@@ -8,7 +8,11 @@ using System;
 public class ResourceManager : MonoBehaviour
 {
     public static ResourceManager Instance { get; private set; } //싱글톤 인스턴스
-
+    // UI가 새로 켜질 때 현재 값을 바로 가져갈 수 있도록 getter 추가
+    public int Gold => gold;
+    public int Research => research;
+    public int Population => population;
+    public int MaxPopulation => maxPopulation;
     public event Action<int, int, int> OnResourceChanged; //자원 변경 이벤트
     [Header("자원 초기값")]
     [SerializeField] private int gold = 1000; //골드 초기값
@@ -29,9 +33,9 @@ public class ResourceManager : MonoBehaviour
             Destroy(gameObject); //이미 인스턴스가 존재하면 현재 오브젝트를 파괴
         }
     }
-    private void Start()
+    void Start()
     {
-        
+        NotifyUI();
     }
 
     public void AddGold(int amount)

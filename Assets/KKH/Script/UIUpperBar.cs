@@ -10,18 +10,22 @@ public class UIUpperBar : MonoBehaviour
     [SerializeField] private TextMeshProUGUI researchText; //골드 텍스트
     [SerializeField] private TextMeshProUGUI populationText; //골드 텍스트
 
-    private void OnEnable()
+    private void Start()
     {
+        // 씬이 시작될 때 현재 매니저의 이벤트에 내 함수를 등록
         if (ResourceManager.Instance != null)
         {
-            ResourceManager.Instance.OnResourceChanged += UpdateResourceUI;// 자원 변경 이벤트 구독
+            ResourceManager.Instance.OnResourceChanged += UpdateResourceUI;
+            // 등록하자마자 현재 값으로 UI 초기화
+            UpdateResourceUI(ResourceManager.Instance.Gold, ResourceManager.Instance.Research, ResourceManager.Instance.Population);
         }
     }
-    private void OnDisable()
+    private void OnDestroy()
     {
+        // 씬이 바뀌거나 UI가 파괴될 때 구독 해제 (중요: 메모리 누수 및 에러 방지)
         if (ResourceManager.Instance != null)
         {
-            ResourceManager.Instance.OnResourceChanged -= UpdateResourceUI;// 자원 변경 이벤트 구독 해제
+            ResourceManager.Instance.OnResourceChanged -= UpdateResourceUI;
         }
     }
 
