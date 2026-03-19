@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
-  m_Name: strike
+  m_Name: strike 3
   m_EditorClassIdentifier: 
-  <Description>k__BackingField: strike
-  <Mana>k__BackingField: 1
+  <Description>k__BackingField: strike3
+  <Mana>k__BackingField: 3
   <Image>k__BackingField: {fileID: 0}

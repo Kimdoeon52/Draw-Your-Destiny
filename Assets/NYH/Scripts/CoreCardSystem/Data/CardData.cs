@@ -2,6 +2,7 @@ namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
+    using UnityEngine.UI;
 
     [CreateAssetMenu(menuName = "Data/Card")]
     public class CardData : ScriptableObject

@@ -2,10 +2,10 @@ namespace NYH.CoreCardSystem
 {
     using TMPro;
     using UnityEngine;
-    using UnityEngine.UI; // UI Image 사용을 위해 추가
+    using UnityEngine.UI;
     using UnityEngine.EventSystems;
 
-    public class CardView: MonoBehaviour
+    public class CardView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("UI Text Objects")]
         [SerializeField] private TMP_Text titleText;
@@ -13,8 +13,8 @@ namespace NYH.CoreCardSystem
         [SerializeField] private TMP_Text manaText;
 
         [Header("UI Image Objects")]
-        [SerializeField] private Image cardArtImage; // 카드 일러스트 이미지
-        [SerializeField] private Image cardBackgroundImage; // 카드 배경 이미지
+        [SerializeField] private Image cardArtImage;
+        [SerializeField] private Image cardBackgroundImage;
 
         [Header("Other Settings")]
         [SerializeField] private GameObject wrapper;
@@ -23,73 +23,82 @@ namespace NYH.CoreCardSystem
         public Card Card { get; private set; }
         private Vector3 dragStartPosition;
         private Quaternion dragStartRotation;
-        private Vector3 offset;
         private bool isDragging = false;
         private Camera mainCamera;
+        private HandView cachedHandView;
 
         private void Awake()
         {
             mainCamera = Camera.main;
-            // UI 클릭 인식을 위해 카메라에 Physics2DRaycaster가 없으면 추가
-            if (mainCamera != null && mainCamera.GetComponent<Physics2DRaycaster>() == null)
-            {
-                mainCamera.gameObject.AddComponent<Physics2DRaycaster>();
-            }
+            cachedHandView = FindFirstObjectByType<HandView>();
         }
 
         public void Setup(Card card)
         {
             if (card == null) return;
             Card = card;
-            
             if (titleText != null) titleText.text = card.Title;
             if (descriptionText != null) descriptionText.text = card.Description;
             if (manaText != null) manaText.text = card.Mana.ToString();
-            
-            if (cardArtImage != null) cardArtImage.sprite = card.Image;
+            if (cardArtImage != null && card.Image != null) cardArtImage.sprite = card.Image;
         }
 
-        private void OnMouseDown()
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-            
+            if (isDragging) return;
+            transform.SetAsLastSibling();
+            if (CardViewHoverSystem.Instance != null) CardViewHoverSystem.Instance.Show(Card, transform.position);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (isDragging) return;
+            if (CardViewHoverSystem.Instance != null) CardViewHoverSystem.Instance.Hide();
+            if (cachedHandView != null) StartCoroutine(cachedHandView.UpdateCardPositions(0.15f));
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
             isDragging = true;
             dragStartPosition = transform.position;
             dragStartRotation = transform.rotation;
-
-            Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            mousePos.z = 0;
-            offset = transform.position - mousePos;
             
-            transform.rotation = Quaternion.identity;
-            transform.position = new Vector3(transform.position.x, transform.position.y, -1f);
+            transform.rotation = Quaternion.identity; 
+            transform.SetAsLastSibling();
+
+            if (cachedHandView != null) cachedHandView.RemoveCard(Card);
+            if (CardViewHoverSystem.Instance != null) CardViewHoverSystem.Instance.Hide();
         }
 
-        private void OnMouseDrag()
+        public void OnDrag(PointerEventData eventData)
         {
             if (!isDragging) return;
-
-            Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            mousePos.z = 0;
-            transform.position = mousePos + offset + Vector3.forward * -1f;
+            transform.position = eventData.position;
         }
 
-        private void OnMouseUp()
+        public void OnPointerUp(PointerEventData eventData)
         {
             if (!isDragging) return;
             isDragging = false;
 
-            Collider2D hit = Physics2D.OverlapPoint(transform.position, dropLayer);
+            Vector3 mousePos = eventData.position;
+            mousePos.z = -mainCamera.transform.position.z; 
+            Vector2 worldPoint = mainCamera.ScreenToWorldPoint(mousePos);
+
+            Collider2D hit = Physics2D.OverlapPoint(worldPoint, dropLayer);
             
             if (hit != null)
             {
-                PlayCardGA playCardGA = new(Card);
-                ActionSystem.Instance.Perform(playCardGA);
+                ActionSystem.Instance.Perform(new PlayCardGA(Card));
             }
             else
             {
-                transform.position = dragStartPosition;
-                transform.rotation = dragStartRotation;
+                if (cachedHandView != null) StartCoroutine(cachedHandView.AddCard(this));
+                else
+                {
+                    transform.position = dragStartPosition;
+                    transform.rotation = dragStartRotation;
+                }
             }
         }
     }

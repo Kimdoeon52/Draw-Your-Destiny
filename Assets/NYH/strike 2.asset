@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Description>k__BackingField: strike3
   <Mana>k__BackingField: 3
-  <Image>k__BackingField: {fileID: 8117750489508839553, guid: 1c9bc0d104c01934da10d4333b9dc48b,
-    type: 3}
+  <Image>k__BackingField: {fileID: 0}

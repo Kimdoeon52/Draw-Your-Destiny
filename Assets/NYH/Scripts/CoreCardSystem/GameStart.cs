@@ -1,36 +1,33 @@
 using NYH.CoreCardSystem;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
- using NYH.CoreCardSystem; // Áß¿ä: Á¦°¡ ¼³Á¤ÇØµå¸° ³×ÀÓ½ºÆäÀÌ½ºÀÔ´Ï´Ù!
-    
-     public class GameStarter : MonoBehaviour
-     {
-         // ¿¡µğÅÍ¿¡¼­ ¿ì¸®°¡ ¸¸µç Ä«µå µ¥ÀÌÅÍ(CardData)µéÀ» ¿©±â¿¡ ³ÖÀ» °Å¿¹¿ä.
-         [SerializeField] private List<CardData> myDeck;
-    
-        void Start()
+using System.Collections;
+
+public class GameStarter : MonoBehaviour
+{
+    [SerializeField] private List<CardData> myDeck;
+
+    private IEnumerator Start()
+    {
+        yield return null; // ì‹œìŠ¤í…œ ì´ˆê¸°í™” ëŒ€ê¸°
+
+        if (CardSystem.Instance != null && myDeck != null && myDeck.Count > 0)
         {
-            // 1. °ÔÀÓ ½ÃÀÛ ½Ã µ¦À» ¼³Á¤ÇÕ´Ï´Ù. (CardSystem¿¡°Ô µ¥ÀÌÅÍ¸¦ ³Ñ°ÜÁÜ)
-            if (CardSystem.Instance != null && myDeck != null && myDeck.Count > 0)
-            {
-                CardSystem.Instance.Setup(myDeck);
-   
-                // 2. Ã³À½ ½ÃÀÛÇÒ ¶§ Ä«µå 5ÀåÀ» »ÌÀ¸¶ó°í ¸í·ÉÇÕ´Ï´Ù.
-                ActionSystem.Instance.Perform(new DrawCardsGA(5));
-            }
-         else
-             {
-                 Debug.LogWarning("µ¦ µ¥ÀÌÅÍ°¡ ºñ¾îÀÖ°Å³ª ¸Å´ÏÀú°¡ ¾ø½À´Ï´Ù!");
-             }
-     }
-   
-        void Update()
+            CardSystem.Instance.Setup(myDeck);
+            yield return new WaitForSeconds(0.1f);
+            ActionSystem.Instance.Perform(new DrawCardsGA(5));
+        }
+        else
         {
-             // Å×½ºÆ®¿ë: °ÔÀÓ Áß¿¡ [D] Å°¸¦ ´©¸£¸é Ä«µå 1ÀåÀ» ´õ »Ì½À´Ï´Ù.
-            if (Input.GetKeyDown(KeyCode.D))
-                 {
-                     ActionSystem.Instance.Perform(new DrawCardsGA(1));
-                 }
-         }
- }
+            Debug.LogError("GameStarter: ë± ì •ë³´ê°€ ì—†ê±°ë‚˜ CardSystemì´ ì—†ìŠµë‹ˆë‹¤.");
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            ActionSystem.Instance.Perform(new DrawCardsGA(1));
+        }
+    }
+}

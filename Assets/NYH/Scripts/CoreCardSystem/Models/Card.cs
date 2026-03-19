@@ -2,7 +2,7 @@ namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
-
+    using UnityEngine.UI;
     public class Card
     {
         public string Title => data.name;
