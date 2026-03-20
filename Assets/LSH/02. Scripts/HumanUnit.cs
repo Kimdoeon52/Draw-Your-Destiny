@@ -18,10 +18,6 @@ public class HumanUnit : MonoBehaviour
     private BuildingType curbuildingType = BuildingType.None;
     //private BuildingType 
     //private bool isDead = false;
-    void Start()
-    {
-        UnitAppear();
-    }
 
     void Update()
     {
@@ -29,9 +25,14 @@ public class HumanUnit : MonoBehaviour
         {
             UnitNextTurn();
         }
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            UseAdultUnitCard();
+        }
     }
-    void UnitAppear() //유닛이 나올 때 초기화하는거
+    public void UnitAppear() //유닛이 나올 때 초기화하는거
     {
+        Debug.Log("유닛이 나와서 초기화!");
         humanPool = FindAnyObjectByType<HumanPool>();
         naturalDeathChance = unitInfo.startNaturalDeathChance;
         gender = Random.value < 0.5f ? Gender.Male : Gender.Female;
@@ -44,16 +45,21 @@ public class HumanUnit : MonoBehaviour
         age++;
         ChangeAgeGroup();
         ChangeDeathPer();
+        CheckCardUsing();
         if (Random.value < naturalDeathChance)
         {
             Dead();
         }
     }
 
+    void CheckCardUsing()//카드 사용했을때 행동들 체크.
+    {
+
+    }
     //void DoingBehavier(behavier)
     void Dead() //죽는거는 이거
     {
-        UnitAppear(); //죽으면 초기화
+        //UnitAppear(); //죽으면 초기화
         humanPool.ReturnHuman(this.gameObject);
     }
     public void ChangeAgeGroup()//나이 그룹 바뀌는거는 이거
@@ -88,24 +94,11 @@ public class HumanUnit : MonoBehaviour
         }
     }
 
-/*    public void GoToFarm() //농사 지으러 가자
-    {
-        if (curbuildingType == BuildingType.Farm)
-        {
-
-        }
-    }*/
     public void UseAdultUnitCard() //만약 어른을 소환하는 카드를 사용시
     {
         ageGroup = AgeGroup.Adult;
         age = unitInfo.adultStartAge;
+        Debug.Log("어른 소환 카드 사용!");
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.CompareTag("Farm"))
-        {
-            curbuildingType = BuildingType.Farm;
-        }
-    }
 }

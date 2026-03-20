@@ -26,6 +26,7 @@ public class TestScripts : MonoBehaviour
                 {
                     HumanUnit humanScript = human.GetComponent<HumanUnit>();
                     humanScript.UseAdultUnitCard();
+                    Debug.Log("성인 유닛 카드 사용!");
                 }
             }
         }

@@ -29,7 +29,12 @@ public class HumanPool : MonoBehaviour
 
         GameObject human = pool.Dequeue();
         human.SetActive(true);
-        
+        HumanUnit humanUnit = human.GetComponent<HumanUnit>();
+        if (humanUnit != null)
+        {
+            humanUnit.UnitAppear();
+        }
+
         return human;
     }
 
