@@ -5,6 +5,8 @@ namespace NYH.CoreCardSystem
     using UnityEngine.UI;
     using DG.Tweening;
     using UnityEngine.EventSystems;
+    using Unity.Hierarchy;
+    using UnityEditor.ShaderGraph.Internal;
 
     public class CardView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
@@ -20,9 +22,11 @@ namespace NYH.CoreCardSystem
         [Header("Other Settings")]
         [SerializeField] private GameObject wrapper;
         [SerializeField] private LayerMask dropLayer;
+        [SerializeField] private float dragSpeed = 0.15f;
 
         public Card Card { get; private set; }
         private Vector3 dragStartPosition;
+        private Vector3 currentVelocity; //속도용
         private Quaternion dragStartRotation;
         
         private bool isDragging = false;  // 꾹 누르고 있는 상태
@@ -37,6 +41,7 @@ namespace NYH.CoreCardSystem
         {
             mainCamera = Camera.main;
             cachedHandView = FindFirstObjectByType<HandView>();
+            
         }
 
         private void Update()
@@ -44,9 +49,10 @@ namespace NYH.CoreCardSystem
             // 집어든 상태이거나 드래그 중일 때 마우스 따라가기
             if (isPickedUp || isDragging)
             {
+                // 마우스의 현재 화면 좌표를 가져옵니다.
                 Vector3 mousePos = Input.mousePosition;
-                mousePos.z = -mainCamera.transform.position.z; 
-                transform.position = mousePos;
+                mousePos.z = -mainCamera.transform.position.z;
+                transform.position = Vector3.SmoothDamp(transform.position, mousePos, ref currentVelocity, dragSpeed);
 
                 // 우클릭 시 즉시 취소
                 if (Input.GetMouseButtonDown(1))

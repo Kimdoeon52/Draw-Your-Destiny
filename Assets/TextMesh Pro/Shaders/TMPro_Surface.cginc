@@ -12,7 +12,9 @@ void VertShader(inout appdata_full v, out Input data)
 	v.normal *= sign(dot(v.normal, view));
 
 #if USE_DERIVATIVE
-	data.param.y = 1;
+	
+	
+	param.y = 1;
 #else
 	float4 vert = v.vertex;
 	float4 vPosition = UnityObjectToClipPos(vert);
