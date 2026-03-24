@@ -5,8 +5,11 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/KKH/UIScene/Lobby.unity
     guid: 86a71addd4708f645a644c43d7689488
+  - enabled: 1
+    path: Assets/KKH/UIScene/TestKKH.unity
+    guid: c34ef78955c834949af41b1e6b8ab5ad
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
