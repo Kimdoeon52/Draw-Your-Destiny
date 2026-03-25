@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
   m_Name: "\uACE8\uB4DC\uD68D\uB4DD"
   m_EditorClassIdentifier: 
-  description: "\uACE8\uB4DC\uB97C 5 \uD68D\uB4DD\uD558\uACE0\n\uCE74\uB4DC\uB97C
-    \uBF51\uC2B5\uB2C8\uB2E4."
+  description: "<color=red>\uC18C\uBA78</color>\n<color=yellow>\uACE8\uB4DC</color>\uB97C
+    5 \uD68D\uB4DD\uD558\uACE0\n\uCE74\uB4DC\uB97C \uBF51\uC2B5\uB2C8\uB2E4."
   <Cost>k__BackingField: 0
   <Image>k__BackingField: {fileID: -6620443678240376230, guid: c10b3c5338d9e914fb4398031c8b7051,
     type: 3}

@@ -22,23 +22,27 @@
 
 
         // 게임 내 카드 데이터들
-        private List<Card> drawPile = new();    // 덱
-        private List<Card> hand = new();        // 손패
-        private List<Card> discardPile = new(); // 무덤(버려진 카드)
+        private List<Card> drawPile = new();       // 덱
+        private List<Card> hand = new();           // 손패
+        private List<Card> discardPile = new();    // 무덤(버려진 카드)
+        private List<Card> extinctionPile = new(); // 소멸칸
 
         protected override void Awake()
         {
             base.Awake();
             
             // 액션 연결 (AttachPerformer)
-            ActionSystem.AttachPerformer<DrawCardsGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<PlayCardGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<DiscardAllCardsGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<DiscardRandomGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<GoldCardGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<PlayCostGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<ChooseOneGA>(action => Perform(action));
-            
+            ActionSystem.AttachPerformer<DrawCardsGA>(action => Perform(action));                 //카드 드로우 액션
+            ActionSystem.AttachPerformer<PlayCardGA>(action => Perform(action));                  //카드 플레이 액션
+            ActionSystem.AttachPerformer<DiscardAllCardsGA>(action => Perform(action));           //카드 전부 버리기 액션
+            ActionSystem.AttachPerformer<DiscardRandomGA>(action => Perform(action));             //카드 랜덤 버리기 액션
+            ActionSystem.AttachPerformer<ExtinctionCardGA>(action => Perform(action));            //카드 소멸 액션
+            ActionSystem.AttachPerformer<GoldCardGA>(action => Perform(action));                  //골드 획득 액션
+            ActionSystem.AttachPerformer<PlayCostGA>(action => Perform(action));                  //골드 사용 액션
+            ActionSystem.AttachPerformer<ChooseOneGA>(action => Perform(action));                 //선택 카드 액션
+            ActionSystem.AttachPerformer<ResearchpointsGA>(action => Perform(action));            //연구 포인트 획득 액션
+            ActionSystem.AttachPerformer<IncreasePopulationGA>(action => Perform(action));        //인구 증가 획득 액션
+
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
 
@@ -67,7 +71,7 @@
                 {
                     if (drawPile.Count == 0) RefillDeck();
                     if (hand.Count >= 10) break;
-                    if (drawPile.Count > 0) 
+                    if (drawPile.Count > 0)
                     {
                         yield return DrawOneCard();
                         yield return new WaitForSeconds(0.1f);
@@ -91,6 +95,14 @@
                     yield return DiscardCardByInstance(targetCard);
                 }
             }
+            else if (action is ExtinctionCardGA extinctionCardGA)
+            {
+                // 소멸 효과가 활성화되어 있고 대상 카드가 지정되어 있다면 소멸 처리
+                if (extinctionCardGA.IsExtinction && extinctionCardGA.TargetCard != null)
+                {
+                    yield return ExtinctionCardByInstance(extinctionCardGA.TargetCard);
+                }
+            }
             else if (action is GoldCardGA goldCardGA)
             {
                 GameManager.Instance.AddGold(goldCardGA.Amount);
@@ -105,6 +117,16 @@
             {
                 yield return ChooseCardPerformer(chooseOneGA.Amount);
             }
+            else if (action is ResearchpointsGA researchpointsGA)
+            {
+                GameManager.Instance.AddResearch(researchpointsGA.Amount);
+                yield return null;
+            }
+            else if (action is IncreasePopulationGA increasPoulationGA)
+            {
+                GameManager.Instance.IncreasePopulationCap(increasPoulationGA.Amount);
+                yield return null;
+            }
         }
 
         /// <summary>
@@ -114,12 +136,12 @@
         {
             if (drawPile.Count == 0) yield break;
 
-            // 1. 보여줄 카드 리스트 만들기 (덱에서 빼지 않고 복사만 함)
+            // 보여줄 카드 리스트 만들기 (덱에서 빼지 않고 복사만 함)
             List<Card> choices = new List<Card>();
             int actualAmount = Mathf.Min(amount, drawPile.Count);
             for (int i = 0; i < actualAmount; i++) choices.Add(drawPile[i]);
 
-            // 2. UI 호출 및 유저 선택 대기
+            // UI 호출 및 유저 선택 대기
             Card selectedCard = null;
             bool isChosen = false;
 
@@ -132,7 +154,7 @@
             CardSelectionUI.Instance.Show(choices, (card) => { selectedCard = card; isChosen = true; });
             yield return new WaitUntil(() => isChosen);
 
-            // 3. 선택된 카드 처리
+            // 선택된 카드 처리
             if (selectedCard != null)
             {
                 drawPile.Remove(selectedCard); // 덱에서 제거
@@ -147,6 +169,7 @@
 
         private IEnumerator DrawOneCard()
         {
+
             Card card = drawPile.Draw();
             hand.Add(card);
             deackCount.text = $"{drawPile.Count}장";
@@ -168,7 +191,29 @@
                 }
             }
 
-            yield return DiscardCardAnimation(cardView);
+            // --- 소멸 효과 체크 로직 추가 ---
+            bool isExtinction = false;
+            if (playCardGA.Card?.Effects != null)
+            {
+                foreach (var effect in playCardGA.Card.Effects)
+                {
+                    if (effect is ExtinctionCardEffect)
+                    {
+                        isExtinction = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isExtinction)
+            {
+                yield return ExtinctionCardAnimation(cardView);
+            }
+            else
+            {
+                yield return DiscardCardAnimation(cardView);
+            }
+            // ---------------------------
             
             if (playCardGA.Card?.Effects != null)
             {
@@ -198,11 +243,17 @@
         private IEnumerator DiscardCardAnimation(CardView cardView)
         {
             if (cardView == null) yield break;
+
+            //데이터를 무덤 리스트에 추가.
             discardPile.Add(cardView.Card);
             discardCount.text = $"{discardPile.Count}장";
+
+            // 2. 애니메이션 연출 (무덤 위치로 이동하며 작아짐)
             cardView.transform.DOKill();
             cardView.transform.DOScale(Vector3.zero, 0.2f);
             yield return cardView.transform.DOMove(discardPilePoint.position, 0.2f).WaitForCompletion();
+
+            // 3. 게임 오브젝트 파괴 (메모리 관리)
             Destroy(cardView.gameObject);
         }
 
@@ -226,6 +277,37 @@
                 discardCount.text = $"{discardPile.Count}장";
                 yield return new WaitForSeconds(0.05f);
             }
+        }
+
+        //카드를 소멸 칸으로
+        private IEnumerator ExtinctionCardAnimation(CardView cardView)
+        {
+            if (cardView == null) yield break;
+
+            // 1. 무덤이 아닌 소멸 리스트에 추가
+            extinctionPile.Add(cardView.Card);
+            // 소멸 카운트 텍스트가 있다면 업데이트 (예: extinctionCount.text = ...)
+
+            // 2. 소멸 연출 (예: 무덤 위치가 아닌 다른 곳으로 이동하거나 그냥 제자리에서 소멸)
+            cardView.transform.DOKill();
+            // 무덤 대신 소멸 포인트로 이동하거나, Scale을 0으로 줄임
+            yield return cardView.transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).WaitForCompletion();
+
+            // 3. 파괴
+            Destroy(cardView.gameObject);
+        }
+
+        // 소멸 함수
+        private IEnumerator ExtinctionCardByInstance(Card targetCard)
+        {
+            if (targetCard == null) yield break;
+            // 손패에서 데이터 제거
+            hand.Remove(targetCard);
+            // 뷰 오브젝트 가져오기
+            CardView cardView = handView.RemoveCard(targetCard);
+            // 소멸 애니메이션 (무덤 대신 소멸)
+            yield return ExtinctionCardAnimation(cardView);
+
         }
 
         /// <summary>

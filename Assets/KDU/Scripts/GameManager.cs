@@ -84,11 +84,15 @@ public class GameManager : PersistentSingleton<GameManager>
     public void AddResearch(int amount)
     {
         playerResearch += amount;
+        Debug.Log($"연구 포인트 획득:{amount}");
+        Debug.Log($"현재 연구 포인트: {playerResearch}");
     }
 
     // 인구 한도 증가
     public void IncreasePopulationCap(int amount)
     {
         playerPopulationCap += amount;
+        Debug.Log($"인구 한도 증가:{amount}");
+        Debug.Log($"현재 인구 수:{playerPopulation}");
     }
 }
