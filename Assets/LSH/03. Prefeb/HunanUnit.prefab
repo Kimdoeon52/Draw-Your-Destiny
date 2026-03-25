@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65a5a1a9fecca284886f87d3734de2e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 10
   unitInfo: {fileID: 11400000, guid: b0d7ac82f149ade429837a8f19faa55a, type: 2}
   buildingData: {fileID: 11400000, guid: 268a0889472ac9e46bbdc31d1b0f25cf, type: 2}
   humanPool: {fileID: 0}
@@ -119,7 +120,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 10
   m_Sprite: {fileID: -6620443678240376230, guid: c10b3c5338d9e914fb4398031c8b7051,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

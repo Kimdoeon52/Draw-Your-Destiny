@@ -1,8 +1,16 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class HumanUnit : MonoBehaviour
 {
+    [Header("이동  속도")]
+    [SerializeField] private float moveSpeed = 3f;
+
+    private List<Vector3Int> currentPath = new List<Vector3Int>();
+    private int pathIndex = 0;
+    private bool isMoving = false;
+
     [Header("원본 데이터")]
     public UnitInfo unitInfo;
     public BuildingData buildingData;
@@ -29,6 +37,8 @@ public class HumanUnit : MonoBehaviour
         {
             UseAdultUnitCard();
         }
+        HandleClickMove();
+        MoveAlongPath();
     }
     public void UnitAppear() //유닛이 나올 때 초기화하는거
     {
@@ -101,4 +111,51 @@ public class HumanUnit : MonoBehaviour
         Debug.Log("어른 소환 카드 사용!");
     }
 
+    void HandleClickMove()
+    {
+        if (!Input.GetMouseButtonDown(1))
+            return;
+        
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorld.z = 0f;
+
+        Vector3Int targetCell = TileMapManager.Instance.groundTilemap.WorldToCell(mouseWorld);
+        Vector3Int startCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+
+        // 클릭한 곳이 영지가 아니면 이동 불가
+        if (!TileMapManager.Instance.IsWalkableTerritory(targetCell))
+            return;
+
+        List<Vector3Int> newPath = PathFindingManager.Instance.FindPath(startCell, targetCell);
+        if (newPath != null && newPath.Count > 0)
+        {
+            currentPath = newPath;
+            pathIndex = 0;
+            isMoving = true;
+        }
+    }
+
+    void MoveAlongPath()
+    {
+        if (!isMoving || currentPath == null || pathIndex >= currentPath.Count)
+            return;
+
+        Vector3 targetWorld = TileMapManager.Instance.GetCellCenterWorld(currentPath[pathIndex]);
+        targetWorld.z = transform.position.z;
+
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            targetWorld,
+            moveSpeed * Time.deltaTime
+        );
+
+        if (Vector3.Distance(transform.position, targetWorld) < 0.02f)
+        {
+            transform.position = targetWorld;
+            pathIndex++;
+
+            if (pathIndex >= currentPath.Count)
+                isMoving = false;
+        }
+    }
 }

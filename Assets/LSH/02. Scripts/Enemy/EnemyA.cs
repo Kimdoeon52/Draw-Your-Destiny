@@ -151,8 +151,4 @@ public class EnemyA : MonoBehaviour
 
         return false;
     }
-    private void MoveUnit()
-    {
-
-    }
 }
