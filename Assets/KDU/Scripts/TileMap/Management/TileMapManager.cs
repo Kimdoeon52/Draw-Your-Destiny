@@ -64,11 +64,11 @@ public class TileMapManager : Singleton<TileMapManager>
     {
         HashSet<Vector3Int> allPositions = new HashSet<Vector3Int>();
 
-        CollectPositions(groundTilemap,    allPositions);
-        CollectPositions(farmlandTilemap,  allPositions);
-        CollectPositions(riverTilemap,     allPositions);
-        CollectPositions(goldMineTilemap,  allPositions);
-        CollectPositions(cityTilemap,      allPositions);
+        CollectPositions(groundTilemap, allPositions);
+        CollectPositions(farmlandTilemap, allPositions);
+        CollectPositions(riverTilemap, allPositions);
+        CollectPositions(goldMineTilemap, allPositions);
+        CollectPositions(cityTilemap, allPositions);
 
         foreach (Vector3Int pos in allPositions)
             tileDataMap[pos] = new TileData(GetTileType(pos), FogState.Hidden, -1);
@@ -97,11 +97,11 @@ public class TileMapManager : Singleton<TileMapManager>
     // 타일 제거 후 tileDataMap 재평가
     private void RefreshTileData(Vector3Int pos)
     {
-        bool exists = (groundTilemap   != null && groundTilemap.HasTile(pos))
+        bool exists = (groundTilemap != null && groundTilemap.HasTile(pos))
                    || (farmlandTilemap != null && farmlandTilemap.HasTile(pos))
-                   || (riverTilemap    != null && riverTilemap.HasTile(pos))
+                   || (riverTilemap != null && riverTilemap.HasTile(pos))
                    || (goldMineTilemap != null && goldMineTilemap.HasTile(pos))
-                   || (cityTilemap     != null && cityTilemap.HasTile(pos));
+                   || (cityTilemap != null && cityTilemap.HasTile(pos));
 
         if (exists)
         {
@@ -125,11 +125,11 @@ public class TileMapManager : Singleton<TileMapManager>
     // ── 타일 타입 조회 (우선순위: 강 > 금광 > 농경지 > 도시 > 평지) ──
     public TileType GetTileType(Vector3Int pos)
     {
-        if (riverTilemap    != null && riverTilemap.HasTile(pos))    return TileType.River;
+        if (riverTilemap != null && riverTilemap.HasTile(pos)) return TileType.River;
         if (goldMineTilemap != null && goldMineTilemap.HasTile(pos)) return TileType.Resource;
         if (farmlandTilemap != null && farmlandTilemap.HasTile(pos)) return TileType.Farmland;
-        if (cityTilemap     != null && cityTilemap.HasTile(pos))     return TileType.City;
-        if (groundTilemap   != null && groundTilemap.HasTile(pos))   return TileType.Plain;
+        if (cityTilemap != null && cityTilemap.HasTile(pos)) return TileType.City;
+        if (groundTilemap != null && groundTilemap.HasTile(pos)) return TileType.Plain;
         return TileType.River; // 타일 없음 = 이동 불가
     }
 
@@ -260,8 +260,8 @@ public class TileMapManager : Singleton<TileMapManager>
 
                 if (!IsValidPosition(checkPos)) return false;
 
-                if (riverTilemap    != null && riverTilemap.HasTile(checkPos))    return false;
-                if (cityTilemap     != null && cityTilemap.HasTile(checkPos))     return false;
+                if (riverTilemap != null && riverTilemap.HasTile(checkPos)) return false;
+                if (cityTilemap != null && cityTilemap.HasTile(checkPos)) return false;
                 if (buildingMap.ContainsKey(checkPos)) return false;
 
                 TileType tileType = GetTileType(checkPos);
@@ -299,12 +299,12 @@ public class TileMapManager : Singleton<TileMapManager>
 
         BuildingInstance instance = new BuildingInstance
         {
-            data        = building,
-            origin      = origin,
-            footprint   = footprint,
-            ownerCivID  = civID,
+            data = building,
+            origin = origin,
+            footprint = footprint,
+            ownerCivID = civID,
             wasEverSeen = (civID == 0), // 내 건물은 항상 표시
-            visual      = visual
+            visual = visual
         };
 
         allBuildings.Add(instance);
@@ -384,7 +384,7 @@ public class TileMapManager : Singleton<TileMapManager>
     // ── 건물 기준점 계산 (StarCraft 방식) ────────────────────────
     public Vector3Int GetOrigin(Vector3Int clickPos, BuildingData building)
     {
-        int offsetX = building.width  % 2 == 0 ? building.width  / 2 - 1 : building.width  / 2;
+        int offsetX = building.width % 2 == 0 ? building.width / 2 - 1 : building.width / 2;
         int offsetY = building.height % 2 == 0 ? building.height / 2 - 1 : building.height / 2;
         return clickPos - new Vector3Int(offsetX, offsetY, 0);
     }
@@ -403,45 +403,42 @@ public class TileMapManager : Singleton<TileMapManager>
     }
 
     // --------건들ㄴ--------------------------------
-    public bool IsWalkable(Vector3Int pos)
+    public bool IsWalkableTerritory(Vector3Int pos)
     {
-        // 땅 타일이 없으면 이동 불가
-        if (groundTilemap == null || !groundTilemap.HasTile(pos))
+        if (!tileDataMap.TryGetValue(pos, out TileData data))
             return false;
 
-        // 강 타일이면 이동 불가
-        if (riverTilemap != null && riverTilemap.HasTile(pos))
-            return false;
-
-        // 건물이 있으면 이동 불가
-        if (buildingInstanceMap != null && buildingInstanceMap.ContainsKey(pos))
-            return false;
-
-        return true;
+        return data.ownerCivID != -1;
     }
 
     public List<Vector3Int> GetNeighbors(Vector3Int current)
     {
         List<Vector3Int> neighbors = new List<Vector3Int>();
 
-        Vector3Int[] directions = new Vector3Int[]
+        Vector3Int[] directions =
         {
-        new Vector3Int(1, 0, 0),
-        new Vector3Int(-1, 0, 0),
-        new Vector3Int(0, 1, 0),
-        new Vector3Int(0, -1, 0)
+            new Vector3Int(1, 0, 0),
+            new Vector3Int(-1, 0, 0),
+            new Vector3Int(0, 1, 0),
+            new Vector3Int(0, -1, 0),
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(-1, -1, 0),
+            new Vector3Int(1, -1, 0),
+            new Vector3Int(-1, 1, 0)
         };
+
         foreach (var dir in directions)
         {
             Vector3Int next = current + dir;
 
-            if (IsWalkable(next))
+            if (IsWalkableTerritory(next))
                 neighbors.Add(next);
         }
+
         return neighbors;
     }
-    public Vector3 GetCellCenterWorld(Vector3Int cellPos)
+    public Vector3 GetCellCenterWorld(Vector3Int pos)
     {
-        return groundTilemap.GetCellCenterWorld(cellPos);
+        return groundTilemap.GetCellCenterWorld(pos);
     }
 }
