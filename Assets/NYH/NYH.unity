@@ -2877,6 +2877,8 @@ MonoBehaviour:
   buildingTilemap: {fileID: 1560795505}
   fogTilemap: {fileID: 0}
   territoryTilemap: {fileID: 0}
+  cityTileAsset: {fileID: 0}
+  farmlandTileAsset: {fileID: 0}
 --- !u!4 &1395773283
 Transform:
   m_ObjectHideFlags: 0
@@ -3816,7 +3818,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
   - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
   - {fileID: 11400000, guid: 1fbf25b4933a43f47a1644f4a0ecf0ac, type: 2}
-  - {fileID: 11400000, guid: 7825ab8f12ed9084b9e10522dba7e1d9, type: 2}
+  - {fileID: 11400000, guid: e0b7db0502043b64ab48ddc2a1d0a648, type: 2}
+  - {fileID: 11400000, guid: e0b7db0502043b64ab48ddc2a1d0a648, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1698640415
 MonoBehaviour:

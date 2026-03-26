@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using TMPro;
     using UnityEngine;
@@ -173,6 +173,10 @@
                         isDragging = false;
                         AnyCardPickedUp = false;
                         isTargetingMode = false;
+
+                        // [추가] 설치 성공 시에도 턴 종료 버튼 다시 활성화
+                        // if (GameManager.Instance != null) GameManager.Instance.SetTurnEndButtonInteractable(true);
+
                         ActionSystem.Instance.Perform(new PlayCardGA(Card));
                         return;
                     }
@@ -215,6 +219,7 @@
 
             // [타겟팅 모드 전환 로직]
             if (placementEffect != null && isDragging)
+            if (placementEffect != null && (isDragging || isPickedUp))
             {
                 if (mousePos.y > targetingThresholdY)
                 {
@@ -242,6 +247,10 @@
             transform.DOKill();
             transform.DOMove(targetingCenterPos, 0.3f).SetEase(Ease.OutBack);
             transform.DOScale(1.2f, 0.3f);
+            transform.DORotate(Vector3.zero, 0.3f); 
+
+            // [추가] 카드 배치 중에는 턴 종료 버튼을 막음
+            // if (GameManager.Instance != null) GameManager.Instance.SetTurnEndButtonInteractable(false);
 
             var placementService = FindFirstObjectByType<BuildingPlacementService>();
             if (placementService != null && effect is InstallBuildingEffect ibe)
@@ -255,6 +264,10 @@
             isTargetingMode = false;
             transform.DOKill();
             transform.DOScale(1.0f, 0.2f);
+        transform.DORotate(Vector3.zero, 0.2f);
+
+            // [주석 처리] 배치 모드 종료 시 턴 종료 버튼 다시 활성화
+            // if (GameManager.Instance != null) GameManager.Instance.SetTurnEndButtonInteractable(true);
 
             var placementService = FindFirstObjectByType<BuildingPlacementService>();
             if (placementService != null)
@@ -285,6 +298,12 @@
             isPickedUp = false;
             isDragging = false;
             AnyCardPickedUp = false;
+
+            // [추가] 손패로 돌아올 때 혹시 커져있거나 기울어져 있는 상태를 확실히 초기화
+            transform.DOKill();
+            transform.DOScale(Vector3.one, 0.2f);
+            transform.DORotate(Vector3.zero, 0.2f);
+
             if (cachedHandView != null) StartCoroutine(cachedHandView.AddCard(this));
         }
 

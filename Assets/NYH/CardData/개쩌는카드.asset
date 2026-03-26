@@ -18,7 +18,8 @@ MonoBehaviour:
     type: 3}
   <Effects>k__BackingField:
   - rid: 1012689262540226645
-  - rid: 1012689262540226646
+  - rid: 4274341048764858582
+  - rid: 4274341048764858581
   references:
     version: 2
     RefIds:
@@ -26,7 +27,13 @@ MonoBehaviour:
       type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
       data:
         playCardCost: 5
-    - rid: 1012689262540226646
-      type: {class: ExtinctionCardEffect, ns: , asm: Assembly-CSharp}
+    - rid: 4274341048764858581
+      type: {class: RandomChanceEffect, ns: , asm: Assembly-CSharp}
       data:
-        ExtinctionCard: 1
+        options:
+        - weight: 50
+        - weight: 50
+    - rid: 4274341048764858582
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        drawAmount: 2
