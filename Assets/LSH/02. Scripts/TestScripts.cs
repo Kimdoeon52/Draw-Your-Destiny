@@ -3,32 +3,28 @@ using UnityEngine;
 
 public class TestScripts : MonoBehaviour
 {
-    [SerializeField] HumanPool humanPool;
+    [SerializeField] CardUseGroup cardUse;
     
     // Update is called once per frame
     void Start()
     {
-        humanPool = FindAnyObjectByType<HumanPool>();
+        cardUse = FindAnyObjectByType<CardUseGroup>();
     }
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            humanPool.GetHuman();
+            cardUse.SpawnFarmer(2);
         }
+
         if (Input.GetKeyDown(KeyCode.S))
         {
-            for (int i = 0; i < 5; i++)
-            {
-                GameObject human = humanPool.GetHuman();
+            cardUse.SpawnMiner(2);
+        }
 
-                if (human != null)
-                {
-                    HumanUnit humanScript = human.GetComponent<HumanUnit>();
-                    humanScript.UseAdultUnitCard();
-                    Debug.Log("성인 유닛 카드 사용!");
-                }
-            }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            cardUse.SpawnSolider(2);
         }
     }
 }

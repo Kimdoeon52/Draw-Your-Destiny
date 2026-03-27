@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Unity.Properties;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,6 +25,9 @@ public class HumanUnit : MonoBehaviour
     [SerializeField] private bool koreanArmy;
     [SerializeField] private float naturalDeathChance;
 
+    [Header("직업")]
+    [SerializeField] public Job job;
+    
     private BuildingType curbuildingType = BuildingType.None;
     //private BuildingType 
     //private bool isDead = false;
@@ -42,13 +47,27 @@ public class HumanUnit : MonoBehaviour
     }
     public void UnitAppear() //유닛이 나올 때 초기화하는거
     {
-        Debug.Log("유닛이 나와서 초기화!");
-        humanPool = FindAnyObjectByType<HumanPool>();
         naturalDeathChance = unitInfo.startNaturalDeathChance;
         gender = Random.value < 0.5f ? Gender.Male : Gender.Female;
         ageGroup = AgeGroup.Baby; //처음 나올 때는 응애
         age = unitInfo.babyStartAge;
-        koreanArmy = false;
+        switch (job) //직업에 따른 초기화를 여기서 하도록
+        {
+            case Job.Farmer:
+                koreanArmy = false;
+                break;
+            case Job.Soldier:
+                koreanArmy = true;
+                break;
+            case Job.Miner:
+                koreanArmy = false;
+                break;
+
+            default:
+                Debug.LogError("뭔 직업이냐 이건.");
+                break;
+        }
+        
     }
     public void UnitNextTurn() //턴이 지날때마다 나오는거니까 여따가 다 때려박을까
     {
@@ -66,6 +85,7 @@ public class HumanUnit : MonoBehaviour
     {
 
     }
+    
     //void DoingBehavier(behavier)
     void Dead() //죽는거는 이거
     {

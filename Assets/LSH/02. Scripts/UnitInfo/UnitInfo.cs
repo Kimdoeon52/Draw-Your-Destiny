@@ -10,6 +10,12 @@ public enum AgeGroup
     Adult,
     Old
 }
+public enum Job
+{
+    Farmer,
+    Soldier,
+    Miner
+}
 [CreateAssetMenu(fileName = "UnitInfo", menuName = "Unit/UnitInfo")]
 public class UnitInfo : ScriptableObject
 {
