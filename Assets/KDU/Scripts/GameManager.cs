@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using NYH.CoreCardSystem;
+using UnityEngine;
 
 // ============================================================
 // GameManager — 게임 전체 상태 관리 (PersistentSingleton)

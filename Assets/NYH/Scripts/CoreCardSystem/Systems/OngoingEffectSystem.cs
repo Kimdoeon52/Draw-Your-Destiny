@@ -28,18 +28,19 @@ public class OngoingEffectSystem : Singleton<OngoingEffectSystem>
         for (int i = entries.Count - 1; i >= 0; i--)
         {
             var entry = entries[i];
-
             if (entry.SourceCard?.Effects != null)
             {
                 for (int j = entry.StartEffectIndex; j < entry.SourceCard.Effects.Count; j++)
                 {
                     var effect = entry.SourceCard.Effects[j];
-                    ActionSystem.Instance.AddReaction(new PerformEffectGA(entry.SourceCard, effect, j));
+
+                    // AddReaction 대신 Perform을 사용해 보세요.
+                    // 이렇게 하면 매 효과마다 ActionSystem 엔진이 체크하고 실행합니다.
+                    ActionSystem.Instance.Perform(new PerformEffectGA(entry.SourceCard, effect, j));
                 }
             }
 
             entry.RemainingTurns--;
-
             if (entry.RemainingTurns <= 0)
                 entries.RemoveAt(i);
         }

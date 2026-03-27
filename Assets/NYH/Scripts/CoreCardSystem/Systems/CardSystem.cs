@@ -42,9 +42,6 @@
             ActionSystem.AttachPerformer<ChooseOneGA>(action => Perform(action));                 //선택 카드 액션
             ActionSystem.AttachPerformer<ResearchpointsGA>(action => Perform(action));            //연구 포인트 획득 액션
             ActionSystem.AttachPerformer<IncreasePopulationGA>(action => Perform(action));        //인구 증가 획득 액션
-            ActionSystem.AttachPerformer<ContinueBehaviourGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<PerformEffectGA>(action => Perform(action));
-
 
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
