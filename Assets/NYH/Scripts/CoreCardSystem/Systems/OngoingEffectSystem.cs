@@ -19,7 +19,7 @@ public class OngoingEffectSystem : Singleton<OngoingEffectSystem>
         {
             SourceCard = sourceCard,
             StartEffectIndex = startEffectIndex,
-            RemainingTurns = turnAmount
+            RemainingTurns = turnAmount - 1
         });
     }
 

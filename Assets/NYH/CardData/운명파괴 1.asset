@@ -20,6 +20,9 @@ MonoBehaviour:
   <Effects>k__BackingField:
   - rid: 1427804423798915157
   - rid: 1427804423798915158
+  - rid: 4274341092659036235
+  - rid: 4274341092659036236
+  - rid: 4274341092659036237
   references:
     version: 2
     RefIds:
@@ -31,3 +34,15 @@ MonoBehaviour:
       type: {class: ColdCardEffect, ns: , asm: Assembly-CSharp}
       data:
         costAmount: 30
+    - rid: 4274341092659036235
+      type: {class: ResearchpointsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        ResarchPointGA: 10
+    - rid: 4274341092659036236
+      type: {class: IncreasePopulationffect, ns: , asm: Assembly-CSharp}
+      data:
+        increasePopulationGA: 10
+    - rid: 4274341092659036237
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        drawAmount: 1
