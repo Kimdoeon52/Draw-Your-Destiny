@@ -22,6 +22,7 @@ MonoBehaviour:
   - rid: 1427804423798915158
   - rid: 4274341092659036235
   - rid: 4274341092659036236
+  - rid: 4274341092659036237
   references:
     version: 2
     RefIds:
@@ -41,3 +42,7 @@ MonoBehaviour:
       type: {class: IncreasePopulationffect, ns: , asm: Assembly-CSharp}
       data:
         increasePopulationGA: 10
+    - rid: 4274341092659036237
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        drawAmount: 1

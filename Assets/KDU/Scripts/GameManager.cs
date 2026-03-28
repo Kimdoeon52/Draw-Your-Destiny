@@ -66,13 +66,13 @@ public class GameManager : PersistentSingleton<GameManager>
         startTurn = true;
         endTurn = false;
         currentTurn++;
+        OngoingEffectSystem.Instance.OnTurnStartOrEnd();
     }
 
     public void EndTurn()
     {
         endTurn = true;
         startTurn = false;
-        OngoingEffectSystem.Instance.OnTurnStartOrEnd();
     }
 
     // ── 재화 관리 ─────────────────────────────────────────────
