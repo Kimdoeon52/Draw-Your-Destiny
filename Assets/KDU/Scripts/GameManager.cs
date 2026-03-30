@@ -73,7 +73,7 @@ public class GameManager : PersistentSingleton<GameManager>
     {
         endTurn = true;
         startTurn = false;
-    }
+	}
 
     // ── 재화 관리 ─────────────────────────────────────────────
     public void AddGold(int amount)

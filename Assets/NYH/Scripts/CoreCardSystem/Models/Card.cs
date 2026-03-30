@@ -16,16 +16,17 @@
         public string Description => data.Description;
         public Sprite Image => data.Image;
         public List<Effect> Effects => data.Effects;
+        public int CardID => data.cardID;
 
         /// <summary>
         /// 카드의 마나 비용입니다. 
         /// CardData에서 직접 가져오지 않고 별도의 프로퍼티(Mana)로 둔 이유는,
         /// 게임 중에 특정 효과로 인해 '이 카드의 비용만' 줄어들거나 늘어날 수 있기 때문입니다.
         /// </summary>
-        public int Cost { get; private set; }
+        public int Cost { get; set; }
 
         // 이 카드가 참조하고 있는 데이터 원본(에셋)
-        private readonly CardData data;
+        public CardData data { get; private set; }
 
         /// <summary>
         /// 생성자: CardData 에셋을 기반으로 새로운 카드 인스턴스를 만듭니다.
