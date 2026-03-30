@@ -1,4 +1,4 @@
-﻿/*namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -27,10 +27,10 @@
         private List<Card> discardPile = new();    // 무덤(버려진 카드)
         private List<Card> extinctionPile = new(); // 소멸칸
 
-		protected override void Awake()
+        protected override void Awake()
         {
             base.Awake();
-            
+
             // 액션 연결 (AttachPerformer)
             ActionSystem.AttachPerformer<DrawCardsGA>(action => Perform(action));                 //카드 드로우 액션
             ActionSystem.AttachPerformer<PlayCardGA>(action => Perform(action));                  //카드 플레이 액션
@@ -43,6 +43,7 @@
             ActionSystem.AttachPerformer<ResearchpointsGA>(action => Perform(action));            //연구 포인트 획득 액션
             ActionSystem.AttachPerformer<IncreasePopulationGA>(action => Perform(action));        //인구 증가 획득 액션
             ActionSystem.AttachPerformer<CostPlusGA>(action => Perform(action));                  //코스트 증가
+            ActionSystem.AttachPerformer<CountCardByTypeGA>(action => Perform(action));                  //손패 중 특정 타입 카드 갯수 세기
 
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
@@ -139,8 +140,12 @@
             }
             else if (action is CostPlusGA costPlusGA)
             {
-				costPlusGA.SourceCard.Cost += costPlusGA.Cost;
-			}
+                costPlusGA.SourceCard.Cost += costPlusGA.Cost;
+            }
+            else if (action is CountCardByTypeGA countCardByTypeGA)
+            {
+
+            }
         }
 
         /// <summary>
@@ -195,7 +200,7 @@
         {
             hand.Remove(playCardGA.Card);
             CardView cardView = handView.RemoveCard(playCardGA.Card);
-            
+
             if (cardView == null)
             {
                 CardView[] allViews = FindObjectsByType<CardView>(FindObjectsSortMode.None);
@@ -228,7 +233,7 @@
                 yield return DiscardCardAnimation(cardView);
             }
             // ---------------------------
-            
+
             if (playCardGA.Card?.Effects != null)
             {
                 for (int i = 0; i < playCardGA.Card.Effects.Count; i++)
@@ -353,6 +358,5 @@
 
             CardListUI.Instance.Show(shuffledCopy, "무덤 확인");
         }
-	}
+    }
 }
-*/
