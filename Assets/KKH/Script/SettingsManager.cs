@@ -84,6 +84,22 @@ public class SettingsManager : MonoBehaviour
         resolutionDropdown.RefreshShownValue();
     }
 
+    // --- 자동 그래픽 제어 (버튼 연결용) ---
+
+    public void ApplyAutoGraphics(int level)
+    {
+        // 유니티 Quality Settings 적용 (Project Settings > Quality 인덱스 기준)
+        QualitySettings.SetQualityLevel(level, true);
+
+        // PC 환경이므로 60프레임 이상 확보 시도
+        Application.targetFrameRate = 144;
+
+        // 설정값 저장
+        PlayerPrefs.SetInt("GraphicQuality", level);
+        PlayerPrefs.Save();
+
+        Debug.Log($"[Auto-Graphics] 현재 설정된 품질 단계: {level}");
+    }
     private void LoadAndApplySettings()
     {
         masterSlider.value = PlayerPrefs.GetFloat("MasterVol", 0.8f);
