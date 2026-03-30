@@ -21,7 +21,7 @@ MonoBehaviour:
   goldCost: 100
   width: 1
   height: 1
-  allowedTiles: 04000000
+  allowedTiles: 0400000000000000
   goldPerTurn: 0
   populationCapBonus: 5
   soldierCapacity: 0

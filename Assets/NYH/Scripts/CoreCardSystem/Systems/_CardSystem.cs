@@ -1,4 +1,4 @@
-﻿/*namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -6,6 +6,7 @@
     using System.Collections;
     using DG.Tweening;
 
+    //_CardSystem
 
     /// <summary>
     /// 카드 게임의 규칙(드로우, 플레이, 버리기 등)과 데이터(덱, 손패, 무덤)를 관리하는 핵심 시스템입니다.
@@ -45,6 +46,7 @@
             ActionSystem.AttachPerformer<IncreasePopulationGA>(action => Perform(action));        //인구 증가 획득 액션
             ActionSystem.AttachPerformer<CostPlusGA>(action => Perform(action));                  //코스트 증가
             ActionSystem.AttachPerformer<ZeroCostHandGA>(action => Perform(action));              //손패 코스트 0으로 변경 액션
+            ActionSystem.AttachPerformer<PlayBuildingGA>(action => Perform(action));              //건물 설치 액션
 
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
@@ -173,6 +175,60 @@
                 }
                 yield return null;
             }
+            else if (action is PlayBuildingGA playBuildingGA)
+            {
+                yield return PlayBuildingPerformer(playBuildingGA);
+            }
+        }
+
+        /// <summary>
+        /// 설치 카드의 배치 가능 여부를 확인한 뒤,
+        /// 카드 사용이 끝나면 해당 좌표에 건물을 설치하도록 순차 실행합니다.
+        /// </summary>
+        public bool TryQueuePlacementCard(Card sourceCard, Vector3Int targetPos)
+        {
+            if (sourceCard == null)
+            {
+                Debug.LogWarning("[_CardSystem] 설치할 카드가 없습니다.");
+                return false;
+            }
+
+            InstallBuildingEffect installEffect = null;
+            if (sourceCard.Effects != null)
+            {
+                foreach (var effect in sourceCard.Effects)
+                {
+                    if (effect is InstallBuildingEffect foundEffect)
+                    {
+                        installEffect = foundEffect;
+                        break;
+                    }
+                }
+            }
+
+            if (installEffect == null || installEffect.buildingData == null)
+            {
+                Debug.LogWarning($"[_CardSystem] {sourceCard.Title} 카드에 설치할 건물 데이터가 없습니다.");
+                return false;
+            }
+
+            if (TileMapManager.Instance == null)
+            {
+                Debug.LogError("[_CardSystem] TileMapManager가 없어 건물을 설치할 수 없습니다.");
+                return false;
+            }
+
+            if (!TileMapManager.Instance.CanPlace(targetPos, installEffect.buildingData))
+            {
+                Debug.LogWarning($"[_CardSystem] {installEffect.buildingData.buildingName} 건물을 {targetPos}에 설치할 수 없습니다.");
+                return false;
+            }
+
+            ActionSystem.Instance.Perform(
+                new PlayCardGA(sourceCard),
+                () => ActionSystem.Instance.Perform(new PlayBuildingGA(installEffect.buildingData, targetPos))
+            );
+            return true;
         }
 
         /// <summary>
@@ -223,6 +279,31 @@
             if (cardView != null) yield return handView.AddCard(cardView);
         }
 
+        private IEnumerator PlayBuildingPerformer(PlayBuildingGA playBuildingGA)
+        {
+            if (playBuildingGA == null || playBuildingGA.Data == null)
+            {
+                Debug.LogWarning("[_CardSystem] 설치할 건물 데이터가 없어 배치를 중단합니다.");
+                yield break;
+            }
+
+            if (TileMapManager.Instance == null)
+            {
+                Debug.LogError("[_CardSystem] TileMapManager가 없어 건물을 설치할 수 없습니다.");
+                yield break;
+            }
+
+            if (!TileMapManager.Instance.CanPlace(playBuildingGA.TargetPos, playBuildingGA.Data))
+            {
+                Debug.LogWarning($"[_CardSystem] {playBuildingGA.Data.buildingName} 건물을 {playBuildingGA.TargetPos}에 설치할 수 없습니다.");
+                yield break;
+            }
+
+            TileMapManager.Instance.PlaceBuilding(playBuildingGA.TargetPos, playBuildingGA.Data);
+            Debug.Log($"[_CardSystem] {playBuildingGA.Data.buildingName} 설치 완료: {playBuildingGA.TargetPos}");
+            yield return null;
+        }
+
         private IEnumerator PlayCardPerformer(PlayCardGA playCardGA)
         {
             hand.Remove(playCardGA.Card);
@@ -266,6 +347,7 @@
                 for (int i = 0; i < playCardGA.Card.Effects.Count; i++)
                 {
                     var effect = playCardGA.Card.Effects[i];
+                    if (effect is InstallBuildingEffect) continue;
                     ActionSystem.Instance.AddReaction(new PerformEffectGA(playCardGA.Card, effect, i));
                 }
             }
@@ -387,4 +469,4 @@
         }
     }
 }
-*/
+
