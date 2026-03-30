@@ -13,5 +13,6 @@
         [field: SerializeField] public Sprite Image { get; private set; }
         [field: SerializeReference, SR] public List<Effect> Effects {  get; private set; }
 		[field: SerializeField] public int cardID { get; private set; }
+		[field: SerializeField] public CardType cardType { get; private set; }
 	}
 }

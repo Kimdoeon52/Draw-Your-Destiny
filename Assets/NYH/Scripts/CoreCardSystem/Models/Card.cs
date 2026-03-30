@@ -4,6 +4,16 @@
     using UnityEngine;
     using UnityEngine.UI;
 
+    public enum CardType
+    {
+        None,   
+        Fight,  //전투
+        Money,  //경제
+        Science,//과학
+        Normal, //중립
+        Common  //일반
+    }
+
     /// <summary>
     /// 게임 내에서 실제로 생성되어 손패나 덱에 존재하는 '카드 객체'입니다.
     /// 에셋 데이터인 CardData를 참조하며, 게임 중 변할 수 있는 상태(예: 마나 비용)를 직접 관리합니다.
@@ -17,6 +27,7 @@
         public Sprite Image => data.Image;
         public List<Effect> Effects => data.Effects;
         public int CardID => data.cardID;
+        public CardType _CardType => data.cardType;
 
         /// <summary>
         /// 카드의 마나 비용입니다. 
