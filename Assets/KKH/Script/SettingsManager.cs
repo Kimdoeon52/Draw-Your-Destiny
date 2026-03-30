@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using UnityEngine.Audio;
 using System.Collections.Generic;
 
@@ -11,12 +12,15 @@ public class SettingsManager : MonoBehaviour
 
     [Header("그래픽 컴포넌트")]
     public Toggle fullscreenToggle;
-    public Dropdown resolutionDropdown;
+    public TMP_Dropdown resolutionDropdown;
 
     private Resolution[] resolutions;
-
+    public static SettingsManager Instance;
     void Awake()
     {
+        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
+        else { Destroy(gameObject); }
+        SetupResolutions();
         // 해상도 목록 초기화
         SetupResolutions();
     }
@@ -93,6 +97,7 @@ public class SettingsManager : MonoBehaviour
         SetSFXVolume(sfxSlider.value);
         SetFullscreen(fullscreenToggle.isOn);
     }
+    
 
     public void SaveAllSettings() => PlayerPrefs.Save();
 }

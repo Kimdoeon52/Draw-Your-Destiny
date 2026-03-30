@@ -26,7 +26,7 @@ public class GameSceneManager : MonoBehaviour
     /// </summary>
     public void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene(sceneName);// SceneManager를 이용해 해당 이름의 씬을 즉각 로드 (로딩 중 화면 멈춤 발생 가능)
     }
 
     /// <summary>
