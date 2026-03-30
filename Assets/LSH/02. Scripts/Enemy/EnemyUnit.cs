@@ -85,7 +85,7 @@ public class EnemyUnit : MonoBehaviour
     void Dead() //죽는거는 이거
     {
         //UnitAppear(); //죽으면 초기화
-        enemyPool.ReturnHuman(this.gameObject);
+        enemyPool.ReturnEnemy(this.gameObject);
     }
     public void ChangeAgeGroup()//나이 그룹 바뀌는거는 이거
     {

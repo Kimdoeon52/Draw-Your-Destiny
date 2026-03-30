@@ -2,12 +2,12 @@
 using UnityEngine;
 
 
-public class EnemyA : EnemyOrigin
+public class EnemyB : EnemyOrigin
 {
 
     protected override void Start()
     {
-        enemyID = 1;
+        enemyID = 2;
         base.Start();
     }
     private void Update()
@@ -22,7 +22,7 @@ public class EnemyA : EnemyOrigin
     protected override void ExecuteRandomAction()
     {
         base.ExecuteRandomAction();
-        Debug.Log("적 A의 행동 실행");
+        Debug.Log("적 B의 행동 실행");
 
         //foreach (var actionCase in actionCases) //가중치 확률로 행동 선택하는 부분
         //{
@@ -33,8 +33,6 @@ public class EnemyA : EnemyOrigin
         //        return actionCase.actionType;
         //    }
         //}
-
-        
     }
 
     protected override void DoGetEnemyHuman()

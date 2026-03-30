@@ -124,3 +124,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8da1e0985c7ff4a44bafd43b2edd14c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 3
+  enemyInfo: {fileID: 11400000, guid: ec431f9036e119948b1490f2fd0ddc3c, type: 2}
+  enemyPool: {fileID: 0}
+  age: 0
+  ageGroup: 0
+  naturalDeathChance: 0
+  gender: 0
+  job: 0
