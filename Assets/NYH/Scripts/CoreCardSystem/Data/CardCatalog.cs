@@ -91,5 +91,32 @@
             int count = Mathf.Min(amount, pool.Count);
             return pool.GetRange(0, count);
         }
+
+        // 시대에 해당하는 카드 풀에서 랜덤 N장 반환
+        public List<CardData> GetRandom(int amount, Era era)
+        {
+            List<CardData> pool = new();
+            foreach (var card in allCards)
+            {
+                if (card != null && IsCardInPool(card.cardID, era))
+                    pool.Add(card);
+            }
+            pool.Shuffle();
+
+            int count = Mathf.Min(amount, pool.Count);
+            return pool.GetRange(0, count);
+        }
+
+        // 시대별 카드 풀 필터링 규칙 (CARD_DATA.md ID 범주 기준)
+        private bool IsCardInPool(int cardId, Era era)
+        {
+            return era switch
+            {
+                Era.Stone  => cardId < 2200,
+                Era.Bronze => cardId < 2200 || (cardId >= 3001 && cardId < 3200),
+                Era.Iron   => cardId < 9000,
+                _          => false
+            };
+        }
     }
 }
