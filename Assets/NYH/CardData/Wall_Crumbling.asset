@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
+  m_Name: Wall_Crumbling
+  m_EditorClassIdentifier: 
+  <cardID>k__BackingField: 2204
+  cardName: 
+  <cardType>k__BackingField: 1
+  <Image>k__BackingField: {fileID: 0}
+  <Cost>k__BackingField: 1
+  description: "\uD574\uB2F9 \uC784\uC9C0\uC5D0 \uC788\uB294 \uBCD1\uB825 1\uBA85\uB2F9
+    \uD574\uB2F9 \uC784\uC9C0\uC758 \uC131\uBCBD\uC774 1%\uC529 \uC4F0\uB7EC\uC9D1\uB2C8\uB2E4."
+  <Effects>k__BackingField: []
+  references:
+    version: 2
+    RefIds: []

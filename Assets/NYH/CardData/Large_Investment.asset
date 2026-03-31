@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
+  m_Name: Large_Investment
+  m_EditorClassIdentifier: 
+  <cardID>k__BackingField: 2212
+  cardName: 
+  <cardType>k__BackingField: 2
+  <Image>k__BackingField: {fileID: 0}
+  <Cost>k__BackingField: 2
+  description: "\uC774\uBC88\uD574 \uB3D9\uC548 \uAC74\uBB3C \uCF54\uC2A4\uD2B8\uAC00
+    n% \uAC10\uC18C\uD569\uB2C8\uB2E4.(\uC774\uD558\uC778\uC5D0 \uC788\uB294 \uACBD\uC81C
+    \uD2B8\uB9AC \uCE74\uB4DC 1\uC7A5\uB2F9 \uBAA8\uB4E0 \uAC74\uBB3C\uC758 \uAC74\uC124
+    \uCF54\uC2A4\uD2B8\uAC00 \uC774\uBC88 \uD574 10%\uC529 \uAC10\uC18C. \uCD5C\uB300
+    80% \uAC10\uC18C)"
+  <Effects>k__BackingField: []
+  references:
+    version: 2
+    RefIds: []
