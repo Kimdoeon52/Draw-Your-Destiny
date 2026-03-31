@@ -8,7 +8,7 @@
     public class CardData : ScriptableObject
     {
         [field: SerializeField] public int cardID { get; private set; }
-        [field: SerializeField] private string cardName;
+        [field: SerializeField] public string cardName;
         [field: SerializeField] public CardType cardType { get; private set; }
         [field: SerializeField] public Sprite Image { get; private set; }
         [field: SerializeField] public int Cost { get; private set; }

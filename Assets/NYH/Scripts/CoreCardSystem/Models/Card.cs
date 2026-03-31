@@ -22,7 +22,7 @@
     {
         // 이름, 설명, 이미지, 효과 등은 게임 중에 변할 일이 없으므로 
         // 데이터 원본(CardData)에서 실시간으로 가져옵니다 (=> 표현식 사용).
-        public string Title => data.name;
+        public string Title => data.cardName;
         public string Description => data.Description;
         public Sprite Image => data.Image;
         public List<Effect> Effects => data.Effects;
