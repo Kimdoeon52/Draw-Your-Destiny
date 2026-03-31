@@ -23,42 +23,26 @@ MonoBehaviour:
     imageSourceIndex: 0
     selectedCameraIndex: 0
     imageContext:
-      kind: 3
+      kind: 0
       assetGuid: 
       assetPath: 
       externalFilePath: 
       descriptor: 
-      cacheRelativePath: SoundGeneration/ImageContext/91234c0496614eeda39276cefe1720bd.png
+      cacheRelativePath: 
   musicGeneration:
     promptText: Ancient drums, mysterious forest, primitive flute, stone age atmosphere.
-    generatedEntries:
-    - id: 1e5bdc03cfed4889baefe51525ea6818
-      displayName: 'Ancient drums, mysterious forest, primitive flute, stone age
-        atmosphere. [scene]'
-      cacheRelativePath: MusicGeneration/30494b2bb3c94c8a9061f76591fdc042.wav
-      isSavedToProject: 1
-      fromSuggestion: 0
-      suggestionIndex: -1
-      createdTicks: 639104515797515472
-    - id: 07d08f8f09a54e688c1ddcbbc49d262e
-      displayName: 'Ancient drums, mysterious forest, primitive flute, stone age
-        atmosphere. [scene]'
-      cacheRelativePath: MusicGeneration/c30b1d195db84e1db330d43c9ad74349.wav
-      isSavedToProject: 0
-      fromSuggestion: 0
-      suggestionIndex: -1
-      createdTicks: 639104515818736201
-    lastActiveEntryId: 1e5bdc03cfed4889baefe51525ea6818
+    generatedEntries: []
+    lastActiveEntryId: 
     imageSourceIndex: 1
     selectedCameraIndex: 0
     scrollPosition: 0
     imageContext:
-      kind: 3
+      kind: 0
       assetGuid: 
       assetPath: 
       externalFilePath: 
-      descriptor: scene
-      cacheRelativePath: MusicGeneration/ImageContext/46decc87b9c641b3b7d79bc92d34fa6b.png
+      descriptor: 
+      cacheRelativePath: 
     pendingTasks: []
   autoLoop:
     inputClipGuid: 
@@ -66,13 +50,13 @@ MonoBehaviour:
     segmentStart: 0
     segmentEnd: 0
     loopResult:
-      id: 666f7ef941cb44af8dafcd16e4c7ba00
+      id: caffeaa47ff1481ca1da5e7c4260a345
       displayName: 
       cacheRelativePath: 
       isSavedToProject: 0
       fromSuggestion: 0
       suggestionIndex: 0
-      createdTicks: 639104515343588685
+      createdTicks: 639105170496891816
   autoVariation:
     lastStrength: 1
     lastSampleCount: 3
@@ -90,10 +74,10 @@ MonoBehaviour:
     targetClipGuid: 
     targetClipPath: 
     resultEntry:
-      id: 9a4f54501bab4b138a93b1849d1b13ba
+      id: edc5c9d1b2064148b899e253c2cde99c
       displayName: 
       cacheRelativePath: 
       isSavedToProject: 0
       fromSuggestion: 0
       suggestionIndex: 0
-      createdTicks: 639104515343897809
+      createdTicks: 639105170497265367

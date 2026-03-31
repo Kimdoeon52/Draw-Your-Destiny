@@ -248,6 +248,12 @@ public class HumanUnit : MonoBehaviour
 
     private void SetPlayerUnitInfo()
     {
+        if (playerInfo == null)
+        {
+            Debug.LogWarning("playerInfo가 아직 없음");
+            return;
+        }
+
         job = playerInfo.job;
         age = playerInfo.age;
         unitInfo.maxHealth = playerInfo.maxHealth;

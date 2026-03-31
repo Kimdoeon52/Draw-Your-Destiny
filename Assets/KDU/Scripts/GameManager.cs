@@ -1,6 +1,8 @@
 ﻿using DG.Tweening;
 using NYH.CoreCardSystem;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.U2D.IK;
 
 // ============================================================
 // GameManager — 게임 전체 상태 관리 (PersistentSingleton)
@@ -27,6 +29,7 @@ public class GameManager : PersistentSingleton<GameManager>
     // 재화
     public int playerGold = 10;
     public int playerResearch = 0;
+    public int Food = 0;
 
     // 인구 — 현재 인구 수 / 최대 인구 한도
     // 인구 한도는 민가(House) 배치 시 populationCapBonus만큼 증가
@@ -37,7 +40,10 @@ public class GameManager : PersistentSingleton<GameManager>
     public bool endTurn = false;
     public bool startTurn = false;
 
+    public Era playerEra = Era.Stone;
+
     Camera cam;
+    [SerializeField] Transform[] humanGenPoints;
 
     protected override void Awake()
     {
@@ -77,7 +83,8 @@ public class GameManager : PersistentSingleton<GameManager>
     {
         endTurn = true;
         startTurn = false;
-	}
+        checkResearch();
+    }
 
     // ── 재화 관리 ─────────────────────────────────────────────
     public void AddGold(int amount)
@@ -117,17 +124,54 @@ public class GameManager : PersistentSingleton<GameManager>
     {
         GameObject[] humans = new GameObject[amount];
 
-        Vector3 mouse = Input.mousePosition;
-        mouse.z = Mathf.Abs(Camera.main.transform.position.z);
+        List<int> indices = new List<int>();
+        for (int i = 0; i < humanGenPoints.Length; i++)
+        {
+            indices.Add(i);
+        }
 
-        Vector3 worldPos = Camera.main.ScreenToWorldPoint(mouse);
+        // 섞기 (Fisher-Yates Shuffle)
+        for (int i = 0; i < indices.Count; i++)
+        {
+            int rand = Random.Range(i, indices.Count);
+            int temp = indices[i];
+            indices[i] = indices[rand];
+            indices[rand] = temp;
+        }
 
         for (int i = 0; i < amount; i++)
         {
             humans[i] = HumanPool.Instance.GetHuman();
-            humans[i].transform.position = worldPos;
+            int index = indices[i];
+            humans[i].transform.position = humanGenPoints[index].position;
+            Debug.Log($"{humans[i].transform.position}");
             HumanUnit humanUnit = humans[i].GetComponent<HumanUnit>();
             humanUnit.SetUnitInfo(unitInfo);
+        }
+    }
+
+    // 식량 획득 (CardSystem에서 호출)
+    public void AddFood(int amount)
+    {
+        Food += amount;
+        Debug.Log($"식량 획득:{amount}");
+    }
+    private void checkResearch()
+    {
+        if (playerResearch >= 100)
+        {
+            if (playerEra == Era.Stone)
+            {
+                playerEra = Era.Bronze;
+                playerResearch -= 100;
+                TileMapManager.Instance?.UpgradeBuildingsForEra(Era.Bronze);
+            }
+            else if (playerEra == Era.Bronze)
+            {
+                playerEra = Era.Iron;
+                playerResearch -= 100;
+                TileMapManager.Instance?.UpgradeBuildingsForEra(Era.Iron);
+            }
         }
     }
 }

@@ -31,6 +31,10 @@ public class BuildingPlacementService : MonoBehaviour
     // 외부(Controller)에서 배치 중인지 확인할 때 사용
     public bool IsPlacing => isPlacing;
 
+    // 현재 위치 저장 (GetMouseTilePos()로 얻은 타일 좌표)
+    // 카드 확정 시에는 마우스를 다시 계산하지 말고 이 값을 쓰도록 통일
+    private Vector3Int currentPreviewTilePos = Vector3Int.zero;
+
     private void Awake()
     {
         buildingPreview = GetComponentInChildren<BuildingPreview>();
@@ -55,6 +59,7 @@ public class BuildingPlacementService : MonoBehaviour
         isPlacing       = true;
         lastTilePos     = Vector3Int.zero;
         lastCanPlace    = false;
+        currentPreviewTilePos = Vector3Int.zero;
 
         if (buildingPreview != null)
             buildingPreview.ShowPreview(currentBuilding);
@@ -67,6 +72,8 @@ public class BuildingPlacementService : MonoBehaviour
         currentBuilding = null;
         lastTilePos     = Vector3Int.zero;
         lastCanPlace    = false;
+        Debug.Log($"[PlacementService:{GetInstanceID()}] CancelPlacing 직전 preview tile={currentPreviewTilePos}");
+        currentPreviewTilePos = Vector3Int.zero;
 
         if (buildingPreview != null)
             buildingPreview.HidePreview();
@@ -78,6 +85,9 @@ public class BuildingPlacementService : MonoBehaviour
     {
         if (!isPlacing || buildingPreview == null || currentBuilding == null
             || tileMapManager == null || tileMapManager.groundTilemap == null) return;
+
+        // 프리뷰가 실제로 사용 중인 좌표를 여기서 currentPreviewTilePos에 저장
+        currentPreviewTilePos = tilePos;
 
         // 기준점(origin) 계산 → 건물 중심 월드 좌표 계산
         Vector3Int origin = tileMapManager.GetOrigin(tilePos, currentBuilding);
@@ -123,10 +133,21 @@ public class BuildingPlacementService : MonoBehaviour
         return false;
     }
 
+    // HINT: CardView에서 설치 확정 시 GetMouseTilePos() 대신 사용할 getter를 추가하세요.
+    // 예: public Vector3Int GetCurrentPreviewTilePos() => currentPreviewTilePos;
+    public Vector3Int GetCurrentPreviewTilePos()
+    {
+        Debug.Log($"[PlacementService:{GetInstanceID()}] GetCurrentPreviewTilePos -> {currentPreviewTilePos}, isPlacing={isPlacing}");
+        return currentPreviewTilePos;
+    }
+
     // ── 마우스 위치 → 타일 좌표 변환 ─────────────────────────
     // Controller에서 매 프레임 호출해 UpdatePreview/TryPlaceBuilding에 전달
     public Vector3Int GetMouseTilePos()
     {
+        // HINT: 이 함수는 "현재 마우스 위치를 다시 계산"합니다.
+        // 프리뷰와 확정 좌표를 통일하려면 카드 확정 시에는 이 함수 대신
+        // 마지막 프리뷰 좌표를 반환하는 getter를 쓰는 편이 더 안정적입니다.
         if (mainCamera == null || tileMapManager == null || tileMapManager.groundTilemap == null)
             return Vector3Int.zero;
 

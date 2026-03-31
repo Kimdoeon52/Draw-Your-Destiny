@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CountCardByTypeGA : GameAction
 {
-	CardType _CardType;
+	public CardType _CardType { get; private set; }
 
 	public CountCardByTypeGA(CardType cardType)
 	{

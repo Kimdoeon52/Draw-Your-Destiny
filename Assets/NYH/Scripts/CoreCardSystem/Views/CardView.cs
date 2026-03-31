@@ -1,4 +1,4 @@
-namespace NYH.CoreCardSystem
+ï»¿namespace NYH.CoreCardSystem
 {
     using TMPro;
     using UnityEngine;
@@ -7,8 +7,8 @@ namespace NYH.CoreCardSystem
     using UnityEngine.EventSystems;
 
     /// <summary>
-    /// È­¸é¿¡ º¸ÀÌ´Â Ä«µå UI¸¦ Á¦¾îÇÕ´Ï´Ù.
-    /// ¸¶¿ì½º µå·¡±×, Å¬¸¯, È£¹ö ¹Ì¸®º¸±â, Ä«µå »ç¿ë ÀÔ·ÂÀ» ´ã´çÇÕ´Ï´Ù.
+    /// ?ï¿½ï¿½ë©´ì— ë³´ì´?ï¿½ï¿½ ì¹´ë“œ UIï¿½? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½.
+    /// ë§ˆìš°?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ï¿½?, ?ï¿½ï¿½ï¿½?, ?ï¿½ï¿½ï¿½? ë¯¸ë¦¬ë³´ê¸°, ì¹´ë“œ ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½.
     /// </summary>
     public class CardView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
@@ -57,7 +57,10 @@ namespace NYH.CoreCardSystem
             if (isPickedUp || isDragging)
             {
                 HandleFollowingMouse();
-                if (Input.GetMouseButtonDown(1)) ReturnToHand();
+                if (Input.GetMouseButtonDown(1))
+                 ReturnToHand();
+                if (isPickedUp && isTargetingMode && Input.GetMouseButtonDown(0))
+                TryPlayCard();
             }
         }
 
@@ -103,7 +106,7 @@ namespace NYH.CoreCardSystem
             if (eventData.button != PointerEventData.InputButton.Left) return;
             if (ActionSystem.Instance.IsPerforming) return;
 
-            if (isPickedUp)
+            if (isPickedUp && !isTargetingMode)
             {
                 TryPlayCard();
                 return;
@@ -133,7 +136,7 @@ namespace NYH.CoreCardSystem
         {
             if (GameManager.Instance.playerGold < Card.Cost)
             {
-                Debug.Log("ÇÃ·¹ÀÌ¾îÀÇ °ñµå°¡ ºÎÁ·ÇÏ¿© Ä«µå°¡ »ç¿ëµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+                Debug.Log("?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ê³¨ë“œï¿½? ï¿½?ì¡±í•˜?ï¿½ï¿½ ì¹´ë“œï¿½? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½.");
                 ReturnToHand();
                 return;
             }
@@ -141,10 +144,13 @@ namespace NYH.CoreCardSystem
             if (isTargetingMode)
             {
                 var placementService = FindFirstObjectByType<BuildingPlacementService>();
-                if (placementService != null && CardSystem.Instance != null)
+
+                if (placementService == null || !placementService.IsPlacing)
+                     return;
+                if (CardSystem.Instance != null)
                 {
-                    Vector3Int tilePos = placementService.GetMouseTilePos();
-                    Debug.Log($"[CardView] ¼³Ä¡ ½Ãµµ: {Card?.Title} -> {tilePos}");
+                    Vector3Int tilePos = placementService.GetCurrentPreviewTilePos();
+                    Debug.Log($"[CardView] ?ï¿½ï¿½ï¿½? ?ï¿½ï¿½?ï¿½ï¿½: {Card?.Title} -> {tilePos}");
                     if (CardSystem.Instance.TryQueuePlacementCard(Card, tilePos))
                     {
                         placementService.CancelPlacing();
@@ -156,7 +162,7 @@ namespace NYH.CoreCardSystem
                     }
                 }
 
-                Debug.Log("[CardView] °Ç¹° ¼³Ä¡¿¡ ½ÇÆĞÇÏ¿© Ä«µå¸¦ ¼ÕÆĞ·Î µÇµ¹¸³´Ï´Ù.");
+                Debug.Log("[CardView] ê±´ë¬¼ ?ï¿½ï¿½ì¹˜ì— ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ì¹´ë“œï¿½? ?ï¿½ï¿½?ï¿½ï¿½ï¿½? ?ï¿½ï¿½?ï¿½ï¿½ë¦½ë‹ˆ?ï¿½ï¿½.");
                 ReturnToHand();
                 return;
             }
@@ -229,12 +235,12 @@ namespace NYH.CoreCardSystem
             var placementService = FindFirstObjectByType<BuildingPlacementService>();
             if (placementService != null && effect is InstallBuildingEffect installEffect && installEffect.buildingData != null)
             {
-                Debug.Log($"[CardView] Å¸°ÔÆÃ ¸ğµå ÁøÀÔ: {Card?.Title}, °Ç¹°={installEffect.buildingData.buildingName}");
+                Debug.Log($"[CardView] ???ê²ŒíŒ… ëª¨ë“œ ì§„ì…: {Card?.Title}, ê±´ë¬¼={installEffect.buildingData.buildingName}");
                 placementService.StartPlacing(installEffect.buildingData);
             }
             else
             {
-                Debug.LogWarning($"[CardView] Å¸°ÔÆÃ ¸ğµå ÁøÀÔ ½ÇÆĞ: service={(placementService != null)}, effect={effect?.GetType().Name}");
+                Debug.LogWarning($"[CardView] ???ê²ŒíŒ… ëª¨ë“œ ì§„ì… ?ï¿½ï¿½?ï¿½ï¿½: service={(placementService != null)}, effect={effect?.GetType().Name}");
             }
         }
 

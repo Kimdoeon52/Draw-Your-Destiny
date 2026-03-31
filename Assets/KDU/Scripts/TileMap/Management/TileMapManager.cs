@@ -715,6 +715,37 @@ public class TileMapManager : Singleton<TileMapManager>
         return true;
     }
 
+    // ── 시대 전환 시 자동 업그레이드 ────────────────────────────────
+    // GameManager.checkResearch()에서 시대가 바뀔 때 호출
+    // isAutoUpgrade=true이고 upgradesTo의 requiredEra가 현재 시대 이하인 건물을 자동 교체
+    public void UpgradeBuildingsForEra(Era newEra)
+    {
+        foreach (BuildingInstance instance in allBuildings)
+        {
+            if (!instance.data.isAutoUpgrade) continue;
+            if (instance.data.upgradesTo == null) continue;
+            if (instance.data.upgradesTo.requiredEra > newEra) continue;
+
+            BuildingData next = instance.data.upgradesTo;
+
+            // 데이터 교체
+            instance.data = next;
+
+            // buildingMap도 새 데이터로 갱신
+            foreach (Vector3Int pos in instance.footprint)
+                buildingMap[pos] = next;
+
+            // 스프라이트 교체
+            if (instance.visual != null)
+            {
+                SpriteRenderer sr = instance.visual.GetComponent<SpriteRenderer>();
+                if (sr != null) sr.sprite = next.sprite;
+            }
+
+            Debug.Log($"[TileMapManager] 건물 업그레이드: {instance.origin} → {next.buildingName}");
+        }
+    }
+
     //---------------------------금광타일 찾는거임 건들 ㄴㄴㄴㄴㄴㄴ-----------------------
     public List<Vector3Int> GetAllGoldMineCells()
     {

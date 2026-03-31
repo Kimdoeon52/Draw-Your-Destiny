@@ -55,6 +55,7 @@ MonoBehaviour:
   ageGroup: 0
   koreanArmy: 0
   naturalDeathChance: 0
+  job: 0
 --- !u!95 &-7514744366701420720
 Animator:
   serializedVersion: 7

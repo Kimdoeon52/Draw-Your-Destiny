@@ -50,11 +50,11 @@ public class BuildingPlacementController : MonoBehaviour
         Vector3Int tilePos = placementService.GetMouseTilePos();
         placementService.UpdatePreview(tilePos);
 
-        // 좌클릭 — 배치 시도 (배치 성공 시 배치 모드 자동 종료)
-        if (Input.GetMouseButtonDown(0))
-        {
-            placementService.TryPlaceBuilding(tilePos);
-        }
+        // 이거 키면 카드에서 배치할때 뺏겨서 마우스 클릭 배치 안됨
+        // if (Input.GetMouseButtonDown(0))
+        // {
+        //     placementService.TryPlaceBuilding(tilePos);
+        // }
 
         // 우클릭 또는 ESC — 배치 취소
         if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(cancelKey))

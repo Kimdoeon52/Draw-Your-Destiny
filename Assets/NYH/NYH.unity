@@ -3797,20 +3797,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myDeck:
-  - {fileID: 11400000, guid: 52c1d00a3201fcd4fae7407195a4e50b, type: 2}
-  - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
-  - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
-  - {fileID: 11400000, guid: 1fbf25b4933a43f47a1644f4a0ecf0ac, type: 2}
-  - {fileID: 11400000, guid: e0b7db0502043b64ab48ddc2a1d0a648, type: 2}
-  - {fileID: 11400000, guid: e0b7db0502043b64ab48ddc2a1d0a648, type: 2}
-  - {fileID: 11400000, guid: 8990faac30819074ea1167ea911676e2, type: 2}
-  - {fileID: 11400000, guid: 8990faac30819074ea1167ea911676e2, type: 2}
-  - {fileID: 11400000, guid: 8990faac30819074ea1167ea911676e2, type: 2}
-  - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
-  - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
-  - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
-  - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
-  - {fileID: 11400000, guid: 154ae29be519ff942a2645e674a008db, type: 2}
+  - {fileID: 11400000, guid: f8b9bb2a07fc2d94aaab3bc8b536bab9, type: 2}
+  - {fileID: 11400000, guid: f8b9bb2a07fc2d94aaab3bc8b536bab9, type: 2}
+  - {fileID: 11400000, guid: f8b9bb2a07fc2d94aaab3bc8b536bab9, type: 2}
+  - {fileID: 11400000, guid: f8b9bb2a07fc2d94aaab3bc8b536bab9, type: 2}
+  - {fileID: 11400000, guid: f8b9bb2a07fc2d94aaab3bc8b536bab9, type: 2}
+  - {fileID: 11400000, guid: f8b9bb2a07fc2d94aaab3bc8b536bab9, type: 2}
+  - {fileID: 11400000, guid: f8b9bb2a07fc2d94aaab3bc8b536bab9, type: 2}
   gameManager: {fileID: 1169971044}
 --- !u!114 &1698640415
 MonoBehaviour:

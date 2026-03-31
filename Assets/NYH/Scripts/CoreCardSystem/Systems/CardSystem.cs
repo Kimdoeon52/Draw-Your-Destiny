@@ -27,6 +27,8 @@
         private List<Card> discardPile = new();    // 무덤(버려진 카드)
         private List<Card> extinctionPile = new(); // 소멸칸
 
+        int cardTypeCount = 0; // 손패 중 특정 타입 카드 갯수 (CountCardByTypeEffect 결과 저장용)
+
         protected override void Awake()
         {
             base.Awake();
@@ -45,6 +47,7 @@
             ActionSystem.AttachPerformer<CostPlusGA>(action => Perform(action));                  //코스트 증가
             ActionSystem.AttachPerformer<CountCardByTypeGA>(action => Perform(action));           //손패 중 특정 타입 카드 갯수 세기
             ActionSystem.AttachPerformer<GenerateHumanGA>(action => Perform(action));             //인간 생성
+            ActionSystem.AttachPerformer<IncreaseFoodGA>(action => Perform(action));             //식량 추가
 
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
@@ -146,11 +149,17 @@
             }
             else if (action is CountCardByTypeGA countCardByTypeGA)
             {
-
+                cardTypeCount = CountCardByType(countCardByTypeGA._CardType);
+                yield return null;
             }
             else if (action is GenerateHumanGA generateHumanGA)
             {
                 GameManager.Instance.GenerateHumans(generateHumanGA.Amount, generateHumanGA._UnitInfo);
+                yield return null;
+            }
+            else if (action is IncreaseFoodGA increaseFoodGA)
+            {
+                GameManager.Instance.AddFood(increaseFoodGA.Amount);
                 yield return null;
             }
         }
@@ -414,6 +423,19 @@
                 () => ActionSystem.Instance.Perform(new PlayBuildingGA(installEffect.buildingData, targetPos))
             );
             return true;
+        }
+
+        private int CountCardByType(CardType type)
+        {
+            int count = 0;
+            for(int i = 0; i < hand.Count; i++)
+            {
+                if(hand[i]._CardType == type)
+                {
+                    count++;
+                }
+            }
+            return count;
         }
     }
 }

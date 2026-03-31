@@ -14,7 +14,6 @@ public class HumanPool : Singleton<HumanPool>
         {
             GameObject human = Instantiate(humanPrefab);
             human.SetActive(false);
-
             pool.Enqueue(human);
         }
     }
