@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class SettingsManager : MonoBehaviour
 {
+    [Header("UI 패널")]
+    public GameObject settingsPanel;
     [Header("오디오 컴포넌트")]
     public AudioMixer mainMixer;
     public Slider masterSlider, bgmSlider, sfxSlider;
@@ -29,6 +31,27 @@ public class SettingsManager : MonoBehaviour
     {
         // 저장된 설정 불러오기 및 적용
         LoadAndApplySettings();
+    }
+    void Update()
+    {
+        // 매 프레임 Esc 키 입력을 감시합니다.
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleSettingsPanel();
+        }
+    }
+
+    public void ToggleSettingsPanel()
+    {
+        // 현재 상태를 반전
+        bool isActive = !settingsPanel.activeSelf;
+        settingsPanel.SetActive(isActive);      
+    }
+
+    // 닫기 버튼 등에 연결할 메서드
+    public void SetSettingPanelExit()
+    {
+        settingsPanel.SetActive(false);
     }
 
     // --- 오디오 제어 (슬라이더 연결용) ---
@@ -97,7 +120,7 @@ public class SettingsManager : MonoBehaviour
         // 설정값 저장
         PlayerPrefs.SetInt("GraphicQuality", level);
         PlayerPrefs.Save();
-
+        Debug.Log(SystemInfo.processorFrequency);
         Debug.Log($"[Auto-Graphics] 현재 설정된 품질 단계: {level}");
     }
     private void LoadAndApplySettings()

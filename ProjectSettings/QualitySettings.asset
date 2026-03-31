@@ -4,10 +4,10 @@
 QualitySettings:
   m_ObjectHideFlags: 0
   serializedVersion: 5
-  m_CurrentQuality: 3
+  m_CurrentQuality: 0
   m_QualitySettings:
   - serializedVersion: 4
-    name: Very Low
+    name: '0: Very Low'
     pixelLightCount: 0
     shadows: 0
     shadowResolution: 0
@@ -60,7 +60,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 4
-    name: Low
+    name: '1: Low'
     pixelLightCount: 0
     shadows: 0
     shadowResolution: 0
@@ -113,7 +113,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 4
-    name: Medium
+    name: '2: Medium'
     pixelLightCount: 1
     shadows: 0
     shadowResolution: 0
@@ -166,7 +166,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 4
-    name: High
+    name: '3: High'
     pixelLightCount: 2
     shadows: 0
     shadowResolution: 1
@@ -219,7 +219,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 4
-    name: Very High
+    name: '4: Very High'
     pixelLightCount: 3
     shadows: 0
     shadowResolution: 2
@@ -272,7 +272,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 4
-    name: Ultra
+    name: '5: Ultra'
     pixelLightCount: 4
     shadows: 0
     shadowResolution: 0
@@ -333,7 +333,7 @@ QualitySettings:
     PSM: 5
     PSP2: 2
     Server: 0
-    Standalone: 5
+    Standalone: 0
     Tizen: 2
     WebGL: 3
     WiiU: 5
