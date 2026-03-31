@@ -14,7 +14,8 @@ public enum Job
 {
     Farmer,
     Soldier,
-    Miner
+    Miner,
+    Merchant
 }
 [CreateAssetMenu(fileName = "UnitInfo", menuName = "Unit/UnitInfo")]
 public class UnitInfo : ScriptableObject

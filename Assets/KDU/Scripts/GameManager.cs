@@ -1,4 +1,5 @@
-﻿using NYH.CoreCardSystem;
+﻿using DG.Tweening;
+using NYH.CoreCardSystem;
 using UnityEngine;
 
 // ============================================================
@@ -36,10 +37,13 @@ public class GameManager : PersistentSingleton<GameManager>
     public bool endTurn = false;
     public bool startTurn = false;
 
+    Camera cam;
+
     protected override void Awake()
     {
         base.Awake();
         InitializeManagers();
+        cam = Camera.main;
     }
 
     // 씬 시작 시 필요한 매니저 참조 수집
@@ -106,5 +110,24 @@ public class GameManager : PersistentSingleton<GameManager>
     {
         playerPopulationCap += amount;
         Debug.Log($"인구 한도 증가:{amount} / 현재 인구:{playerPopulation}");
+    }
+
+    // 인간 생성 카드 효과 처리 후 CardSystem에서 호출
+    public void GenerateHumans(int amount, PlayerUnitInfoByJob unitInfo)
+    {
+        GameObject[] humans = new GameObject[amount];
+
+        Vector3 mouse = Input.mousePosition;
+        mouse.z = Mathf.Abs(Camera.main.transform.position.z);
+
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(mouse);
+
+        for (int i = 0; i < amount; i++)
+        {
+            humans[i] = HumanPool.Instance.GetHuman();
+            humans[i].transform.position = worldPos;
+            HumanUnit humanUnit = humans[i].GetComponent<HumanUnit>();
+            humanUnit.SetUnitInfo(unitInfo);
+        }
     }
 }

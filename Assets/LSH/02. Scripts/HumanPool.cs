@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanPool : MonoBehaviour
+public class HumanPool : Singleton<HumanPool>
 {
     public GameObject humanPrefab;
     public int poolSize = 20;

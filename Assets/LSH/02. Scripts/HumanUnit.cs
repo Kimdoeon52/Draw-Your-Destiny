@@ -32,6 +32,7 @@ public class HumanUnit : MonoBehaviour
     //private BuildingType 
     //private bool isDead = false;
 
+    private PlayerUnitInfoByJob playerInfo;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) //실험용
@@ -237,5 +238,24 @@ public class HumanUnit : MonoBehaviour
             if (pathIndex >= currentPath.Count)
                 isMoving = false;
         }
+    }
+
+    private void OnEnable()
+    {
+        UnitAppear();
+        SetPlayerUnitInfo();
+    }
+
+    private void SetPlayerUnitInfo()
+    {
+        job = playerInfo.job;
+        age = playerInfo.age;
+        unitInfo.maxHealth = playerInfo.maxHealth;
+        unitInfo.attackPower = playerInfo.attackPower;
+    }
+
+    public void SetUnitInfo(PlayerUnitInfoByJob info)
+    {
+        playerInfo = info;
     }
 }

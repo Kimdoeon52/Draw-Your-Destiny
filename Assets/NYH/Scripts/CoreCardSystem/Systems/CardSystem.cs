@@ -1,4 +1,4 @@
-﻿/*namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -43,7 +43,8 @@
             ActionSystem.AttachPerformer<ResearchpointsGA>(action => Perform(action));            //연구 포인트 획득 액션
             ActionSystem.AttachPerformer<IncreasePopulationGA>(action => Perform(action));        //인구 증가 획득 액션
             ActionSystem.AttachPerformer<CostPlusGA>(action => Perform(action));                  //코스트 증가
-            ActionSystem.AttachPerformer<CountCardByTypeGA>(action => Perform(action));                  //손패 중 특정 타입 카드 갯수 세기
+            ActionSystem.AttachPerformer<CountCardByTypeGA>(action => Perform(action));           //손패 중 특정 타입 카드 갯수 세기
+            ActionSystem.AttachPerformer<GenerateHumanGA>(action => Perform(action));             //인간 생성
 
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
@@ -141,10 +142,16 @@
             else if (action is CostPlusGA costPlusGA)
             {
                 costPlusGA.SourceCard.Cost += costPlusGA.Cost;
+                yield return null;
             }
             else if (action is CountCardByTypeGA countCardByTypeGA)
             {
 
+            }
+            else if (action is GenerateHumanGA generateHumanGA)
+            {
+                GameManager.Instance.GenerateHumans(generateHumanGA.Amount, generateHumanGA._UnitInfo);
+                yield return null;
             }
         }
 
@@ -358,6 +365,55 @@
 
             CardListUI.Instance.Show(shuffledCopy, "무덤 확인");
         }
+
+        /// <summary>
+        /// 설치 카드의 배치 가능 여부를 확인한 뒤,
+        /// 카드 사용이 끝나면 해당 좌표에 건물을 설치하도록 순차 실행합니다.
+        /// </summary>
+        public bool TryQueuePlacementCard(Card sourceCard, Vector3Int targetPos)
+        {
+            if (sourceCard == null)
+            {
+                Debug.LogWarning("[_CardSystem] 설치할 카드가 없습니다.");
+                return false;
+            }
+
+            InstallBuildingEffect installEffect = null;
+            if (sourceCard.Effects != null)
+            {
+                foreach (var effect in sourceCard.Effects)
+                {
+                    if (effect is InstallBuildingEffect foundEffect)
+                    {
+                        installEffect = foundEffect;
+                        break;
+                    }
+                }
+            }
+
+            if (installEffect == null || installEffect.buildingData == null)
+            {
+                Debug.LogWarning($"[_CardSystem] {sourceCard.Title} 카드에 설치할 건물 데이터가 없습니다.");
+                return false;
+            }
+
+            if (TileMapManager.Instance == null)
+            {
+                Debug.LogError("[_CardSystem] TileMapManager가 없어 건물을 설치할 수 없습니다.");
+                return false;
+            }
+
+            if (!TileMapManager.Instance.CanPlace(targetPos, installEffect.buildingData))
+            {
+                Debug.LogWarning($"[_CardSystem] {installEffect.buildingData.buildingName} 건물을 {targetPos}에 설치할 수 없습니다.");
+                return false;
+            }
+
+            ActionSystem.Instance.Perform(
+                new PlayCardGA(sourceCard),
+                () => ActionSystem.Instance.Perform(new PlayBuildingGA(installEffect.buildingData, targetPos))
+            );
+            return true;
+        }
     }
 }
-*/
