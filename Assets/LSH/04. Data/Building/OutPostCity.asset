@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
   m_Name: OutPostCity
   m_EditorClassIdentifier: 
-  buildingName: "\uC801\uC758 \uC9D1"
-  buildingType: 1
+  buildingName: "\uC791\uC740\uC601\uC9C0"
+  buildingType: 8
   sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
   requiredEra: 0
   isAutoUpgrade: 0
@@ -21,7 +21,7 @@ MonoBehaviour:
   goldCost: 0
   width: 4
   height: 4
-  allowedTiles: 04000000
+  allowedTiles: 00000000
   goldPerTurn: 0
   populationCapBonus: 0
   soldierCapacity: 0
