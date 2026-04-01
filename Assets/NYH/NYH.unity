@@ -363,6 +363,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 983716238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &325783176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 325783178}
+  - component: {fileID: 325783177}
+  m_Layer: 0
+  m_Name: MousePointerDebug
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &325783177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325783176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6c5871a0a299c447abb29a0d7087221, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showOverlay: 1
+  verboseRaycastList: 1
+  overlayOffset: {x: 16, y: 16}
+  world3DMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  world2DMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  world3DDistance: 1000
+--- !u!4 &325783178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325783176}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34.6321, y: 29.20637, z: -0.0053704837}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &375026989
 GameObject:
   m_ObjectHideFlags: 0
@@ -2882,6 +2936,13 @@ MonoBehaviour:
   territoryTilemap: {fileID: 0}
   cityTileAsset: {fileID: 0}
   farmlandTileAsset: {fileID: 0}
+  outpostManorPrefab: {fileID: 0}
+  outpostManorSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  outpostManorHP: 50
 --- !u!4 &1395773283
 Transform:
   m_ObjectHideFlags: 0
@@ -6873,3 +6934,4 @@ SceneRoots:
   - {fileID: 983716238}
   - {fileID: 184097673}
   - {fileID: 383627627}
+  - {fileID: 325783178}

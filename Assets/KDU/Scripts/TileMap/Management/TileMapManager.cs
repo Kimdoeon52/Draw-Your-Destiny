@@ -475,11 +475,7 @@ public class TileMapManager : Singleton<TileMapManager>
         spriteRenderer.sprite = building.sprite;
         spriteRenderer.sortingOrder = 1;
 
-        float centerX = origin.x + (building.width - 1) * 0.5f;
-        float centerY = origin.y + (building.height - 1) * 0.5f;
-        Vector3 worldPos = groundTilemap.CellToWorld(new Vector3Int(Mathf.RoundToInt(centerX), Mathf.RoundToInt(centerY), 0));
-
-        buildingObj.transform.position = worldPos + groundTilemap.cellSize * 0.5f;
+        buildingObj.transform.position = GetBuildingWorldCenter(origin, building);
         buildingObj.transform.localScale = new Vector3(building.width, building.height, 1);
 
         buildingObjects[origin] = buildingObj;
@@ -656,6 +652,21 @@ public class TileMapManager : Singleton<TileMapManager>
     public Vector3 GetCellCenterWorld(Vector3Int pos)
     {
         return groundTilemap.GetCellCenterWorld(pos);
+    }
+
+    // 건물 프리뷰와 실제 설치가 항상 같은 좌표를 사용하도록 공용 계산식으로 통일한다.
+    public Vector3 GetBuildingWorldCenter(Vector3Int origin, BuildingData building)
+    {
+        if (groundTilemap == null || building == null)
+            return Vector3.zero;
+
+        Vector3 originWorld = groundTilemap.CellToWorld(origin);
+        Vector3 cellSize = groundTilemap.cellSize;
+
+        return originWorld + new Vector3(
+            building.width * cellSize.x * 0.5f,
+            building.height * cellSize.y * 0.5f,
+            0f);
     }
 
     // ── 소규모 영지 확장 ─────────────────────────────────────────

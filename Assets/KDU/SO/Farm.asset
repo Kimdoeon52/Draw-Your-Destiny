@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: "\uB18D\uC7A5"
   buildingType: 4
-  sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
+  sprite: {fileID: 8284690431070618562, guid: 20d6cce5c7ac33b4e97f0f98a09aa347, type: 3}
   requiredEra: 0
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
   goldCost: 1
   width: 2
   height: 2
-  allowedTiles: 0200000000000000
+  allowedTiles: 02000000
   goldPerTurn: 1
   populationCapBonus: 0
   soldierCapacity: 0
