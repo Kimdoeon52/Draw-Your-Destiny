@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class EnemyUnit : MonoBehaviour
@@ -28,6 +30,8 @@ public class EnemyUnit : MonoBehaviour
 
     private BuildingType curbuildingType = BuildingType.None;
 
+    public int ownerCivID;
+    private CancellationTokenSource moveCts;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) // 실험용
@@ -71,6 +75,7 @@ public class EnemyUnit : MonoBehaviour
                 Debug.LogError("뭔 직업이냐 이건.");
                 break;
         }
+        StartMoveLoop();
     }
 
     public void UnitNextTurn()
@@ -83,11 +88,28 @@ public class EnemyUnit : MonoBehaviour
         if (Random.value < naturalDeathChance)
         {
             Dead();
+            return;
         }
-        TryRandomStepMove();
     }
 
-    //------------------유닛 한칸씩 움직이는거임-----------------------------
+    //------------------유닛 움직이는거임-----------------------------
+
+    //타일 검사하는 함수임
+    private bool CanMoveToCell(Vector3Int cell) //셀 받아서
+    {
+        if (!TileMapManager.Instance.IsValidPosition(cell)) //유효한 위치인지 검사
+            return false;
+
+        if (TileMapManager.Instance.GetOwner(cell) != ownerCivID) //내 영지만 허용
+            return false;
+
+        TileType tileType = TileMapManager.Instance.GetTileType(cell); //타일 타입 받아와서
+
+        return tileType == TileType.Plain //평지, 도시, 농지 허용
+            || tileType == TileType.City
+            || tileType == TileType.Farmland;
+    }
+
     private void TryRandomStepMove()
     {
         Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
@@ -110,7 +132,8 @@ public class EnemyUnit : MonoBehaviour
         {
             Vector3Int nextCell = currentCell + dir;
 
-            if (!TileMapManager.Instance.IsWalkableTerritory(nextCell))
+            // 타일 검사 
+            if (!CanMoveToCell(nextCell))
                 continue;
 
             possibleMoves.Add(nextCell);
@@ -125,14 +148,54 @@ public class EnemyUnit : MonoBehaviour
         pathIndex = 0;
         isMoving = true;
     }
+    private async UniTask RamdomMoveLoop(CancellationToken token)
+    {
+        try
+        {
+            while(!token.IsCancellationRequested) //토큰이 취소되지 않은 동안 계속 반복
+            {
+                await UniTask.Delay(3000, cancellationToken: token); // 3초 //토큰 전달하여 대기 중에도 취소 가능하게 함
+                if (token.IsCancellationRequested)
+                    break;
+                if (!gameObject.activeInHierarchy)
+                    continue;
+                if(!isMoving)
+                {
+                    TryRandomStepMove();
+                }
 
+            }
+        }
+        catch (System.OperationCanceledException) //작업이 취소되었을 때 발생하는 예외 처리
+        {
+            // 작업이 취소되었을 때 처리할 내용
+        }
+    }
 
+    private void StartMoveLoop()
+    {
+        StopMoveLoop();
+        
+        moveCts = new CancellationTokenSource(); //토큰생성
+        RamdomMoveLoop(moveCts.Token).Forget();
+    }
+    private void StopMoveLoop()
+    {
+        if (moveCts != null)
+        {
+            moveCts.Cancel(); //토큰 취소
+            moveCts.Dispose(); //자원 해제
+            moveCts = null; //참조 제거
+        }
+    }
     void CheckCardUsing()
     {
+
     }
 
     void Dead()
     {
+        StopMoveLoop();
         if (enemyPool == null)
         {
             Debug.LogWarning($"{name} 의 enemyPool이 연결되지 않았습니다.");

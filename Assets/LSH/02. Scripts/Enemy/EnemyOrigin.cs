@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -319,7 +319,7 @@ public class EnemyOrigin : MonoBehaviour
             return;
         }
 
-        GameObject spawnedEnemy = enemyUnitPool.GetEnemyUnit(enemyType);
+        GameObject spawnedEnemy = enemyUnitPool.GetEnemyUnit(enemyType, enemyID);
 
         if (spawnedEnemy == null)
         {

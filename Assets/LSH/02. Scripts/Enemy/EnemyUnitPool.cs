@@ -45,7 +45,7 @@ public class EnemyUnitPool : MonoBehaviour
         }
     }
 
-    public GameObject GetEnemyUnit(EnemyType type)
+    public GameObject GetEnemyUnit(EnemyType type, int ownerCivID)
     {
         if (!pools.ContainsKey(type) || pools[type].Count == 0)
         {
@@ -55,10 +55,10 @@ public class EnemyUnitPool : MonoBehaviour
 
         GameObject enemy = pools[type].Dequeue();
         enemy.SetActive(true);
-
         EnemyUnit enemyUnit = enemy.GetComponent<EnemyUnit>();
         if (enemyUnit != null)
         {
+            enemyUnit.ownerCivID = ownerCivID;
             enemyUnit.enemyType = type;
             enemyUnit.enemyPool = this;
             enemyUnit.UnitAppear();

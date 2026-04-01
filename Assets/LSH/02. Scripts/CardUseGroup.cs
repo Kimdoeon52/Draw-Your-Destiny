@@ -16,7 +16,7 @@ public class CardUseGroup : MonoBehaviour
     {
         for (int i = 0; i < n; i++)
         {
-            GameObject human = humanPool.GetHuman();
+            GameObject human = humanPool.GetHuman(0);
             if(human != null)
             {
                 HumanUnit humanScript = human.GetComponent<HumanUnit>();
@@ -30,7 +30,7 @@ public class CardUseGroup : MonoBehaviour
     {
         for (int i = 0; i < n; i++)
         {
-            GameObject human = humanPool.GetHuman();
+            GameObject human = humanPool.GetHuman(0);
             if (human != null)
             {
                 HumanUnit humanScript = human.GetComponent<HumanUnit>();
@@ -43,7 +43,7 @@ public class CardUseGroup : MonoBehaviour
     {
         for (int i = 0; i < n; i++)
         {
-            GameObject human = humanPool.GetHuman();
+            GameObject human = humanPool.GetHuman(0);
             if (human != null)
             {
                 HumanUnit humanScript = human.GetComponent<HumanUnit>();

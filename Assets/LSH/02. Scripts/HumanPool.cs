@@ -18,7 +18,7 @@ public class HumanPool : Singleton<HumanPool>
         }
     }
 
-    public GameObject GetHuman() //이거 쓰셈 소환할때.(카드 만드는 사람은 이걸 읽도록)
+    public GameObject GetHuman(int ownerCivID) //이거 쓰셈 소환할때.(카드 만드는 사람은 이걸 읽도록)
     {
         if (pool.Count == 0)
         {
@@ -29,6 +29,7 @@ public class HumanPool : Singleton<HumanPool>
         GameObject human = pool.Dequeue();
         human.SetActive(true);
         HumanUnit humanUnit = human.GetComponent<HumanUnit>();
+        humanUnit.ownerCivID = ownerCivID;
         if (humanUnit != null)
         {
             humanUnit.UnitAppear();
