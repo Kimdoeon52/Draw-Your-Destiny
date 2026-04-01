@@ -1,4 +1,5 @@
 ﻿using NYH.CoreCardSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GoldCardEffect : Effect
@@ -9,6 +10,13 @@ public class GoldCardEffect : Effect
     public override GameAction GetGameAction(int effectIndex = 0, Card sourceCard = null)
     {
         return new GoldCardGA(costAmount);
+    }
+   public override Dictionary<string, string> GetDescriptionTokens()
+    {
+        return new Dictionary<string, string>
+        {
+            { "costAmount", costAmount.ToString() }
+        };
     }
 
 }

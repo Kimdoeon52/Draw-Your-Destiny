@@ -1,4 +1,5 @@
 ﻿using NYH.CoreCardSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 /*
@@ -40,4 +41,13 @@ public class DiscardRandomEffect : Effect
         // 이 명령서(GA)가 생성되면, CardSystem.cs에 등록된 로직이 이를 감지하고 실행합니다.
         return new DiscardRandomGA(discardAmount);
     }
+
+    public override Dictionary<string, string> GetDescriptionTokens()
+    {
+        return new Dictionary<string, string>
+        {
+            { "discardAmount", discardAmount.ToString() }
+        };
+    }
+
 }

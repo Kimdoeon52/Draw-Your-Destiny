@@ -1,4 +1,5 @@
 ﻿using NYH.CoreCardSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CostPlusEffect : Effect
@@ -10,4 +11,12 @@ public class CostPlusEffect : Effect
 	{
 		return new CostPlusGA(sourceCard, costAmount);
 	}
+
+	public override Dictionary<string, string> GetDescriptionTokens()
+    {
+        return new Dictionary<string, string>
+        {
+            { "costAmount", costAmount.ToString() }
+        };
+    }
 }

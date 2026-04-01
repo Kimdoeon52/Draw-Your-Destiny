@@ -360,6 +360,7 @@
         private IEnumerator PlayCardPerformer(PlayCardGA playCardGA)
         {
             Debug.Log($"[_CardSystem] PlayCardPerformer 진입: card={playCardGA.Card?.Title}");
+
             hand.Remove(playCardGA.Card);
             CardView cardView = handView.RemoveCard(playCardGA.Card);
 

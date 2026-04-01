@@ -1,4 +1,5 @@
 ﻿using NYH.CoreCardSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DrawCardEffect : Effect
@@ -10,5 +11,13 @@ public class DrawCardEffect : Effect
     {
         DrawCardsGA drawCardsGA = new(drawAmount);
         return drawCardsGA;
+    }
+
+    public override Dictionary<string, string> GetDescriptionTokens()
+    {
+        return new Dictionary<string, string>
+        {
+            { "drawAmount", drawAmount.ToString() }
+        };
     }
 }

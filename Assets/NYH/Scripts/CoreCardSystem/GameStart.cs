@@ -52,6 +52,7 @@ public class GameStarter : MonoBehaviour
         //StartCoroutine(StartTurnCardRoutine());
     }
 
+    // 턴 시작시 카드 3장 덱에 넣기 카드 시스템 합칠때까지 주석처리
     //private IEnumerator StartTurnCardRoutine()
     //{
     //    //카드 선택

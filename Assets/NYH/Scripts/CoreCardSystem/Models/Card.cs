@@ -1,6 +1,7 @@
 ﻿namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
+    using System.Text;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -23,7 +24,7 @@
         // 이름, 설명, 이미지, 효과 등은 게임 중에 변할 일이 없으므로 
         // 데이터 원본(CardData)에서 실시간으로 가져옵니다 (=> 표현식 사용).
         public string Title => data.cardName;
-        public string Description => data.Description;
+        public string Description => BuildDescription();
         public Sprite Image => data.Image;
         public List<Effect> Effects => data.Effects;
         public int CardID => data.cardID;
@@ -50,6 +51,27 @@
             // 처음 생성될 때만 데이터 원본의 코스트 값을 복사해옵니다.
             // 이후에는 이 Card 객체의 Cost 변수만 수정하여 게임 로직을 처리합니다.
             Cost = cardData.Cost;
+        }
+        private string BuildDescription()
+        {
+            string description = data.Description;
+            if (string.IsNullOrEmpty(description) || data.Effects == null) return description;
+
+            StringBuilder builder = new StringBuilder(description);
+            foreach (var effect in data.Effects)
+            {
+                if (effect == null) continue;
+
+                var tokens = effect.GetDescriptionTokens();
+                if (tokens == null) continue;
+
+                foreach (var pair in tokens)
+                {
+                    builder.Replace($"{{{pair.Key}}}", pair.Value);
+                }
+            }
+
+            return builder.ToString();
         }
     }
 }
