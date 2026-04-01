@@ -144,7 +144,7 @@ public class EnemyUnit : MonoBehaviour
 
         Vector3Int randomTarget = possibleMoves[Random.Range(0, possibleMoves.Count)];
 
-        currentPath = new List<Vector3Int> { randomTarget };
+        currentPath = new List<Vector3Int> { randomTarget }; //여기서 currentPath를 담고 거의 아랫쪽 함수에서 이동함.
         pathIndex = 0;
         isMoving = true;
     }

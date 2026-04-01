@@ -141,7 +141,7 @@ public class GameManager : PersistentSingleton<GameManager>
 
         for (int i = 0; i < amount; i++)
         {
-            humans[i] = HumanPool.Instance.GetHuman();
+            humans[i] = HumanPool.Instance.GetHuman(0);
             int index = indices[i];
             humans[i].transform.position = humanGenPoints[index].position;
             Debug.Log($"{humans[i].transform.position}");

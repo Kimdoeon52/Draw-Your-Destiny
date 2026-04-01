@@ -73,7 +73,7 @@ public class HumanUnit : MonoBehaviour
                 Debug.LogError("뭔 직업이냐 이건.");
                 break;
         }
-        
+        StartMoveLoop(); //유닛이 나올 때 움직이는거 시작
     }
     public void UnitNextTurn() //턴이 지날때마다 나오는거니까 여따가 다 때려박을까
     {
@@ -85,7 +85,6 @@ public class HumanUnit : MonoBehaviour
         {
             Dead();
         }
-        TryRandomStepMove();
     }
 
     //------------------유닛 움직이는거임-----------------------------
@@ -325,4 +324,5 @@ public class HumanUnit : MonoBehaviour
     {
         playerInfo = info;
     }
+
 }
