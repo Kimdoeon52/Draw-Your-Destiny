@@ -174,4 +174,10 @@ public class GameManager : PersistentSingleton<GameManager>
             }
         }
     }
+
+    // 금
+    public void ConvertGoldToFood(int percent)
+    {
+        Food += playerGold * percent / 100;
+	}
 }

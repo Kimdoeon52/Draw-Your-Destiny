@@ -3038,6 +3038,13 @@ MonoBehaviour:
   territoryTilemap: {fileID: 0}
   cityTileAsset: {fileID: 0}
   farmlandTileAsset: {fileID: 0}
+  outpostManorPrefab: {fileID: 0}
+  outpostManorSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  outpostManorHP: 50
 --- !u!4 &1395773283
 Transform:
   m_ObjectHideFlags: 0
@@ -4050,22 +4057,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myDeck:
-  - {fileID: 11400000, guid: 805296239e6bc4540b0005cacbf6c299, type: 2}
-  - {fileID: 11400000, guid: 847f7dc08e9b60d409a3e0f747c74de1, type: 2}
-  - {fileID: 11400000, guid: 4487b2f43f2b42a4ebf2514158dac2dd, type: 2}
-  - {fileID: 11400000, guid: 79b4ec058cacc58438f7b8f2649b38de, type: 2}
-  - {fileID: 11400000, guid: 805296239e6bc4540b0005cacbf6c299, type: 2}
-  - {fileID: 11400000, guid: 847f7dc08e9b60d409a3e0f747c74de1, type: 2}
-  - {fileID: 11400000, guid: 4487b2f43f2b42a4ebf2514158dac2dd, type: 2}
-  - {fileID: 11400000, guid: 79b4ec058cacc58438f7b8f2649b38de, type: 2}
-  - {fileID: 11400000, guid: 805296239e6bc4540b0005cacbf6c299, type: 2}
-  - {fileID: 11400000, guid: 847f7dc08e9b60d409a3e0f747c74de1, type: 2}
-  - {fileID: 11400000, guid: 4487b2f43f2b42a4ebf2514158dac2dd, type: 2}
-  - {fileID: 11400000, guid: 79b4ec058cacc58438f7b8f2649b38de, type: 2}
-  - {fileID: 11400000, guid: 805296239e6bc4540b0005cacbf6c299, type: 2}
-  - {fileID: 11400000, guid: 847f7dc08e9b60d409a3e0f747c74de1, type: 2}
-  - {fileID: 11400000, guid: 4487b2f43f2b42a4ebf2514158dac2dd, type: 2}
-  - {fileID: 11400000, guid: 79b4ec058cacc58438f7b8f2649b38de, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
+  - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1698640415
 MonoBehaviour:
@@ -4136,6 +4142,7 @@ MonoBehaviour:
   discardPilePoint: {fileID: 2044909669}
   deackCount: {fileID: 1176276858}
   discardCount: {fileID: 2044909670}
+  ReturnCard: 0
 --- !u!1 &1731127173
 GameObject:
   m_ObjectHideFlags: 0
