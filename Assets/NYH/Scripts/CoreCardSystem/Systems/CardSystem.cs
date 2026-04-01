@@ -1,4 +1,5 @@
-﻿namespace NYH.CoreCardSystem
+﻿/*
+namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -439,3 +440,4 @@
         }
     }
 }
+*/

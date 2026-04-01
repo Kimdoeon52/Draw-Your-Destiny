@@ -76,7 +76,7 @@ public class GameManager : PersistentSingleton<GameManager>
         startTurn = true;
         endTurn = false;
         currentTurn++;
-        OngoingEffectSystem.Instance.OnTurnStartOrEnd();
+       /* OngoingEffectSystem.Instance.OnTurnStartOrEnd();*/
     }
 
     public void EndTurn()
