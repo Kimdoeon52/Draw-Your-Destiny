@@ -43,7 +43,9 @@ public class GameManager : PersistentSingleton<GameManager>
     public Era playerEra = Era.Stone;
 
     Camera cam;
-    [SerializeField] Transform[] humanGenPoints;
+    [SerializeField] int lordCastleSize = 4; // 영주성 크기
+
+    private CitySpawnManager citySpawnManager;
 
     protected override void Awake()
     {
@@ -57,6 +59,7 @@ public class GameManager : PersistentSingleton<GameManager>
     {
         tileMapManager = TileMapManager.Instance;
         placementService = FindFirstObjectByType<BuildingPlacementService>();
+        citySpawnManager = FindFirstObjectByType<CitySpawnManager>();
     }
 
     // ── 건물 배치 ─────────────────────────────────────────────
@@ -122,32 +125,49 @@ public class GameManager : PersistentSingleton<GameManager>
     // 인간 생성 카드 효과 처리 후 CardSystem에서 호출
     public void GenerateHumans(int amount, PlayerUnitInfoByJob unitInfo)
     {
-        GameObject[] humans = new GameObject[amount];
+        List<Vector3Int> spawnTiles = GetManorOuterTiles();
 
-        List<int> indices = new List<int>();
-        for (int i = 0; i < humanGenPoints.Length; i++)
+        // Fisher-Yates 셔플
+        for (int i = spawnTiles.Count - 1; i > 0; i--)
         {
-            indices.Add(i);
-        }
-
-        // 섞기 (Fisher-Yates Shuffle)
-        for (int i = 0; i < indices.Count; i++)
-        {
-            int rand = Random.Range(i, indices.Count);
-            int temp = indices[i];
-            indices[i] = indices[rand];
-            indices[rand] = temp;
+            int rand = Random.Range(0, i + 1);
+            (spawnTiles[i], spawnTiles[rand]) = (spawnTiles[rand], spawnTiles[i]);
         }
 
         for (int i = 0; i < amount; i++)
         {
-            humans[i] = HumanPool.Instance.GetHuman(0);
-            int index = indices[i];
-            humans[i].transform.position = humanGenPoints[index].position;
-            Debug.Log($"{humans[i].transform.position}");
-            HumanUnit humanUnit = humans[i].GetComponent<HumanUnit>();
+            GameObject human = HumanPool.Instance.GetHuman(0);
+            if (human == null) break;
+
+            Vector3Int tile = spawnTiles[i % spawnTiles.Count];
+            human.transform.position = tileMapManager.groundTilemap.GetCellCenterWorld(tile);
+
+            HumanUnit humanUnit = human.GetComponent<HumanUnit>();
             humanUnit.SetUnitInfo(unitInfo);
         }
+    }
+
+    // 플레이어 영주성(lordCastleSize×lordCastleSize) 바깥 1칸 링 타일 목록
+    private List<Vector3Int> GetManorOuterTiles()
+    {
+        Vector3Int center = citySpawnManager.SpawnedCityCenters[0];
+
+        // GetOrigin과 동일한 오프셋: 짝수 크기 → offset = size/2 - 1
+        int offset = lordCastleSize / 2 - 1;
+        int xMin = center.x - offset;
+        int xMax = xMin + lordCastleSize - 1;
+        int yMin = center.y - offset;
+        int yMax = yMin + lordCastleSize - 1;
+
+        List<Vector3Int> outerTiles = new List<Vector3Int>();
+        for (int x = xMin - 1; x <= xMax + 1; x++)
+        for (int y = yMin - 1; y <= yMax + 1; y++)
+        {
+            bool isInterior = (x >= xMin && x <= xMax && y >= yMin && y <= yMax);
+            if (!isInterior)
+                outerTiles.Add(new Vector3Int(x, y, 0));
+        }
+        return outerTiles;
     }
 
     // 식량 획득 (CardSystem에서 호출)
