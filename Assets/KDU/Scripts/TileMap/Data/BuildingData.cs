@@ -28,9 +28,9 @@ public class BuildingData : ScriptableObject
     public int goldCost;                // 최초 배치 시 금 소모량 (업그레이드는 무료)
 
     [Header("크기")]
-    [Range(1, 4)]
+    [Range(1, 8)]
     public int width = 1;
-    [Range(1, 4)]
+    [Range(1, 8)]
     public int height = 1;
 
     [Header("배치 제약")]

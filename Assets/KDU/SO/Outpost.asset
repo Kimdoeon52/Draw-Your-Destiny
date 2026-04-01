@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
+  m_Name: Outpost
+  m_EditorClassIdentifier: 
+  buildingName: "\uC18C\uADDC\uBAA8 \uC601\uC9C0"
+  buildingType: 8
+  sprite: {fileID: 8284690431070618562, guid: 20d6cce5c7ac33b4e97f0f98a09aa347, type: 3}
+  requiredEra: 0
+  isAutoUpgrade: 0
+  upgradesTo: {fileID: 0}
+  goldCost: 0
+  width: 8
+  height: 8
+  allowedTiles: 00000000
+  goldPerTurn: 0
+  populationCapBonus: 0
+  soldierCapacity: 0
