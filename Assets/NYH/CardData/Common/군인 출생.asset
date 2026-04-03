@@ -28,4 +28,4 @@ MonoBehaviour:
       type: {class: GenerateHumanEffect, ns: , asm: Assembly-CSharp}
       data:
         unitInfo: {fileID: 11400000, guid: b403c33956a0d634b9ac5d9b74fd2366, type: 2}
-        unitAmount: 0
+        unitAmount: 5

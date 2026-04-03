@@ -34,6 +34,7 @@
         private bool isDragging = false;
         private bool isPickedUp = false;
         private bool isTargetingMode = false;
+        public bool IsTargetingMode => isTargetingMode;
         private Vector3 pointerDownMousePos;
         private float clickThreshold = 20f;
         private float targetingThresholdY;
@@ -141,6 +142,26 @@
                 return;
             }
 
+            bool isBuildingCard = false;
+            if (Card?.Effects != null)
+            {
+                foreach (var effect in Card.Effects)
+                {
+                    if (effect is InstallBuildingEffect)
+                    {
+                        isBuildingCard = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isBuildingCard && !isTargetingMode)
+            {
+                Debug.Log($"[CardView] {Card?.Title} 건물 카드는 가운데 배치 모드에서만 사용할 수 있습니다.");
+                ReturnToHand();
+                return;
+            }
+
             if (isTargetingMode)
             {
                 var placementService = FindFirstObjectByType<BuildingPlacementService>();
@@ -151,7 +172,7 @@
                 {
                     Vector3Int tilePos = placementService.GetCurrentPreviewTilePos();
                     Debug.Log($"[CardView] ?���? ?��?��: {Card?.Title} -> {tilePos}");
-                    if (CardSystem.Instance.TryQueuePlacementCard(Card, tilePos))
+                    if (CardSystem.Instance.TryQueuePlacementCard(Card, tilePos, IsTargetingMode))
                     {
                         placementService.CancelPlacing();
                         isPickedUp = false;

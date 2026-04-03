@@ -35,7 +35,7 @@ public class GameStarter : MonoBehaviour
         }
         else
         {
-            Debug.LogError("GameStarter: 덱 정보가 없거나 CardSystem이 없습니다.");
+            Debug.LogError("GameStarter: 덱 정보가 없거나 CardSystem이 없습니다."); 
         }
     }
 

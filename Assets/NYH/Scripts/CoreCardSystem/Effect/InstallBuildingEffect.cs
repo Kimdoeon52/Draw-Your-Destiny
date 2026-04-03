@@ -48,7 +48,7 @@ namespace NYH.CoreCardSystem
         public override GameAction GetGameAction(int effectIndex = 0, Card sourceCard = null)
         {
             // 좌표는 나중에 주입되므로 초기값은 zero로 생성합니다.
-            return new PlayBuildingGA(buildingData, Vector3Int.zero);
+            return new PlayBuildingGA(sourceCard, buildingData, Vector3Int.zero, false);
         }
     }
 }

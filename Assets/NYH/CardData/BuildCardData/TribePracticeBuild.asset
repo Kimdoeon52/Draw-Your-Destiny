@@ -10,15 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
-  m_Name: HousBuild
+  m_Name: TribePracticeBuild
   m_EditorClassIdentifier: 
-  <cardID>k__BackingField: 0
-  cardName: "\uBBFC\uAC00\uC124"
+  <cardID>k__BackingField: 1102
+  cardName: "\uBD80\uC871 \uD6C8\uB828\uC9C0 \uAC74\uC124"
   <cardType>k__BackingField: 0
-  <Image>k__BackingField: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480,
+  <Image>k__BackingField: {fileID: -4042746362274735046, guid: ca837ae7e2bbede40bcedc031c500e6d,
     type: 3}
-  <Cost>k__BackingField: 0
-  description: 
+  <Cost>k__BackingField: 3
+  description: "\uBCD1\uC0AC {Amount}\uBA85 \uC218\uC6A9\uD560 \uC218 \uC788\uB294
+    \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4.(\uC124\uCE58 \uB418\uC5B4
+    \uC788\uB294 \uAC74\uBB3C \uBC0F \uB371\uC758 \uCE74\uB4DC \uBAA8\uB450 \uBCD1\uC601
+    \uAC74\uBB3C\uB85C \uC790\uB3D9 \uC5C5\uADF8\uB808\uC774\uB4DC)"
   <Effects>k__BackingField:
   - rid: 7216728159325782090
   - rid: -2
@@ -30,4 +33,4 @@ MonoBehaviour:
     - rid: 7216728159325782090
       type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
       data:
-        buildingData: {fileID: 11400000, guid: 5d99c4a3e2e5b5849b5cad5988e0d8eb, type: 2}
+        buildingData: {fileID: 11400000, guid: 45594f0911134e3489cdd3dda42a77c5, type: 2}
