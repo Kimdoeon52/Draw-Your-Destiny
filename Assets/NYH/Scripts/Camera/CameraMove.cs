@@ -5,11 +5,11 @@ public class CameraMove : MonoBehaviour
 {
 	private Camera cam;
 
-	float mapMinX = -138f;    // 맵 왼쪽 끝
-    float mapMaxX = 16f;  // 맵 오른쪽 끝
+	float mapMinX = -142f;    // 맵 왼쪽 끝
+    float mapMaxX = 20f;  // 맵 오른쪽 끝
 
-	float mapMinY = -8f;    // 맵 아래 끝
-	float mapMaxY = 136;   // 맵 위 끝
+	float mapMinY = -12f;    // 맵 아래 끝
+	float mapMaxY = 140;   // 맵 위 끝
 
 	float minZoom = 3.6f;
 	float maxZoom = 43.31f;
