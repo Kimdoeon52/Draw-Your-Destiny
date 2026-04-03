@@ -22,6 +22,10 @@
         [SerializeField] private Text deackCount;           // 덱 숫자를 띄울 텍스트
         [SerializeField] private Text discardCount;         // 무덤의 카드 숫자 띄울 텍스트
 
+        [SerializeField] private List<EraCardData> eraCards = new(); // 시대별 카드 데이터 (인스펙터에서 설정)
+        
+        private Dictionary<int, EraCardData> eraCardMap = new();
+
 
         // 게임 내 카드 데이터들
         private List<Card> drawPile = new();       // 덱
@@ -543,6 +547,18 @@
             shuffledCopy.Shuffle();
 
             CardListUI.Instance.Show(shuffledCopy, "무덤 확인");
+        }
+
+        private void BuildEraMap()
+        {
+/*            eraCardMap.Clear();
+            foreach (var eraCard in eraCards)
+            {
+                if (eraCard != null && !eraCardMap.ContainsKey(eraCard.eraID))
+                {
+                    eraCardMap[eraCard.eraID] = eraCard;
+                }
+            }   */
         }
     }
 }
