@@ -29,7 +29,10 @@ public class HumanUnit : MonoBehaviour
 
     [Header("직업")]
     [SerializeField] public Job job;
+    [Header("애니메이션 모음")]
+    [SerializeField] public Animator anime;
     
+
     private BuildingType curbuildingType = BuildingType.None;
     //private BuildingType 
     //private bool isDead = false;
@@ -58,6 +61,8 @@ public class HumanUnit : MonoBehaviour
         gender = Random.value < 0.5f ? Gender.Male : Gender.Female;
         ageGroup = AgeGroup.Baby; //처음 나올 때는 응애
         age = unitInfo.babyStartAge;
+        anime = GetComponent<Animator>();
+        
         switch (job) //직업에 따른 초기화를 여기서 하도록
         {
             case Job.Farmer:
@@ -83,6 +88,7 @@ public class HumanUnit : MonoBehaviour
         ChangeAgeGroup();
         ChangeDeathPer();
         CheckCardUsing();
+        anime.SetInteger("age", age);
         if (Random.value < naturalDeathChance)
         {
             Dead();
