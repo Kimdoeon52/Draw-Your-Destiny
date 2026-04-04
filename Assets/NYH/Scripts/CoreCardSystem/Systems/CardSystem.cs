@@ -1,4 +1,4 @@
-﻿/* namespace NYH.CoreCardSystem
+﻿ namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -452,7 +452,7 @@
         /// 설치 카드의 배치 가능 여부를 확인한 뒤,
         /// 카드 사용이 끝나면 해당 좌표에 건물을 설치하도록 순차 실행합니다.
         /// </summary>
-        public bool TryQueuePlacementCard(Card sourceCard, Vector3Int targetPos)
+        public bool TryQueuePlacementCard(Card sourceCard, Vector3Int targetPos, bool isTargetingMode)
         {
             if (sourceCard == null)
             {
@@ -493,7 +493,7 @@
 
             ActionSystem.Instance.Perform(
                 new PlayCardGA(sourceCard),
-                () => ActionSystem.Instance.Perform(new PlayBuildingGA(installEffect.buildingData, targetPos))
+                () => ActionSystem.Instance.Perform(new PlayBuildingGA(sourceCard, installEffect.buildingData, targetPos, isTargetingMode))
             );
             return true;
         }
@@ -535,4 +535,3 @@
 		}
 	}
 }
-*/

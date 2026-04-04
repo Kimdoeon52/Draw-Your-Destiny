@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+﻿/*namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -551,14 +551,15 @@
 
         private void BuildEraMap()
         {
-/*            eraCardMap.Clear();
+            eraCardMap.Clear();
             foreach (var eraCard in eraCards)
             {
                 if (eraCard != null && !eraCardMap.ContainsKey(eraCard.eraID))
                 {
                     eraCardMap[eraCard.eraID] = eraCard;
                 }
-            }   */
+            }   
         }
     }
 }
+*/
