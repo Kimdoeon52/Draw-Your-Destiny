@@ -36,12 +36,15 @@ public class HumanUnit : MonoBehaviour
     private BuildingType curbuildingType = BuildingType.None;
     //private BuildingType 
     //private bool isDead = false;
-    [SerializeField] private bool isFarming = false;
     private Vector3Int farmingTargetCell; //농사 타일 감지
 
     private PlayerUnitInfoByJob playerInfo;
     public int ownerCivID;
     private CancellationTokenSource moveCts;
+
+    private BuildingInstance assignedFarm;   // 현재 배정된 농장
+    [Header("농장 배정 상태")]
+    [SerializeField]private bool isAssignedToFarm = false;   // 이미 배정됐는지
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) //실험용
@@ -210,7 +213,8 @@ public class HumanUnit : MonoBehaviour
             return false;
 
         StopMoveLoop(); // 랜덤 이동 정지
-        isFarming = false;
+        assignedFarm = building;
+        isAssignedToFarm = true;
         farmingTargetCell = targetCell;
 
         currentPath = path;
@@ -311,45 +315,62 @@ public class HumanUnit : MonoBehaviour
             return;
         }
 
-        if (!TryFindNearestFarmBuilding(out BuildingInstance nearestFarm))
+        if (isAssignedToFarm)
+            return;
+
+        if (BuildingRegistry.Instance == null)
+            return;
+
+        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+        BuildingInstance farm = BuildingRegistry.Instance.FindNearestAvailableFarm(currentCell, ownerCivID);
+
+        if (farm == null)
         {
-            Debug.Log("근처에 갈 수 있는 Farm 건물이 없음");
+            Debug.Log("배정 가능한 Farm이 없음");
             return;
         }
 
-        bool success = MoveToBuilding(nearestFarm);
-
-        if (!success)
+        bool assigned = BuildingRegistry.Instance.TryAssignFarmer(farm, this);
+        if (!assigned)
         {
-            Debug.Log("Farm 근처로 이동할 수 없음");
+            Debug.Log("Farm 배정 실패");
             return;
         }
 
-        Debug.Log($"{name} 이 Farm으로 이동 시작");
+        bool moved = MoveToBuilding(farm);
+        if (!moved)
+        {
+            BuildingRegistry.Instance.UnassignFarmer(this);
+            assignedFarm = null;
+            isAssignedToFarm = false;
+            Debug.Log("Farm으로 이동 실패");
+            return;
+        }
+
+        assignedFarm = farm;
+        isAssignedToFarm = true;
+
+        Debug.Log($"{name} 이 Farm으로 배정되어 이동 시작");
     }
 
     private bool TryFindNearestFarmBuilding(out BuildingInstance nearestFarm)
     {
         nearestFarm = null;
 
-        TileMapManager tileMapManager = TileMapManager.Instance;
-        if (tileMapManager == null)
+        if (BuildingRegistry.Instance == null)
             return false;
 
-        List<BuildingInstance> allBuildings = tileMapManager.GetAllBuildings();
-        if (allBuildings == null || allBuildings.Count == 0)
+        List<BuildingInstance> farmBuildings = BuildingRegistry.Instance.GetBuildings(BuildingType.Farm);
+        if (farmBuildings == null || farmBuildings.Count == 0)
             return false;
 
-        Vector3Int currentCell = tileMapManager.groundTilemap.WorldToCell(transform.position);
+        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
 
         float minDist = float.MaxValue;
 
-        foreach (var building in allBuildings)
+        foreach (var building in farmBuildings)
         {
             if (building == null || building.data == null)
-                continue;
-
-            if (building.data.buildingType != BuildingType.Farm)
                 continue;
 
             if (building.ownerCivID != ownerCivID)
@@ -376,15 +397,15 @@ public class HumanUnit : MonoBehaviour
 
         Vector3Int[] directions =
         {
-        Vector3Int.right,
-        Vector3Int.left,
-        Vector3Int.up,
-        Vector3Int.down,
-        new Vector3Int(1, 1, 0),
-        new Vector3Int(1, -1, 0),
-        new Vector3Int(-1, 1, 0),
-        new Vector3Int(-1, -1, 0)
-    };
+            Vector3Int.right,
+            Vector3Int.left,
+            Vector3Int.up,
+            Vector3Int.down,
+            new Vector3Int(1, 1, 0),
+            new Vector3Int(1, -1, 0),
+            new Vector3Int(-1, 1, 0),
+            new Vector3Int(-1, -1, 0)
+        };
 
         foreach (var cell in building.footprint)
         {
@@ -461,7 +482,6 @@ public class HumanUnit : MonoBehaviour
                 Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
                 if (currentCell == farmingTargetCell)
                 {
-                    isFarming = true;
                     Debug.Log($"{name} 농사 시작");
                 }
             }
@@ -470,8 +490,89 @@ public class HumanUnit : MonoBehaviour
 
     private void OnEnable()
     {
-        UnitAppear();
         SetPlayerUnitInfo();
+        UnitAppear();
+
+        if (BuildingRegistry.Instance != null)
+        {
+            BuildingRegistry.Instance.OnBuildingRegistered += HandleBuildingRegistered;
+            BuildingRegistry.Instance.OnBuildingRemoved += HandleBuildingRemoved;
+        }
+
+        // 이미 농장이 있는 상태에서 유닛이 활성화되었으면 바로 찾게
+        StartFarming();
+    }
+    private void OnDisable()
+    {
+        StopMoveLoop();
+
+        if (BuildingRegistry.Instance != null)
+        {
+            BuildingRegistry.Instance.UnassignFarmer(this);
+            BuildingRegistry.Instance.OnBuildingRegistered -= HandleBuildingRegistered;
+            BuildingRegistry.Instance.OnBuildingRemoved -= HandleBuildingRemoved;
+        }
+
+        assignedFarm = null;
+        isAssignedToFarm = false;
+    }
+    private void HandleBuildingRegistered(BuildingInstance building)
+    {
+        if (job != Job.Farmer)
+            return;
+
+        if (building == null || building.data == null)
+            return;
+
+        if (building.data.buildingType != BuildingType.Farm)
+            return;
+
+        if (building.ownerCivID != ownerCivID)
+            return;
+
+        if (isAssignedToFarm)
+            return;
+
+        if (BuildingRegistry.Instance == null)
+            return;
+
+        if (!BuildingRegistry.Instance.HasVacancy(building))
+            return;
+
+        bool assigned = BuildingRegistry.Instance.TryAssignFarmer(building, this);
+        if (!assigned)
+            return;
+
+        bool moved = MoveToBuilding(building);
+        if (!moved)
+        {
+            BuildingRegistry.Instance.UnassignFarmer(this);
+            assignedFarm = null;
+            isAssignedToFarm = false;
+            return;
+        }
+
+        assignedFarm = building;
+        isAssignedToFarm = true;
+
+        Debug.Log($"{name} 이 새 Farm 빈자리에 자동 배정됨");
+    }
+
+    private void HandleBuildingRemoved(BuildingInstance building)
+    {
+        if (building == null)
+            return;
+
+        if (assignedFarm == building)
+        {
+            BuildingRegistry.Instance.UnassignFarmer(this);
+
+            assignedFarm = null;
+            isAssignedToFarm = false;
+
+            StartMoveLoop();
+            StartFarming(); // 다른 빈 농장 있으면 재배정
+        }
     }
 
     private void SetPlayerUnitInfo()
