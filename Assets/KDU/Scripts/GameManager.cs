@@ -136,6 +136,8 @@ public class GameManager : PersistentSingleton<GameManager>
     {
         endTurn = true;
         startTurn = false;
+        CardModifierSystem.OnTurnEnd();
+        CardSystem.Instance?.RefreshVisibleCardViews();
         checkResearch();
     }
 

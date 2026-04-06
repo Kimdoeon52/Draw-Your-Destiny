@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using System.Text;
@@ -62,7 +62,7 @@
             {
                 if (effect == null) continue;
 
-                var tokens = effect.GetDescriptionTokens();
+                var tokens = effect.GetDescriptionTokens(this);
                 if (tokens == null) continue;
 
                 foreach (var pair in tokens)

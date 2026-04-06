@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NYH.CoreCardSystem;
 using UnityEngine;
 
@@ -9,14 +9,15 @@ public class ChooseOneEffect : Effect
 
     public override GameAction GetGameAction(int effectIndex = 0, Card sourceCard = null)
     {
-        return new ChooseOneGA(choseOneAmount);
+        int finalAmount = CardModifierSystem.Apply(sourceCard, choseOneAmount);
+        return new ChooseOneGA(finalAmount);
     }
 
-    public override Dictionary<string, string> GetDescriptionTokens()
+    public override Dictionary<string, string> GetDescriptionTokens(Card sourceCard)
     {
         return new Dictionary<string, string>
         {
-            { "choseOneAmount", choseOneAmount.ToString() }
+            { "choseOneAmount", CardModifierSystem.Apply(sourceCard, choseOneAmount).ToString() }
         };
     }
 }

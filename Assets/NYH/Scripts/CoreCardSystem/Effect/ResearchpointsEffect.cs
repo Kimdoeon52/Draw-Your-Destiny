@@ -1,4 +1,4 @@
-﻿using NYH.CoreCardSystem;
+using NYH.CoreCardSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,15 +9,15 @@ public class ResearchpointsEffect : Effect
 
     public override GameAction GetGameAction(int effectIndex = 0, Card sourceCard = null)
     {
-        return new ResearchpointsGA(resarchPointAmount);
+        int finalAmount = CardModifierSystem.Apply(sourceCard, resarchPointAmount);
+        return new ResearchpointsGA(finalAmount);
     }
 
-    public override Dictionary<string, string> GetDescriptionTokens()
+    public override Dictionary<string, string> GetDescriptionTokens(Card sourceCard)
     {
         return new Dictionary<string, string>
         {
-            { "resarchPointAmount", resarchPointAmount.ToString() }
+            { "resarchPointAmount", CardModifierSystem.Apply(sourceCard, resarchPointAmount).ToString() }
         };
     }
-
 }

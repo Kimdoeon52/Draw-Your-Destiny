@@ -1,4 +1,4 @@
-﻿using NYH.CoreCardSystem;
+using NYH.CoreCardSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,14 +9,15 @@ public class ContinueBehaviourEffect : Effect
 
     public override GameAction GetGameAction(int effectIndex, Card sourceCard)
     {
-        return new ContinueBehaviourGA(sourceCard, effectIndex + 1, turnAmount);
+        int finalAmount = CardModifierSystem.Apply(sourceCard, turnAmount);
+        return new ContinueBehaviourGA(sourceCard, effectIndex + 1, finalAmount);
     }
 
-    public override Dictionary<string, string> GetDescriptionTokens()
+    public override Dictionary<string, string> GetDescriptionTokens(Card sourceCard)
     {
         return new Dictionary<string, string>
         {
-            { "turnAmount", turnAmount.ToString() }
+            { "turnAmount", CardModifierSystem.Apply(sourceCard, turnAmount).ToString() }
         };
     }
 }

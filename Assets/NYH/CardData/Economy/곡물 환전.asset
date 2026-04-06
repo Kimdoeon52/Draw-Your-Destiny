@@ -29,4 +29,4 @@ MonoBehaviour:
     - rid: 5056991553752137804
       type: {class: ConvertGoldToFoodEffect, ns: , asm: Assembly-CSharp}
       data:
-        percentAmount: 0
+        percentAmount: 20

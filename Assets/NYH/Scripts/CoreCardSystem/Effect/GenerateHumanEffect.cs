@@ -1,4 +1,4 @@
-﻿using NYH.CoreCardSystem;
+using NYH.CoreCardSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,16 +11,16 @@ public class GenerateHumanEffect : Effect
 
     public override GameAction GetGameAction(int effectIndex = 0, Card sourceCard = null)
     {
-        return new GenerateHumanGA(unitInfo, unitAmount);
+        int finalAmount = CardModifierSystem.Apply(sourceCard, unitAmount);
+        return new GenerateHumanGA(unitInfo, finalAmount);
     }
 
-        public override Dictionary<string, string> GetDescriptionTokens()
+    public override Dictionary<string, string> GetDescriptionTokens(Card sourceCard)
     {
         return new Dictionary<string, string>
         {
-            { "unitAmount", unitAmount.ToString() },
-            { "unitInfo", unitInfo.ToString() }
+            { "unitAmount", CardModifierSystem.Apply(sourceCard, unitAmount).ToString() },
+            { "unitInfo", unitInfo != null ? unitInfo.job.ToString() : string.Empty }
         };
     }
-
 }

@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -53,6 +53,7 @@
             ActionSystem.AttachPerformer<IncreaseFoodGA>(action => Perform(action));              //식량 추가
             ActionSystem.AttachPerformer<ZeroCostHandGA>(action => Perform(action));              //손패 코스트 0으로 변경 액션
             ActionSystem.AttachPerformer<PlayBuildingGA>(action => Perform(action));              //건물 설치 액션
+            ActionSystem.AttachPerformer<SetCardTypeMultiplierGA>(action => Perform(action));     //카드 타입 배율 변경 액션
 
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
@@ -244,6 +245,16 @@
             else if (action is PlayBuildingGA playBuildingGA)
             {
                 yield return PlayBuildingPerformer(playBuildingGA);
+            }
+            else if (action is SetCardTypeMultiplierGA setCardTypeMultiplierGA)
+            {
+                CardModifierSystem.SetTypeMultiplier(
+                    setCardTypeMultiplierGA.TargetType,
+                    setCardTypeMultiplierGA.Multiplier,
+                    setCardTypeMultiplierGA.DurationTurns
+                );
+                RefreshVisibleCardViews();
+                yield return null;
             }
         }
 
@@ -520,6 +531,18 @@
 
         }
 
+
+        public void RefreshVisibleCardViews()
+        {
+            CardView[] allViews = Object.FindObjectsByType<CardView>(FindObjectsSortMode.None);
+            foreach (var view in allViews)
+            {
+                if (view != null && view.Card != null && !view.IsHoverPreview)
+                {
+                    view.Setup(view.Card);
+                }
+            }
+        }
         /// <summary>
         /// 덱에 있는 모든 카드를 무작위 순서로 보여줍니다 (단순 확인용).
         /// </summary>
@@ -562,3 +585,4 @@
         //}
     }
 }
+

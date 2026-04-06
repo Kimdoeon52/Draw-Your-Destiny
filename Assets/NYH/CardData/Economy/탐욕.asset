@@ -18,12 +18,25 @@ MonoBehaviour:
   <Image>k__BackingField: {fileID: 21300000, guid: e15a0aaf619d8aa429bd091186fb29a2,
     type: 3}
   <Cost>k__BackingField: 1
-  description: 
+  description: "\uCE74\uB4DC {drawAmount}\uC7A5\uC744 \uCD94\uAC00 \uB4DC\uB85C\uC6B0
+    \uD569\uB2C8\uB2E4. \uC0AC\uC6A9 \uC2DC \uCF54\uC2A4\uD2B8\uAC00 1 \uC99D\uAC00\uD55C
+    \uD6C4 \uC190\uD328\uB85C \uB2E4\uC2DC \uB3CC\uC544\uC635\uB2C8\uB2E4.(\uD134
+    \uC885\uB8CC\uC2DC \uCF54\uC2A4\uD2B8 \uC6D0\uC0C1\uBCF5\uADC0)"
   <Effects>k__BackingField:
   - rid: 5056991553752137805
+  - rid: 7216728268698026062
+  - rid: 7216728268698026063
   references:
     version: 2
     RefIds:
     - rid: 5056991553752137805
       type: {class: ReturnToHandEffect, ns: , asm: Assembly-CSharp}
       data: 
+    - rid: 7216728268698026062
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        drawAmount: 1
+    - rid: 7216728268698026063
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
