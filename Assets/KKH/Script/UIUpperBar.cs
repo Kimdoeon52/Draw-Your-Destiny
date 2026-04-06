@@ -14,6 +14,10 @@ public class UIUpperBar : MonoBehaviour
 
     [Header("시대 텍스트")]
     [SerializeField] private TextMeshProUGUI eraText; // 시대 텍스트
+    
+    [Header("시대 텍스트")]
+    [SerializeField] private TextMeshProUGUI turnText; // 턴 텍스트
+
 
     void Awake()
     {
@@ -85,6 +89,8 @@ public class UIUpperBar : MonoBehaviour
         {
             ironText.text = iron.ToString("N0"); //광석 텍스트 업데이트
         }
+        int currentTurn = GameManager.Instance != null ? GameManager.Instance.currentTurn : 0;
+        turnText.text = $"현재턴: {currentTurn}턴"; // 턴 텍스트 업데이트
     }
 
     private void UpdateEraUI(Era era)
