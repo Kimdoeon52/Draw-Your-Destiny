@@ -2,6 +2,7 @@ using NYH.CoreCardSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 연구 포인트 증가 이펙트
 public class ResearchpointsEffect : Effect
 {
     [Header("증가 시킬 연구 포인트")]

@@ -229885,6 +229885,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3748704e7c9a8044591ffdfb3030b52c, type: 2}
   - {fileID: 11400000, guid: cf65d020771504a4b888462f7e409d5d, type: 2}
   - {fileID: 11400000, guid: c56558867237eef4093033dbd179bd35, type: 2}
+  - {fileID: 11400000, guid: 3493f5fa8559b4a408bfd25caff453bc, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1319902120
 MonoBehaviour:

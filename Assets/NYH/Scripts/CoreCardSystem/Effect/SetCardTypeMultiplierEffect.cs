@@ -2,6 +2,7 @@ using NYH.CoreCardSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 특정 타입카드의 효과(숫자 만)를 n턴동안 n배 증가시키는 이펙트
 public class SetCardTypeMultiplierEffect : Effect
 {
     [Header("배율을 적용할 카드 타입")]

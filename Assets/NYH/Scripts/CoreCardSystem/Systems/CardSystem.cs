@@ -1,4 +1,4 @@
-﻿// namespace NYH.CoreCardSystem
+﻿//namespace NYH.CoreCardSystem
 //{
 //    using System.Collections.Generic;
 //    using UnityEngine;
@@ -217,15 +217,15 @@
 //                GameManager.Instance.AddFood(increaseFoodGA.Amount);
 //                yield return null;
 //            }
-//            else if(action is ConvertGoldToFoodGA convertGoldToFoodGA)
+//            else if (action is ConvertGoldToFoodGA convertGoldToFoodGA)
 //            {
 //                GameManager.Instance.ConvertGoldToFood(convertGoldToFoodGA.Percent);
 //                yield return null;
 //            }
-//            else if(action is ReturnToHandGA returnToHandGA)
+//            else if (action is ReturnToHandGA returnToHandGA)
 //            {
 //                yield return ReturnCardFromDiscardToHand(returnToHandGA.TargetCard);
-//			}
+//            }
 //        }
 
 //        /// <summary>
@@ -276,64 +276,64 @@
 //            if (cardView != null) yield return handView.AddCard(cardView);
 //        }
 
-//		private IEnumerator PlayCardPerformer(PlayCardGA playCardGA)
-//		{
-//			hand.Remove(playCardGA.Card);
-//			CardView cardView = handView.RemoveCard(playCardGA.Card);
+//        private IEnumerator PlayCardPerformer(PlayCardGA playCardGA)
+//        {
+//            hand.Remove(playCardGA.Card);
+//            CardView cardView = handView.RemoveCard(playCardGA.Card);
 
-//			if (cardView == null)
-//			{
-//				CardView[] allViews = FindObjectsByType<CardView>(FindObjectsSortMode.None);
-//				foreach (var cv in allViews)
-//				{
-//					if (cv.Card == playCardGA.Card && !cv.IsHoverPreview)
-//					{
-//						cardView = cv;
-//						break;
-//					}
-//				}
-//			}
+//            if (cardView == null)
+//            {
+//                CardView[] allViews = FindObjectsByType<CardView>(FindObjectsSortMode.None);
+//                foreach (var cv in allViews)
+//                {
+//                    if (cv.Card == playCardGA.Card && !cv.IsHoverPreview)
+//                    {
+//                        cardView = cv;
+//                        break;
+//                    }
+//                }
+//            }
 
-//			bool isExtinction = false;
-//			bool isReturnToHand = false;
+//            bool isExtinction = false;
+//            bool isReturnToHand = false;
 
-//			if (playCardGA.Card?.Effects != null)
-//			{
-//				foreach (var effect in playCardGA.Card.Effects)
-//				{
-//					if (effect is ExtinctionCardEffect)
-//						isExtinction = true;
+//            if (playCardGA.Card?.Effects != null)
+//            {
+//                foreach (var effect in playCardGA.Card.Effects)
+//                {
+//                    if (effect is ExtinctionCardEffect)
+//                        isExtinction = true;
 
-//					if (effect is ReturnToHandEffect)
-//						isReturnToHand = true;
-//				}
-//			}
+//                    if (effect is ReturnToHandEffect)
+//                        isReturnToHand = true;
+//                }
+//            }
 
-//			if (isExtinction)
-//			{
-//				yield return ExtinctionCardAnimation(cardView);
-//			}
-//			else if (isReturnToHand)
-//			{
-//				hand.Add(playCardGA.Card);
-//				yield return handView.AddCard(cardView);
-//			}
-//			else
-//			{
-//				yield return DiscardCardAnimation(cardView);
-//			}
+//            if (isExtinction)
+//            {
+//                yield return ExtinctionCardAnimation(cardView);
+//            }
+//            else if (isReturnToHand)
+//            {
+//                hand.Add(playCardGA.Card);
+//                yield return handView.AddCard(cardView);
+//            }
+//            else
+//            {
+//                yield return DiscardCardAnimation(cardView);
+//            }
 
-//			if (playCardGA.Card?.Effects != null)
-//			{
-//				for (int i = 0; i < playCardGA.Card.Effects.Count; i++)
-//				{
-//					var effect = playCardGA.Card.Effects[i];
-//					ActionSystem.Instance.AddReaction(new PerformEffectGA(playCardGA.Card, effect, i));
-//				}
-//			}
-//		}
+//            if (playCardGA.Card?.Effects != null)
+//            {
+//                for (int i = 0; i < playCardGA.Card.Effects.Count; i++)
+//                {
+//                    var effect = playCardGA.Card.Effects[i];
+//                    ActionSystem.Instance.AddReaction(new PerformEffectGA(playCardGA.Card, effect, i));
+//                }
+//            }
+//        }
 
-//		private void RefillDeck()
+//        private void RefillDeck()
 //        {
 //            if (discardPile.Count > 0)
 //            {
@@ -501,9 +501,9 @@
 //        private int CountCardByType(CardType type)
 //        {
 //            int count = 0;
-//            for(int i = 0; i < hand.Count; i++)
+//            for (int i = 0; i < hand.Count; i++)
 //            {
-//                if(hand[i]._CardType == type)
+//                if (hand[i]._CardType == type)
 //                {
 //                    count++;
 //                }
@@ -512,26 +512,26 @@
 //        }
 
 //        // 무덤에서 다시 덱으로 되돌아오는 함수
-//		private IEnumerator ReturnCardFromDiscardToHand(Card targetCard)
-//		{
-//			if (targetCard == null) yield break;
+//        private IEnumerator ReturnCardFromDiscardToHand(Card targetCard)
+//        {
+//            if (targetCard == null) yield break;
 
-//			if (!discardPile.Contains(targetCard))
-//				yield break;
+//            if (!discardPile.Contains(targetCard))
+//                yield break;
 
-//			discardPile.Remove(targetCard);
-//			discardCount.text = $"{discardPile.Count}장";
+//            discardPile.Remove(targetCard);
+//            discardCount.text = $"{discardPile.Count}장";
 
-//			hand.Add(targetCard);
+//            hand.Add(targetCard);
 
-//			CardView cardView = CardViewCreator.Instance.CreateCardView(
-//				targetCard,
-//				discardPilePoint.position,
-//				discardPilePoint.rotation
-//			);
+//            CardView cardView = CardViewCreator.Instance.CreateCardView(
+//                targetCard,
+//                discardPilePoint.position,
+//                discardPilePoint.rotation
+//            );
 
-//			if (cardView != null)
-//				yield return handView.AddCard(cardView);
-//		}
-//	}
+//            if (cardView != null)
+//                yield return handView.AddCard(cardView);
+//        }
+//    }
 //}

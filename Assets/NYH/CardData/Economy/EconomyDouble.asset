@@ -19,9 +19,14 @@ MonoBehaviour:
     type: 3}
   <Cost>k__BackingField: 2
   description: "<color=yellow>\uACBD\uC81C</color> \uD0C0\uC785 \uCE74\uB4DC \uD6A8\uACFC\uB97C
-    {multiplier}\uBC30\uB85C \uB9CC\uB4ED\uB2C8\uB2E4."
+    {multiplier}\uBC30\uB85C \uB9CC\uB4ED\uB2C8\uB2E4.\n\uB300\uC2E0 {durationTurns}\uD134\uAC04
+    <color=red>\uC804\uD22C</color> \uBC0F <color=blue>\uACFC\uD559</color> \uCE74\uB4DC\uB97C
+    \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC74C"
   <Effects>k__BackingField:
   - rid: 7216728268698026061
+  - rid: 7216728268698026064
+  - rid: 7216728268698026065
+  - rid: 7216728268698026066
   references:
     version: 2
     RefIds:
@@ -31,3 +36,17 @@ MonoBehaviour:
         targetType: 2
         multiplier: 2
         durationTurns: 1
+    - rid: 7216728268698026064
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
+    - rid: 7216728268698026065
+      type: {class: DisableCardTypeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 3
+        durationTurns: 2
+    - rid: 7216728268698026066
+      type: {class: DisableCardTypeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        targetType: 1
+        durationTurns: 2

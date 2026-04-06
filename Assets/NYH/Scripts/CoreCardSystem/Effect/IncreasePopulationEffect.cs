@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class IncreasePopulationffect : Effect
 {
-    [Header("利앷? ?쒗궗 ?멸뎄 ?쒕룄")]
+    [Header("증가 시킬 인구 한도")]
     [SerializeField] private int increasePopulationAmount;
 
     public override GameAction GetGameAction(int effectIndex = 0, Card sourceCard = null)
