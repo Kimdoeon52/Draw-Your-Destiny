@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
-  m_Name: House
+  m_Name: House_Bronze
   m_EditorClassIdentifier: 
   buildingName: "\uBBFC\uAC00"
   buildingType: 1
   sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
-  requiredEra: 0
-  isAutoUpgrade: 0
-  upgradesTo: {fileID: 0}
+  requiredEra: 1
+  isAutoUpgrade: 1
+  upgradesTo: {fileID: 11400000, guid: 5ee06868e805d664bac8186316451380, type: 2}
   goldCost: 100
   width: 1
   height: 1
   allowedTiles: 0400000000000000
   goldPerTurn: 0
-  populationCapBonus: 5
+  populationCapBonus: 10
   soldierCapacity: 0

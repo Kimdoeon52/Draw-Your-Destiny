@@ -47,6 +47,23 @@ public class TileMapManager : Singleton<TileMapManager>
     public Sprite[] outpostManorSprites = new Sprite[4]; // civID별 스프라이트
     public int outpostManorHP = 50;       // 영주성 초기 체력
 
+    [Header("농장 인접 스프라이트 (18종)")]
+    [Tooltip(
+        "가로 줄 계열 (N·S 없음):\n" +
+        "  0: 왼쪽 끝   (E만 연결, 풀이 왼쪽)\n" +
+        "  1: 오른쪽 끝  (W만 연결, 풀이 오른쪽)\n" +
+        "  2: 가운데    (E+W 연결, 세로 줄)\n" +
+        "세로 줄 계열 (E·W 없음):\n" +
+        "  3: 위쪽 끝   (S만 연결, 풀이 위)\n" +
+        "  4: 아래쪽 끝  (N만 연결, 풀이 아래)\n" +
+        "  5: 가운데    (N+S 연결, 가로 줄)\n" +
+        "NE 구석: 6=바깥(대각없음) / 7=바깥(대각있음) / 8=안쪽꺾임\n" +
+        "NW 구석: 9=바깥(대각없음) / 10=바깥(대각있음) / 11=안쪽꺾임\n" +
+        "SE 구석: 12=바깥(대각없음) / 13=바깥(대각있음) / 14=안쪽꺾임\n" +
+        "SW 구석: 15=바깥(대각없음) / 16=바깥(대각있음) / 17=안쪽꺾임\n" +
+        "해당 없음(단독·복잡) → BuildingData.sprite 사용")]
+    public Sprite[] farmSprites = new Sprite[18];
+
     // ── 건물 관련 컬렉션 ──────────────────────────────────────
     // buildingMap: footprint의 모든 타일 좌표를 키로 BuildingData를 저장
     //              CanPlace에서 충돌 검사 시 사용
@@ -358,26 +375,26 @@ public class TileMapManager : Singleton<TileMapManager>
         }
 
         // [Outpost 전용 추가 검사]
-        // 소규모 영지는 설치 시 주변에 8×8 City 영역 + 2칸 Farmland 테두리가 생성되므로
+        // 소규모 영지는 설치 시 주변에 8×8 City 영역 + 3칸 Farmland 테두리가 생성되므로
         // 1×1 클릭 타일만 검사하면 부족함. 아래 범위를 추가로 검사한다.
         //
-        //   ┌──────────────────────────────┐  ← dy = +6
-        //   │  [Farmland 테두리 2칸]        │
+        //   ┌──────────────────────────────┐  ← dy = +7
+        //   │  [Farmland 테두리 3칸]        │
         //   │  ┌──────────────────────┐    │  ← dy = +4
         //   │  │   [8×8 City 영역]   │    │
         //   │  │        [X]          │    │  ← origin (클릭 지점)
         //   │  │   8×8 내부 전체     │    │
         //   │  └──────────────────────┘    │  ← dy = -3
-        //   │  [Farmland 테두리 2칸]        │
-        //   └──────────────────────────────┘  ← dy = -5
-        //   dx: -5 ~ +6  (총 12칸)
+        //   │  [Farmland 테두리 3칸]        │
+        //   └──────────────────────────────┘  ← dy = -6
+        //   dx: -6 ~ +7  (총 14칸)
         //
         // 8×8 내부(dx -3~+4, dy -3~+4): 강 또는 기존 건물 있으면 배치 불가
         // Farmland 테두리(그 외):        기존 건물 있으면 배치 불가 (다른 영지 침범 방지)
         if (building.buildingType == BuildingType.Outpost && !isRuinsPlacement)
         {
-            for (int dx = -5; dx <= 6; dx++)
-            for (int dy = -5; dy <= 6; dy++)
+            for (int dx = -6; dx <= 7; dx++)
+            for (int dy = -6; dy <= 7; dy++)
             {
                 Vector3Int checkPos = origin + new Vector3Int(dx, dy, 0);
                 bool isInCityZone = dx >= -3 && dx <= 4 && dy >= -3 && dy <= 4;
@@ -459,6 +476,10 @@ public class TileMapManager : Singleton<TileMapManager>
         FogManager.Instance?.OnBuildingPlaced(instance);
         BuildingRegistry.Instance?.Register(instance);
 
+        //// 농장이면 자신 + 인접 농장 스프라이트 갱신
+        //if (building.buildingType == BuildingType.Farm)
+        //    RefreshFarmAndNeighbors(origin);
+
         GameManager gameManager = GameManager.Instance;
         if (gameManager != null)
         {
@@ -488,6 +509,12 @@ public class TileMapManager : Singleton<TileMapManager>
     public void RemoveBuilding(Vector3Int position)
     {
         if (!buildingMap.ContainsKey(position)) return;
+
+        //// 농장이면 제거 전에 origin 기록 (제거 후 인접 농장 갱신에 사용)
+        //Vector3Int? farmOriginToRefresh = null;
+        //if (buildingInstanceMap.TryGetValue(position, out BuildingInstance checkFarm)
+        //    && checkFarm?.data?.buildingType == BuildingType.Farm)
+        //    farmOriginToRefresh = checkFarm.origin;
 
         // BuildingInstance 정리
         if (buildingInstanceMap.TryGetValue(position, out BuildingInstance instance))
@@ -522,6 +549,10 @@ public class TileMapManager : Singleton<TileMapManager>
             buildingObjects.Remove(instance.origin);
         }
         BuildingRegistry.Instance?.Remove(instance);
+
+        //// 농장 제거 후 인접 농장 스프라이트 갱신 (자신은 이미 map에서 제거됨)
+        //if (farmOriginToRefresh.HasValue)
+        //    RefreshFarmAndNeighbors(farmOriginToRefresh.Value);
     }
 
     // ── 건물 기준점 계산 (StarCraft 방식) ────────────────────────
@@ -673,7 +704,7 @@ public class TileMapManager : Singleton<TileMapManager>
     }
 
     // ── 소규모 영지 확장 ─────────────────────────────────────────
-    // origin 기준 8×8 City 타일 생성 + 2칸 Farmland 테두리 생성
+    // origin 기준 8×8 City 타일 생성 + 3칸 Farmland 테두리 생성
     private void ExpandOutpostArea(Vector3Int origin)
     {
         // 8×8 City 영역 (origin 기준 -3 ~ +4)
@@ -683,9 +714,9 @@ public class TileMapManager : Singleton<TileMapManager>
             SetCityTile(origin + new Vector3Int(dx, dy, 0));
         }
 
-        // 2칸 Farmland 테두리 (12×12 외곽 - 8×8 내부)
-        for (int dx = -5; dx <= 6; dx++)
-        for (int dy = -5; dy <= 6; dy++)
+        // 3칸 Farmland 테두리 (14×14 외곽 - 8×8 내부)
+        for (int dx = -6; dx <= 7; dx++)
+        for (int dy = -6; dy <= 7; dy++)
         {
             if (dx >= -3 && dx <= 4 && dy >= -3 && dy <= 4) continue;
             SetFarmlandTile(origin + new Vector3Int(dx, dy, 0));
@@ -855,6 +886,10 @@ public class TileMapManager : Singleton<TileMapManager>
         FogManager.Instance?.OnBuildingPlaced(instance);
         BuildingRegistry.Instance?.Register(instance);
 
+        //// 농장이면 자신 + 인접 농장 스프라이트 갱신
+        //if (building.buildingType == BuildingType.Farm)
+        //    RefreshFarmAndNeighbors(origin);
+
         // 플레이어용 GameManager 자원 처리 없음
         return true;
     }
@@ -889,6 +924,140 @@ public class TileMapManager : Singleton<TileMapManager>
             Debug.Log($"[TileMapManager] 건물 업그레이드: {instance.origin} → {next.buildingName}");
         }
     }
+
+    //// ── 농장 8방향 스프라이트 갱신 (18종) ───────────────────────────────
+    //// 연결 조건: 해당 방향 바깥에 농경지 타일 OR Farm 건물 중 하나라도 존재
+    ////
+    //// 직선 4방향: footprint 외곽 행/열 전체를 검사 (하나라도 있으면 연결)
+    //// 대각 4방향: footprint 모서리 바깥 타일 1칸만 검사
+    ////            단, 양쪽 직선방향이 모두 연결됐을 때만 유효
+
+    //// 해당 위치에 Farm 건물이 있으면 true
+    //// (농경지 타일은 Farm 아래 항상 존재하므로 제외 — 건물 기준으로만 연결 판정)
+    //private bool IsFarmOrFarmland(Vector3Int pos)
+    //{
+    //    if (buildingInstanceMap.TryGetValue(pos, out BuildingInstance inst)
+    //        && inst?.data?.buildingType == BuildingType.Farm) return true;
+    //    return false;
+    //}
+
+    //// footprint 경계 바깥 지정 방향 연결 여부
+    //// dx/dy: 직선은 (±1,0)(0,±1) / 대각은 (±1,±1)
+    //private bool IsConnectedTo(Vector3Int origin, int w, int h, int dx, int dy)
+    //{
+    //    if (dx != 0 && dy != 0) // 대각선: 모서리 타일 1칸
+    //    {
+    //        Vector3Int pos = origin + new Vector3Int(dx > 0 ? w : -1, dy > 0 ? h : -1, 0);
+    //        return IsFarmOrFarmland(pos);
+    //    }
+    //    if (dx != 0) // 좌우: 해당 열 전체
+    //    {
+    //        int x = dx > 0 ? origin.x + w : origin.x - 1;
+    //        for (int j = 0; j < h; j++)
+    //            if (IsFarmOrFarmland(new Vector3Int(x, origin.y + j, 0))) return true;
+    //    }
+    //    else // 상하: 해당 행 전체
+    //    {
+    //        int y = dy > 0 ? origin.y + h : origin.y - 1;
+    //        for (int i = 0; i < w; i++)
+    //            if (IsFarmOrFarmland(new Vector3Int(origin.x + i, y, 0))) return true;
+    //    }
+    //    return false;
+    //}
+
+    //// 18종 스프라이트 인덱스 분류
+    //// 반환 -1 → BuildingData 기본 스프라이트 (단독·해당 없음)
+    ////
+    ////  가로 줄 계열 (N·S 없음):
+    ////   0=왼쪽끝(E만)  1=오른쪽끝(W만)  2=가운데(E+W, 세로줄)
+    ////  세로 줄 계열 (E·W 없음):
+    ////   3=위쪽끝(S만)  4=아래쪽끝(N만)  5=가운데(N+S, 가로줄)
+    ////  구석 계열 (+0=바깥대각없음 / +1=바깥대각있음 / +2=안쪽꺾임):
+    ////   NE: 6~8   NW: 9~11   SE: 12~14   SW: 15~17
+    //private int GetFarmSpriteIndex(bool N, bool NE, bool E, bool SE, bool S, bool SW, bool W, bool NW)
+    //{
+    //    bool anyNS = N || S;
+    //    bool anyEW = E || W;
+
+    //    // 가로 줄 계열 (N도 S도 없음)
+    //    if (!anyNS && anyEW)
+    //    {
+    //        if ( E && !W) return 0;
+    //        if (!E &&  W) return 1;
+    //        if ( E &&  W) return 2;
+    //    }
+
+    //    // 세로 줄 계열 (E도 W도 없음)
+    //    if (!anyEW && anyNS)
+    //    {
+    //        if ( S && !N) return 3;
+    //        if (!S &&  N) return 4;
+    //        if ( N &&  S) return 5;
+    //    }
+
+    //    // 구석 계열 — 인접 두 직선방향이 모두 연결된 경우
+    //    // S 또는 W도 연결됐으면 안쪽 꺾임, 아니면 대각선 유무로 바깥 구석 구분
+    //    if (N && E) { if (S || W) return 8;  return NE ? 7 : 6;  }
+    //    if (N && W) { if (S || E) return 11; return NW ? 10 : 9; }
+    //    if (S && E) { if (N || W) return 14; return SE ? 13 : 12; }
+    //    if (S && W) { if (N || E) return 17; return SW ? 16 : 15; }
+
+    //    return -1; // 단독 또는 해당 없음 → 기본 스프라이트
+    //}
+
+    //// 특정 농장 인스턴스의 8방향을 검사해 스프라이트 교체
+    //private void RefreshFarmSprite(BuildingInstance farm)
+    //{
+    //    if (farm == null || farm.data?.buildingType != BuildingType.Farm) return;
+    //    if (farm.visual == null) return;
+
+    //    Vector3Int o = farm.origin;
+    //    int w = farm.data.width;
+    //    int h = farm.data.height;
+
+    //    bool N = IsConnectedTo(o, w, h,  0,  1);
+    //    bool S = IsConnectedTo(o, w, h,  0, -1);
+    //    bool E = IsConnectedTo(o, w, h,  1,  0);
+    //    bool W = IsConnectedTo(o, w, h, -1,  0);
+    //    // 대각선은 양쪽 직선방향 둘 다 연결됐을 때만 확인
+    //    bool NE = N && E && IsConnectedTo(o, w, h,  1,  1);
+    //    bool NW = N && W && IsConnectedTo(o, w, h, -1,  1);
+    //    bool SE = S && E && IsConnectedTo(o, w, h,  1, -1);
+    //    bool SW = S && W && IsConnectedTo(o, w, h, -1, -1);
+
+    //    int idx = GetFarmSpriteIndex(N, NE, E, SE, S, SW, W, NW);
+
+    //    Sprite newSprite = (idx < 0 || farmSprites == null || idx >= farmSprites.Length)
+    //        ? farm.data.sprite
+    //        : farmSprites[idx] ?? farm.data.sprite;
+
+    //    SpriteRenderer sr = farm.visual.GetComponent<SpriteRenderer>();
+    //    if (sr != null) sr.sprite = newSprite;
+    //}
+
+    //// 배치/제거된 농장의 자신 + 8방향 인접 농장 모두 갱신
+    //// (대각선 연결 여부도 스프라이트에 영향을 주므로 대각 4방향 포함)
+    //private void RefreshFarmAndNeighbors(Vector3Int farmOrigin)
+    //{
+    //    // 자신 갱신 (제거 직후 호출 시에는 map에서 이미 없으므로 무시됨)
+    //    if (buildingInstanceMap.TryGetValue(farmOrigin, out BuildingInstance self))
+    //        RefreshFarmSprite(self);
+
+    //    // 8방향 인접 Farm 갱신 (직선 4 + 대각 4, 농장 크기 3칸 간격)
+    //    Vector3Int[] dirs =
+    //    {
+    //        new Vector3Int( 3,  0, 0), new Vector3Int(-3,  0, 0),
+    //        new Vector3Int( 0,  3, 0), new Vector3Int( 0, -3, 0),
+    //        new Vector3Int( 3,  3, 0), new Vector3Int(-3,  3, 0),
+    //        new Vector3Int( 3, -3, 0), new Vector3Int(-3, -3, 0),
+    //    };
+    //    foreach (Vector3Int dir in dirs)
+    //    {
+    //        if (buildingInstanceMap.TryGetValue(farmOrigin + dir, out BuildingInstance neighbor)
+    //            && neighbor?.data?.buildingType == BuildingType.Farm)
+    //            RefreshFarmSprite(neighbor);
+    //    }
+    //}
 
     //---------------------------금광타일 찾는거임 건들 ㄴㄴㄴㄴㄴㄴ-----------------------
     public List<Vector3Int> GetAllGoldMineCells()

@@ -19,8 +19,8 @@ MonoBehaviour:
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
   goldCost: 1
-  width: 2
-  height: 2
+  width: 3
+  height: 3
   allowedTiles: 02000000
   goldPerTurn: 1
   populationCapBonus: 0

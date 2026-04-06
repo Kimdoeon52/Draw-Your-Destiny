@@ -138,19 +138,19 @@ public class CitySpawnManager : MonoBehaviour
         return regions;
     }
 
-    // 미사용 도시: city 타일 전체 제거 + 주변 2칸 farmland 제거
+    // 미사용 도시: city 타일 전체 제거 + 주변 3칸 farmland 제거
     private void RemoveCityRegion(List<Vector3Int> region)
     {
         // city 타일 전체 제거
         foreach (Vector3Int pos in region)
             tileMapManager.EraseTile(tileMapManager.cityTilemap, pos);
 
-        // 도시 영역의 각 타일 기준 2칸 안의 farmland 제거
+        // 도시 영역의 각 타일 기준 3칸 안의 farmland 제거
         HashSet<Vector3Int> toRemove = new HashSet<Vector3Int>();
         foreach (Vector3Int cityPos in region)
         {
-            for (int dx = -2; dx <= 2; dx++)
-            for (int dy = -2; dy <= 2; dy++)
+            for (int dx = -3; dx <= 3; dx++)
+            for (int dy = -3; dy <= 3; dy++)
             {
                 Vector3Int pos = cityPos + new Vector3Int(dx, dy, 0);
                 if (tileMapManager.farmlandTilemap != null && tileMapManager.farmlandTilemap.HasTile(pos))

@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
-  m_Name: Barracks
+  m_Name: Wall_Bronze
   m_EditorClassIdentifier: 
-  buildingName: "\uBCD1\uC601 \uAC74\uBB3C"
-  buildingType: 7
+  buildingName: "\uC131\uBCBD(\uCCAD\uB3D9\uAE30)"
+  buildingType: 9
   sprite: {fileID: 8284690431070618562, guid: 20d6cce5c7ac33b4e97f0f98a09aa347, type: 3}
-  requiredEra: 2
-  isAutoUpgrade: 0
-  upgradesTo: {fileID: 0}
+  requiredEra: 1
+  isAutoUpgrade: 1
+  upgradesTo: {fileID: 11400000, guid: 2cbe78378c9ba8142beaac42edfc3741, type: 2}
   goldCost: 0
   width: 1
   height: 1
   allowedTiles: 04000000
   goldPerTurn: 0
   populationCapBonus: 0
-  soldierCapacity: 15
+  soldierCapacity: 0
