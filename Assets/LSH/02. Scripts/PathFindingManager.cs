@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PathFindingManager : MonoBehaviour
@@ -11,13 +12,14 @@ public class PathFindingManager : MonoBehaviour
 
     // start → goal 까지 갈 수 있는 경로를 찾는 함수
     // BFS (너비 우선 탐색) 방식
-    public List<Vector3Int> FindPath(Vector3Int start, Vector3Int goal)
+    public List<Vector3Int> FindPath(Vector3Int start, Vector3Int goal) //정수 좌표를 쓰기위해 Vector3Int로 했음. 일반 Vector는 Float임 오차 생길 수도?
     {
         // 다음에 탐색할 타일을 저장하는 큐
         Queue<Vector3Int> queue = new Queue<Vector3Int>();
         // "어떤 타일이 어디에서 왔는지" 기록
         // 나중에 경로를 역추적할 때 사용
         Dictionary<Vector3Int, Vector3Int> cameFrom = new Dictionary<Vector3Int, Vector3Int>();
+        //Dictrionary로 5,4에 3,4가 들어있다. 이런식으로 이전 좌표를 기록하기 위해 사용한거임
         // 이미 방문한 타일 기록
         // 같은 타일을 여러 번 탐색하지 않기 위해 사용
         HashSet<Vector3Int> visited = new HashSet<Vector3Int>();

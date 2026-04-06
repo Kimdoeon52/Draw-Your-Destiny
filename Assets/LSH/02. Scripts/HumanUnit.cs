@@ -63,24 +63,26 @@ public class HumanUnit : MonoBehaviour
         HandleClickMove();
         MoveAlongPath();
     }
-    public void UnitAppear() //유닛이 나올 때 초기화하는거
+    public void UnitAppear()
     {
         humanPool = FindAnyObjectByType<HumanPool>();
         naturalDeathChance = unitInfo.startNaturalDeathChance;
         gender = Random.value < 0.5f ? Gender.Male : Gender.Female;
-        ageGroup = AgeGroup.Baby; //처음 나올 때는 응애
+        ageGroup = AgeGroup.Baby;
         age = unitInfo.babyStartAge;
         anime = GetComponent<Animator>();
 
-        switch (job) //직업에 따른 초기화를 여기서 하도록
+        switch (job)
         {
             case Job.Farmer:
                 koreanArmy = false;
                 break;
+
             case Job.Soldier:
                 koreanArmy = true;
-                gender = Gender.Male; //군인은 남자만 나옴
+                gender = Gender.Male;
                 break;
+
             case Job.Miner:
                 koreanArmy = false;
                 break;
@@ -89,7 +91,18 @@ public class HumanUnit : MonoBehaviour
                 Debug.LogError("뭔 직업이냐 이건.");
                 break;
         }
-        StartMoveLoop(); //유닛이 나올 때 움직이는거 시작
+
+        if (job == Job.Farmer)
+        {
+            StartFarming();
+
+            if (!isAssignedToFarm)
+                StartMoveLoop();
+        }
+        else
+        {
+            StartMoveLoop();
+        }
     }
     public void UnitNextTurn() //턴이 지날때마다 나오는거니까 여따가 다 때려박을까
     {
@@ -200,26 +213,27 @@ public class HumanUnit : MonoBehaviour
 
     public bool MoveToBuilding(BuildingInstance building)
     {
-        if (building == null || building.data == null)
+        if (building == null || building.data == null) //건물이 없거나 건물 데이터가 없으면
             return false;
 
-        if (!TryFindReachableCellNearBuilding(building, out Vector3Int targetCell))
+        if (!TryFindReachableCellNearBuilding(building, out Vector3Int targetCell)) 
+            //현재 유닛의 위치에서 부터 건물 주변에서 가장 가까운 거리의 타일을 찾는 targetCell
             return false;
 
-        Vector3Int startCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
-        List<Vector3Int> path = PathFindingManager.Instance.FindPath(startCell, targetCell);
+        Vector3Int startCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치
+        List<Vector3Int> path = PathFindingManager.Instance.FindPath(startCell, targetCell); //현재 위치와 건물 주변중 가장 가까운 경로
 
-        if (path == null || path.Count == 0)
+        if (path == null || path.Count == 0) //경로가 없으면 이동 실패
             return false;
 
         StopMoveLoop(); // 랜덤 이동 정지
-        assignedFarm = building;
-        isAssignedToFarm = true;
-        farmingTargetCell = targetCell;
+        assignedFarm = building; //배정된 농장 설정
+        isAssignedToFarm = true; //농장 배정 상태 설정
+        farmingTargetCell = targetCell; //농사 타일 설정 (건물 주변에서 가장 가까운 타일)
 
-        currentPath = path;
-        pathIndex = 0;
-        isMoving = true;
+        currentPath = path; //이동할 경로 설정
+        pathIndex = 0; //경로 인덱스 초기화
+        isMoving = true; //이동 시작
 
         return true;
     }
@@ -246,6 +260,7 @@ public class HumanUnit : MonoBehaviour
 
         if (BuildingRegistry.Instance != null && oldFarm != null)
             BuildingRegistry.Instance.NotifyFarmVacancy(oldFarm);//농장 빈자리 알림
+        Debug.LogError("빈자리 생김김김김김!");
     }
     public void ChangeAgeGroup()//나이 그룹 바뀌는거는 이거
     {
@@ -286,18 +301,20 @@ public class HumanUnit : MonoBehaviour
         Debug.Log("어른 소환 카드 사용!");
     }
 
+    //일단 마우스 위치까지 최소 거리 구하는 함수임
     void HandleClickMove()
     {
         if (!Input.GetMouseButtonDown(1))
             return;
-
-        // 마우스 위치를 월드 좌표로 변환
-        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        isAssignedToFarm = false;   //임시 버그 픽스1
+        isProcessingFarmAssignment = false; //임시 버그 픽스2
+                                                     // 마우스 위치를 월드 좌표로 변환
+    Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         // 2D 게임에서는 z값을 0으로 맞춰준다
         mouseWorld.z = 0f;
 
         // 클릭한 위치가 어떤 타일인지 계산
-        Vector3Int targetCell = TileMapManager.Instance.groundTilemap.WorldToCell(mouseWorld);
+        Vector3Int targetCell = TileMapManager.Instance.groundTilemap.WorldToCell(mouseWorld);//WorldToCell은 월드 좌표를 타일 좌표로 변환하는 함수
         // 현재 유닛이 있는 타일 좌표 계산
         Vector3Int startCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
 
@@ -307,7 +324,7 @@ public class HumanUnit : MonoBehaviour
 
         // 시작 타일 → 목표 타일까지
         // 이동 가능한 경로를 계산
-        List<Vector3Int> newPath = PathFindingManager.Instance.FindPath(startCell, targetCell);
+        List<Vector3Int> newPath = PathFindingManager.Instance.FindPath(startCell, targetCell); //현재 위치와 클릭한 좌표타일을 가져감
         //경로가 존재하면 이동 시작
         if (newPath != null && newPath.Count > 0)
         {
@@ -321,104 +338,104 @@ public class HumanUnit : MonoBehaviour
     }
     void StartFarming()
     {
-        if (job != Job.Farmer)
+        if (job != Job.Farmer) //농부가 아니라면 바로 리턴
         {
             Debug.Log($"{name} 은 농부가 아님");
             return;
         }
 
-        if (isAssignedToFarm || isProcessingFarmAssignment)
+        if (isAssignedToFarm || isProcessingFarmAssignment) //이미 농장에 배정되어 있거나, 배정 처리 중이라면
             return;
 
-        if (BuildingRegistry.Instance == null)
+        if (BuildingRegistry.Instance == null) //빌딩 레지스트리가 없으면
             return;
 
-        isProcessingFarmAssignment = true;
+        isProcessingFarmAssignment = true; //농장 배정 처리 시작
 
-        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
-        BuildingInstance farm = BuildingRegistry.Instance.FindNearestAvailableFarm(currentCell, ownerCivID);
-
+        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치
+        BuildingInstance farm = BuildingRegistry.Instance.FindNearestAvailableFarm(currentCell, ownerCivID); //현재 위치에서 가장 가까운 빈 농장 찾기
+        //farm에는 가장 가까운 빈 농장이 할당됨. 만약 배정 가능한 농장이 없다면 null이 할당됨
         if (farm == null)
         {
-            isProcessingFarmAssignment = false;
+            isProcessingFarmAssignment = false; //없으면 배치 x
             Debug.Log("배정 가능한 Farm이 없음");
             return;
         }
 
-        bool assigned = BuildingRegistry.Instance.TryAssignFarmer(farm, this);
-        if (!assigned)
+        bool assigned = BuildingRegistry.Instance.TryAssignFarmer(farm, this); //해당 농장에 이 유닛을 배정 시도. 성공하면 true, 실패하면 false 반환
+        if (!assigned)//배정 실패
         {
             isProcessingFarmAssignment = false;
             Debug.Log("Farm 배정 실패");
             return;
         }
 
-        bool moved = MoveToBuilding(farm);
+        bool moved = MoveToBuilding(farm); //배정된 농장으로 이동 시도. 성공하면 true, 실패하면 false 반환
         if (!moved)
         {
-            BuildingRegistry.Instance.UnassignFarmer(this);
-            assignedFarm = null;
-            isAssignedToFarm = false;
-            isProcessingFarmAssignment = false;
+            BuildingRegistry.Instance.UnassignFarmer(this); //이 유닛을 농장에 배정 해제. 배정은 했지만 이동 실패했으니까 다시 배정 해제해서 다른 유닛이 그 농장에 배정될 수 있게 함
+            assignedFarm = null; //배정된 농장 초기화
+            isAssignedToFarm = false; //농장 배정 상태 초기화
+            isProcessingFarmAssignment = false; //농장 배정 처리 초기화
             Debug.Log("Farm으로 이동 실패");
             return;
         }
 
-        assignedFarm = farm;
-        isAssignedToFarm = true;
-        isProcessingFarmAssignment = false;
-
+        assignedFarm = farm; //배정된 농장 설정
+        isAssignedToFarm = true; //농장 배정 상태 설정
+        isProcessingFarmAssignment = false; //농장 배정 처리 완료
+        StopMoveLoop(); //랜덤 이동 정지
         Debug.Log($"{name} 이 Farm으로 배정되어 이동 시작");
     }
 
-    private bool TryFindNearestFarmBuilding(out BuildingInstance nearestFarm)
-    {
-        nearestFarm = null;
+    //private bool TryFindNearestFarmBuilding(out BuildingInstance nearestFarm)
+    //{
+    //    nearestFarm = null;
 
-        if (BuildingRegistry.Instance == null)
-            return false;
+    //    if (BuildingRegistry.Instance == null)
+    //        return false;
 
-        List<BuildingInstance> farmBuildings = BuildingRegistry.Instance.GetBuildings(BuildingType.Farm);
-        if (farmBuildings == null || farmBuildings.Count == 0)
-            return false;
+    //    List<BuildingInstance> farmBuildings = BuildingRegistry.Instance.GetBuildings(BuildingType.Farm);
+    //    if (farmBuildings == null || farmBuildings.Count == 0)
+    //        return false;
 
-        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+    //    Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
 
-        float minDist = float.MaxValue;
+    //    float minDist = float.MaxValue;
 
-        foreach (var building in farmBuildings)
-        {
-            if (building == null || building.data == null)
-                continue;
+    //    foreach (var building in farmBuildings)
+    //    {
+    //        if (building == null || building.data == null)
+    //            continue;
 
-            if (building.ownerCivID != ownerCivID)
-                continue;
+    //        if (building.ownerCivID != ownerCivID)
+    //            continue;
 
-            float dist = Vector3Int.Distance(currentCell, building.origin);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                nearestFarm = building;
-            }
-        }
+    //        float dist = Vector3Int.Distance(currentCell, building.origin);
+    //        if (dist < minDist)
+    //        {
+    //            minDist = dist;
+    //            nearestFarm = building;
+    //        }
+    //    }
 
-        return nearestFarm != null;
-    }
+    //    return nearestFarm != null;
+    //}
     private bool TryFindReachableCellNearBuilding(BuildingInstance building, out Vector3Int targetCell)
-    {
+    {//건물 주변의 도달 가능한 타일을 찾아서 targetCell로 반환하는 함수임
         targetCell = Vector3Int.zero;
 
-        if (building == null || building.footprint == null || building.footprint.Count == 0)
-            return false;
+        if (building == null || building.footprint == null || building.footprint.Count == 0) //footprint는 건물이 차지하는 타일의 리스트임
+            return false; //대충 건물이없으면 false를 리턴함
 
-        HashSet<Vector3Int> candidateCells = new HashSet<Vector3Int>();
+        HashSet<Vector3Int> candidateCells = new HashSet<Vector3Int>(); //순서 없고, 중복 안되는 셀 HastSet임 값으로 접근해야댐
 
-        Vector3Int[] directions =
+        Vector3Int[] directions = //그냥 팔방향임
         {
-            Vector3Int.right,
-            Vector3Int.left,
-            Vector3Int.up,
-            Vector3Int.down,
+            Vector3Int.right,//(1,0,0)
+            Vector3Int.left, //(-1,0,0)
+            Vector3Int.up, //(0,1,0)
+            Vector3Int.down,//(0,-1,0)
             new Vector3Int(1, 1, 0),
             new Vector3Int(1, -1, 0),
             new Vector3Int(-1, 1, 0),
@@ -429,34 +446,36 @@ public class HumanUnit : MonoBehaviour
         {
             foreach (var dir in directions)
             {
-                Vector3Int near = cell + dir;
+                Vector3Int near = cell + dir; //건물타일에서 팔방향으로 한칸씩 더한 타일이 near임
 
-                if (building.footprint.Contains(near))
+                if (building.footprint.Contains(near)) //건물 타일 자체는 후보에서 제외
                     continue;
 
-                candidateCells.Add(near);
+                candidateCells.Add(near);//건물 타일 주변의 타일들을 후보로 추가
             }
         }
 
-        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
-
-        float minDist = float.MaxValue;
+        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치를 타일 좌표로 바꾼다.
+        float minDist = float.MaxValue; //일단 최소 거리를 최대값으로 초기화
         bool found = false;
 
-        foreach (var cell in candidateCells)
+        foreach (var cell in candidateCells) //주변 타일들 중에서
         {
-            if (!CanMoveToCell(cell))
+            if (!CanMoveToCell(cell)) //맵 안에 있는지 내 영지인지 등등 cell검사하는거임
                 continue;
 
             List<Vector3Int> testPath = PathFindingManager.Instance.FindPath(currentCell, cell);
+            //해당 타일까지 실제로 도달 가능한지 검사하는거임. 그냥 직선거리로 가까운 타일이 아니라, 길이 뚫려있는 타일 중에서 가장 가까운 타일을 찾아야하니까
+
+            //testPath가 null이거나 경로가 없으면 그 타일은 도달 불가능하다고 간주하고 넘어감
             if (testPath == null || testPath.Count == 0)
                 continue;
 
-            float dist = Vector3Int.Distance(currentCell, cell);
-            if (dist < minDist)
+            float dist = Vector3Int.Distance(currentCell, cell); //현재 위치에서 후보 타일까지의 직선 거리를 계산
+            if (dist < minDist) //이 후보 타일이 지금까지 찾은 타일들 중에서 가장 가까우면
             {
-                minDist = dist;
-                targetCell = cell;
+                minDist = dist; //최소 거리 갱신
+                targetCell = cell; //목적지 타일 갱신
                 found = true;
             }
         }
@@ -497,7 +516,7 @@ public class HumanUnit : MonoBehaviour
             {
                 isMoving = false;
 
-                Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+                Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치를 타일 좌표로 바꾼다.
                 if (currentCell == farmingTargetCell)
                 {
                     Debug.Log($"{name} 농사 시작");
@@ -508,17 +527,14 @@ public class HumanUnit : MonoBehaviour
 
     private void OnEnable()
     {
-        SetPlayerUnitInfo();
-        UnitAppear();
-
         if (BuildingRegistry.Instance != null)
         {
             BuildingRegistry.Instance.OnBuildingRegistered += HandleBuildingRegistered;
             BuildingRegistry.Instance.OnBuildingRemoved += HandleBuildingRemoved;
             BuildingRegistry.Instance.OnFarmVacancyAvailable += HandleFarmVacancyAvailable;
         }
-
-        StartFarming();
+        //UnitAppear();
+        SetPlayerUnitInfo();
     }
     private void OnDisable()
     {
@@ -536,7 +552,7 @@ public class HumanUnit : MonoBehaviour
         isAssignedToFarm = false;
         isProcessingFarmAssignment = false;
     }
-    private void HandleBuildingRegistered(BuildingInstance building)
+    private void HandleBuildingRegistered(BuildingInstance building) //건물 지으면 실행될 이벤트
     {
         if (job != Job.Farmer)
             return;
@@ -596,30 +612,31 @@ public class HumanUnit : MonoBehaviour
         if (!BuildingRegistry.Instance.HasVacancy(farm))
             return;
 
-        isProcessingFarmAssignment = true;
+        isProcessingFarmAssignment = true; // 농장 배정 처리중
 
-        bool assigned = BuildingRegistry.Instance.TryAssignFarmer(farm, this);
+        bool assigned = BuildingRegistry.Instance.TryAssignFarmer(farm, this); //농장 배정 시도
         if (!assigned)
         {
-            isProcessingFarmAssignment = false;
+            isProcessingFarmAssignment = false; //배정 실패
             return;
         }
 
-        bool moved = MoveToBuilding(farm);
+        bool moved = MoveToBuilding(farm); //배정된 농장으로 이동 시도
         if (!moved)
         {
-            BuildingRegistry.Instance.UnassignFarmer(this);
-            assignedFarm = null;
-            isAssignedToFarm = false;
-            isProcessingFarmAssignment = false;
+            BuildingRegistry.Instance.UnassignFarmer(this); //이 유닛을 농장에 배정 해제. 배정은 했지만 이동 실패했으니까 다시 배정 해제해서 다른 유닛이 그 농장에 배정될 수 있게 함
+            assignedFarm = null; //배정된 농장 초기화
+            isAssignedToFarm = false; //농장 배정 상태 초기화
+            isProcessingFarmAssignment = false; //농장 배정 처리중 상태 초기화
             return;
         }
 
-        assignedFarm = farm;
-        isAssignedToFarm = true;
-        isProcessingFarmAssignment = false;
+        assignedFarm = farm; //배정된 농장 설정
+        isAssignedToFarm = true; //농장 배정 상태 설정
+        isProcessingFarmAssignment = false; //농장 배정 처리 완료
 
         Debug.Log($"{name} 이 기존 Farm 빈자리에 자동 투입됨");
+        Debug.LogError($"{name} 이 기존 Farm 빈자리에 자동 투입됨");
     }
     private void SetPlayerUnitInfo()
     {

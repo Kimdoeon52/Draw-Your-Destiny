@@ -32,7 +32,7 @@ public class HumanPool : Singleton<HumanPool>
         humanUnit.ownerCivID = ownerCivID;
         if (humanUnit != null)
         {
-            humanUnit.UnitAppear();
+            //humanUnit.UnitAppear();
         }
 
         return human;

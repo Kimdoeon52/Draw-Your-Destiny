@@ -190,6 +190,7 @@ public class GameManager : PersistentSingleton<GameManager>
 
             HumanUnit humanUnit = human.GetComponent<HumanUnit>();
             humanUnit.SetUnitInfo(unitInfo);
+            humanUnit.UnitAppear();
         }
     }
 
