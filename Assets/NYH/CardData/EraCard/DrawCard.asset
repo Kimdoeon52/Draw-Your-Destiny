@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
+  m_Name: DrawCard
+  m_EditorClassIdentifier: 
+  <cardID>k__BackingField: 0
+  cardName: "\uCE74\uB4DC\uBF51\uAE30"
+  <cardType>k__BackingField: 5
+  <Image>k__BackingField: {fileID: 8349983785581354816, guid: ca34055ff8b1c1442821a6ffa239c24a,
+    type: 3}
+  <Cost>k__BackingField: 15
+  description: "\uCE74\uB4DC\uB97C 2\uC7A5 \uBF51\uC2B5\uB2C8\uB2E4."
+  <Effects>k__BackingField:
+  - rid: 7216728271782674554
+  - rid: 7216728271782674556
+  references:
+    version: 2
+    RefIds:
+    - rid: 7216728271782674554
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
+    - rid: 7216728271782674556
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        drawAmount: 2

@@ -21,6 +21,7 @@ MonoBehaviour:
   description: "\uB18D\uBD80 {unitAmount}\uBA85\uC774 \uD0DC\uC5B4\uB0A9\uB2C8\uB2E4."
   <Effects>k__BackingField:
   - rid: 2172718143113527375
+  - rid: 7216728271782674553
   references:
     version: 2
     RefIds:
@@ -29,3 +30,7 @@ MonoBehaviour:
       data:
         unitInfo: {fileID: 11400000, guid: a629766ba16ceb347868691e150c9b54, type: 2}
         unitAmount: 5
+    - rid: 7216728271782674553
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
