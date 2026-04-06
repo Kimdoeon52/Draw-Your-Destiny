@@ -74,8 +74,8 @@ public class UIUpperBar : MonoBehaviour
         if (populationText)
         {
             // 인구 텍스트 업데이트 (현재 인구 / 최대 인구)
-            int maxPop = ResourceManager.Instance != null ? ResourceManager.Instance.MaxPopulation : 20;
-            populationText.text = $"{pop} / {maxPop}";
+            int maxPop = ResourceManager.Instance.MaxPopulation;
+            populationText.text = $"{pop}/{maxPop}";
         }
         if (foodText)
         {

@@ -28,16 +28,8 @@ public class GameManager : PersistentSingleton<GameManager>
     [Header("Game State")]
     public int currentTurn = 0;
 
-    // 재화
-    public int playerGold = 10;
-    public int playerResearch = 0;
-    public int Food = 0;
 
-    // 인구 — 현재 인구 수 / 최대 인구 한도
-    // 인구 한도는 민가(House) 배치 시 populationCapBonus만큼 증가
-    public int playerPopulation = 0;
-    public int playerPopulationCap = 10;
-
+ 
     // 턴 상태 플래그 (다른 시스템에서 턴 전환 시점을 감지할 때 사용)
     public bool endTurn = false;
     public bool startTurn = false;
@@ -126,7 +118,7 @@ public class GameManager : PersistentSingleton<GameManager>
     public void StartBuildingPlacement(BuildingData buildingData)
     {
         if (placementService == null) return;
-        if (playerGold < buildingData.goldCost) return;
+        if (ResourceManager.Instance.Gold < buildingData.goldCost) return;
 
         placementService.StartPlacing(buildingData);
     }
@@ -148,36 +140,30 @@ public class GameManager : PersistentSingleton<GameManager>
     }
 
     // ── 재화 관리 ─────────────────────────────────────────────
-    public void AddGold(int amount)
-    {
-        playerGold += amount;
-        Debug.Log($"골드 획득 현재 골드:{playerGold}");
-    }
+    public void AddGold(int amount) => ResourceManager.Instance.AddGold(amount);
 
     // 금 소모 — 부족하면 false 반환 (TileMapManager.PlaceBuilding에서 호출)
     public bool SpendGold(int amount)
     {
-        if (playerGold < amount)
+        if (ResourceManager.Instance.Gold < amount)
         {
             Debug.Log($"골드가 부족하여 사용할 수 없습니다.");
             return false;
         }
-        playerGold -= amount;
-        Debug.Log($"골드 사용:{amount} / 남은 골드:{playerGold}");
+        ResourceManager.Instance.AddGold(-amount);
+        Debug.Log($"골드 사용:{amount} / 남은 골드:{ResourceManager.Instance.Gold}");
         return true;
     }
 
-    public void AddResearch(int amount)
-    {
-        playerResearch += amount;
-        Debug.Log($"연구 포인트 획득:{amount} / 현재:{playerResearch}");
-    }
+    public void AddResearch(int amount) => ResourceManager.Instance.AddResearch(amount);
+    // 식량 획득 (CardSystem에서 호출)
+    public void AddFood(int amount) => ResourceManager.Instance.AddFood(amount);
 
     // 민가(House) 배치 시 TileMapManager에서 호출
     public void IncreasePopulationCap(int amount)
     {
-        playerPopulationCap += amount;
-        Debug.Log($"인구 한도 증가:{amount} / 현재 인구:{playerPopulation}");
+        ResourceManager.Instance.AddMaxPopulation(amount);
+        Debug.Log($"인구 한도 증가:{amount} / 현재 인구:{ResourceManager.Instance.Population}");
     }
 
     // 인간 생성 카드 효과 처리 후 CardSystem에서 호출
@@ -228,27 +214,22 @@ public class GameManager : PersistentSingleton<GameManager>
         return outerTiles;
     }
 
-    // 식량 획득 (CardSystem에서 호출)
-    public void AddFood(int amount)
-    {
-        Food += amount;
-        Debug.Log($"식량 획득:{amount}");
-    }
+
     private void checkResearch()
     {
-        if (playerResearch >= 100)
+        if (ResourceManager.Instance.Research >= 100)
         {
             if (playerEra == Era.Stone)
             {
                 playerEra = Era.Bronze;
-                playerResearch -= 100;
+                ResourceManager.Instance.AddResearch(-100);
                 OnEraChanged?.Invoke(playerEra); // 이벤트 호출
                 TileMapManager.Instance?.UpgradeBuildingsForEra(Era.Bronze);
             }
             else if (playerEra == Era.Bronze)
             {
                 playerEra = Era.Iron;
-                playerResearch -= 100;
+                ResourceManager.Instance.AddResearch(-100);
                 OnEraChanged?.Invoke(playerEra); // 이벤트 호출
                 TileMapManager.Instance?.UpgradeBuildingsForEra(Era.Iron);
             }
@@ -258,6 +239,7 @@ public class GameManager : PersistentSingleton<GameManager>
     // 금
     public void ConvertGoldToFood(int percent)
     {
-        Food += playerGold * percent / 100;
-	}
+        int amount = (ResourceManager.Instance.Gold * percent) / 100;
+        ResourceManager.Instance.AddFood(amount);
+    }
 }

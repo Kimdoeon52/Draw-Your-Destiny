@@ -135,7 +135,7 @@
 
         private void TryPlayCard()
         {
-            if (GameManager.Instance.playerGold < Card.Cost)
+            if (ResourceManager.Instance.Gold < Card.Cost)
             {
                 Debug.Log("골드가 부족하여 카드를 낼 수 없습니다.");
                 ReturnToHand();

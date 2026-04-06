@@ -59,6 +59,11 @@ public class ResourceManager : MonoBehaviour
         population = Mathf.Clamp(population + amount, 0, maxPopulation); //인구는 0과 최대 인구 사이로 제한
         NotifyUI(); //자원 변경 시 UI 업데이트 알림
     }
+    public void AddMaxPopulation(int amount)
+    {
+        maxPopulation += amount;
+        NotifyUI();
+    }
     public void AddFood(int amount)
     {
         food += amount;
