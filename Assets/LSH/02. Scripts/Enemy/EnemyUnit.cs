@@ -73,6 +73,9 @@ public class EnemyUnit : MonoBehaviour
             case Job.Miner:
                 break;
 
+            case Job.Merchant:
+                break;
+
             default:
                 Debug.LogError("뭔 직업이냐 이건.");
                 break;
