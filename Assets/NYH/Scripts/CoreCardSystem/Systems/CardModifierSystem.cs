@@ -1,4 +1,4 @@
-namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +13,14 @@ namespace NYH.CoreCardSystem
             public int RemainingTurns;
         }
 
+        private class TimedBlockedType
+        {
+            public CardType Type;
+            public int RemainingTurns;
+        }
+
         private static readonly List<TimedTypeMultiplier> timedMultipliers = new();
+        private static readonly List<TimedBlockedType> blockedTypes = new();
 
         public static event Action OnModifiersChanged;
 
@@ -43,15 +50,18 @@ namespace NYH.CoreCardSystem
 
         public static void ClearAll()
         {
-            if (timedMultipliers.Count == 0) return;
+            if (timedMultipliers.Count == 0 && blockedTypes.Count == 0) return;
+
             timedMultipliers.Clear();
-            Debug.Log("[CardModifierSystem] all multipliers cleared");
+            blockedTypes.Clear();
+            Debug.Log("[CardModifierSystem] all modifiers cleared");
             OnModifiersChanged?.Invoke();
         }
 
         public static void OnTurnEnd()
         {
             bool changed = false;
+
             for (int i = timedMultipliers.Count - 1; i >= 0; i--)
             {
                 if (timedMultipliers[i].RemainingTurns < 0) continue;
@@ -61,6 +71,19 @@ namespace NYH.CoreCardSystem
                 {
                     Debug.Log($"[CardModifierSystem] {timedMultipliers[i].Type} multiplier expired");
                     timedMultipliers.RemoveAt(i);
+                    changed = true;
+                }
+            }
+
+            for (int i = blockedTypes.Count - 1; i >= 0; i--)
+            {
+                if (blockedTypes[i].RemainingTurns < 0) continue;
+
+                blockedTypes[i].RemainingTurns--;
+                if (blockedTypes[i].RemainingTurns <= 0)
+                {
+                    Debug.Log($"[CardModifierSystem] {blockedTypes[i].Type} block expired");
+                    blockedTypes.RemoveAt(i);
                     changed = true;
                 }
             }
@@ -95,6 +118,31 @@ namespace NYH.CoreCardSystem
             }
 
             return multiplier;
+        }
+
+        public static void BlockType(CardType type, int durationTurns = -1)
+        {
+            blockedTypes.RemoveAll(x => x.Type == type);
+
+            blockedTypes.Add(new TimedBlockedType
+            {
+                Type = type,
+                RemainingTurns = durationTurns
+            });
+
+            Debug.Log($"[CardModifierSystem] {type} type blocked, duration={durationTurns}");
+            OnModifiersChanged?.Invoke();
+        }
+
+        public static bool IsTypeBlocked(CardType type)
+        {
+            foreach (var blocked in blockedTypes)
+            {
+                if (blocked.Type == type)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

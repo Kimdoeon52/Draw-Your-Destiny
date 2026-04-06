@@ -7,8 +7,8 @@
     using UnityEngine.EventSystems;
 
     /// <summary>
-    /// ?��면에 보이?�� 카드 UI�? ?��?��?��?��?��.
-    /// 마우?�� ?��?���?, ?���?, ?���? 미리보기, 카드 ?��?�� ?��?��?�� ?��?��?��?��?��.
+    /// 화면에 보이는 카드를 띄우는 view 스크립트.
+    /// 마우스를 올려두면 카드가 커지며 여러 기능이 있음.
     /// </summary>
     public class CardView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
@@ -40,6 +40,7 @@
         private float targetingThresholdY;
         private Vector3 targetingCenterPos;
         private bool hasLoggedTargetingPreviewUpdate = false;
+
 
         private Camera mainCamera;
         private HandView cachedHandView;
@@ -135,6 +136,12 @@
 
         private void TryPlayCard()
         {
+            if (CardModifierSystem.IsTypeBlocked(Card._CardType))
+           {
+                Debug.Log($"{Card._CardType} 타입 카드는 지금 사용할 수 없습니다.");
+                ReturnToHand();
+                return;
+            }
             if (ResourceManager.Instance.Gold < Card.Cost)
             {
                 Debug.Log("골드가 부족하여 카드를 낼 수 없습니다.");
@@ -183,7 +190,7 @@
                     }
                 }
 
-                Debug.Log("[CardView] 건물 ?��치에 ?��?��?��?�� 카드�? ?��?���? ?��?��립니?��.");
+                Debug.Log("[CardView] 건물 위치에 이미 카드가 있습니다.");
                 ReturnToHand();
                 return;
             }
@@ -256,12 +263,12 @@
             var placementService = FindFirstObjectByType<BuildingPlacementService>();
             if (placementService != null && effect is InstallBuildingEffect installEffect && installEffect.buildingData != null)
             {
-                Debug.Log($"[CardView] ???게팅 모드 진입: {Card?.Title}, 건물={installEffect.buildingData.buildingName}");
+                Debug.Log($"[CardView] 타게팅 모드 진입: {Card?.Title}, 건물={installEffect.buildingData.buildingName}");
                 placementService.StartPlacing(installEffect.buildingData);
             }
             else
             {
-                Debug.LogWarning($"[CardView] ???게팅 모드 진입 ?��?��: service={(placementService != null)}, effect={effect?.GetType().Name}");
+                Debug.LogWarning($"[CardView] 타겟팅 모드 진입: service={(placementService != null)}, effect={effect?.GetType().Name}");
             }
         }
 
@@ -310,3 +317,4 @@
         }
     }
 }
+

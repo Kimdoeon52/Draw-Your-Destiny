@@ -1,4 +1,4 @@
-namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
@@ -54,6 +54,7 @@ namespace NYH.CoreCardSystem
             ActionSystem.AttachPerformer<ZeroCostHandGA>(action => Perform(action));              //손패 코스트 0으로 변경 액션
             ActionSystem.AttachPerformer<PlayBuildingGA>(action => Perform(action));              //건물 설치 액션
             ActionSystem.AttachPerformer<SetCardTypeMultiplierGA>(action => Perform(action));     //카드 타입 배율 변경 액션
+            ActionSystem.AttachPerformer<DisableCardTypeGA>(action => Perform(action));           //카드 타입 사용 금지 액션
 
             Debug.Log("[CardSystem] 초기화 및 액션 등록 완료");
         }
@@ -256,6 +257,13 @@ namespace NYH.CoreCardSystem
                 RefreshVisibleCardViews();
                 yield return null;
             }
+            else if (action is DisableCardTypeGA disableCardTypeGA)
+            {
+                CardModifierSystem.BlockType(disableCardTypeGA.TargetType, disableCardTypeGA.DurationTurns);
+                RefreshVisibleCardViews();
+                yield return null;
+            }
+
         }
 
         /// <summary>
@@ -585,4 +593,5 @@ namespace NYH.CoreCardSystem
         //}
     }
 }
+
 
