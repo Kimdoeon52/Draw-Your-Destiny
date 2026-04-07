@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f10e149a0eaab004fa76b5ba153646be
+guid: 0fcec82c17651a8488428a5ddf9822c0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3718056767793079498
-    second: nogsa_0
+      213: -6007857137893288414
+    second: Sprite-0001_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 8
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: nogsa_0
+      name: Sprite-0001_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
-        width: 16
-        height: 16
+        y: 40
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,20 +115,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 63bd4fc911fc66cc0800000000000000
-      internalID: -3718056767793079498
+      spriteID: 226539a93cdcf9ca0800000000000000
+      internalID: -6007857137893288414
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_1
+      name: Sprite-0001_1
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 40
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9fbd40efbd92434a9a0227ae9d308a3
+      internalID: -1252407568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001_2
       rect:
         serializedVersion: 2
         x: 16
-        y: 64
-        width: 16
-        height: 16
+        y: 40
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,42 +159,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6721419812286c04d82a81eab2230bc2
-      internalID: 2037333229
+      spriteID: dad4b44488dffaf41a3dff0a1a1ccf4b
+      internalID: 1322183773
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_2
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 64
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0d372da4e7e799f448731911ebe7c08d
-      internalID: -1421918252
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_3
+      name: Sprite-0001_3
       rect:
         serializedVersion: 2
         x: 0
-        y: 48
-        width: 16
-        height: 16
+        y: 32
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -181,64 +181,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7de809ac9a6108949a7cf1d5089268fe
-      internalID: 442256855
+      spriteID: 3ade76ccb9b9c844fb7684c8d6b9eced
+      internalID: 1919086362
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_4
+      name: Sprite-0001_4
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 32
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f35dd25414e3988418ff19fbb58b877f
+      internalID: -1741091180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001_5
       rect:
         serializedVersion: 2
         x: 16
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 82bfbe584ef792345964f663cf8489c1
-      internalID: -2024954071
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_5
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 48
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1b39a7c0af3125c47bdd272c396cc72f
-      internalID: 729781615
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_6
-      rect:
-        serializedVersion: 2
-        x: 32
         y: 32
-        width: 16
-        height: 16
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -247,20 +225,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9f3a7ef017c2f2e499cd995714eefb0b
-      internalID: 771303416
+      spriteID: 8e3a6c5193a151342898482df877268d
+      internalID: -2018195908
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_7
+      name: Sprite-0001_6
       rect:
         serializedVersion: 2
-        x: 48
-        y: 32
-        width: 16
-        height: 16
+        x: 0
+        y: 24
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -269,20 +247,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 90091f1d70b49c6458b80c07e34d3aba
-      internalID: 259003197
+      spriteID: 2deed875cb6b0654f87719c688475257
+      internalID: -1834190763
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_8
+      name: Sprite-0001_7
       rect:
         serializedVersion: 2
-        x: 64
-        y: 32
-        width: 16
-        height: 16
+        x: 8
+        y: 24
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -291,20 +269,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62b8a3b91cc21734a96af1479abc40a1
-      internalID: 1234269452
+      spriteID: 3dafb9deedd9ed84e84d4d315c416b13
+      internalID: 1044544602
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_9
+      name: Sprite-0001_8
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 24
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f26994623602344bbff5559ae5c30d2
+      internalID: 514430667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001_9
       rect:
         serializedVersion: 2
         x: 0
         y: 16
-        width: 16
-        height: 16
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -313,20 +313,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8ed5ed2915a8ae942ab2d82084f1362a
-      internalID: -1963711117
+      spriteID: 82adc791c223226439bfc9c76c524680
+      internalID: -554330659
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_10
+      name: Sprite-0001_10
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 16
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f3feb095f881c446a31dede3141adb1
+      internalID: -737685083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001_11
       rect:
         serializedVersion: 2
         x: 16
         y: 16
-        width: 16
-        height: 16
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -335,64 +357,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 186cad45fd51ede41aaf9b4669b69d7b
-      internalID: -2012674919
+      spriteID: d11b936f109d92849851d53ea9d4d1d6
+      internalID: 559691463
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_11
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 16
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e12adc0334b02a74e9c019910e0b6090
-      internalID: -1208294157
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_12
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 16
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ea6defe91b376514bb1585fa36291529
-      internalID: 1037098083
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_13
+      name: Sprite-0001_12
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 16
-        height: 16
+        y: 8
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -401,20 +379,42 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b237f5fcf40d4024885d75ee832a1508
-      internalID: 279300848
+      spriteID: 6c7cf8fadf9f6f241b5c58a298ac0dc6
+      internalID: -1817303385
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nogsa_14
+      name: Sprite-0001_13
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 8
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad6ca48f03839e247946a0dfe77a3571
+      internalID: -1925133641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite-0001_14
       rect:
         serializedVersion: 2
         x: 16
-        y: 0
-        width: 16
-        height: 16
+        y: 8
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -423,74 +423,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a9c1278efe16c9e44a21a216aa6973bd
-      internalID: 1230763827
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_15
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2b2d5ede649c5264e8fa297d04cc390b
-      internalID: 646917738
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_16
-      rect:
-        serializedVersion: 2
-        x: 48
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a5017980a16411a4fbaf37c134c4c627
-      internalID: -1483092056
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: nogsa_17
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5d190bf258f7e424fb8aed0dd51d8d96
-      internalID: 645090
+      spriteID: 892506272bec8e34ba86d05f7e228c01
+      internalID: 356085618
       vertices: []
       indices: 
       edges: []
@@ -499,7 +433,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 0abec2a3c7b22144ebc0f0ed60347284
+    spriteID: 2f4eec0263acfe0408e78692f04faa29
     internalID: 0
     vertices: []
     indices: 
@@ -509,24 +443,21 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      nogsa_0: -3718056767793079498
-      nogsa_1: 2037333229
-      nogsa_10: -2012674919
-      nogsa_11: -1208294157
-      nogsa_12: 1037098083
-      nogsa_13: 279300848
-      nogsa_14: 1230763827
-      nogsa_15: 646917738
-      nogsa_16: -1483092056
-      nogsa_17: 645090
-      nogsa_2: -1421918252
-      nogsa_3: 442256855
-      nogsa_4: -2024954071
-      nogsa_5: 729781615
-      nogsa_6: 771303416
-      nogsa_7: 259003197
-      nogsa_8: 1234269452
-      nogsa_9: -1963711117
+      Sprite-0001_0: -6007857137893288414
+      Sprite-0001_1: -1252407568
+      Sprite-0001_10: -737685083
+      Sprite-0001_11: 559691463
+      Sprite-0001_12: -1817303385
+      Sprite-0001_13: -1925133641
+      Sprite-0001_14: 356085618
+      Sprite-0001_2: 1322183773
+      Sprite-0001_3: 1919086362
+      Sprite-0001_4: -1741091180
+      Sprite-0001_5: -2018195908
+      Sprite-0001_6: -1834190763
+      Sprite-0001_7: 1044544602
+      Sprite-0001_8: 514430667
+      Sprite-0001_9: -554330659
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
