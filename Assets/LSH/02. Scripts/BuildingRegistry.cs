@@ -148,7 +148,6 @@ public class BuildingRegistry : MonoBehaviour
 
         BuildingInstance nearestFarm = null; // 가장 가까운 농장 초기화
         float minDist = float.MaxValue; // 최소 거리 초기화
-
         foreach (var farm in farms) // 모든 농장 순회
         {
             if (farm == null || farm.data == null) //농장이 없으면 무시

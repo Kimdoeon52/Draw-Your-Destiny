@@ -1077,4 +1077,29 @@ public class TileMapManager : Singleton<TileMapManager>
 
         return result;
     }
+    //--------------------도라지 코드 건들지 마셈 진짜 혼난다^_^------------------
+    private Dictionary<Vector3Int, HumanUnit> occupiedCells
+    = new Dictionary<Vector3Int, HumanUnit>(); //각 셀에 유닛있는지 확인하려는 용도임
+    public bool IsCellOccupied(Vector3Int cell) //셀이 점유되어있는지 확인하는 함수
+    {
+        return occupiedCells.ContainsKey(cell); //점유된 셀이면 true, 아니면 false 반환
+    }
+
+    public bool RegisterUnitCell(Vector3Int cell, HumanUnit unit)
+    {
+        if (occupiedCells.ContainsKey(cell)) //이미 점유된 칸이면 안댐
+            return false;
+
+        occupiedCells[cell] = unit; //새로운 유닛 등록
+        return true;
+    }
+
+    public void UnregisterUnitCell(Vector3Int cell, HumanUnit unit)
+    {
+        if (occupiedCells.TryGetValue(cell, out var existing)) //점유된 칸이 맞는지 확인
+        {
+            if (existing == unit) //등록된 유닛이 맞으면 해제
+                occupiedCells.Remove(cell);//점유 해제
+        }
+    }
 }
