@@ -211,32 +211,7 @@ public class HumanUnit : MonoBehaviour
         }
     }
 
-    public bool MoveToBuilding(BuildingInstance building)
-    {
-        if (building == null || building.data == null) //건물이 없거나 건물 데이터가 없으면
-            return false;
-
-        if (!TryFindReachableCellNearBuilding(building, out Vector3Int targetCell)) 
-            //현재 유닛의 위치에서 부터 건물 주변에서 가장 가까운 거리의 타일을 찾는 targetCell
-            return false;
-
-        Vector3Int startCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치
-        List<Vector3Int> path = PathFindingManager.Instance.FindPath(startCell, targetCell); //현재 위치와 건물 주변중 가장 가까운 경로
-
-        if (path == null || path.Count == 0) //경로가 없으면 이동 실패
-            return false;
-
-        StopMoveLoop(); // 랜덤 이동 정지
-        assignedFarm = building; //배정된 농장 설정
-        isAssignedToFarm = true; //농장 배정 상태 설정
-        farmingTargetCell = targetCell; //농사 타일 설정 (건물 주변에서 가장 가까운 타일)
-
-        currentPath = path; //이동할 경로 설정
-        pathIndex = 0; //경로 인덱스 초기화
-        isMoving = true; //이동 시작
-
-        return true;
-    }
+    //-------------------유닛 움직이는거 끝-----------------------------
 
     void CheckCardUsing()//카드 사용했을때 행동들 체크.
     {
@@ -293,6 +268,8 @@ public class HumanUnit : MonoBehaviour
                 break;
         }
     }
+    //---------------------------------------------------------------------------------------
+
 
     public void UseAdultUnitCard() //만약 어른을 소환하는 카드를 사용시
     {
@@ -388,6 +365,93 @@ public class HumanUnit : MonoBehaviour
         Debug.Log($"{name} 이 Farm으로 배정되어 이동 시작");
     }
 
+    public bool MoveToBuilding(BuildingInstance building)
+    {
+        if (building == null || building.data == null) //건물이 없거나 건물 데이터가 없으면
+            return false;
+
+        if (!TryFindReachableCellInsideBuilding(building, out Vector3Int targetCell))
+            //현재 유닛의 위치에서 부터 건물 주변에서 가장 가까운 거리의 타일을 찾는 targetCell
+            return false;
+
+        Vector3Int startCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치
+        List<Vector3Int> path = PathFindingManager.Instance.FindPath(startCell, targetCell); //현재 위치와 건물 주변중 가장 가까운 경로
+
+        if (path == null || path.Count == 0) //경로가 없으면 이동 실패
+            return false;
+
+        StopMoveLoop(); // 랜덤 이동 정지
+        assignedFarm = building; //배정된 농장 설정
+        isAssignedToFarm = true; //농장 배정 상태 설정
+        farmingTargetCell = targetCell; //농사 타일 설정 (건물 주변에서 가장 가까운 타일)
+
+        currentPath = path; //이동할 경로 설정
+        pathIndex = 0; //경로 인덱스 초기화
+        isMoving = true; //이동 시작
+
+        return true;
+    }
+
+    private bool TryFindReachableCellInsideBuilding(BuildingInstance building, out Vector3Int targetCell)
+    {
+        targetCell = Vector3Int.zero;
+
+        if (building == null || building.footprint == null || building.footprint.Count == 0)
+            return false;
+
+        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+
+        float minDist = float.MaxValue;
+        bool found = false;
+
+        foreach (var cell in building.footprint)
+        {
+            // 내 영지인지
+            if (!TileMapManager.Instance.IsValidPosition(cell))
+                continue;
+
+            if (TileMapManager.Instance.GetOwner(cell) != ownerCivID)
+                continue;
+
+            // Farm 내부 타일로 들어갈 수 있는지 따로 검사
+            if (!CanMoveToFarmInnerCell(cell, building))
+                continue;
+
+            List<Vector3Int> testPath = PathFindingManager.Instance.FindPath(currentCell, cell);
+            if (testPath == null || testPath.Count == 0)
+                continue;
+
+            float dist = Vector3Int.Distance(currentCell, cell);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                targetCell = cell;
+                found = true;
+            }
+        }
+
+        return found;
+    }
+
+    private bool CanMoveToFarmInnerCell(Vector3Int cell, BuildingInstance building)
+    {
+        if (!TileMapManager.Instance.IsValidPosition(cell))
+            return false;
+
+        if (TileMapManager.Instance.GetOwner(cell) != ownerCivID)
+            return false;
+
+        // 해당 셀이 정말 이 건물의 footprint 안인지
+        if (building == null || building.footprint == null || !building.footprint.Contains(cell))
+            return false;
+
+        // 필요하면 점유 검사 추가
+        // 다른 유닛이 서있으면 막고 싶다면 여기서 검사
+        // if (UnitManager.Instance.IsOccupied(cell)) return false;
+
+        return true;
+    }
+
     //private bool TryFindNearestFarmBuilding(out BuildingInstance nearestFarm)
     //{
     //    nearestFarm = null;
@@ -421,67 +485,67 @@ public class HumanUnit : MonoBehaviour
 
     //    return nearestFarm != null;
     //}
-    private bool TryFindReachableCellNearBuilding(BuildingInstance building, out Vector3Int targetCell)
-    {//건물 주변의 도달 가능한 타일을 찾아서 targetCell로 반환하는 함수임
-        targetCell = Vector3Int.zero;
+    //private bool TryFindReachableCellNearBuilding(BuildingInstance building, out Vector3Int targetCell)
+    //{//건물 주변의 도달 가능한 타일을 찾아서 targetCell로 반환하는 함수임
+    //    targetCell = Vector3Int.zero;
 
-        if (building == null || building.footprint == null || building.footprint.Count == 0) //footprint는 건물이 차지하는 타일의 리스트임
-            return false; //대충 건물이없으면 false를 리턴함
+    //    if (building == null || building.footprint == null || building.footprint.Count == 0) //footprint는 건물이 차지하는 타일의 리스트임
+    //        return false; //대충 건물이없으면 false를 리턴함
 
-        HashSet<Vector3Int> candidateCells = new HashSet<Vector3Int>(); //순서 없고, 중복 안되는 셀 HastSet임 값으로 접근해야댐
+    //    HashSet<Vector3Int> candidateCells = new HashSet<Vector3Int>(); //순서 없고, 중복 안되는 셀 HastSet임 값으로 접근해야댐
 
-        Vector3Int[] directions = //그냥 팔방향임
-        {
-            Vector3Int.right,//(1,0,0)
-            Vector3Int.left, //(-1,0,0)
-            Vector3Int.up, //(0,1,0)
-            Vector3Int.down,//(0,-1,0)
-            new Vector3Int(1, 1, 0),
-            new Vector3Int(1, -1, 0),
-            new Vector3Int(-1, 1, 0),
-            new Vector3Int(-1, -1, 0)
-        };
+    //    Vector3Int[] directions = //그냥 팔방향임
+    //    {
+    //        Vector3Int.right,//(1,0,0)
+    //        Vector3Int.left, //(-1,0,0)
+    //        Vector3Int.up, //(0,1,0)
+    //        Vector3Int.down,//(0,-1,0)
+    //        new Vector3Int(1, 1, 0),
+    //        new Vector3Int(1, -1, 0),
+    //        new Vector3Int(-1, 1, 0),
+    //        new Vector3Int(-1, -1, 0)
+    //    };
 
-        foreach (var cell in building.footprint)
-        {
-            foreach (var dir in directions)
-            {
-                Vector3Int near = cell + dir; //건물타일에서 팔방향으로 한칸씩 더한 타일이 near임
+    //    foreach (var cell in building.footprint)
+    //    {
+    //        foreach (var dir in directions)
+    //        {
+    //            Vector3Int near = cell + dir; //건물타일에서 팔방향으로 한칸씩 더한 타일이 near임
 
-                if (building.footprint.Contains(near)) //건물 타일 자체는 후보에서 제외
-                    continue;
+    //            if (building.footprint.Contains(near)) //건물 타일 자체는 후보에서 제외
+    //                continue;
 
-                candidateCells.Add(near);//건물 타일 주변의 타일들을 후보로 추가
-            }
-        }
+    //            candidateCells.Add(near);//건물 타일 주변의 타일들을 후보로 추가
+    //        }
+    //    }
 
-        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치를 타일 좌표로 바꾼다.
-        float minDist = float.MaxValue; //일단 최소 거리를 최대값으로 초기화
-        bool found = false;
+    //    Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치를 타일 좌표로 바꾼다.
+    //    float minDist = float.MaxValue; //일단 최소 거리를 최대값으로 초기화
+    //    bool found = false;
 
-        foreach (var cell in candidateCells) //주변 타일들 중에서
-        {
-            if (!CanMoveToCell(cell)) //맵 안에 있는지 내 영지인지 등등 cell검사하는거임
-                continue;
+    //    foreach (var cell in candidateCells) //주변 타일들 중에서
+    //    {
+    //        if (!CanMoveToCell(cell)) //맵 안에 있는지 내 영지인지 등등 cell검사하는거임
+    //            continue;
 
-            List<Vector3Int> testPath = PathFindingManager.Instance.FindPath(currentCell, cell);
-            //해당 타일까지 실제로 도달 가능한지 검사하는거임. 그냥 직선거리로 가까운 타일이 아니라, 길이 뚫려있는 타일 중에서 가장 가까운 타일을 찾아야하니까
+    //        List<Vector3Int> testPath = PathFindingManager.Instance.FindPath(currentCell, cell);
+    //        //해당 타일까지 실제로 도달 가능한지 검사하는거임. 그냥 직선거리로 가까운 타일이 아니라, 길이 뚫려있는 타일 중에서 가장 가까운 타일을 찾아야하니까
 
-            //testPath가 null이거나 경로가 없으면 그 타일은 도달 불가능하다고 간주하고 넘어감
-            if (testPath == null || testPath.Count == 0)
-                continue;
+    //        //testPath가 null이거나 경로가 없으면 그 타일은 도달 불가능하다고 간주하고 넘어감
+    //        if (testPath == null || testPath.Count == 0)
+    //            continue;
 
-            float dist = Vector3Int.Distance(currentCell, cell); //현재 위치에서 후보 타일까지의 직선 거리를 계산
-            if (dist < minDist) //이 후보 타일이 지금까지 찾은 타일들 중에서 가장 가까우면
-            {
-                minDist = dist; //최소 거리 갱신
-                targetCell = cell; //목적지 타일 갱신
-                found = true;
-            }
-        }
+    //        float dist = Vector3Int.Distance(currentCell, cell); //현재 위치에서 후보 타일까지의 직선 거리를 계산
+    //        if (dist < minDist) //이 후보 타일이 지금까지 찾은 타일들 중에서 가장 가까우면
+    //        {
+    //            minDist = dist; //최소 거리 갱신
+    //            targetCell = cell; //목적지 타일 갱신
+    //            found = true;
+    //        }
+    //    }
 
-        return found;
-    }
+    //    return found;
+    //}
     void MoveAlongPath()
     {
         // isMoving == false → 이동 안함
