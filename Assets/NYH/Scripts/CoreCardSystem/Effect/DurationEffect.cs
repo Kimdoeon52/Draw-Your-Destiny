@@ -1,13 +1,15 @@
 /*using NYH.CoreCardSystem;
 
+
+// ìž„ì‹œ ë³´ê´€
 [System.Serializable]
 public class DurationEffect : Effect
 {
-    public int duration; // ¸î ÅÏ µ¿¾È Áö¼ÓµÉÁö ¼³Á¤ (¿¹: 3)
+    public int duration; // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: 3)
 
     public override GameAction GetGameAction()
     {
-        // Ä«µå¸¦ ³¾ ¶§ ÀÌ ¾×¼ÇÀÌ ½ÇÇàµÇ¸é CardSystemÀÌ °¨ÁöÇÕ´Ï´Ù.
+        // Ä«ï¿½å¸¦ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½×¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ CardSystemï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         return new RegisterDurationGA(duration);
     }
 }*/
