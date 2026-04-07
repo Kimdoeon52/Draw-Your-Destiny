@@ -1,5 +1,7 @@
 /*using NYH.CoreCardSystem;
 
+
+// ìž„ì‹œ ë³´ê´€
 namespace NYH
 {RegisterDurationGA
     public class RegisterDurationGA : GameAction
@@ -18,22 +20,22 @@ namespace NYH
  *  1 [System.Serializable]
     2 public class DurationEffect : Effect
     3 {
-    4     public int duration; // ¸î ÅÏ µ¿¾È Áö¼ÓµÉÁö ¼³Á¤ (¿¹: 3)
+    4     public int duration; // ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: 3)
     5
     6     public override GameAction GetGameAction()
     7     {
-    8         // Ä«µå¸¦ ³¾ ¶§ ÀÌ ¾×¼ÇÀÌ ½ÇÇàµÇ¸é CardSystemÀÌ °¨ÁöÇÕ´Ï´Ù.
+    8         // Ä«ï¿½å¸¦ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½×¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ CardSystemï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
     9         return new RegisterDurationGA(duration);
    10     }
    11 }
 
-  2. È°¼ºÈ­µÈ È¿°ú¸¦ °ü¸®ÇÏ´Â µ¥ÀÌÅÍ (ActiveDuration.cs)
-  ÇöÀç °ÔÀÓ ÇÊµå À§¿¡ ¶° ÀÖ´Â "Áö¼Ó È¿°ú" ±× ÀÚÃ¼¸¦ Á¤ÀÇÇÕ´Ï´Ù.
+  2. È°ï¿½ï¿½È­ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ActiveDuration.cs)
+  ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Êµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ "ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½" ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 
     1 public class ActiveDuration
     2 {
-    3     public Card SourceCard;      // ¿ø·¡ ¾î¶² Ä«µå¿´´ÂÁö (È¿°úµéÀ» ´Ù½Ã ¾²±â À§ÇØ)
-    4     public int RemainingTurns;   // ³²Àº ÅÏ ¼ö
+    3     public Card SourceCard;      // ï¿½ï¿½ï¿½ï¿½ ï¿½î¶² Ä«ï¿½å¿´ï¿½ï¿½ï¿½ï¿½ (È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    4     public int RemainingTurns;   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
     5
     6     public ActiveDuration(Card card, int turns)
     7     {
@@ -42,54 +44,54 @@ namespace NYH
    10     }
    11 }
 
-  3. CardSystem.cs¿¡¼­ÀÇ Ã³¸® (ÇÙ½É ·ÎÁ÷)
-  ¿©±â¼­ Ä«µå¸¦ ³¾ ¶§ µî·ÏÇÏ°í, ÅÏÀÌ ³¡³¯ ¶§¸¶´Ù È¿°ú¸¦ "Àç¹ßµ¿" ½ÃÅµ´Ï´Ù.
+  3. CardSystem.csï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ (ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+  ï¿½ï¿½ï¿½â¼­ Ä«ï¿½å¸¦ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ßµï¿½" ï¿½ï¿½Åµï¿½Ï´ï¿½.
 
     1 public class CardSystem : Singleton<CardSystem>
     2 {
-    3     // ÇöÀç È°¼ºÈ­µÈ Áö¼Ó È¿°ú ¸®½ºÆ®
+    3     // ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
     4     private List<ActiveDuration> activeDurations = new();
     5
-    6     // [A] Ä«µå¸¦ ³¾ ¶§: Áö¼Ó È¿°ú°¡ ÀÖ´Ù¸é ¸®½ºÆ®¿¡ µî·Ï
+    6     // [A] Ä«ï¿½å¸¦ ï¿½ï¿½ ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½
     7     private IEnumerator PlayCardPerformer(PlayCardGA playCardGA)
     8     {
-    9         // ... ±âÁ¸ Ä«µå ³»±â ·ÎÁ÷ (¹«´ý ÀÌµ¿ µî) ...
+    9         // ... ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½) ...
    10
-   11         // Ä«µå È¿°ú Áß¿¡ DurationEffect°¡ ÀÖ´ÂÁö Ã¼Å©
+   11         // Ä«ï¿½ï¿½ È¿ï¿½ï¿½ ï¿½ß¿ï¿½ DurationEffectï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ Ã¼Å©
    12         foreach (var effect in playCardGA.Card.Effects)
    13         {
    14             if (effect is DurationEffect de)
    15             {
-   16                 // Áö¼Ó È¿°ú ¸®½ºÆ®¿¡ Ãß°¡ (Ä«µå´Â ¹«´ý¿¡ °¡µµ µ¥ÀÌÅÍ´Â ¿©±â ³²À½)
+   16                 // ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ß°ï¿½ (Ä«ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
    17                 activeDurations.Add(new ActiveDuration(playCardGA.Card, de.duration));
    18             }
    19         }
    20     }
    21
-   22     // [B] ÅÏ Á¾·á ½Ã: ¸®½ºÆ®¸¦ µ¹¸ç È¿°ú Àç¹ßµ¿ (¿©±â°¡ Æ÷ÀÎÆ®!)
+   22     // [B] ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½ßµï¿½ (ï¿½ï¿½ï¿½â°¡ ï¿½ï¿½ï¿½ï¿½Æ®!)
    23     public IEnumerator ProcessTurnEndEffects()
    24     {
    25         List<ActiveDuration> expired = new();
    26
    27         foreach (var active in activeDurations)
    28         {
-   29             // 1. ÇØ´ç Ä«µå°¡ °¡Áø '¸ðµç È¿°ú'¸¦ ´Ù½Ã ½ÇÇà ¸ñ·Ï¿¡ ³ÖÀ½
-   30             // (ÀÌ¹Ì ¸¸µç GoldCardEffect µîÀÌ ¿©±â¼­ ´Ù½Ã ºÒ·Á°¨!)
+   29             // 1. ï¿½Ø´ï¿½ Ä«ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ 'ï¿½ï¿½ï¿½ È¿ï¿½ï¿½'ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+   30             // (ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ GoldCardEffect ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¼­ ï¿½Ù½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½!)
    31             foreach (var effect in active.SourceCard.Effects)
    32             {
-   33                 // Áö¼Ó ½Ã°£ È¿°ú ÀÚÃ¼´Â »©°í ³ª¸ÓÁö ½ÇÁ¦ È¿°úµé¸¸ ½ÇÇà
+   33                 // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ È¿ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½é¸¸ ï¿½ï¿½ï¿½ï¿½
    34                 if (effect is not DurationEffect)
    35                 {
    36                     ActionSystem.Instance.AddReaction(new PerformEffectGA(effect));
    37                 }
    38             }
    39
-   40             // 2. ÅÏ °¨¼Ò ¹× ¸¸·á Ã¼Å©
+   40             // 2. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©
    41             active.RemainingTurns--;
    42             if (active.RemainingTurns <= 0) expired.Add(active);
    43         }
    44
-   45         // 3. ³¡³­ È¿°ú´Â »èÁ¦
+   45         // 3. ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
    46         foreach (var ex in expired) activeDurations.Remove(ex);
    47
    48         yield return null;
@@ -99,7 +101,7 @@ namespace NYH
    2 {
    3     endTurn = true;
    4
-   5     // ÅÏÀÌ ³¡³¯ ¶§ CardSystem¿¡ "ÀÚ, ÀÌÁ¦ Áö¼Ó È¿°úµé ´Ù ¹ßµ¿½ÃÄÑ!"¶ó°í ¸í·É
+   5     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ CardSystemï¿½ï¿½ "ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½!"ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
    6     StartCoroutine(CardSystem.Instance.ProcessTurnEndEffects());
    7 }
  * 
