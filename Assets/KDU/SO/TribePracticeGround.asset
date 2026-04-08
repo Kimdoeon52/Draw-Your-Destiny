@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingName: "\uBD80\uC871 \uD6C8\uB828\uC9C0"
   buildingType: 5
-  sprite: {fileID: 0}
+  sprite: {fileID: -1576980807942169303, guid: 8c388fa22c4ee0e41aa2578512daaa89, type: 3}
   requiredEra: 0
   isAutoUpgrade: 1
   upgradesTo: {fileID: 11400000, guid: e110e8fa3f8664f4abddf8e2e231a3c4, type: 2}

@@ -24,13 +24,15 @@ MonoBehaviour:
     \uAC74\uBB3C\uB85C \uC790\uB3D9 \uC5C5\uADF8\uB808\uC774\uB4DC)"
   <Effects>k__BackingField:
   - rid: 7216728159325782090
-  - rid: -2
+  - rid: 7216728271782674557
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 7216728159325782090
       type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
       data:
         buildingData: {fileID: 11400000, guid: 45594f0911134e3489cdd3dda42a77c5, type: 2}
+    - rid: 7216728271782674557
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
