@@ -41,7 +41,7 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
     [Header("소속 문명 ID")]
     protected int ownerCivID;
 
-
+    protected Animator anime;
     protected CancellationTokenSource moveCts;
     protected List<Vector3Int> currentPath = new List<Vector3Int>();
     protected int pathIndex = 0;
@@ -57,7 +57,10 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
         UnitAppear();
         StartMoveLoop();
     }
-
+    protected virtual void OnDisable() //유닛이 비활성화 될 때 이동 루프 정지
+    {
+        StopMoveLoop();
+    }
     void UnitAppear() //유닛이 소환되면 초기화 시킴.
     {
         age = 0; //나이는 무조건 0으로 시작
@@ -67,6 +70,7 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
         ownerCivID = 0; //소속 문명은 0번.
         health = 1; //체력도 1로 시작. 직업에 따라 나중에 조정할 것임
         attackPower = 1;
+        anime = GetComponent<Animator>();
         switch (canMoveJobBase)
         {
             case CanMoveJobBase.CanMoveJob:
@@ -81,6 +85,7 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
                 break;
         }
     }
+    
     //======================= 유닛 나이와 사망 확률 조정 =======================
     protected virtual void ChangeAgeGroup() //나이 그룹 변경
     {
