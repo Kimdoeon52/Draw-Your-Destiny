@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3930178039903472149}
-  - component: {fileID: 7603692894581200823}
   - component: {fileID: -7514744366701420720}
   - component: {fileID: 4397359622358000846}
+  - component: {fileID: 5076822536410085477}
   m_Layer: 0
-  m_Name: HunanUnit
+  m_Name: RockWarrior
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,30 +34,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7603692894581200823
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5877644716001515087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65a5a1a9fecca284886f87d3734de2e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 10
-  unitInfo: {fileID: 11400000, guid: b0d7ac82f149ade429837a8f19faa55a, type: 2}
-  buildingData: {fileID: 11400000, guid: 268a0889472ac9e46bbdc31d1b0f25cf, type: 2}
-  humanPool: {fileID: 0}
-  age: 0
-  gender: 0
-  ageGroup: 0
-  koreanArmy: 0
-  naturalDeathChance: 0
-  job: 0
-  anime: []
-  ownerCivID: 0
 --- !u!95 &-7514744366701420720
 Animator:
   serializedVersion: 7
@@ -124,15 +100,35 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: -6620443678240376230, guid: c10b3c5338d9e914fb4398031c8b7051,
+  m_Sprite: {fileID: 4611015411362049425, guid: 3f36ff1864498174aad3095fd86b5ac2,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.8333333, y: 0.8333333}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5076822536410085477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5877644716001515087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e380a310883c76d4fb6b422f8c23d10a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  age: 0
+  health: 0
+  attackPower: 0
+  ageGroup: 0
+  naturalDeathChance: 0
+  canMoveJobBase: 0
+  levelBase: 0

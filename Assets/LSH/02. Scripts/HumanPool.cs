@@ -17,7 +17,15 @@ public class HumanPool : Singleton<HumanPool>
             pool.Enqueue(human);
         }
     }
-
+    //===========================임시 코드================================
+    private void Update()
+    {
+       if(Input.GetKeyDown(KeyCode.A))
+        {
+            GetHuman(0);
+        }
+    }
+    //====================================================================
     public GameObject GetHuman(int ownerCivID) //이거 쓰셈 소환할때.(카드 만드는 사람은 이걸 읽도록)
     {
         if (pool.Count == 0)
@@ -28,7 +36,7 @@ public class HumanPool : Singleton<HumanPool>
 
         GameObject human = pool.Dequeue();
         human.SetActive(true);
-        HumanUnit humanUnit = human.GetComponent<HumanUnit>();
+        HumanBase humanUnit = human.GetComponent<HumanBase>();
         humanUnit.ownerCivID = ownerCivID;
         if (humanUnit != null)
         {

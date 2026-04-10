@@ -33346,6 +33346,25 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   outpostManorHP: 50
+  farmSprites:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &535769638
 Transform:
   m_ObjectHideFlags: 0
@@ -33471,8 +33490,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f6d6bb662f45c14882ed9a40c7a4dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardUse: {fileID: 0}
-  unitInfo: {fileID: 11400000, guid: a629766ba16ceb347868691e150c9b54, type: 2}
 --- !u!4 &688555337
 Transform:
   m_ObjectHideFlags: 0
@@ -270988,7 +271005,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a444871b40bd5046a548efdffc68886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  humanPool: {fileID: 524849246}
 --- !u!4 &1544862443
 Transform:
   m_ObjectHideFlags: 0
@@ -271154,6 +271170,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 834ecaff6ca3ad44caa3ef33f5f96415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapMinX: -142
+  mapMaxX: 20
+  mapMinY: -12
+  mapMaxY: 140
+  minZoom: 3.6
+  maxZoom: 43.31
+  zoomSpeed: 5
+  useStepZoom: 0
+  zoomSteps:
+  - 4
+  - 6
+  - 9
+  - 13
+  - 18
+  - 24
+  - 32
+  - 43
+  snapCameraToPixelGrid: 1
+  useDragMove: 1
+  dragMouseButton: 1
+  useEdgeScroll: 1
+  edgeSize: 20
+  edgeScrollSpeed: 25
 --- !u!1 &1601650326
 GameObject:
   m_ObjectHideFlags: 0
@@ -271235,11 +271274,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentTurn: 0
-  playerGold: 500
-  playerResearch: 0
-  Food: 0
-  playerPopulation: 0
-  playerPopulationCap: 10
   endTurn: 0
   startTurn: 0
   playerEra: 0

@@ -20,6 +20,21 @@ public enum LevelBase //시대별 상태임
     Level2, //신석기
     Level3 //철기
 }
+//public enum Job
+//{
+//    //기본 농부, 상점주인
+//    Farmer,
+//    Shoper,
+//    //1단계 돌도끼병
+//    RockWarrior,
+//    //2단계 힐러, 아처
+//    Healer,
+//    Archer,
+//    //3단계 마법사, 기마병, 자이언트같은거
+//    Wizzard,
+//    HorseWarrior,
+//    SuperUnit
+//}
 public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지는 기본 베이스가 됨.
 {
     [Header("이동 속도")] //이거는 전투원 위주로 사용할꺼임.
@@ -27,8 +42,6 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
 
     [Header("현재 상태")]
     [SerializeField] protected int age;
-    [SerializeField] protected int health;
-    [SerializeField] protected int attackPower;
     [SerializeField] protected AgeGroupBase ageGroup;
     [SerializeField] protected float naturalDeathChance;
 
@@ -39,7 +52,7 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
     [SerializeField] protected LevelBase levelBase;
 
     [Header("소속 문명 ID")]
-    protected int ownerCivID;
+    public int ownerCivID;
 
     protected Animator anime;
     protected CancellationTokenSource moveCts;
@@ -47,15 +60,22 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
     protected int pathIndex = 0;
     protected bool isMoving = false;
 
+    //================================업데이트================================================
 
     protected void Update()
     {
         MoveAlongPath();
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            UnitNextTurn();
+        }
     }
+
+    //=====================================초기화=============================================
+
     protected virtual void OnEnable()//초기화
     {
         UnitAppear();
-        StartMoveLoop();
     }
     protected virtual void OnDisable() //유닛이 비활성화 될 때 이동 루프 정지
     {
@@ -68,8 +88,6 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
         naturalDeathChance = 0f; //자연사망 확률도 0으로 시작
         levelBase = LevelBase.Level1; //시대도 구석기부터 시작
         ownerCivID = 0; //소속 문명은 0번.
-        health = 1; //체력도 1로 시작. 직업에 따라 나중에 조정할 것임
-        attackPower = 1;
         anime = GetComponent<Animator>();
         switch (canMoveJobBase)
         {
@@ -85,7 +103,18 @@ public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지�
                 break;
         }
     }
-    
+
+    protected virtual void UnitNextTurn() //턴이 지날때마다 나오는거니까 여따가 다 때려박자
+    {
+        age++;
+        ChangeAgeGroup();
+        ChangeDeathChance();
+        anime.SetInteger("age", age);
+        if (Random.value < naturalDeathChance)
+        {
+            Dead();
+        }
+    }
     //======================= 유닛 나이와 사망 확률 조정 =======================
     protected virtual void ChangeAgeGroup() //나이 그룹 변경
     {
