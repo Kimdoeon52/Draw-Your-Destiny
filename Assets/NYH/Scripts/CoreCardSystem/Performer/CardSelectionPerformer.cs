@@ -2,6 +2,7 @@
 {
     using System.Collections;
     using System.Collections.Generic;
+    using NYH.BattleCardSystem;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -107,6 +108,95 @@
             pileState.ShuffleDrawPile();
             refreshPileCounts?.Invoke();
             UpdateTexts();
+        }
+
+        public IEnumerator OfferRewardBundlesToDecks(int bundleCount)
+        {
+            if (CardSelectionUI.Instance == null)
+            {
+                Debug.LogWarning("[CardSystem] CardSelectionUI가 없어 보상 묶음 선택을 건너뜁니다.");
+                yield break;
+            }
+
+            if (CardCatalog.Instance == null || BattleCardCatalog.Instance == null)
+            {
+                Debug.LogWarning("[CardSystem] CardCatalog 또는 BattleCardCatalog가 없어 보상 묶음을 만들 수 없습니다.");
+                yield break;
+            }
+
+            List<CardData> civilizationCandidates = CardCatalog.Instance.GetRandom(bundleCount);
+            List<BattleCardData> battleCandidates = BattleCardCatalog.Instance.GetRandom(bundleCount);
+            int actualBundleCount = Mathf.Min(civilizationCandidates.Count, battleCandidates.Count);
+
+            if (actualBundleCount == 0)
+            {
+                Debug.LogWarning("[CardSystem] 보상 묶음 후보가 없습니다.");
+                yield break;
+            }
+
+            List<RewardCardBundleChoice> rewardBundles = new();
+            for (int i = 0; i < actualBundleCount; i++)
+            {
+                CardData civilizationCard = civilizationCandidates[i];
+                BattleCardData battleCard = battleCandidates[i];
+                if (civilizationCard == null || battleCard == null)
+                {
+                    continue;
+                }
+
+                rewardBundles.Add(new RewardCardBundleChoice(civilizationCard, battleCard));
+            }
+
+            if (rewardBundles.Count == 0)
+            {
+                Debug.LogWarning("[CardSystem] 유효한 보상 묶음을 만들지 못했습니다.");
+                yield break;
+            }
+
+            RewardCardBundleChoice selectedBundle = null;
+            bool isChosen = false;
+
+            CardSelectionUI.Instance.ShowRewardBundles(rewardBundles, bundle =>
+            {
+                selectedBundle = bundle;
+                isChosen = true;
+            });
+
+            yield return new WaitUntil(() => isChosen);
+
+            if (selectedBundle == null)
+            {
+                yield break;
+            }
+
+            if (selectedBundle.CivilizationCardData != null)
+            {
+                pileState.AddToDrawPile(new Card(selectedBundle.CivilizationCardData));
+                pileState.ShuffleDrawPile();
+                refreshPileCounts?.Invoke();
+                UpdateTexts();
+            }
+
+            if (selectedBundle.BattleCardData != null)
+            {
+                if (BattleDeckCollection.Instance == null)
+                {
+                    Debug.LogWarning("[CardSystem] BattleDeckCollection이 없어 전투 카드를 저장할 수 없습니다.");
+                    yield break;
+                }
+
+                BattleDeckAddResult result = BattleDeckCollection.Instance.AddBattleRewardCard(selectedBundle.BattleCardData);
+                if (result == BattleDeckAddResult.NeedsReplacement)
+                {
+                    Debug.LogWarning("[CardSystem] 전투 덱이 가득 찼습니다. 교체 UI가 아직 없어 전투 카드를 추가하지 못했습니다.");
+                }
+            }
+        }
+
+        public IEnumerator OfferMixedRewardToDecks(int civilizationAmount, int battleAmount)
+        {
+            int bundleCount = Mathf.Min(civilizationAmount, battleAmount);
+            yield return OfferRewardBundlesToDecks(bundleCount);
         }
 
         public IEnumerator ChooseCardPerformer(int amount)

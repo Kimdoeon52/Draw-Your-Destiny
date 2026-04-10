@@ -8,5 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/NYH/NYH2.unity
     guid: f30882224e40b714eb3a118533b9eae3
+  - enabled: 1
+    path: Assets/NYH/Battle.unity
+    guid: a6a94635d431bd34abd4c4cf9fa8457d
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

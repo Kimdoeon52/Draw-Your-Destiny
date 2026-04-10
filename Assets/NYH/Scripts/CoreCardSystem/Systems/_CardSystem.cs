@@ -77,6 +77,16 @@
             yield return selectionPerformer.OfferRandomCatalogCardToDeck(amount);
         }
 
+        public IEnumerator OfferRewardBundlesToDecks(int bundleCount)
+        {
+            yield return selectionPerformer.OfferRewardBundlesToDecks(bundleCount);
+        }
+
+        public IEnumerator OfferMixedRewardToDecks(int civilizationAmount, int battleAmount)
+        {
+            yield return selectionPerformer.OfferMixedRewardToDecks(civilizationAmount, battleAmount);
+        }
+
 
         /// <summary>
         /// 만약 이곳에 규칙에 맞지 않는 액션이 생긴다면 Perform새로운 스크립트를 만들고

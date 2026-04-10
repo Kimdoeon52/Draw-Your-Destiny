@@ -1,31 +1,43 @@
-namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System;
     using System.Collections.Generic;
+    using NYH.BattleCardSystem;
     using UnityEngine;
     using UnityEngine.UI;
 
-    /// <summary>
-    /// 카드 선택(발견/Discover) UI를 관리하는 클래스입니다.
-    /// </summary>
     public class CardSelectionUI : MonoBehaviour
     {
+        private const float RewardCardWidth = 244f;
+        private const float RewardCardHeight = 380f;
+        private const float RewardBundleSpacing = 16f;
+        private const float RewardBundlePadding = 16f;
+
         public static CardSelectionUI Instance { get; private set; }
 
         [Header("UI References")]
-        [SerializeField] private GameObject panel;       
-        [SerializeField] private Transform container;    
-        [SerializeField] private Button closeButton;     // [추가] 닫기 버튼 레퍼런스
+        [SerializeField] private GameObject panel;
+        [SerializeField] private Transform container;
+        [SerializeField] private Button closeButton;
 
         private Action<Card> onCardSelectedCallback;
+        private Action<RewardCardBundleChoice> onRewardBundleSelectedCallback;
 
         private void Awake()
         {
-            if (Instance != null) { Destroy(gameObject); return; }
-            Instance = this;
-            if (panel != null) panel.SetActive(false);
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
 
-            // [추가] 닫기 버튼 클릭 시 Close 함수 호출 연결
+            Instance = this;
+
+            if (panel != null)
+            {
+                panel.SetActive(false);
+            }
+
             if (closeButton != null)
             {
                 closeButton.onClick.AddListener(Close);
@@ -34,36 +46,36 @@ namespace NYH.CoreCardSystem
 
         public void Show(List<Card> cards, Action<Card> onSelected = null)
         {
-            if (panel == null || container == null) return;
+            if (panel == null || container == null)
+            {
+                return;
+            }
 
             onCardSelectedCallback = onSelected;
+            onRewardBundleSelectedCallback = null;
             panel.SetActive(true);
 
-            // [추가] 선택 모드(onSelected가 있음)라면 닫기 버튼을 숨기고, 
-            // 단순 보기 모드(onSelected가 없음)라면 닫기 버튼을 보여줍니다.
             if (closeButton != null)
             {
                 closeButton.gameObject.SetActive(onSelected == null);
             }
 
-            // 1. 기존 카드 제거
-            foreach (Transform child in container) Destroy(child.gameObject);
+            ClearContainer();
 
-            // 2. 선택용 카드 생성
             foreach (var card in cards)
             {
                 CardView cardView = CardViewCreator.Instance.CreateCardView(card, container.position, Quaternion.identity);
                 cardView.transform.SetParent(container, false);
-
-                // [중요] 호버 기능 설정: IsHoverPreview를 true로 설정합니다.
                 cardView.IsHoverPreview = true;
+                cardView.transform.localScale = Vector3.one;
 
-                // 클릭 처리를 위한 버튼 설정 (선택 콜백이 있을 때만 활성화)
                 Button button = cardView.GetComponent<Button>();
-                if (button == null) button = cardView.gameObject.AddComponent<Button>();
+                if (button == null)
+                {
+                    button = cardView.gameObject.AddComponent<Button>();
+                }
 
                 button.onClick.RemoveAllListeners();
-                
                 if (onSelected != null)
                 {
                     Card capturedCard = card;
@@ -72,12 +84,35 @@ namespace NYH.CoreCardSystem
                 }
                 else
                 {
-                    // 단순 보기 모드일 때는 버튼 상호작용은 끄되, 호버는 작동하게 합니다.
-                    // (만약 버튼 자체가 Raycast를 막는다면 interatacle만 끄거나 필요시 조정)
                     button.interactable = false;
                 }
+            }
+        }
 
-                cardView.transform.localScale = Vector3.one;
+        public void ShowRewardBundles(List<RewardCardBundleChoice> bundles, Action<RewardCardBundleChoice> onSelected = null)
+        {
+            if (panel == null || container == null)
+            {
+                return;
+            }
+
+            onCardSelectedCallback = null;
+            onRewardBundleSelectedCallback = onSelected;
+            panel.SetActive(true);
+
+            if (closeButton != null)
+            {
+                closeButton.gameObject.SetActive(onSelected == null);
+            }
+
+            ClearContainer();
+
+            foreach (var bundle in bundles)
+            {
+                if (bundle != null)
+                {
+                    CreateRewardBundleView(bundle);
+                }
             }
         }
 
@@ -85,16 +120,141 @@ namespace NYH.CoreCardSystem
         {
             Debug.Log($"[CardSelectionUI] 카드 선택 완료: {card.Title}");
             onCardSelectedCallback?.Invoke(card);
-            
-            // 호버가 뜬 채로 선택될 경우 미리보기를 숨겨줍니다.
-            if (CardViewHoverSystem.Instance != null) CardViewHoverSystem.Instance.Hide();
-            
+
+            if (CardViewHoverSystem.Instance != null)
+            {
+                CardViewHoverSystem.Instance.Hide();
+            }
+
             Close();
+        }
+
+        private void OnRewardBundleClicked(RewardCardBundleChoice bundle)
+        {
+            string civilizationName = bundle?.CivilizationCardData != null ? bundle.CivilizationCardData.cardName : "None";
+            string battleName = bundle?.BattleCardData != null ? bundle.BattleCardData.CardName : "None";
+            Debug.Log($"[CardSelectionUI] 보상 세트 선택 완료: 문명={civilizationName}, 전투={battleName}");
+
+            onRewardBundleSelectedCallback?.Invoke(bundle);
+
+            if (CardViewHoverSystem.Instance != null)
+            {
+                CardViewHoverSystem.Instance.Hide();
+            }
+
+            Close();
+        }
+
+        private void CreateRewardBundleView(RewardCardBundleChoice bundle)
+        {
+            GameObject root = new GameObject("RewardBundle", typeof(RectTransform), typeof(Image), typeof(Button), typeof(HorizontalLayoutGroup));
+            root.transform.SetParent(container, false);
+
+            RectTransform rootRect = root.GetComponent<RectTransform>();
+            float rootWidth = (RewardCardWidth * 2f) + RewardBundleSpacing + (RewardBundlePadding * 2f);
+            float rootHeight = RewardCardHeight + (RewardBundlePadding * 2f);
+            rootRect.sizeDelta = new Vector2(rootWidth, rootHeight);
+
+            Image background = root.GetComponent<Image>();
+            background.color = new Color(0.15f, 0.15f, 0.15f, 0.45f);
+
+            HorizontalLayoutGroup layout = root.GetComponent<HorizontalLayoutGroup>();
+            layout.spacing = RewardBundleSpacing;
+            layout.padding = new RectOffset((int)RewardBundlePadding, (int)RewardBundlePadding, (int)RewardBundlePadding, (int)RewardBundlePadding);
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+
+            Button button = root.GetComponent<Button>();
+            button.onClick.RemoveAllListeners();
+
+            if (onRewardBundleSelectedCallback != null)
+            {
+                RewardCardBundleChoice capturedBundle = bundle;
+                button.onClick.AddListener(() => OnRewardBundleClicked(capturedBundle));
+                button.interactable = true;
+            }
+            else
+            {
+                button.interactable = false;
+            }
+
+            CreateCivilizationRewardView(bundle.CivilizationCardData, root.transform);
+            CreateBattleRewardView(bundle.BattleCardData, root.transform);
+        }
+
+        private void CreateCivilizationRewardView(CardData civilizationCardData, Transform parent)
+        {
+            if (civilizationCardData == null)
+            {
+                return;
+            }
+
+            Card previewCard = new Card(civilizationCardData);
+            CardView cardView = CardViewCreator.Instance.CreateCardView(previewCard, parent.position, Quaternion.identity);
+            cardView.transform.SetParent(parent, false);
+            cardView.IsHoverPreview = true;
+            cardView.transform.localScale = Vector3.one;
+
+            Button button = cardView.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = false;
+            }
+
+            LayoutElement layoutElement = cardView.GetComponent<LayoutElement>();
+            if (layoutElement == null)
+            {
+                layoutElement = cardView.gameObject.AddComponent<LayoutElement>();
+            }
+
+            layoutElement.preferredWidth = RewardCardWidth;
+            layoutElement.preferredHeight = RewardCardHeight;
+        }
+
+        private void CreateBattleRewardView(BattleCardData battleCardData, Transform parent)
+        {
+            if (battleCardData == null)
+            {
+                return;
+            }
+
+            Card previewCard = BattleCardViewAdapter.CreatePreviewCard(battleCardData);
+            CardView cardView = CardViewCreator.Instance.CreateCardView(previewCard, parent.position, Quaternion.identity);
+            cardView.transform.SetParent(parent, false);
+            cardView.IsHoverPreview = true;
+            cardView.transform.localScale = Vector3.one;
+
+            Button button = cardView.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = false;
+            }
+
+            LayoutElement layoutElement = cardView.GetComponent<LayoutElement>();
+            if (layoutElement == null)
+            {
+                layoutElement = cardView.gameObject.AddComponent<LayoutElement>();
+            }
+
+            layoutElement.preferredWidth = RewardCardWidth;
+            layoutElement.preferredHeight = RewardCardHeight;
+        }
+
+        private void ClearContainer()
+        {
+            foreach (Transform child in container)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         public void Close()
         {
-            if (panel != null) panel.SetActive(false);
+            if (panel != null)
+            {
+                panel.SetActive(false);
+            }
         }
     }
 }
