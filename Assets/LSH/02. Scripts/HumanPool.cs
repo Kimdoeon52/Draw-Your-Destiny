@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
+using Base;
 public class HumanPool : Singleton<HumanPool>
 {
     public GameObject humanPrefab;
