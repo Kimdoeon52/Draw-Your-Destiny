@@ -61,6 +61,7 @@
         [field: SerializeField] public int AttackTargetCount { get; private set; } = 1;
         [field: SerializeField] public bool HitsAllTargetsInRange { get; private set; }
         [field: SerializeField] public BattleAttackPattern AttackPattern { get; private set; } = BattleAttackPattern.None;
+        [field: SerializeField] public AttackPatternData CustomAttackPattern { get; private set; }
 
         [Header("추가 이펙트")]
         [field: SerializeReference, SR] public List<Effect> Effects { get; private set; }

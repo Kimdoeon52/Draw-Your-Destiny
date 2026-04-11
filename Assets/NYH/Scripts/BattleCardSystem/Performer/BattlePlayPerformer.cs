@@ -86,7 +86,8 @@ namespace NYH.BattleCardSystem
                         playCardGA.Card.AttackRange,
                         playCardGA.Card.AttackTargetCount,
                         playCardGA.Card.HitsAllTargetsInRange,
-                        playCardGA.Card.AttackPattern));
+                        playCardGA.Card.AttackPattern,
+                        playCardGA.Card.CustomAttackPattern));
             }
             else if (playCardGA.Card.CardType == BattleCardType.Move)
             {

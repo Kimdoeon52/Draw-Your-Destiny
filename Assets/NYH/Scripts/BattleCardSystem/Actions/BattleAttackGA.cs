@@ -14,6 +14,7 @@ namespace NYH.BattleCardSystem
         public int TargetCount { get; }
         public bool HitsAllTargetsInRange { get; }
         public BattleAttackPattern AttackPattern { get; }
+        public AttackPatternData CustomAttackPattern { get; }
 
         public BattleAttackGA(
             BattleCard sourceCard,
@@ -24,7 +25,8 @@ namespace NYH.BattleCardSystem
             int range,
             int targetCount,
             bool hitsAllTargetsInRange,
-            BattleAttackPattern attackPattern)
+            BattleAttackPattern attackPattern,
+            AttackPatternData customAttackPattern = null)
         {
             SourceCard = sourceCard;
             Attacker = attacker;
@@ -35,6 +37,7 @@ namespace NYH.BattleCardSystem
             TargetCount = targetCount;
             HitsAllTargetsInRange = hitsAllTargetsInRange;
             AttackPattern = attackPattern;
+            CustomAttackPattern = customAttackPattern;
         }
     }
 }

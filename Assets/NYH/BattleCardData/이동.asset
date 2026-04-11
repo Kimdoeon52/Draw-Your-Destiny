@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: "\uC774\uB3D9"
   m_EditorClassIdentifier: 
   <CardID>k__BackingField: 1
-  <CardName>k__BackingField: "\uC774\uB3D9"
-  <CardType>k__BackingField: 1
+  <CardName>k__BackingField: "\uB2E4\uC774\uC544\uACF5\uACA9"
+  <CardType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 3420474935965269878, guid: 1c9bc0d104c01934da10d4333b9dc48b,
     type: 3}
   <ActionPointCost>k__BackingField: 0
@@ -27,6 +27,8 @@ MonoBehaviour:
   <AttackTargetCount>k__BackingField: 1
   <HitsAllTargetsInRange>k__BackingField: 0
   <AttackPattern>k__BackingField: 0
+  <CustomAttackPattern>k__BackingField: {fileID: 11400000, guid: 8052a4feadd557947b535d3bb96ef7d4,
+    type: 2}
   <Effects>k__BackingField: []
   description: "\uC774\uB3D9\uC774\uB3D9"
   references:

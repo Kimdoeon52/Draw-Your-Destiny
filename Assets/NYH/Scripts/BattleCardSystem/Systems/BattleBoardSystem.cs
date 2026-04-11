@@ -128,6 +128,12 @@ namespace NYH.BattleCardSystem
             }
 
             BattleTeam targetTeam = attacker.Team == BattleTeam.Player ? BattleTeam.Enemy : BattleTeam.Player;
+            HashSet<Vector2Int> customPatternCells = null;
+            if (attackGA.CustomAttackPattern != null)
+            {
+                customPatternCells = ResolvePatternCells(attacker.GridPosition, targetPosition, attackGA.CustomAttackPattern);
+            }
+
             foreach (var pair in unitMap)
             {
                 BattleUnit unit = pair.Value;
@@ -136,7 +142,14 @@ namespace NYH.BattleCardSystem
                     continue;
                 }
 
-                if (IsInAttackArea(attacker.GridPosition, targetPosition, unit.GridPosition, attackGA))
+                if (customPatternCells != null)
+                {
+                    if (customPatternCells.Contains(unit.GridPosition))
+                    {
+                        result.Add(unit);
+                    }
+                }
+                else if (IsInAttackArea(attacker.GridPosition, targetPosition, unit.GridPosition, attackGA))
                 {
                     result.Add(unit);
                 }
@@ -152,6 +165,27 @@ namespace NYH.BattleCardSystem
             }
 
             return result;
+        }
+
+        public HashSet<Vector2Int> ResolvePatternCells(
+            Vector2Int attackerPosition,
+            Vector2Int targetPosition,
+            AttackPatternData patternData)
+        {
+            HashSet<Vector2Int> resolved = new();
+            if (patternData == null || patternData.Cells == null)
+            {
+                return resolved;
+            }
+
+            FacingDirection facing = ResolveFacingDirection(attackerPosition, targetPosition);
+            foreach (var cell in patternData.Cells)
+            {
+                Vector2Int rotated = patternData.RotateToFacing ? RotateOffset(cell, facing) : cell;
+                resolved.Add(attackerPosition + rotated);
+            }
+
+            return resolved;
         }
 
         private bool CanEnter(Vector2Int position)
@@ -212,6 +246,34 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        private static FacingDirection ResolveFacingDirection(Vector2Int attackerPosition, Vector2Int targetPosition)
+        {
+            Vector2Int delta = targetPosition - attackerPosition;
+            if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+            {
+                return delta.x >= 0 ? FacingDirection.Right : FacingDirection.Left;
+            }
+
+            if (delta.y != 0)
+            {
+                return delta.y >= 0 ? FacingDirection.Up : FacingDirection.Down;
+            }
+
+            return FacingDirection.Up;
+        }
+
+        private static Vector2Int RotateOffset(Vector2Int offset, FacingDirection facing)
+        {
+            return facing switch
+            {
+                FacingDirection.Up => offset,
+                FacingDirection.Right => new Vector2Int(offset.y, -offset.x),
+                FacingDirection.Down => new Vector2Int(-offset.x, -offset.y),
+                FacingDirection.Left => new Vector2Int(-offset.y, offset.x),
+                _ => offset,
+            };
+        }
+
         private static int ManhattanDistance(Vector2Int a, Vector2Int b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
@@ -222,6 +284,14 @@ namespace NYH.BattleCardSystem
             int min = Mathf.Min(start, end);
             int max = Mathf.Max(start, end);
             return value >= min && value <= max;
+        }
+
+        private enum FacingDirection
+        {
+            Up,
+            Right,
+            Down,
+            Left,
         }
     }
 }

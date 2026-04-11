@@ -24,6 +24,7 @@
         public int AttackTargetCount => Data.AttackTargetCount;
         public bool HitsAllTargetsInRange => Data.HitsAllTargetsInRange;
         public BattleAttackPattern AttackPattern => Data.AttackPattern;
+        public AttackPatternData CustomAttackPattern => Data.CustomAttackPattern;
 
         public int RuntimeCardID => CardID;
         public string RuntimeTitle => Title;
