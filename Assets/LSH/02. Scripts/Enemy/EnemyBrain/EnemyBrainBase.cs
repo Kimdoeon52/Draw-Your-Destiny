@@ -1,5 +1,4 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public enum EnemyAction
@@ -14,8 +13,192 @@ public enum EnemyState
     Defend //방어 <- 일반적인 문명 행동 타입
 }
 
+[System.Serializable]
+public class ActionCases
+{
+    public EnemyAction action;
+    public EnemyState state;
+    [Range(0, 100)] public int weight; //행동 확률
+}
 public class EnemyBrainBase : MonoBehaviour
 {
     [Header("적 행동 확률")]
-    [SerializeField] protected List<ActionCase> actionCases = new List<ActionCase>();
+    [SerializeField] protected List<ActionCases> actionCases = new List<ActionCases>();
+
+    [Header("농장 건물")]
+    [SerializeField] protected GameObject FarmPrefabs;
+    [Header("상점 건물")]
+    [SerializeField] protected GameObject MarketPrefabs;
+    [Header("병영 건물")] //0번은 석기시대 병영 1번 2번은 청동기 3,4,5번은 철기
+    [SerializeField] protected List<GameObject> BarracksPrefabs = new List<GameObject>();
+
+    [Header("골드 및 식량")]
+    [SerializeField] protected int gold;
+    [SerializeField] protected int food;
+
+    [Header("시대 레벨")]
+    [SerializeField] protected int enemyLevel; //적의 시대를 나타낼 레벨임
+
+    [Header("적의 번호")]
+    [SerializeField] protected int enemyID; //적의 번호를 나타낼 변수임
+
+    [Header("턴 진행 여부")] //적 종류마다 다르게 설정할꺼임.
+    [SerializeField] protected int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
+
+    protected virtual void OnEnable()
+    {
+        //적 행동 초기화
+        InitializeActionCases();
+    }
+
+
+    //=============================적 행동 확률====================================
+
+    protected void InitializeActionCases()
+    {
+        actionCases.Clear();//일단 비워주고
+
+        //적 행동 확률 초기화
+        actionCases.Add(new ActionCases { action = EnemyAction.Building, state = EnemyState.Defend, weight = 50 });
+        actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 50 });
+    }
+
+    protected virtual EnemyAction GetWeightedRandomAction()
+    {
+        int totalWeight = 0; //전체적인 가중치 계산용도
+        foreach (var actionCase in actionCases) //각 행동 케이스
+            totalWeight += actionCase.weight; //전체 가중치 계산 일단 100이겠죠?
+
+        if (totalWeight <= 0) //그냥 안전장치로 골드나 얻으라는 뜻
+            return EnemyAction.GetGold;
+
+        int randomValue = Random.Range(0, totalWeight); //0부터 100까지 생각
+        int currentWeight = 0; //현재 가중치
+
+        foreach (var actionCase in actionCases)
+        {
+            currentWeight += actionCase.weight; //첫번째 가중치 50 두번째 가중치 100이 되겠죠?
+            if (randomValue < currentWeight) //랜덤값이 현재 가중치 보다 낮으면 액션
+                return actionCase.action; //첫번째 케이스면 0~49 두번째 케이스면 50~99
+        }
+
+        return EnemyAction.GetGold;
+    }
+    //==============================적 행동 실행====================================
+    protected virtual void StartEnemyTurn()
+    {
+        EnemyAction action = GetWeightedRandomAction(); //적 행동 확률에 따른 행동 선택
+        bool actionCheck = CheckAction(action); //돈없으면 건물 못짓게 하기
+        if (!actionCheck)
+        {
+            action = EnemyAction.GetGold; //조건이 안맞으면 골드 얻는 행동으로 강제 변경
+        }
+        switch (action) //일단 50대 50임
+        {
+           case EnemyAction.Building: //건물 짓기
+                CheckWhichBuilding(); //어떤 건물을 지을껀지 판단
+                break;
+           case EnemyAction.GetGold: //금과 식량 얻기
+                GetGold();
+                break;
+        }
+    }
+    
+    protected virtual bool CheckAction(EnemyAction action) //행동 조건 검사
+    {
+        switch (action)
+        {
+            case EnemyAction.Building: return gold >= 300;//골드가 없으면 건물 지어야댐
+            case EnemyAction.GetGold: return true;
+        }
+        return false;
+    }
+    //==============================건물 짓기====================================
+    protected virtual void CheckWhichBuilding()
+    {
+        switch(enemyLevel) //적의 시대에 따른 건물 짓기
+        {
+            case 1: //석기 시대
+                BuildLevelOne();
+                break;
+            case 2: //청동기 시대
+                BuildLevelTwo();
+                break;
+            case 3: //철기 시대
+                BuildLevelThree();
+                break;
+        }
+    }
+    protected virtual void BuildLevelOne()
+    {
+        //적의 석기 시대 건물 짓기 행동 구현
+        int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
+        switch (buildingChoice)
+        {
+            case 0: //농장 건물
+                Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                break;
+            case 1: //상점 건물
+                Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                break;
+            case 2: //병영 건물
+                Instantiate(BarracksPrefabs[0], GetRandomPosition(), Quaternion.identity); //석기 시대 병영
+                break;
+        }
+    }
+    protected virtual void BuildLevelTwo()
+    {
+        //적의 청동기 시대 건물 짓기 행동 구현
+        int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
+        switch (buildingChoice)
+        {
+            case 0: //농장 건물
+                Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                break;
+            case 1: //상점 건물
+                Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                break;
+            case 2: //병영 건물
+                Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                break;
+        }
+    }
+    protected virtual void BuildLevelThree()
+    {
+        //적의 철기 시대 건물 짓기 행동 구현
+        int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
+        switch (buildingChoice)
+        {
+            case 0: //농장 건물
+                Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                break;
+            case 1: //상점 건물
+                Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                break;
+            case 2: //병영 건물
+                Instantiate(BarracksPrefabs[Random.Range(3, 6)], GetRandomPosition(), Quaternion.identity); //철기 시대 병영
+                break;
+        }
+    }
+    protected Vector3 GetRandomPosition() //설치 위치임.
+    {
+        //적이 건물을 지을 위치를 랜덤으로 결정하는 함수
+        float x = Random.Range(-10f, 10f); //적의 건물 위치 범위 설정
+        float z = Random.Range(-10f, 10f);
+        return new Vector3(x, 0, z); //y축은 0으로 고정
+    }
+    //==============================골드 및 식량 얻기====================================
+    protected virtual void GetGold()
+    {
+        //짜피 Enemy마다 overide 하면 댐.
+        gold += 100; //일단 100씩
+        food += 50; //일단 50씩
+    }
+    //==============================점령 시도===========================================
+    //적이 영지 점령 시도하는 행동 구현
+    //인접한 노드 탐색
+    //조건1: 인접한 노드가 비어있는가. <- 비어있다면 해당 노드에 있는 Brain Active를 킨다. 키면 해당 영지는 본인 것으로 설정.
+    //조건2: 인접한 노드가 플레이어의 영지인가. <- 플레이어의 영지라면 전투로 진입.
+    //조건3: 인접한 노드가 본인의 영지인가. <- 본인의 영지라면 점령 시도 안함.
+    //조건4: 인접한 노드가 다른적의 영지인가. <- 다른 적과 골드와 식량의 총량을 비교후 승리 판단여부.
 }
