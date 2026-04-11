@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
@@ -10,7 +10,6 @@ public class UIUpperBar : MonoBehaviour
     [SerializeField] private TextMeshProUGUI researchText; //연구 텍스트
     [SerializeField] private TextMeshProUGUI populationText; //인구 텍스트
     [SerializeField] private TextMeshProUGUI foodText; //식량 텍스트
-    [SerializeField] private TextMeshProUGUI ironText; //광석 텍스트
 
     [Header("시대 텍스트")]
     [SerializeField] private TextMeshProUGUI eraText; // 시대 텍스트
@@ -34,8 +33,7 @@ public class UIUpperBar : MonoBehaviour
                 ResourceManager.Instance.Gold, 
                 ResourceManager.Instance.Research, 
                 ResourceManager.Instance.Population,
-                ResourceManager.Instance.Food,
-                ResourceManager.Instance.Iron
+                ResourceManager.Instance.Food
             );
         }
 
@@ -65,7 +63,7 @@ public class UIUpperBar : MonoBehaviour
         }
     }
 
-    private void UpdateResourceUI(int gold, int research, int pop, int food, int iron)
+    private void UpdateResourceUI(int gold, int research, int pop, int food)
     {
         if (goldText)
         {
@@ -84,10 +82,6 @@ public class UIUpperBar : MonoBehaviour
         if (foodText)
         {
             foodText.text = food.ToString("N0"); //식량 텍스트 업데이트
-        }
-        if (ironText)
-        {
-            ironText.text = iron.ToString("N0"); //광석 텍스트 업데이트
         }
         int currentTurn = GameManager.Instance != null ? GameManager.Instance.currentTurn : 0;
         turnText.text = $"현재턴: {currentTurn}턴"; // 턴 텍스트 업데이트
