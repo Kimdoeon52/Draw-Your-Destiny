@@ -165,6 +165,30 @@ namespace NYH.BattleCardSystem
             pileState.DiscardHand();
         }
 
+        public void ShowDeck()
+        {
+            if (pileState.DrawPileCount == 0 || CardListUI.Instance == null)
+            {
+                return;
+            }
+
+            CardListUI.Instance.Show(
+                ConvertToPreviewCards(pileState.GetShuffledDrawPileCopy()),
+                "전투 덱 확인");
+        }
+
+        public void ShowDiscardPile()
+        {
+            if (pileState.DiscardPileCount == 0 || CardListUI.Instance == null)
+            {
+                return;
+            }
+
+            CardListUI.Instance.Show(
+                ConvertToPreviewCards(pileState.GetShuffledDiscardPileCopy()),
+                "전투 버림 더미 확인");
+        }
+
         public void PlayCard(
             BattleCard card,
             BattleUnit userUnit,
@@ -218,6 +242,26 @@ namespace NYH.BattleCardSystem
             float penaltyRatio = Mathf.Clamp01(cost * healthPenaltyPerCostStep);
             int healthPenalty = Mathf.Max(1, Mathf.FloorToInt(userCurrentHealth * penaltyRatio));
             return (false, remainingActionPoints, healthPenalty);
+        }
+
+        private static List<Card> ConvertToPreviewCards(IEnumerable<BattleCard> battleCards)
+        {
+            List<Card> previewCards = new();
+            if (battleCards == null)
+            {
+                return previewCards;
+            }
+
+            foreach (var battleCard in battleCards)
+            {
+                Card previewCard = BattleCardViewAdapter.CreatePreviewCard(battleCard);
+                if (previewCard != null)
+                {
+                    previewCards.Add(previewCard);
+                }
+            }
+
+            return previewCards;
         }
     }
 }

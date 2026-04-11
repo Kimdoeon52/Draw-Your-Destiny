@@ -1,9 +1,10 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using SerializeReferenceEditor;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.Serialization;
+    using NYH.CoreCardSystem;
 
     public enum BattleCardType
     {
@@ -34,25 +35,7 @@ namespace NYH.BattleCardSystem
     }
 
     [CreateAssetMenu(menuName = "Data/Battle Card")]
-    /*
-     * BattleCardData
-     *
-     * 역할:
-     * - 전투 카드 1장의 원본 데이터를 정의하는 ScriptableObject입니다.
-     * - 카드 종류, 식량 코스트, 이동/공격 수치, 키워드, 설명을 보관합니다.
-     *
-     * 인스펙터에서 넣는 것:
-     * - Card Type: Attack / Move / Skill / Potion
-     * - Food Cost: 전투 중 사용하는 식량 코스트
-     * - Move Amount: 이동 카드일 때 기본 이동량
-     * - Attack Damage / Range / Pattern: 공격 카드일 때 기본 공격 정보
-     * - Ignores Deck Limit: 포션처럼 30장 제한을 무시해야 할 때 사용
-     *
-     * 사용하는 법:
-     * - 이 SO를 BattleCardCatalog에 등록합니다.
-     * - 보상으로 얻거나 기본 전투 덱에 넣을 때 이 에셋을 사용합니다.
-     */
-    public class BattleCardData : ScriptableObject
+    public class BattleCardData : CardDataBase
     {
         [Header("기본 정보")]
         [field: SerializeField] public int CardID { get; private set; }
@@ -80,8 +63,7 @@ namespace NYH.BattleCardSystem
         [field: SerializeField] public BattleAttackPattern AttackPattern { get; private set; } = BattleAttackPattern.None;
 
         [Header("추가 이펙트")]
-        [field: SerializeReference, SR] public List<Effect> Effects { get; private set; }   
-
+        [field: SerializeReference, SR] public List<Effect> Effects { get; private set; }
 
         [Header("카드 설명")]
         [SerializeField]
@@ -89,5 +71,12 @@ namespace NYH.BattleCardSystem
         private string description;
 
         public string Description => description;
+
+        public override int SharedCardID => CardID;
+        public override string SharedCardName => CardName;
+        public override Sprite SharedImage => Image;
+        public override string SharedDescription => Description;
+        public override int SharedBaseCost => ActionPointCost;
+        public override IReadOnlyList<Effect> SharedEffects => Effects;
     }
 }

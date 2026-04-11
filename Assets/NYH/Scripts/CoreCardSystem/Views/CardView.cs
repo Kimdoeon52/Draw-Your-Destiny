@@ -1,10 +1,11 @@
 ﻿namespace NYH.CoreCardSystem
 {
+    using System.Linq;
+    using DG.Tweening;
     using TMPro;
     using UnityEngine;
-    using UnityEngine.UI;
-    using DG.Tweening;
     using UnityEngine.EventSystems;
+    using UnityEngine.UI;
 
     /// <summary>
     /// 화면에 보이는 카드를 띄우는 view 스크립트.
@@ -32,24 +33,25 @@
         public bool UseBuiltInInteractions { get; set; } = true;
 
         private Vector3 currentVelocity;
-        private bool isDragging = false;
-        private bool isPickedUp = false;
-        private bool isTargetingMode = false;
+        private bool isDragging;
+        private bool isPickedUp;
+        private bool isTargetingMode;
         public bool IsTargetingMode => isTargetingMode;
         private Vector3 pointerDownMousePos;
-        private float clickThreshold = 20f;
+        private readonly float clickThreshold = 20f;
         private float targetingThresholdY;
         private Vector3 targetingCenterPos;
-        private bool hasLoggedTargetingPreviewUpdate = false;
-
+        private bool hasLoggedTargetingPreviewUpdate;
 
         private Camera mainCamera;
         private HandView cachedHandView;
+        private ICardViewPlayHandler customPlayHandler;
 
         private void Awake()
         {
             mainCamera = Camera.main;
             cachedHandView = FindFirstObjectByType<HandView>();
+            customPlayHandler = GetComponents<MonoBehaviour>().OfType<ICardViewPlayHandler>().FirstOrDefault();
 
             targetingThresholdY = Screen.height * 0.35f;
             targetingCenterPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.2f, 0f);
@@ -66,15 +68,23 @@
             {
                 HandleFollowingMouse();
                 if (Input.GetMouseButtonDown(1))
-                 ReturnToHand();
+                {
+                    ReturnToHand();
+                }
+
                 if (isPickedUp && isTargetingMode && Input.GetMouseButtonDown(0))
-                TryPlayCard();
+                {
+                    TryPlayCard();
+                }
             }
         }
 
         public void Setup(Card card)
         {
-            if (card == null) return;
+            if (card == null)
+            {
+                return;
+            }
 
             Card = card;
             if (titleText != null) titleText.text = card.Title;
@@ -85,7 +95,10 @@
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (isPickedUp || isDragging || AnyCardPickedUp) return;
+            if (isPickedUp || isDragging || AnyCardPickedUp)
+            {
+                return;
+            }
 
             if (!IsHoverPreview)
             {
@@ -97,8 +110,15 @@
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (this == null) return;
-            if (isPickedUp || isDragging || AnyCardPickedUp) return;
+            if (this == null)
+            {
+                return;
+            }
+
+            if (isPickedUp || isDragging || AnyCardPickedUp)
+            {
+                return;
+            }
 
             CardViewHoverSystem.Instance?.Hide();
 
@@ -113,7 +133,7 @@
             if (IsHoverPreview) return;
             if (!UseBuiltInInteractions) return;
             if (eventData.button != PointerEventData.InputButton.Left) return;
-            if (ActionSystem.Instance.IsPerforming) return;
+            if (ActionSystem.Instance != null && ActionSystem.Instance.IsPerforming) return;
 
             if (isPickedUp && !isTargetingMode)
             {
@@ -144,12 +164,38 @@
 
         private void TryPlayCard()
         {
+            if (customPlayHandler == null)
+            {
+                customPlayHandler = GetComponents<MonoBehaviour>().OfType<ICardViewPlayHandler>().FirstOrDefault();
+            }
+
+            bool wasDragged = Vector3.Distance(Input.mousePosition, pointerDownMousePos) > clickThreshold || isDragging || isPickedUp;
+            if (customPlayHandler != null)
+            {
+                bool wasPlayed = customPlayHandler.TryPlayCard(this, Input.mousePosition, wasDragged);
+                if (wasPlayed)
+                {
+                    isPickedUp = false;
+                    isDragging = false;
+                    isTargetingMode = false;
+                    AnyCardPickedUp = false;
+                    CardViewHoverSystem.Instance?.Hide();
+                }
+                else
+                {
+                    ReturnToHand();
+                }
+
+                return;
+            }
+
             if (CardModifierSystem.IsTypeBlocked(Card._CardType))
-           {
+            {
                 Debug.Log($"{Card._CardType} 타입 카드는 지금 사용할 수 없습니다.");
                 ReturnToHand();
                 return;
             }
+
             if (ResourceManager.Instance.Gold < Card.Cost)
             {
                 Debug.Log("골드가 부족하여 카드를 낼 수 없습니다.");
@@ -182,11 +228,14 @@
                 var placementService = FindFirstObjectByType<BuildingPlacementService>();
 
                 if (placementService == null || !placementService.IsPlacing)
-                     return;
+                {
+                    return;
+                }
+
                 if (CardSystem.Instance != null)
                 {
                     Vector3Int tilePos = placementService.GetCurrentPreviewTilePos();
-                    Debug.Log($"[CardView] ?���? ?��?��: {Card?.Title} -> {tilePos}");
+                    Debug.Log($"[CardView] 카드 배치 시도: {Card?.Title} -> {tilePos}");
                     if (CardSystem.Instance.TryQueuePlacementCard(Card, tilePos, IsTargetingMode))
                     {
                         placementService.CancelPlacing();
@@ -302,9 +351,9 @@
                 Vector3Int tilePos = placementService.GetMouseTilePos();
                 if (!hasLoggedTargetingPreviewUpdate)
                 {
-                    
                     hasLoggedTargetingPreviewUpdate = true;
                 }
+
                 placementService.UpdatePreview(tilePos);
             }
         }
@@ -321,8 +370,10 @@
             transform.localScale = Vector3.one;
             transform.rotation = Quaternion.identity;
 
-            if (cachedHandView != null) StartCoroutine(cachedHandView.AddCard(this));
+            if (cachedHandView != null)
+            {
+                StartCoroutine(cachedHandView.AddCard(this));
+            }
         }
     }
 }
-

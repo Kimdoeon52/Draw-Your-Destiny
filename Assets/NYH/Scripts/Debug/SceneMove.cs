@@ -8,7 +8,7 @@ public class SceneMove : MonoBehaviour
 {
     public void moveBattleScene()
     {
-        Debug.Log($"[SceneMove] moveBattleScene 호출: activeScene={SceneManager.GetActiveScene().name}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
+    
         if (BattleDeckCollection.Instance != null)
         {
             Debug.Log($"[SceneMove] 배틀 덱 상태: baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
@@ -27,5 +27,9 @@ public class SceneMove : MonoBehaviour
 
         Debug.Log("[SceneMove] NYH3 배틀 씬 로드 시작");
         SceneManager.LoadScene("NYH3");
+    }
+    public void moveMainScene()
+    {
+        SceneManager.LoadScene("NYH2");
     }
 }

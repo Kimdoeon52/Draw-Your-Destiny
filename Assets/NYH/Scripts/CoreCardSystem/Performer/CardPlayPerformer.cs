@@ -228,11 +228,7 @@
 
             pileState.AddToDiscard(cardView.Card);
             refreshPileCounts?.Invoke();
-
-            cardView.transform.DOKill();
-            cardView.transform.DOScale(Vector3.zero, 0.2f);
-            yield return cardView.transform.DOMove(discardPilePoint.position, 0.2f).WaitForCompletion();
-            Object.Destroy(cardView.gameObject);
+            yield return CardViewAnimationUtility.AnimateDiscard(cardView, discardPilePoint);
         }
 
         private IEnumerator DiscardCardByInstance(Card targetCard)

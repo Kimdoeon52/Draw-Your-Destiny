@@ -1,10 +1,11 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
     using System.Text;
     using UnityEngine;
+    using NYH.CoreCardSystem;
 
-    public class BattleCard
+    public class BattleCard : IRuntimeCard
     {
         public BattleCardData Data { get; }
         public int CurrentCost { get; set; }
@@ -23,6 +24,13 @@ namespace NYH.BattleCardSystem
         public int AttackTargetCount => Data.AttackTargetCount;
         public bool HitsAllTargetsInRange => Data.HitsAllTargetsInRange;
         public BattleAttackPattern AttackPattern => Data.AttackPattern;
+
+        public int RuntimeCardID => CardID;
+        public string RuntimeTitle => Title;
+        public string RuntimeDescription => Description;
+        public Sprite RuntimeImage => Image;
+        public int RuntimeCost => CurrentCost;
+        public IReadOnlyList<Effect> RuntimeEffects => Data != null ? Data.Effects : null;
 
         public BattleCard(BattleCardData data)
         {

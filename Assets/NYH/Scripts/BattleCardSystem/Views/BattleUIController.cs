@@ -23,6 +23,7 @@
         [Header("Shared Card UI")]
         [SerializeField] private HandView handView;
         [SerializeField] private CardViewCreator cardViewCreator;
+        [SerializeField] private Transform discardPilePoint;
 
         [Header("HUD")]
         [SerializeField] private TMP_Text turnText;
@@ -30,6 +31,8 @@
         [SerializeField] private TMP_Text actionPointsText;
         [SerializeField] private Button endTurnButton;
         [SerializeField] private Button mulliganConfirmButton;
+
+        private bool isResolvingEndTurnDiscard;
 
         private void Awake()
         {
@@ -152,6 +155,16 @@
             return true;
         }
 
+        public void HandleShowDeckClicked()
+        {
+            battleCardSystem?.ShowDeck();
+        }
+
+        public void HandleShowDiscardPileClicked()
+        {
+            battleCardSystem?.ShowDiscardPile();
+        }
+
         private void HandlePhaseChanged(BattlePhase _)
         {
             RefreshHud();
@@ -178,7 +191,10 @@
 
             if (battleManager.CurrentPhase == BattlePhase.PlayerTurn)
             {
-                battleManager.EndPlayerTurn();
+                if (!isResolvingEndTurnDiscard)
+                {
+                    StartCoroutine(AnimatePlayerEndTurnDiscardThenEndTurn());
+                }
             }
             else if (battleManager.CurrentPhase == BattlePhase.EnemyTurn)
             {
@@ -213,7 +229,8 @@
 
             if (endTurnButton != null && battleManager != null)
             {
-                endTurnButton.interactable = !battleManager.IsBattleEnded
+                endTurnButton.interactable = !isResolvingEndTurnDiscard
+                    && !battleManager.IsBattleEnded
                     && (battleManager.CurrentPhase == BattlePhase.PlayerTurn || battleManager.CurrentPhase == BattlePhase.EnemyTurn);
             }
 
@@ -260,13 +277,19 @@
                     continue;
                 }
 
-                BattleCardInputBinder binder = cardView.GetComponent<BattleCardInputBinder>();
-                if (binder == null)
+                BattleCardPlayHandler playHandler = cardView.GetComponent<BattleCardPlayHandler>();
+                if (playHandler == null)
                 {
-                    binder = cardView.gameObject.AddComponent<BattleCardInputBinder>();
+                    playHandler = cardView.gameObject.AddComponent<BattleCardPlayHandler>();
                 }
 
-                binder.Bind(battleCard, this);
+                BattleCardPlayHandler legacyBinder = cardView.GetComponent<BattleCardPlayHandler>();
+                if (legacyBinder != null)
+                {
+                    Destroy(legacyBinder);
+                }
+
+                playHandler.Bind(battleCard, this);
                 yield return handView.AddCard(cardView);
                 createdCount++;
             }
@@ -301,6 +324,45 @@
             return new Vector2Int(
                 Mathf.RoundToInt(worldPosition.x),
                 Mathf.RoundToInt(worldPosition.y));
+        }
+
+        private IEnumerator AnimatePlayerEndTurnDiscardThenEndTurn()
+        {
+            if (battleManager == null || battleManager.CurrentPhase != BattlePhase.PlayerTurn)
+            {
+                yield break;
+            }
+
+            if (discardPilePoint == null || handView == null || handView.Cards.Count == 0)
+            {
+                battleManager.EndPlayerTurn();
+                yield break;
+            }
+
+            isResolvingEndTurnDiscard = true;
+            RefreshHud();
+
+            CardView[] cardsToDiscard = new CardView[handView.Cards.Count];
+            for (int i = 0; i < handView.Cards.Count; i++)
+            {
+                cardsToDiscard[i] = handView.Cards[i];
+            }
+
+            foreach (var cardView in cardsToDiscard)
+            {
+                if (cardView == null)
+                {
+                    continue;
+                }
+
+                handView.RemoveCard(cardView.Card);
+                StartCoroutine(CardViewAnimationUtility.AnimateDiscard(cardView, discardPilePoint));
+                yield return new WaitForSeconds(0.05f);
+            }
+
+            battleManager.EndPlayerTurn();
+            isResolvingEndTurnDiscard = false;
+            RefreshHud();
         }
     }
 }

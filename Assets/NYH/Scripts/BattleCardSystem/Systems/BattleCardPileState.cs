@@ -1,4 +1,4 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
     using NYH.CoreCardSystem;
@@ -12,28 +12,18 @@ namespace NYH.BattleCardSystem
         Invalid,
     }
 
-    public class BattleCardPileState
+    public class BattleCardPileState : CardPileStateBase<BattleCard>
     {
         public const int MaxDeckSize = 30;
 
-        private readonly List<BattleCard> drawPile = new();
-        private readonly List<BattleCard> hand = new();
-        private readonly List<BattleCard> discardPile = new();
         private readonly List<BattleCard> exhaustedPile = new();
 
-        public int DrawPileCount => drawPile.Count;
-        public int HandCount => hand.Count;
-        public int DiscardPileCount => discardPile.Count;
         public int ExhaustedPileCount => exhaustedPile.Count;
         public int LimitedDeckCount => CountLimitedCards(drawPile) + CountLimitedCards(hand) + CountLimitedCards(discardPile);
 
-        public IReadOnlyList<BattleCard> Hand => hand;
-
         public void Setup(IEnumerable<BattleCardData> deckSources)
         {
-            drawPile.Clear();
-            hand.Clear();
-            discardPile.Clear();
+            ClearMainPiles();
             exhaustedPile.Clear();
 
             if (deckSources == null)
@@ -130,11 +120,6 @@ namespace NYH.BattleCardSystem
             drawPile.Shuffle();
         }
 
-        public bool RemoveFromHand(BattleCard card)
-        {
-            return card != null && hand.Remove(card);
-        }
-
         public bool ContainsInHand(BattleCard card)
         {
             return card != null && hand.Contains(card);
@@ -142,10 +127,7 @@ namespace NYH.BattleCardSystem
 
         public void SendToDiscard(BattleCard card)
         {
-            if (card != null)
-            {
-                discardPile.Add(card);
-            }
+            AddToDiscard(card);
         }
 
         public void Exhaust(BattleCard card)
@@ -171,16 +153,14 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
-        private void RefillDeckFromDiscard()
+        public override void RefillDeckFromDiscard()
         {
             if (discardPile.Count == 0)
             {
                 return;
             }
 
-            drawPile.AddRange(discardPile);
-            discardPile.Clear();
-            drawPile.Shuffle();
+            base.RefillDeckFromDiscard();
         }
 
         private bool RemoveFromAnyPlayablePile(BattleCard target)
