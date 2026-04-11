@@ -180,18 +180,18 @@ public class GameManager : PersistentSingleton<GameManager>
             (spawnTiles[i], spawnTiles[rand]) = (spawnTiles[rand], spawnTiles[i]);
         }
 
-        for (int i = 0; i < amount; i++)
-        {
-            GameObject human = HumanPool.Instance.GetHuman(0);
-            if (human == null) break;
+        //for (int i = 0; i < amount; i++)
+        //{
+        //    GameObject human = HumanPool.Instance.GetHuman(0);
+        //    if (human == null) break;
 
-            Vector3Int tile = spawnTiles[i % spawnTiles.Count];
-            human.transform.position = tileMapManager.groundTilemap.GetCellCenterWorld(tile);
+        //    Vector3Int tile = spawnTiles[i % spawnTiles.Count];
+        //    human.transform.position = tileMapManager.groundTilemap.GetCellCenterWorld(tile);
 
-            HumanUnit humanUnit = human.GetComponent<HumanUnit>();
-            humanUnit.SetUnitInfo(unitInfo);
-            humanUnit.UnitAppear();
-        }
+        //    HumanUnit humanUnit = human.GetComponent<HumanUnit>();
+        //    humanUnit.SetUnitInfo(unitInfo);
+        //    humanUnit.UnitAppear();
+        //}
     }
 
     // 플레이어 영주성(lordCastleSize×lordCastleSize) 바깥 1칸 링 타일 목록

@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using Base;
+﻿using Base;
+using UnityEngine;
 
-public class Farmer : HumanBase
+public class Shoper : HumanBase
 {
     protected override void OnEnable()
     {

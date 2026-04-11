@@ -1,42 +1,42 @@
-using NUnit.Framework;
+ï»¿using NUnit.Framework;
 using UnityEngine;
 
 public class MemoryCard : MonoBehaviour
 {
     //private List<> usedCardsThisTurn = new List<>();
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    [SerializeField] private HumanPool humanPool;
+    //[SerializeField] private HumanPool humanPool;
 
-    void Start()
-    {
-        if (humanPool == null)
-            humanPool = FindAnyObjectByType<HumanPool>();
-    }
+    //void Start()
+    //{
+    //    if (humanPool == null)
+    //        humanPool = FindAnyObjectByType<HumanPool>();
+    //}
 
     //public void UseCard(CardType cardType)
     //{
-    //    if(cardType == "ÀÎ°£Àü¿ë")
+    //    if(cardType == "ì¸ê°„ì „ìš©")
     //    {
     //        usedCardsThisTurn.Add(cardType);
-    //        Debug.Log($"Ä«µå ÀúÀåµÊ: {cardType}");
+    //        Debug.Log($"ì¹´ë“œ ì €ì¥ë¨: {cardType}");
     //    }
     //}
 
     // Update is called once per frame
     //public void UseAllUnitTurnCards()
     //{
-    //    Debug.Log("ÀÏ°ı ½ÇÇà");
+    //    Debug.Log("ì¼ê´„ ì‹¤í–‰");
 
-    //    foreach (CardType card in usedCardsThisTurn) //¿©±â¿¡ ÇØ´ç Ä«µå È¿°ú Áı¾î³ÖÀÚ^^.
+    //    foreach (CardType card in usedCardsThisTurn) //ì—¬ê¸°ì— í•´ë‹¹ ì¹´ë“œ íš¨ê³¼ ì§‘ì–´ë„£ì^^.
     //    {
     //        switch (card)
     //        {
-    //            case CardType.AdultUnitCard://´ëÃæ ÀÌ·± Ä«µå¸¦ »ç¿ëÇÏ¸é...?
-    //                SpawnAdultHumans(5); //ÀÌ·± È¿°ú. 
+    //            case CardType.AdultUnitCard://ëŒ€ì¶© ì´ëŸ° ì¹´ë“œë¥¼ ì‚¬ìš©í•˜ë©´...?
+    //                SpawnAdultHumans(5); //ì´ëŸ° íš¨ê³¼. 
     //                break;
     //        }
     //    }
 
-    //    usedCardsThisTurn.Clear(); //ÅÏ³¡³ª¸é ½Ï´Ù ¹ö¸®°í
+    //    usedCardsThisTurn.Clear(); //í„´ëë‚˜ë©´ ì‹¹ë‹¤ ë²„ë¦¬ê³ 
     //}
 }

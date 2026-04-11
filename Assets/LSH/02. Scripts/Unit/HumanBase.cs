@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using PoolBase;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -20,26 +21,26 @@ public enum LevelBase //시대별 상태임
     Level2, //신석기
     Level3 //철기
 }
-//public enum Job
-//{
-//    //기본 농부, 상점주인
-//    Farmer,
-//    Shoper,
-//    //1단계 돌도끼병
-//    RockWarrior,
-//    //2단계 힐러, 아처
-//    Healer,
-//    Archer,
-//    //3단계 마법사, 기마병, 자이언트같은거
-//    Wizzard,
-//    HorseWarrior,
-//    SuperUnit
-//}
+public enum UnitTypeBase
+{
+    //기본 생산 직업
+    Farmer,
+    Shoper,
+    //1단계 돌도끼병
+    RockWarrior,
+    //2단계 힐러, 아처
+    Healer,
+    Archer,
+    //3단계 마법사, 기마병, 자이언트같은거
+    Wizzard,
+    HorseWarrior,
+    SuperUnit
+}
 namespace Base
 {
     public class HumanBase : MonoBehaviour // 일반 유닛이 공통으로 가지는 기본 베이스가 됨.
     {
-        [Header("이동 속도")] //이거는 전투원 위주로 사용할꺼임.
+        [Header("이동 속도")] 
         [SerializeField] protected float moveSpeed = 3f;
 
         [Header("현재 상태")]
@@ -56,6 +57,8 @@ namespace Base
         [Header("소속 문명 ID")]
         public int ownerCivID;
 
+        [Header("유닛 직업")]
+        [SerializeField] protected UnitTypeBase unitTypeBase;
         protected Animator anime;
         protected CancellationTokenSource moveCts;
         protected List<Vector3Int> currentPath = new List<Vector3Int>();
@@ -78,6 +81,7 @@ namespace Base
         protected virtual void OnEnable()//초기화
         {
             UnitAppear();
+
         }
         protected virtual void OnDisable() //유닛이 비활성화 될 때 이동 루프 정지
         {
@@ -114,6 +118,7 @@ namespace Base
             anime.SetInteger("age", age);
             if (Random.value < naturalDeathChance)
             {
+                Debug.Log($"{gameObject.name}이(가) 사망했습니다.");
                 Dead();
             }
         }
@@ -149,11 +154,22 @@ namespace Base
                     break;
             }
         }
+        //=========================사망 시 풀 반환 처리를 위한 곳========================================
+        private IHumanPool ownerPool; //자신이 속한 풀 참조
 
+        public void SetOwnerPool(IHumanPool pool) //GetHuman에서 자신을 불러온 풀을 참조하는거임 그래야 원래 풀로 돌아갈 수 있음
+        {
+            ownerPool = pool; //풀 참조
+        }
         protected virtual void Dead() //사망 처리
         {
             StopMoveLoop();
-            HumanPool.Instance.ReturnHuman(gameObject); //객체 풀로 반환하여 재사용
+            if(ownerPool == null)
+            {
+                Debug.LogError("풀 참조가 없습니다. 사망한 유닛이 풀로 반환되지 않습니다.");
+                return;
+            }
+            ownerPool?.ReturnHuman(gameObject); //pool이 null인지 체크 후 객체 풀로 반환하여 재사용
         }
         //======================== 가만히 있는 유닛 랜덤 이동 처리 =================================
 
@@ -296,6 +312,6 @@ namespace Base
     {
         void TakeDamage(int damage); //데미지 처리 함수
         void SetupHealth(); //체력 설정 함수
-        void Attack(FightBase target); //공격 함수
+        void Attack(int targetID); //공격 함수
     }
 }

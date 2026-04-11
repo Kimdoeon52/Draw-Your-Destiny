@@ -18,7 +18,7 @@ public class HumanUnit : MonoBehaviour
     [Header("원본 데이터")]
     public UnitInfo unitInfo;
     public BuildingData buildingData;
-    public HumanPool humanPool;
+    //public HumanPool humanPool;
 
     [Header("현재 상태")]
     [SerializeField] public int age;
@@ -65,7 +65,7 @@ public class HumanUnit : MonoBehaviour
     }
     public void UnitAppear()
     {
-        humanPool = FindAnyObjectByType<HumanPool>();
+        //humanPool = FindAnyObjectByType<HumanPool>();
         naturalDeathChance = unitInfo.startNaturalDeathChance;
         gender = Random.value < 0.5f ? Gender.Male : Gender.Female;
         ageGroup = AgeGroup.Baby;
@@ -231,7 +231,7 @@ public class HumanUnit : MonoBehaviour
         isAssignedToFarm = false;
         isProcessingFarmAssignment = false;
 
-        humanPool.ReturnHuman(this.gameObject);
+        //humanPool.ReturnHuman(this.gameObject);
 
         if (BuildingRegistry.Instance != null && oldFarm != null)
             BuildingRegistry.Instance.NotifyFarmVacancy(oldFarm);//농장 빈자리 알림

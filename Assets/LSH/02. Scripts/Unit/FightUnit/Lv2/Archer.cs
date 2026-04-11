@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using Base;
-public class RockWarrior : HumanBase, IFightable
+public class Archer : HumanBase, IFightable
 {
     [Header("최대체력")]
     [SerializeField] private int maxHealth;
@@ -8,15 +8,13 @@ public class RockWarrior : HumanBase, IFightable
     [SerializeField] int currentHealth;
     [Header("공격력")]
     [SerializeField] int attackPower;
-
     protected override void OnEnable()
-    {//무난한 일반 병사
+    {
         base.OnEnable();
-        maxHealth = 150;
-        attackPower = 20;
-        moveSpeed = 3f;
+        maxHealth = 200;
+        attackPower = 30;
         SetupHealth();
-        unitTypeBase = UnitTypeBase.RockWarrior;
+        unitTypeBase = UnitTypeBase.Archer;
     }
     protected override void Update()
     {
@@ -25,14 +23,14 @@ public class RockWarrior : HumanBase, IFightable
         {
             Dead();
         }
-        if(Input.GetKeyDown(KeyCode.S)) //임시 공격받았음
+        if (Input.GetKeyDown(KeyCode.S)) //임시 공격받았음
         {
             TakeDamage(10);
         }
     }
     public void Attack(int targetID)
     {
-        
+
     }
 
     public void SetupHealth()
