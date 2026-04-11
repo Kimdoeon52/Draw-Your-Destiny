@@ -27,7 +27,22 @@ public class GameStarter : MonoBehaviour
             Debug.LogError("GameStarter: 씬에 GameManager가 없습니다!");
         }
 
-        if (CardSystem.Instance != null && myDeck != null && myDeck.Count > 0)
+        CivilizationDeckStateStore deckStateStore = CivilizationDeckStateStore.GetOrCreate();
+
+        if (CardSystem.Instance != null && deckStateStore.TryConsume(out CardPileRuntimeState storedState))
+        {
+            if (!CardSystem.Instance.RestoreRuntimeState(storedState))
+            {
+                Debug.LogWarning("GameStarter: 저장된 문명 덱 복원에 실패해 기본 덱으로 다시 세팅합니다.");
+                if (myDeck != null && myDeck.Count > 0)
+                {
+                    CardSystem.Instance.Setup(myDeck);
+                    yield return new WaitForSeconds(0.1f);
+                    ActionSystem.Instance.Perform(new DrawCardsGA(5));
+                }
+            }
+        }
+        else if (CardSystem.Instance != null && myDeck != null && myDeck.Count > 0)
         {
             CardSystem.Instance.Setup(myDeck);
             yield return new WaitForSeconds(0.1f);

@@ -13,9 +13,9 @@ namespace NYH.BattleCardSystem
         public int UserUnitSpeed { get; }
 
         public bool WasPlayed { get; set; }
-        public bool PaidByFood { get; set; }
+        public bool PaidByActionPoints { get; set; }
         public bool UsedHealthPenalty { get; set; }
-        public int FoodSpent { get; set; }
+        public int ActionPointsSpent { get; set; }
         public int HealthPenaltyAmount { get; set; }
 
         public BattlePlayCardGA(

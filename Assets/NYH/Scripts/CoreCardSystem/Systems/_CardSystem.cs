@@ -72,6 +72,25 @@
             Debug.Log($"[_CardSystem] 덱 세팅 완료: {pileState.DrawPileCount}장");
         }
 
+        public CardPileRuntimeState CaptureRuntimeState()
+        {
+            return pileState.ExportRuntimeState();
+        }
+
+        public bool RestoreRuntimeState(CardPileRuntimeState state)
+        {
+            if (state == null || CardCatalog.Instance == null)
+            {
+                return false;
+            }
+
+            pileState.ImportRuntimeState(state, id => CardCatalog.Instance.GetByID(id));
+            RefreshPileCounts();
+            RefreshVisibleCardViews();
+            Debug.Log("[_CardSystem] 저장된 문명 덱 상태를 복원했습니다.");
+            return true;
+        }
+
         public IEnumerator OfferRandomCatalogCardToDeck(int amount)
         {
             yield return selectionPerformer.OfferRandomCatalogCardToDeck(amount);

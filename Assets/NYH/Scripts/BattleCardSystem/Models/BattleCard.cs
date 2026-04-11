@@ -27,7 +27,7 @@ namespace NYH.BattleCardSystem
         public BattleCard(BattleCardData data)
         {
             Data = data;
-            CurrentCost = data != null ? data.FoodCost : 0;
+            CurrentCost = data != null ? data.ActionPointCost : 0;
         }
 
         private string BuildDescription()

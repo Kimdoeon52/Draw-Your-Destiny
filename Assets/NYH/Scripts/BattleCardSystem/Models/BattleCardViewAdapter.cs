@@ -31,7 +31,7 @@ namespace NYH.BattleCardSystem
                 battleCardData.CardName,
                 ResolvePreviewCardType(battleCardData.CardType),
                 battleCardData.Image,
-                battleCardData.FoodCost,
+                battleCardData.ActionPointCost,
                 battleCardData.Description,
                 battleCardData.Effects);
         }

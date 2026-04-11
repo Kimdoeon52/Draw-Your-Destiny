@@ -24,11 +24,18 @@
             Instance = this as T;
         }
 
+        protected virtual void OnDestroy()
+        {
+            if (Instance == this as T)
+            {
+                Instance = null;
+            }
+        }
+
         protected virtual void OnApplicationQuit()
         {
             // 게임 종료 시 참조를 정리합니다.
             Instance = null;
-            Destroy(gameObject);
         }
     }
 }

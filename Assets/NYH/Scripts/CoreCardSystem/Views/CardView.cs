@@ -29,6 +29,7 @@
         public Card Card { get; private set; }
         public static bool AnyCardPickedUp = false;
         public bool IsHoverPreview { get; set; } = false;
+        public bool UseBuiltInInteractions { get; set; } = true;
 
         private Vector3 currentVelocity;
         private bool isDragging = false;
@@ -56,6 +57,11 @@
 
         private void Update()
         {
+            if (!UseBuiltInInteractions)
+            {
+                return;
+            }
+
             if (isPickedUp || isDragging)
             {
                 HandleFollowingMouse();
@@ -105,6 +111,7 @@
         public void OnPointerDown(PointerEventData eventData)
         {
             if (IsHoverPreview) return;
+            if (!UseBuiltInInteractions) return;
             if (eventData.button != PointerEventData.InputButton.Left) return;
             if (ActionSystem.Instance.IsPerforming) return;
 
@@ -127,6 +134,7 @@
         public void OnPointerUp(PointerEventData eventData)
         {
             if (IsHoverPreview) return;
+            if (!UseBuiltInInteractions) return;
             if (eventData.button != PointerEventData.InputButton.Left || !isDragging) return;
 
             isDragging = false;

@@ -3,6 +3,7 @@ namespace NYH.BattleCardSystem
     using SerializeReferenceEditor;
     using System.Collections.Generic;
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     public enum BattleCardType
     {
@@ -60,7 +61,8 @@ namespace NYH.BattleCardSystem
         [field: SerializeField] public Sprite Image { get; private set; }
 
         [Header("전투 코스트 / 덱 규칙")]
-        [field: SerializeField] public int FoodCost { get; private set; }
+        [field: FormerlySerializedAs("<FoodCost>k__BackingField")]
+        [field: SerializeField] public int ActionPointCost { get; private set; }
         [field: SerializeField] public bool IgnoresDeckLimit { get; private set; }
         [field: SerializeField] public bool IsConsumable { get; private set; } = true;
 

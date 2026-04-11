@@ -7,11 +7,11 @@ namespace NYH.BattleCardSystem
     public class BattlePlayPerformer
     {
         private readonly BattleCardPileState pileState;
-        private readonly System.Func<BattleCard, int, (bool paidByFood, int foodSpent, int healthPenalty)> resolveCost;
+        private readonly System.Func<BattleCard, int, (bool paidByActionPoints, int actionPointsSpent, int healthPenalty)> resolveCost;
 
         public BattlePlayPerformer(
             BattleCardPileState pileState,
-            System.Func<BattleCard, int, (bool paidByFood, int foodSpent, int healthPenalty)> resolveCost)
+            System.Func<BattleCard, int, (bool paidByActionPoints, int actionPointsSpent, int healthPenalty)> resolveCost)
         {
             this.pileState = pileState;
             this.resolveCost = resolveCost;
@@ -54,13 +54,13 @@ namespace NYH.BattleCardSystem
             }
 
             playCardGA.WasPlayed = true;
-            playCardGA.PaidByFood = costResult.paidByFood;
+            playCardGA.PaidByActionPoints = costResult.paidByActionPoints;
             playCardGA.UsedHealthPenalty = costResult.healthPenalty > 0;
-            playCardGA.FoodSpent = costResult.foodSpent;
+            playCardGA.ActionPointsSpent = costResult.actionPointsSpent;
             playCardGA.HealthPenaltyAmount = costResult.healthPenalty;
 
             Debug.Log(
-                $"[BattleCardSystem] 카드 사용: {playCardGA.Card.Title}, foodSpent={playCardGA.FoodSpent}, hpPenalty={playCardGA.HealthPenaltyAmount}");
+                $"[BattleCardSystem] 카드 사용: {playCardGA.Card.Title}, actionPointsSpent={playCardGA.ActionPointsSpent}, hpPenalty={playCardGA.HealthPenaltyAmount}");
 
             QueueBattleCardAction(playCardGA);
 

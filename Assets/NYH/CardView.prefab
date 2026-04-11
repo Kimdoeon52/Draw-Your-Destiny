@@ -30,8 +30,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1884323851720310958}
   - {fileID: 2645487071218511513}
+  - {fileID: 1884323851720310958}
   - {fileID: 7779781046706532169}
   - {fileID: 458496637577695443}
   - {fileID: 5862010772005921413}
@@ -119,8 +119,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -85.09522, y: 152.74658}
-  m_SizeDelta: {x: -217.7569, y: -350.0832}
+  m_AnchoredPosition: {x: -87.471924, y: 152.74658}
+  m_SizeDelta: {x: -213.0034, y: -350.0832}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7971850164004751415
 CanvasRenderer:
@@ -256,8 +256,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 15.526, y: 147.92688}
-  m_SizeDelta: {x: -70.628, y: -340.4549}
+  m_AnchoredPosition: {x: 18.550903, y: 151.38397}
+  m_SizeDelta: {x: -76.6779, y: -347.3691}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8777063996269635570
 CanvasRenderer:
@@ -315,7 +315,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 39.5
+  m_fontSize: 32.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -393,8 +393,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.7590027, y: 41.771286}
-  m_SizeDelta: {x: -114.611, y: -232.3115}
+  m_AnchoredPosition: {x: -2.8110962, y: 39.278}
+  m_SizeDelta: {x: -93.1911, y: -202.24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5618211461937814823
 CanvasRenderer:
@@ -499,7 +499,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7668227454539584980, guid: c82344d4c9f2c4f458a5521c4be4272d,
+  m_Sprite: {fileID: 5529886436784579953, guid: 106346c7a9c9e3e4ebf6c6e5f4a84c41,
     type: 3}
   m_Type: 0
   m_PreserveAspect: 0

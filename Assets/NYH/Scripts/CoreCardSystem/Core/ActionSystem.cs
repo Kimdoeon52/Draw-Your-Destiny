@@ -21,8 +21,26 @@
         private static Dictionary<Type, List<Action<GameAction>>> postSubs = new();
         private static Dictionary<Type, Func<GameAction, IEnumerator>> performers = new();
 
+        protected override void Awake()
+        {
+            base.Awake();
+            if (Instance != this)
+            {
+                return;
+            }
+
+            DontDestroyOnLoad(gameObject);
+            Debug.Log($"[ActionSystem] Awake 완료: scene={gameObject.scene.name}, object={name}");
+        }
+
         public void Perform(GameAction action, System.Action OnPerformFinished = null)
         {
+            if (action == null)
+            {
+                Debug.LogWarning("[ActionSystem] null 액션은 실행할 수 없습니다.");
+                return;
+            }
+
             actionQueue.Enqueue(action);
             if (!IsPerforming)
             {

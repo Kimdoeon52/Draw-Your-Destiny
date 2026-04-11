@@ -34,7 +34,14 @@ namespace NYH.BattleCardSystem
         protected override void Awake()
         {
             base.Awake();
+            if (Instance != this)
+            {
+                Debug.LogWarning($"[BattleDeckCollection] 중복 인스턴스 감지로 파괴 예정: scene={gameObject.scene.name}, object={name}");
+                return;
+            }
+
             DontDestroyOnLoad(gameObject);
+            Debug.Log($"[BattleDeckCollection] Awake 완료: scene={gameObject.scene.name}, object={name}, baseDeck={baseBattleDeck.Count}, earned={earnedBattleCards.Count}");
         }
 
         public void ConfigureBaseDeck(IEnumerable<BattleCardData> source)
@@ -44,11 +51,14 @@ namespace NYH.BattleCardSystem
             {
                 baseBattleDeck.AddRange(source);
             }
+
+            Debug.Log($"[BattleDeckCollection] 기본 전투 덱 설정: baseDeck={baseBattleDeck.Count}");
         }
 
         public void ResetRun()
         {
             earnedBattleCards.Clear();
+            Debug.Log("[BattleDeckCollection] 런 초기화: earnedBattleCards cleared");
         }
 
         public List<BattleCardData> BuildBattleDeckSources()
@@ -63,32 +73,38 @@ namespace NYH.BattleCardSystem
         {
             if (data == null)
             {
+                Debug.LogWarning("[BattleDeckCollection] 보상 카드 추가 실패: data is null");
                 return BattleDeckAddResult.Invalid;
             }
 
             if (ShouldIgnoreDeckLimit(data))
             {
                 earnedBattleCards.Add(data);
+                Debug.Log($"[BattleDeckCollection] 제한 무시 카드 추가: {data.CardName}, earned={earnedBattleCards.Count}");
                 return BattleDeckAddResult.Added;
             }
 
             if (GetLimitedEarnedCount() < BattleCardPileState.MaxDeckSize)
             {
                 earnedBattleCards.Add(data);
+                Debug.Log($"[BattleDeckCollection] 보상 카드 추가: {data.CardName}, earned={earnedBattleCards.Count}");
                 return BattleDeckAddResult.Added;
             }
 
             if (replaceTarget == null)
             {
+                Debug.LogWarning($"[BattleDeckCollection] 교체 대상 필요: {data.CardName}");
                 return BattleDeckAddResult.NeedsReplacement;
             }
 
             if (!earnedBattleCards.Remove(replaceTarget))
             {
+                Debug.LogWarning($"[BattleDeckCollection] 교체 실패: remove target not found, new={data.CardName}, target={replaceTarget.CardName}");
                 return BattleDeckAddResult.Invalid;
             }
 
             earnedBattleCards.Add(data);
+            Debug.Log($"[BattleDeckCollection] 보상 카드 교체: removed={replaceTarget.CardName}, added={data.CardName}, earned={earnedBattleCards.Count}");
             return BattleDeckAddResult.Replaced;
         }
 
@@ -96,10 +112,12 @@ namespace NYH.BattleCardSystem
         {
             if (data == null)
             {
+                Debug.LogWarning("[BattleDeckCollection] 포션 카드 추가 실패: data is null");
                 return;
             }
 
             earnedBattleCards.Add(data);
+            Debug.Log($"[BattleDeckCollection] 포션 카드 추가: {data.CardName}, earned={earnedBattleCards.Count}");
         }
 
         private int GetLimitedEarnedCount()

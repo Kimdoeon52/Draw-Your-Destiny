@@ -17,7 +17,7 @@ MonoBehaviour:
   <CardType>k__BackingField: 1
   <Image>k__BackingField: {fileID: 3420474935965269878, guid: 1c9bc0d104c01934da10d4333b9dc48b,
     type: 3}
-  <FoodCost>k__BackingField: 0
+  <ActionPointCost>k__BackingField: 0
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 1
   <Keywords>k__BackingField: 

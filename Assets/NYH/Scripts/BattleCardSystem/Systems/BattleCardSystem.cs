@@ -30,7 +30,7 @@ namespace NYH.BattleCardSystem
         [SerializeField] private List<BattleCardData> earnedBattleCards = new();
 
         [Header("전투 코스트 규칙")]
-        [SerializeField] private int startingFood = 10;
+        [SerializeField] private int maxActionPoints = 15;
         [SerializeField, Range(0f, 1f)] private float healthPenaltyPerCostStep = 0.1f;
 
         private BattleCardPileState pileState;
@@ -38,7 +38,7 @@ namespace NYH.BattleCardSystem
         private BattleTacticalPerformer tacticalPerformer;
 
         public BattleCardPileState PileState => pileState;
-        public int CurrentFood { get; private set; }
+        public int CurrentActionPoints { get; private set; }
 
         protected override void Awake()
         {
@@ -46,6 +46,8 @@ namespace NYH.BattleCardSystem
             pileState = new BattleCardPileState();
             playPerformer = new BattlePlayPerformer(pileState, ResolveCardCost);
             tacticalPerformer = new BattleTacticalPerformer();
+
+            Debug.Log($"[BattleCardSystem] Awake 완료: scene={gameObject.scene.name}, fallbackBaseDeck={baseBattleDeck.Count}, fallbackEarned={earnedBattleCards.Count}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
 
             ActionSystem.AttachPerformer<BattlePlayCardGA>(action => Perform(action));
             ActionSystem.AttachPerformer<BattleAttackGA>(action => Perform(action));
@@ -66,14 +68,17 @@ namespace NYH.BattleCardSystem
             }
 
             pileState.Setup(mergedDeck);
+            Debug.Log($"[BattleCardSystem] SetupBattleDeck 완료: mergedDeck={mergedDeck.Count}, drawPile={pileState.DrawPileCount}, hand={pileState.HandCount}, discard={pileState.DiscardPileCount}");
         }
 
         public void SetupFromInspector()
         {
             if (BattleDeckCollection.Instance != null)
             {
+                Debug.Log($"[BattleCardSystem] SetupFromInspector: BattleDeckCollection 사용, baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
                 if (BattleDeckCollection.Instance.BaseBattleDeck.Count == 0 && baseBattleDeck.Count > 0)
                 {
+                    Debug.LogWarning($"[BattleCardSystem] BattleDeckCollection 기본 덱이 비어 있어 fallback 기본 덱 {baseBattleDeck.Count}장을 복사합니다.");
                     BattleDeckCollection.Instance.ConfigureBaseDeck(baseBattleDeck);
                 }
 
@@ -83,20 +88,30 @@ namespace NYH.BattleCardSystem
             }
             else
             {
+                Debug.LogWarning($"[BattleCardSystem] SetupFromInspector: BattleDeckCollection 없음, fallback 사용 baseDeck={baseBattleDeck.Count}, earned={earnedBattleCards.Count}");
                 SetupBattleDeck(baseBattleDeck, earnedBattleCards);
             }
 
-            SetupBattleFood(startingFood);
+            SetupActionPoints(0);
+            Debug.Log($"[BattleCardSystem] 행동력 초기화 완료: currentActionPoints={CurrentActionPoints}");
         }
 
-        public void SetupBattleFood(int food)
+        public void SetupActionPoints(int actionPoints)
         {
-            CurrentFood = Mathf.Max(0, food);
+            CurrentActionPoints = Mathf.Clamp(actionPoints, 0, maxActionPoints);
         }
 
-        public void AddFood(int amount)
+        public void AddActionPoints(int amount)
         {
-            CurrentFood = Mathf.Max(0, CurrentFood + amount);
+            CurrentActionPoints = Mathf.Clamp(CurrentActionPoints + amount, 0, maxActionPoints);
+        }
+
+        public int GainTurnActionPoints(int turnNumber)
+        {
+            int gainAmount = Mathf.Max(0, turnNumber);
+            int before = CurrentActionPoints;
+            AddActionPoints(gainAmount);
+            return CurrentActionPoints - before;
         }
 
         public BattleDeckAddResult AddEarnedBattleCard(BattleCardData data, BattleCard replaceTarget = null)
@@ -178,7 +193,7 @@ namespace NYH.BattleCardSystem
             }
         }
 
-        private (bool paidByFood, int foodSpent, int healthPenalty) ResolveCardCost(BattleCard card, int userCurrentHealth)
+        private (bool paidByActionPoints, int actionPointsSpent, int healthPenalty) ResolveCardCost(BattleCard card, int userCurrentHealth)
         {
             if (card == null)
             {
@@ -186,23 +201,23 @@ namespace NYH.BattleCardSystem
             }
 
             int cost = Mathf.Max(0, card.CurrentCost);
-            if (CurrentFood >= cost)
+            if (CurrentActionPoints >= cost)
             {
-                CurrentFood -= cost;
+                CurrentActionPoints -= cost;
                 return (true, cost, 0);
             }
 
-            int remainingFood = CurrentFood;
-            CurrentFood = 0;
+            int remainingActionPoints = CurrentActionPoints;
+            CurrentActionPoints = 0;
 
             if (userCurrentHealth <= 0 || cost <= 0)
             {
-                return (false, remainingFood, 0);
+                return (false, remainingActionPoints, 0);
             }
 
             float penaltyRatio = Mathf.Clamp01(cost * healthPenaltyPerCostStep);
             int healthPenalty = Mathf.Max(1, Mathf.FloorToInt(userCurrentHealth * penaltyRatio));
-            return (false, remainingFood, healthPenalty);
+            return (false, remainingActionPoints, healthPenalty);
         }
     }
 }
