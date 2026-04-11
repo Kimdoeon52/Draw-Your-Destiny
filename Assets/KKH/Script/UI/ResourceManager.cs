@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 /*
@@ -14,9 +14,8 @@ public class ResourceManager : MonoBehaviour
     public int Population => population;
     public int MaxPopulation => maxPopulation;
     public int Food => food;
-    public int Iron => iron;
 
-    public event Action<int, int, int, int, int> OnResourceChanged; //자원 변경 이벤트 (골드, 연구, 인구, 식량, 광석)
+    public event Action<int, int, int, int> OnResourceChanged; //자원 변경 이벤트 (골드, 연구, 인구, 식량)
 
     [Header("자원 초기값")]
     [SerializeField] private int gold = 1000; //골드 초기값
@@ -24,7 +23,6 @@ public class ResourceManager : MonoBehaviour
     [SerializeField] private int population = 10; //인구 초기값
     [SerializeField] private int maxPopulation = 20; //최대 인구 초기값
     [SerializeField] private int food = 500; //식량 초기값
-    [SerializeField] private int iron = 300; //광석 초기값
 
     private void Awake()
     {
@@ -69,14 +67,8 @@ public class ResourceManager : MonoBehaviour
         food += amount;
         NotifyUI(); //자원 변경 시 UI 업데이트 알림
     }
-    public void AddIron(int amount)
-    {
-        iron += amount;
-        NotifyUI(); //자원 변경 시 UI 업데이트 알림
-    }
-
     private void NotifyUI()
     {
-        OnResourceChanged?.Invoke(gold, research, population, food, iron); //자원 변경 이벤트 호출
+        OnResourceChanged?.Invoke(gold, research, population, food); //자원 변경 이벤트 호출
     }
 }

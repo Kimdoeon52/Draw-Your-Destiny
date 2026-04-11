@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TestInput : MonoBehaviour
 {
@@ -34,11 +34,6 @@ public class TestInput : MonoBehaviour
         {
             ResourceManager.Instance.AddFood(50); // 식량 50 추가
             Debug.Log("F Key Pressed: Added 50 Food.");
-        }
-        if (Input.GetKeyDown(KeyCode.M)) // 광석 추가 테스트
-        {
-            ResourceManager.Instance.AddIron(50); // 광석 50 추가
-            Debug.Log("M Key Pressed: Added 50 Iron.");
         }
     }
 }
