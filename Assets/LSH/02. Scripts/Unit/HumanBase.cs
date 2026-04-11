@@ -312,6 +312,6 @@ namespace Base
     {
         void TakeDamage(int damage); //데미지 처리 함수
         void SetupHealth(); //체력 설정 함수
-        void Attack(int targetID); //공격 함수
+        void Attack(int targetID); //공격 함수//
     }
 }
