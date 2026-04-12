@@ -480,7 +480,17 @@ public class EventData : ScriptableObject
 
 ## 구현 현황
 
-### ✅ 구현 완료
+### ✅ 구현 완료 (코드)
+
+**레거시 정리 완료**
+- FogManager.cs / AbandonedTerritoryManager.cs / FOG_OF_WAR.md 삭제
+- Enums.cs — FogState 제거, Wall/Outpost BuildingType 제거, UnitRole Textile 제거, Mansion 추가, 군사 건물 전체 반영
+- TileData.cs — fogState 필드 및 생성자 파라미터 제거
+- BuildingInstance.cs — wasEverSeen 필드 제거
+- BuildingData.cs — id / maxPerTerritory / researchPerTurn 필드 추가
+- TileMapManager.cs — ClaimTerritory/ExpandTerritory/TransferTerritory/ExpandOutpostArea/FogManager 호출부 제거, ClearAllTerrainTiles/ClearAllBuildings/ReinitializeTileDataMap/RestoreBuildingInstance 추가
+- CitySpawnManager.cs — AbandonedTerritoryManager/FogManager 호출 제거
+- BuildingPlacementController.cs — LockPlacement/UnlockPlacement/IsPlacementLocked 추가
 
 **건물 배치 시스템 (도언)**
 - 건물 배치 시스템 (StarCraft 방식) — TileMapManager, BuildingPlacementService
@@ -490,15 +500,21 @@ public class EventData : ScriptableObject
 - 프리뷰 위치 버그 수정 (RoundToInt 오차 제거 — 짝수 크기 건물 반 타일 밀림 해결)
 - 건물 자동 업그레이드 데이터 구조 (BuildingData 체인 / upgradesTo)
 
+**월드맵 시스템 코드 (도언) — 코드만 완료, Unity 에디터 연결 미완료**
+- NodeData.cs — 노드 런타임 상태 클래스
+- WorldMapManager.cs — 노드 목록 관리, 페이드 전환, 영지 진입/이탈, 빈 노드 점령, OnMansionRebuilt()
+- NodeButton.cs — 노드 UI 버튼 동작, 문명 색상 갱신
+- NodeDataManager.cs — 지형 타일맵 복사, 건물 저장/복원
+
 ---
 
-### ❌ 미구현
+### ❌ 미구현 / 미연결
 
 **도언 담당**
-- 세계지도형 노드 맵 UI (WorldMapManager, NodeButton)
-- NodeDataManager (노드 진입/이탈 저장·복원, 풀링)
-- 노드별 영지 프리팹 제작 및 지형 편집
-- 영주성 재건 카드 동작
+- 노드별 영지 프리팹 제작 및 지형 편집 (Unity 에디터 작업)
+- Unity 씬 Hierarchy 구성 — WorldMapView/TerritoryRoot/NodePrefab_XX/FadeCanvas
+- Inspector 연결 — WorldMapManager(worldMapView/territoryView/fadePanel/allNodes), NodeButton(nodeID), NodeDataManager(nodeTerrains)
+- 영주성 재건 카드 동작 (카드 시스템 연동 — 카드 쪽에서 WorldMapManager.OnMansionRebuilt() 호출만 하면 됨)
 - AI 노드 확장 로직
 
 **타 팀원 담당 (연동 필요)**
@@ -524,46 +540,6 @@ public class EventData : ScriptableObject
 | goldPerTurn / researchPerTurn 수치 | 미확정 |
 | 카드 목록 전체 (기본 카드 8장 포함) | 미확정 |
 
-## ⚠️ 레거시 코드 정리 (v0.6 전환 작업)
+## ✅ 레거시 코드 정리 완료 (v0.6 전환 작업)
 
-기획 v0.6으로 전환되면서 아래 시스템이 제거되었다.
-Claude Code는 이 파일을 처음 읽을 때 아래 목록을 기준으로
-불필요한 코드를 정리해야 한다.
-
-### 삭제 대상 파일
-
-| 파일 | 이유 |
-|------|------|
-| FogManager.cs | 안개 전쟁 시스템 제거됨 |
-| AbandonedTerritoryManager.cs | 버려진 영지 시스템 제거됨 |
-| FOG_OF_WAR.md | 삭제된 시스템 문서 |
-
-### 리팩토링 대상 파일
-
-| 파일 | 작업 내용 |
-|------|------|
-| TileMapManager.cs | ClaimTerritory / ExpandTerritory / TransferTerritory / InstallWallPerimeter / ExpandOutpostArea / FogManager 호출부 전부 제거 |
-| BuildingPlacementService.cs | FogManager.OnBuildingPlaced() 호출부 제거 |
-| Enums.cs | FogState, UnitRole(Textile 제거) 정리. Wall / Outpost BuildingType 제거 |
-| BuildingInstance.cs | wasEverSeen 필드 제거 |
-
-### 유지 파일
-
-| 파일 | 비고 |
-|------|------|
-| TileMapManager.cs | 위 리팩토링 후 유지 |
-| BuildingPlacementService.cs | 위 리팩토링 후 유지 |
-| BuildingPlacementController.cs | 그대로 유지 |
-| BuildingPreview.cs | 그대로 유지 |
-| BuildingData.cs | id / maxPerTerritory 필드 추가 필요 |
-| BuildingInstance.cs | wasEverSeen 제거 후 유지 |
-| Singleton.cs | 그대로 유지 |
-
-### 신규 생성 대상
-
-| 파일 | 내용 |
-|------|------|
-| WorldMap/NodeData.cs | 노드 런타임 상태 클래스 |
-| WorldMap/WorldMapManager.cs | 노드 맵 전체 관리 싱글톤 |
-| WorldMap/NodeButton.cs | 노드 UI 버튼 동작 |
-| TileMap/Management/NodeDataManager.cs | 노드 진입/이탈 저장·복원, 풀링 |
+기획 v0.6 전환 시 제거 대상이었던 모든 파일·코드 정리 완료.
