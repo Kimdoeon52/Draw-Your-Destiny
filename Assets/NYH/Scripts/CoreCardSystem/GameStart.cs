@@ -8,9 +8,13 @@ public class GameStarter : MonoBehaviour
     [SerializeField] private List<CardData> myDeck;
     [SerializeField] private GameManager gameManager; // 인스펙터에서 확인 가능하도록 수정
 
+    
+
     private IEnumerator Start()
     {
         yield return null; // 시스템 초기화 대기
+
+        
 
         // GameManager가 연결되지 않았다면 씬에서 찾습니다.
         if (gameManager == null)
@@ -27,10 +31,22 @@ public class GameStarter : MonoBehaviour
             Debug.LogError("GameStarter: 씬에 GameManager가 없습니다!");
         }
 
+        // 문명씬 복귀 시 덱/손패/무덤 상태를 복원할지 결정하는 시작 지점입니다.
+        // 전투씬으로 넘어가기 직전에 Store(CaptureRuntimeState())를 해두었다면,
+        // 여기서 TryConsume()으로 저장 상태를 꺼내 RestoreRuntimeState()로 넘깁니다.
         CivilizationDeckStateStore deckStateStore = CivilizationDeckStateStore.GetOrCreate();
 
-        if (CardSystem.Instance != null && deckStateStore.TryConsume(out CardPileRuntimeState storedState))
+        
+        bool hasStoredState = deckStateStore.HasStoredState;
+        bool consumed = deckStateStore.TryConsume(out CardPileRuntimeState storedState);
+
+        Debug.Log($"GameStarter: 덱 상태 저장소에 저장된 상태가 {(hasStoredState ? "있습니다" : "없습니다")}. TryConsume 결과: {(consumed ? "성공" : "실패")}. storedState는 {(storedState != null ? "유효합니다" : "null입니다")}.");
+
+
+        if (CardSystem.Instance != null && consumed)
         {
+            // 저장된 런타임 상태가 있으면 myDeck으로 새로 시작하지 않고,
+            // 저장해둔 draw/hand/discard/extinction 상태를 그대로 복원합니다.
             if (!CardSystem.Instance.RestoreRuntimeState(storedState))
             {
                 Debug.LogWarning("GameStarter: 저장된 문명 덱 복원에 실패해 기본 덱으로 다시 세팅합니다.");

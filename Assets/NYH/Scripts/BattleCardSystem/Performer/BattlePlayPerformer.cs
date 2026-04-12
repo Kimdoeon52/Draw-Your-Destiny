@@ -1,6 +1,7 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using System.Collections;
+    using System.Collections.Generic;
     using NYH.CoreCardSystem;
     using UnityEngine;
 
@@ -41,7 +42,17 @@ namespace NYH.BattleCardSystem
                 yield break;
             }
 
+            if (!CanPlayCard(playCardGA))
+            {
+                yield break;
+            }
+
             var costResult = resolveCost(playCardGA.Card, playCardGA.UserCurrentHealth);
+
+            if (costResult.healthPenalty > 0 && playCardGA.UserUnit != null)
+            {
+                playCardGA.UserUnit.TakeDamage(costResult.healthPenalty);
+            }
 
             pileState.RemoveFromHand(playCardGA.Card);
             if (playCardGA.Card.IsConsumable)
@@ -67,6 +78,49 @@ namespace NYH.BattleCardSystem
             yield return null;
         }
 
+        private static bool CanPlayCard(BattlePlayCardGA playCardGA)
+        {
+            if (playCardGA == null || playCardGA.Card == null)
+            {
+                return false;
+            }
+
+            BattleUnit userUnit = playCardGA.UserUnit;
+            if (userUnit == null)
+            {
+                return true;
+            }
+
+            if (!userUnit.IsAlive)
+            {
+                Debug.LogWarning("[BattleCardSystem] 사망한 유닛은 카드를 사용할 수 없습니다.");
+                return false;
+            }
+
+            if (playCardGA.Card.CardType == BattleCardType.Attack)
+            {
+                if (userUnit.IsStunned)
+                {
+                    Debug.LogWarning("[BattleCardSystem] 기절 상태라 공격 카드를 사용할 수 없습니다.");
+                    return false;
+                }
+
+                if (userUnit.IsDisarmed)
+                {
+                    Debug.LogWarning("[BattleCardSystem] 무장해제 상태라 공격 카드를 사용할 수 없습니다.");
+                    return false;
+                }
+            }
+
+            if (playCardGA.Card.CardType == BattleCardType.Move && userUnit.IsStunned)
+            {
+                Debug.LogWarning("[BattleCardSystem] 기절 상태라 이동 카드를 사용할 수 없습니다.");
+                return false;
+            }
+
+            return true;
+        }
+
         private void QueueBattleCardAction(BattlePlayCardGA playCardGA)
         {
             if (playCardGA.Card == null)
@@ -88,8 +142,10 @@ namespace NYH.BattleCardSystem
                         playCardGA.Card.HitsAllTargetsInRange,
                         playCardGA.Card.AttackPattern,
                         playCardGA.Card.CustomAttackPattern));
+                return;
             }
-            else if (playCardGA.Card.CardType == BattleCardType.Move)
+
+            if (playCardGA.Card.CardType == BattleCardType.Move)
             {
                 ActionSystem.Instance.AddReaction(
                     new BattleMoveGA(
@@ -98,6 +154,41 @@ namespace NYH.BattleCardSystem
                         playCardGA.TargetPosition,
                         playCardGA.Card.MoveAmount,
                         playCardGA.UserUnitSpeed));
+                return;
+            }
+
+            ApplyDirectBattleEffects(playCardGA);
+        }
+
+        private static void ApplyDirectBattleEffects(BattlePlayCardGA playCardGA)
+        {
+            if (playCardGA?.Card?.RuntimeEffects == null)
+            {
+                return;
+            }
+
+            List<BattleUnit> resolvedTargets = new();
+            if (playCardGA.TargetUnit != null)
+            {
+                resolvedTargets.Add(playCardGA.TargetUnit);
+            }
+
+            BattleEffectContext context = new(
+                playCardGA.Card,
+                playCardGA.UserUnit,
+                playCardGA.TargetUnit,
+                playCardGA.TargetPosition,
+                BattleBoardSystem.Instance,
+                BattleCardSystem.Instance);
+
+            foreach (var effect in playCardGA.Card.RuntimeEffects)
+            {
+                if (effect is not BattleEffect battleEffect)
+                {
+                    continue;
+                }
+
+                battleEffect.Apply(context, resolvedTargets);
             }
         }
     }

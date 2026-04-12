@@ -1,6 +1,7 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using System.Collections;
+    using System.Collections.Generic;
     using NYH.CoreCardSystem;
     using UnityEngine;
 
@@ -50,7 +51,7 @@ namespace NYH.BattleCardSystem
         {
             if (attackGA.Attacker == null)
             {
-                Debug.LogWarning("[BattleCardSystem] 공격자 유닛이 없습니다.");
+                Debug.LogWarning("[BattleCardSystem] 공격 유닛이 없습니다.");
                 return;
             }
 
@@ -65,14 +66,51 @@ namespace NYH.BattleCardSystem
                 attackGA.TargetPosition,
                 attackGA);
 
+            if (TryApplyBattleEffects(attackGA, targets))
+            {
+                Debug.Log(
+                    $"[BattleCardSystem] 이펙트 공격 처리: attacker={attackGA.Attacker.name}, targetCount={targets.Count}, pattern={attackGA.AttackPattern}");
+                return;
+            }
+
             foreach (var target in targets)
             {
-                int totalDamage = Mathf.Max(0, attackGA.Damage + attackGA.Attacker.AttackPower);
+                int totalDamage = Mathf.Max(0, attackGA.Damage + attackGA.Attacker.CurrentAttackPower);
                 target.TakeDamage(totalDamage);
             }
 
             Debug.Log(
-                $"[BattleCardSystem] 공격 처리: attacker={attackGA.Attacker.name}, targetCount={targets.Count}, damage={attackGA.Damage}, pattern={attackGA.AttackPattern}");
+                $"[BattleCardSystem] 기본 공격 처리: attacker={attackGA.Attacker.name}, targetCount={targets.Count}, damage={attackGA.Damage}, pattern={attackGA.AttackPattern}");
+        }
+
+        private static bool TryApplyBattleEffects(BattleAttackGA attackGA, IReadOnlyList<BattleUnit> resolvedTargets)
+        {
+            if (attackGA?.SourceCard?.RuntimeEffects == null)
+            {
+                return false;
+            }
+
+            bool appliedAnyEffect = false;
+            BattleEffectContext context = new(
+                attackGA.SourceCard,
+                attackGA.Attacker,
+                attackGA.PrimaryTarget,
+                attackGA.TargetPosition,
+                BattleBoardSystem.Instance,
+                BattleCardSystem.Instance);
+
+            foreach (var effect in attackGA.SourceCard.RuntimeEffects)
+            {
+                if (effect is not BattleEffect battleEffect)
+                {
+                    continue;
+                }
+
+                battleEffect.Apply(context, resolvedTargets);
+                appliedAnyEffect = true;
+            }
+
+            return appliedAnyEffect;
         }
     }
 }

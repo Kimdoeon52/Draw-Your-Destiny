@@ -42,6 +42,7 @@
         private float targetingThresholdY;
         private Vector3 targetingCenterPos;
         private bool hasLoggedTargetingPreviewUpdate;
+        private int originalHandIndex = -1;
 
         private Camera mainCamera;
         private HandView cachedHandView;
@@ -148,6 +149,10 @@
             transform.SetAsLastSibling();
 
             CardViewHoverSystem.Instance?.Hide();
+            if (cachedHandView != null)
+            {
+                originalHandIndex = cachedHandView.GetCardIndex(this);
+            }
             cachedHandView?.RemoveCard(Card);
         }
 
@@ -360,6 +365,7 @@
 
         private void ReturnToHand()
         {
+            //호버 확대 카드 숨김
             CardViewHoverSystem.Instance?.Hide();
 
             if (isTargetingMode) ExitTargetingMode();
@@ -372,7 +378,16 @@
 
             if (cachedHandView != null)
             {
-                StartCoroutine(cachedHandView.AddCard(this));
+                if (originalHandIndex >= 0)
+                {
+                    StartCoroutine(cachedHandView.InsertCard(this, originalHandIndex));
+                }
+                else
+                {
+                    StartCoroutine(cachedHandView.AddCard(this));
+                }
+
+                originalHandIndex = -1;
             }
         }
     }

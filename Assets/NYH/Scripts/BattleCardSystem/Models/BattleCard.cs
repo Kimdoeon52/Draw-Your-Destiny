@@ -48,6 +48,29 @@
 
             StringBuilder builder = new(Data.Description);
             builder.Replace("{cost}", CurrentCost.ToString());
+
+            if (Data.Effects != null)
+            {
+                foreach (var effect in Data.Effects)
+                {
+                    if (effect == null)
+                    {
+                        continue;
+                    }
+
+                    var tokens = effect.GetDescriptionTokens((Card)null);
+                    if (tokens == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var pair in tokens)
+                    {
+                        builder.Replace($"{{{pair.Key}}}", pair.Value);
+                    }
+                }
+            }
+
             return builder.ToString();
         }
     }

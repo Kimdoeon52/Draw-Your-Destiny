@@ -197,7 +197,7 @@ namespace NYH.BattleCardSystem
             System.Action onFinished = null)
         {
             int currentHealth = userUnit != null ? userUnit.CurrentHealth : 0;
-            int unitSpeed = userUnit != null ? userUnit.Speed : 0;
+            int unitSpeed = userUnit != null ? userUnit.CurrentSpeed : 0;
             ActionSystem.Instance.Perform(
                 new BattlePlayCardGA(card, userUnit, targetUnit, targetPosition, currentHealth, unitSpeed),
                 onFinished);

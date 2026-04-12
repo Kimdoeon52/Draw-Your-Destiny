@@ -86,6 +86,7 @@
 
             pileState.ImportRuntimeState(state, id => CardCatalog.Instance.GetByID(id));
             RefreshPileCounts();
+            StartCoroutine(RebuildHandViewFromRuntimeState());
             RefreshVisibleCardViews();
             Debug.Log("[_CardSystem] 저장된 문명 덱 상태를 복원했습니다.");
             return true;
@@ -186,6 +187,32 @@
         public void RefreshVisibleCardViews()
         {
             viewRefreshService.RefreshVisibleCardViews();
+        }
+
+        private IEnumerator RebuildHandViewFromRuntimeState()
+        {
+            if (handView == null || CardViewCreator.Instance == null)
+            {
+                yield break;
+            }
+
+            handView.ClearAllCardsImmediate();
+
+            foreach (var card in pileState.Hand)
+            {
+                if (card == null)
+                {
+                    continue;
+                }
+
+                CardView cardView = CardViewCreator.Instance.CreateCardView(card, Vector3.zero, Quaternion.identity);
+                if (cardView == null)
+                {
+                    continue;
+                }
+
+                yield return handView.AddCard(cardView);
+            }
         }
 
         private void RefreshPileCounts()

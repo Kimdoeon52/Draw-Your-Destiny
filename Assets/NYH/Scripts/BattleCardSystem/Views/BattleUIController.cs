@@ -1,6 +1,7 @@
 ﻿namespace NYH.BattleCardSystem
 {
     using System.Collections;
+    using System.Collections.Generic;
     using NYH.CoreCardSystem;
     using TMPro;
     using UnityEngine;
@@ -16,9 +17,17 @@
      */
     public class BattleUIController : MonoBehaviour
     {
+        private enum AttackTargetingPhase
+        {
+            None,
+            SelectAttacker,
+            SelectTarget,
+        }
+
         [Header("Battle References")]
         [SerializeField] private BattleManager battleManager;
         [SerializeField] private BattleCardSystem battleCardSystem;
+        [SerializeField] private BattleGridPreviewSystem gridPreviewSystem;
 
         [Header("Shared Card UI")]
         [SerializeField] private HandView handView;
@@ -33,6 +42,10 @@
         [SerializeField] private Button mulliganConfirmButton;
 
         private bool isResolvingEndTurnDiscard;
+        private AttackTargetingPhase attackTargetingPhase = AttackTargetingPhase.None;
+        private BattleCard pendingAttackCard;
+        private BattleUnit pendingAttackerUnit;
+        private HashSet<Vector2Int> selectableAttackCells = new();
 
         private void Awake()
         {
@@ -54,6 +67,17 @@
             if (cardViewCreator == null)
             {
                 cardViewCreator = CardViewCreator.Instance;
+            }
+
+            if (gridPreviewSystem == null)
+            {
+                gridPreviewSystem = FindFirstObjectByType<BattleGridPreviewSystem>();
+            }
+
+            if (gridPreviewSystem == null)
+            {
+                GameObject previewObject = new("BattleGridPreviewSystem");
+                gridPreviewSystem = previewObject.AddComponent<BattleGridPreviewSystem>();
             }
 
             if (endTurnButton != null)
@@ -84,6 +108,26 @@
         {
             RefreshHud();
             RefreshHandView();
+        }
+
+        private void Update()
+        {
+            if (attackTargetingPhase == AttackTargetingPhase.None)
+            {
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                CancelAttackTargeting();
+                RefreshHandView();
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                HandleAttackTargetingClick(Input.mousePosition);
+            }
         }
 
         private void OnDisable()
@@ -123,6 +167,12 @@
             if (battleManager.CurrentPhase != BattlePhase.PlayerTurn || battleManager.IsBattleEnded)
             {
                 Debug.LogWarning($"[BattleUI] 카드를 사용할 수 없는 상태입니다: phase={battleManager.CurrentPhase}, ended={battleManager.IsBattleEnded}");
+                return false;
+            }
+
+            if (battleCard.CardType == BattleCardType.Attack)
+            {
+                BeginAttackTargeting(battleCard);
                 return false;
             }
 
@@ -167,6 +217,11 @@
 
         private void HandlePhaseChanged(BattlePhase _)
         {
+            if (battleManager == null || battleManager.CurrentPhase != BattlePhase.PlayerTurn)
+            {
+                CancelAttackTargeting();
+            }
+
             RefreshHud();
         }
 
@@ -178,6 +233,7 @@
 
         private void HandleBattleFinished(BattleResult result)
         {
+            CancelAttackTargeting();
             RefreshHud();
             Debug.Log($"[BattleUI] 전투 종료: victory={result.IsVictory}, turn={result.TurnCount}");
         }
@@ -283,12 +339,6 @@
                     playHandler = cardView.gameObject.AddComponent<BattleCardPlayHandler>();
                 }
 
-                BattleCardPlayHandler legacyBinder = cardView.GetComponent<BattleCardPlayHandler>();
-                if (legacyBinder != null)
-                {
-                    Destroy(legacyBinder);
-                }
-
                 playHandler.Bind(battleCard, this);
                 yield return handView.AddCard(cardView);
                 createdCount++;
@@ -310,6 +360,135 @@
             }
 
             return null;
+        }
+
+        private void BeginAttackTargeting(BattleCard battleCard)
+        {
+            if (battleCard == null)
+            {
+                return;
+            }
+
+            pendingAttackCard = battleCard;
+            pendingAttackerUnit = null;
+            selectableAttackCells.Clear();
+            attackTargetingPhase = AttackTargetingPhase.SelectAttacker;
+            gridPreviewSystem?.Clear();
+            Debug.Log($"[BattleUI] 공격 카드 타겟팅 시작: card={battleCard.Title}. 먼저 아군 유닛을 선택하세요.");
+        }
+
+        private void HandleAttackTargetingClick(Vector2 screenPosition)
+        {
+            if (battleManager == null || battleManager.CurrentPhase != BattlePhase.PlayerTurn || battleManager.IsBattleEnded)
+            {
+                CancelAttackTargeting();
+                return;
+            }
+
+            Vector2Int clickedGrid = ResolveTargetGridPosition(screenPosition);
+            BattleUnit clickedUnit = BattleBoardSystem.Instance != null
+                ? BattleBoardSystem.Instance.GetUnitAt(clickedGrid)
+                : null;
+
+            if (attackTargetingPhase == AttackTargetingPhase.SelectAttacker)
+            {
+                TrySelectAttacker(clickedUnit);
+                return;
+            }
+
+            if (attackTargetingPhase == AttackTargetingPhase.SelectTarget)
+            {
+                TrySelectAttackTarget(clickedGrid, clickedUnit);
+            }
+        }
+
+        private void TrySelectAttacker(BattleUnit clickedUnit)
+        {
+            if (clickedUnit == null || clickedUnit.Team != BattleTeam.Player || !clickedUnit.IsAlive)
+            {
+                Debug.Log("[BattleUI] 공격 주체로 사용할 아군 유닛을 클릭하세요.");
+                return;
+            }
+
+            if (BattleBoardSystem.Instance == null || pendingAttackCard == null)
+            {
+                CancelAttackTargeting();
+                return;
+            }
+
+            pendingAttackerUnit = clickedUnit;
+            selectableAttackCells = BattleBoardSystem.Instance.GetSelectableAttackCells(clickedUnit, pendingAttackCard);
+            attackTargetingPhase = AttackTargetingPhase.SelectTarget;
+            gridPreviewSystem?.ShowCells(selectableAttackCells);
+
+            Debug.Log($"[BattleUI] 공격 유닛 선택 완료: unit={clickedUnit.name}, selectableCells={selectableAttackCells.Count}");
+        }
+
+        private void TrySelectAttackTarget(Vector2Int clickedGrid, BattleUnit clickedUnit)
+        {
+            if (pendingAttackCard == null || pendingAttackerUnit == null)
+            {
+                CancelAttackTargeting();
+                return;
+            }
+
+            if (!selectableAttackCells.Contains(clickedGrid))
+            {
+                Debug.Log("[BattleUI] 공격 가능한 범위 안의 타일/적을 선택하세요.");
+                return;
+            }
+
+            bool isAreaAttack = IsAreaAttack(pendingAttackCard);
+            if (!isAreaAttack)
+            {
+                if (clickedUnit == null || clickedUnit.Team != BattleTeam.Enemy || !clickedUnit.IsAlive)
+                {
+                    Debug.Log("[BattleUI] 단일 공격 카드는 범위 안의 적 유닛을 클릭해야 합니다.");
+                    return;
+                }
+            }
+
+            BattleCard cardToPlay = pendingAttackCard;
+            BattleUnit attackerToUse = pendingAttackerUnit;
+            BattleUnit targetUnit = isAreaAttack ? null : clickedUnit;
+
+            CancelAttackTargeting();
+
+            battleCardSystem.PlayCard(
+                cardToPlay,
+                attackerToUse,
+                clickedGrid,
+                targetUnit,
+                () =>
+                {
+                    battleManager.CheckBattleEnd();
+                    RefreshHandView();
+                    RefreshHud();
+                });
+        }
+
+        private void CancelAttackTargeting()
+        {
+            attackTargetingPhase = AttackTargetingPhase.None;
+            pendingAttackCard = null;
+            pendingAttackerUnit = null;
+            selectableAttackCells.Clear();
+            gridPreviewSystem?.Clear();
+        }
+
+        private static bool IsAreaAttack(BattleCard battleCard)
+        {
+            if (battleCard == null)
+            {
+                return false;
+            }
+
+            if (battleCard.HitsAllTargetsInRange || battleCard.AttackPattern == BattleAttackPattern.Area)
+            {
+                return true;
+            }
+
+            return battleCard.CustomAttackPattern != null && battleCard.CustomAttackPattern.Cells.Count > 1;
         }
 
         private static Vector2Int ResolveTargetGridPosition(Vector2 screenPosition)

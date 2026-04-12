@@ -40,9 +40,18 @@ namespace NYH.BattleCardSystem
         public int MaxHealth => maxHealth;
         public int CurrentHealth { get; private set; }
         public int AttackPower => attackPower;
+        public int CurrentAttackPower => Mathf.Max(0, attackPower + attackPowerModifier);
         public int Speed => speed;
+        public int CurrentSpeed => Mathf.Max(0, speed + speedModifier);
         public Vector2Int GridPosition => gridPosition;
         public bool IsAlive => CurrentHealth > 0;
+        public bool IsStunned => isStunned;
+        public bool IsDisarmed => isDisarmed;
+
+        private int attackPowerModifier;
+        private int speedModifier;
+        private bool isStunned;
+        private bool isDisarmed;
 
         private void Awake()
         {
@@ -74,6 +83,26 @@ namespace NYH.BattleCardSystem
         public void SetGridPosition(Vector2Int newPosition)
         {
             gridPosition = newPosition;
+        }
+
+        public void ModifyAttackPower(int amount)
+        {
+            attackPowerModifier += amount;
+        }
+
+        public void ModifySpeed(int amount)
+        {
+            speedModifier += amount;
+        }
+
+        public void SetStunned(bool value)
+        {
+            isStunned = value;
+        }
+
+        public void SetDisarmed(bool value)
+        {
+            isDisarmed = value;
         }
 
         public void TakeDamage(int amount)

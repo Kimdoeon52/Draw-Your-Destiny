@@ -167,6 +167,40 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
+        public HashSet<Vector2Int> GetSelectableAttackCells(BattleUnit attacker, BattleCard battleCard)
+        {
+            HashSet<Vector2Int> result = new();
+            if (attacker == null || battleCard == null)
+            {
+                return result;
+            }
+
+            Vector2Int attackerPosition = attacker.GridPosition;
+
+            if (battleCard.CustomAttackPattern != null)
+            {
+                AddCustomPatternCells(attackerPosition, battleCard.CustomAttackPattern, result);
+                return result;
+            }
+
+            switch (battleCard.AttackPattern)
+            {
+                case BattleAttackPattern.Line:
+                    AddLineCells(attackerPosition, Mathf.Max(1, battleCard.AttackRange), result);
+                    break;
+
+                case BattleAttackPattern.Area:
+                case BattleAttackPattern.Adjacent4:
+                case BattleAttackPattern.None:
+                default:
+                    AddDiamondCells(attackerPosition, Mathf.Max(1, battleCard.AttackRange), result);
+                    break;
+            }
+
+            result.Remove(attackerPosition);
+            return result;
+        }
+
         public HashSet<Vector2Int> ResolvePatternCells(
             Vector2Int attackerPosition,
             Vector2Int targetPosition,
@@ -186,6 +220,66 @@ namespace NYH.BattleCardSystem
             }
 
             return resolved;
+        }
+
+        private static void AddDiamondCells(Vector2Int center, int range, HashSet<Vector2Int> destination)
+        {
+            for (int x = -range; x <= range; x++)
+            {
+                for (int y = -range; y <= range; y++)
+                {
+                    Vector2Int offset = new(x, y);
+                    if (Mathf.Abs(offset.x) + Mathf.Abs(offset.y) <= range)
+                    {
+                        destination.Add(center + offset);
+                    }
+                }
+            }
+        }
+
+        private static void AddLineCells(Vector2Int center, int range, HashSet<Vector2Int> destination)
+        {
+            for (int i = 1; i <= range; i++)
+            {
+                destination.Add(center + new Vector2Int(i, 0));
+                destination.Add(center + new Vector2Int(-i, 0));
+                destination.Add(center + new Vector2Int(0, i));
+                destination.Add(center + new Vector2Int(0, -i));
+            }
+        }
+
+        private void AddCustomPatternCells(Vector2Int attackerPosition, AttackPatternData patternData, HashSet<Vector2Int> destination)
+        {
+            if (patternData == null)
+            {
+                return;
+            }
+
+            if (!patternData.RotateToFacing)
+            {
+                foreach (var cell in ResolvePatternCells(attackerPosition, attackerPosition, patternData))
+                {
+                    destination.Add(cell);
+                }
+
+                return;
+            }
+
+            Vector2Int[] facingTargets =
+            {
+                attackerPosition + Vector2Int.up,
+                attackerPosition + Vector2Int.right,
+                attackerPosition + Vector2Int.down,
+                attackerPosition + Vector2Int.left,
+            };
+
+            foreach (var targetPosition in facingTargets)
+            {
+                foreach (var cell in ResolvePatternCells(attackerPosition, targetPosition, patternData))
+                {
+                    destination.Add(cell);
+                }
+            }
         }
 
         private bool CanEnter(Vector2Int position)
