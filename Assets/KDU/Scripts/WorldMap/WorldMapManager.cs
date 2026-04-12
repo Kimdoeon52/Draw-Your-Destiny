@@ -226,6 +226,25 @@ public class WorldMapManager : Singleton<WorldMapManager>
         return false;
     }
 
+    // ── 영주성 재건 카드 효과 ─────────────────────────────────────
+    // 카드 시스템에서 영주성 재건 카드 사용 시 호출.
+    // isMansionBuilt = true로 설정하고 배치 UI 잠금 해제.
+    public void OnMansionRebuilt()
+    {
+        NodeData node = GetNode(currentNodeID);
+        if (node == null)
+        {
+            Debug.LogWarning("[WorldMapManager] 현재 진입한 노드가 없습니다.");
+            return;
+        }
+        node.isMansionBuilt = true;
+        BuildingPlacementController.UnlockPlacement();
+        Debug.Log($"[WorldMapManager] 노드 {currentNodeID} 영주성 재건 완료 — 배치 잠금 해제.");
+    }
+
+    // 현재 건물 배치 가능 여부 (카드 UI 등에서 버튼 활성화 판단용)
+    public bool IsBuildingAllowed => BuildingPlacementController.IsPlacementLocked == false;
+
     // ── 노드 소유권 변경 (외부 시스템 — 전투 결과 등 — 에서 호출) ─
     public void SetNodeOwner(int nodeID, int civID)
     {

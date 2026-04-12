@@ -33,6 +33,7 @@ public class BuildingPlacementController : MonoBehaviour
 
     public static void LockPlacement()   => isLocked = true;
     public static void UnlockPlacement() => isLocked = false;
+    public static bool IsPlacementLocked => isLocked;
 
     private void Awake()
     {
