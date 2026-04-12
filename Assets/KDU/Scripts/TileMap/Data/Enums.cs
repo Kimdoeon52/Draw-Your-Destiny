@@ -8,11 +8,11 @@
 // 순서로 판별한다. 한 타일에 여러 레이어가 겹쳐도 가장 높은 우선순위 타입이 반환됨.
 public enum TileType
 {
-    Plain,      // 평지 — Outpost(소규모 영지)만 건설 가능. 일반 건물 불가
+    Plain,      // 평지 — 건물 배치 불가
     River,      // 강   — 이동/건설 모두 불가
-    Farmland,   // 농경지 — Farm(농장)만 배치 가능. Outpost 건설 시 테두리 2칸 자동 생성
+    Farmland,   // 농경지 — Farm(농장)만 배치 가능
     Resource,   // 금광  — 특수 건물만 가능 (추후 구현)
-    City        // 영지/도시 — 일반 건물 배치 가능. Outpost 건설 시 8×8 영역에 자동 생성
+    City        // 영지/도시 — 일반 건물 배치 가능
 }
 
 // ── 건물 타입 ────────────────────────────────────────────
@@ -23,20 +23,23 @@ public enum BuildingType
     None,
 
     // 기반 건물 — City 타일 위에 배치
+    Mansion,    // 영주성 — 영주성 재건 카드로만 설치. 영지 잠금 해제 조건
     House,      // 민가  — 인구 한도(populationCap) 증가
     Market,     // 시장  — 턴마다 금(gold) 생산
     Lab,        // 연구소 — 턴마다 연구 포인트(research) 생산
-    Farm,       // 농장  — Farmland 전용, 식량/인구 관련 (수치 미확정)
+    Farm,       // 농장  — Farmland 전용, 식량 생산
 
     // 군사 건물 — 시대 전환 시 자동 업그레이드 체인
     // BuildingData.isAutoUpgrade = true, upgradesTo = 다음 단계 SO
     TribePracticeGround,    // 부족 훈련지 (석기시대)
     TrainingCamp,           // 훈련소   (청동기시대로 자동 업그레이드)
     Barracks,               // 병영    (철기시대로 자동 업그레이드, 최종 단계)
-
-    // 확장 건물
-    Outpost,    // 소규모 영지 — Plain에 설치. 8×8 City + 테두리 Farmland 자동 생성
-    Wall        // 성벽 — 시대 전환 시 스프라이트 자동 교체 (기능 미구현)
+    ArcheryRange,           // 사격장  (청동기~)
+    MedicBarracks,          // 의무병 막사 (청동기~)
+    StableBarracks,         // 기마병 막사 (철기)
+    GiantBarracks,          // 자이언트 막사 (철기)
+    MageBarracks,           // 마법사 막사 (철기, 연구포인트 200 필요)
+    PotionBuilding          // 포션 건물 (청동기~)
 }
 
 // ── 시대 ─────────────────────────────────────────────────
@@ -48,28 +51,12 @@ public enum Era
     Iron        // 철기시대  — 연구 포인트 200 달성 시 전환
 }
 
-// ── 안개 전쟁 상태 ────────────────────────────────────────
-// FogManager가 각 타일을 이 2단계로 관리한다.
-// 숫자 크기 비교(Explored < Visible)로 우선순위 판단에 사용됨.
-//
-// 초기 상태: 모든 타일 Explored
-//   - 기본 지형(평지/강/농경지): 회색 틴트로 표시 (롤/스타크래프트 미니맵 방식)
-//   - 금광/도시 타일: 숨김 (적 위치 미공개)
-// Visible: 플레이어 시야 안 — 풀 컬러, 건물/유닛 모두 표시
-public enum FogState
-{
-    Explored,   // 탐험됨 — 기본 지형 회색 표시, 건물은 wasEverSeen이면 표시, 금광/도시 숨김
-    Visible     // 완전 공개 — 풀 컬러, 금광/도시/건물/유닛 모두 표시
-}
-
 // ── 시민 역할 ─────────────────────────────────────────────
 // 인구 개별 관리 방식에서 시민 한 명의 현재 역할을 나타냄 (미구현)
-// 여성은 생산 역할 전반에 보너스 / 병사는 남성 전용
 public enum UnitRole
 {
     Idle,       // 미배치 — 역할 없음
-    Farmer,     // 농민   — 여성 보너스
-    Laborer,    // 노역자  — 여성 보너스
-    Soldier,    // 병사   — 남성 전용, 전역 카드 전까지 역할 변경 불가
-    Textile     // 직물/교역 — 여성 보너스
+    Farmer,     // 농민
+    Laborer,    // 노역자
+    Soldier     // 병사 — 전역 카드 전까지 역할 변경 불가
 }

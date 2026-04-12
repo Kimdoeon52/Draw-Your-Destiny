@@ -22,19 +22,13 @@ public class BuildingInstance
     public Vector3Int origin;
 
     // 건물이 차지하는 모든 타일 좌표 목록 (1×1이면 1개, 2×2이면 4개 등)
-    // 충돌 검사, 안개 렌더링, 건물 철거 시 이 목록으로 순회
+    // 충돌 검사, 건물 철거 시 이 목록으로 순회
     public List<Vector3Int> footprint;
 
     // 건물 소유 문명 ID (0=플레이어, 1~3=AI, -1=중립)
     public int ownerCivID;
 
-    // 안개 스냅샷 플래그 — 플레이어가 Visible 상태에서 이 건물을 한 번이라도 봤으면 true
-    // Explored 상태에서도 마지막으로 본 모습으로 계속 표시됨 (스타크래프트 방식)
-    // 내 건물은 배치 시 자동으로 true로 설정됨
-    public bool wasEverSeen;
-
     // 화면에 표시되는 스프라이트 오브젝트 (SpriteRenderer 포함)
-    // FogManager가 이 오브젝트의 색상을 조절해 보이거나 숨김
     public GameObject visual;
 
     // 현재 건물 타입 — data가 null이면 None 반환

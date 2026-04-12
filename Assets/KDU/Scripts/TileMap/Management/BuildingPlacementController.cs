@@ -28,6 +28,12 @@ public class BuildingPlacementController : MonoBehaviour
     public KeyCode testModeKey = KeyCode.T;
     public KeyCode cancelKey   = KeyCode.Escape;
 
+    // 영주성 미재건 노드 진입 시 배치 전체 잠금
+    private static bool isLocked = false;
+
+    public static void LockPlacement()   => isLocked = true;
+    public static void UnlockPlacement() => isLocked = false;
+
     private void Awake()
     {
         placementService = GetComponent<BuildingPlacementService>();
@@ -36,6 +42,7 @@ public class BuildingPlacementController : MonoBehaviour
     private void Update()
     {
         if (placementService == null) return;
+        if (isLocked) return;
 
         // T 키 — 테스트 건물로 배치 모드 시작 (배치 중이 아닐 때만)
         if (Input.GetKeyDown(testModeKey) && testBuilding != null && !placementService.IsPlacing)

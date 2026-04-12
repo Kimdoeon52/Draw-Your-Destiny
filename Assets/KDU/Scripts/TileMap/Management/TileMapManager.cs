@@ -8,8 +8,7 @@ using UnityEngine.Tilemaps;
 // 담당 범위:
 //   1. 타일 데이터 (tileDataMap) — 모든 타일의 타입/소유권을 런타임에 관리
 //   2. 건물 배치/제거 — PlaceBuilding, RemoveBuilding
-//   3. 영토 소유권 — ClaimTerritory, ExpandTerritory, TransferTerritory
-//   4. Outpost 확장 — ExpandOutpostArea (City/Farmland 타일 동적 생성)
+//   3. 영토 소유권 — SetOwner, GetOwner
 //
 // 주요 데이터 구조:
 //   tileDataMap         : Vector3Int → TileData  (타일 상태, 소유권)
@@ -32,20 +31,8 @@ public class TileMapManager : Singleton<TileMapManager>
     public Tilemap buildingTilemap;     // 코드 미사용, 레이어 렌더링 순서 확보용
 
     [Header("오버레이 레이어")]
-    public Tilemap fogTilemap;          // Tilemap_Fog      — 안개 오버레이 (FogManager 제어)
     public Tilemap territoryTilemap;    // Tilemap_Territory — 영토 색상 오버레이
     private Tile territoryTile;         // 코드에서 생성하는 단색 영토 타일 (1×1 흰색)
-
-    [Header("소규모 영지 타일 에셋 — Outpost 건설 시 동적 타일 생성에 사용")]
-    public Tile cityTileAsset;          // Outpost 영역(8×8)에 깔릴 City 타일 에셋
-    public Tile farmlandTileAsset;      // Outpost 테두리(2칸)에 깔릴 Farmland 타일 에셋
-
-    [Header("소규모 영지 영주성 — LordCastle 시스템 연동")]
-    [Tooltip("LordCastle 컴포넌트가 붙은 프리팹. 소규모 영지 배치 시 8×8 중앙에 자동 생성됨.")]
-    public GameObject outpostManorPrefab; // LordCastle 컴포넌트 포함 프리팹 (문명 공용)
-    [Tooltip("문명별 영주성 스프라이트. 인덱스 = civID (0=플레이어, 1=AI-A, 2=AI-B, 3=AI-C)")]
-    public Sprite[] outpostManorSprites = new Sprite[4]; // civID별 스프라이트
-    public int outpostManorHP = 50;       // 영주성 초기 체력
 
     [Header("농장 인접 스프라이트 (18종)")]
     [Tooltip(
@@ -110,14 +97,16 @@ public class TileMapManager : Singleton<TileMapManager>
 
         // 영토 오버레이에 쓸 단색 흰 타일을 코드로 생성 (에셋 불필요)
         territoryTile = ScriptableObject.CreateInstance<Tile>();
-        territoryTile.sprite = FogManager.CreateSolidSprite();
+        Texture2D tex = new Texture2D(1, 1);
+        tex.SetPixel(0, 0, Color.white);
+        tex.Apply();
+        territoryTile.sprite = Sprite.Create(tex, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1);
         territoryTile.color = Color.white;
 
         InitializeTileDataMap();
     }
 
     // 씬의 모든 지형 Tilemap을 순회해 tileDataMap을 초기화
-    // 이후 GetAllTilePositions()로 FogManager가 전체 타일에 안개를 깐다
     private void InitializeTileDataMap()
     {
         HashSet<Vector3Int> allPositions = new HashSet<Vector3Int>();
@@ -129,7 +118,7 @@ public class TileMapManager : Singleton<TileMapManager>
         CollectPositions(cityTilemap,     allPositions);
 
         foreach (Vector3Int pos in allPositions)
-            tileDataMap[pos] = new TileData(GetTileType(pos), FogState.Explored, -1);
+            tileDataMap[pos] = new TileData(GetTileType(pos), -1);
     }
 
     // Tilemap에서 타일이 있는 좌표만 result에 추가 (null 타일맵 안전 처리)
@@ -168,7 +157,7 @@ public class TileMapManager : Singleton<TileMapManager>
             if (tileDataMap.ContainsKey(pos))
                 tileDataMap[pos].type = GetTileType(pos);
             else
-                tileDataMap[pos] = new TileData(GetTileType(pos), FogState.Explored, -1);
+                tileDataMap[pos] = new TileData(GetTileType(pos), -1);
         }
         else
         {
@@ -176,7 +165,7 @@ public class TileMapManager : Singleton<TileMapManager>
         }
     }
 
-    // FogManager.InitializeFog()에서 전체 타일에 안개를 깔 때 사용
+    // 타일맵 전체 좌표 반환 (순회 용도)
     public IEnumerable<Vector3Int> GetAllTilePositions()
     {
         return tileDataMap.Keys;
@@ -219,75 +208,6 @@ public class TileMapManager : Singleton<TileMapManager>
         RefreshTerritoryVisual(pos, civID);
     }
 
-    // ── BFS로 center 기준 반경 내 타일을 civID로 일괄 점령 ──────
-    // 도시 건설 시 초기 영토 확보, Outpost 설치 후 영토 등록 등에 사용
-    public void ClaimTerritory(Vector3Int center, int civID, int radius)
-    {
-        Queue<Vector3Int> queue = new Queue<Vector3Int>();
-        HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
-        queue.Enqueue(center);
-        visited.Add(center);
-
-        Vector3Int[] dirs = { Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down };
-
-        while (queue.Count > 0)
-        {
-            Vector3Int cur = queue.Dequeue();
-            int dist = Mathf.Abs(cur.x - center.x) + Mathf.Abs(cur.y - center.y);
-            if (dist > radius) continue;
-
-            SetOwner(cur, civID);
-
-            foreach (Vector3Int dir in dirs)
-            {
-                Vector3Int next = cur + dir;
-                if (!visited.Contains(next) && tileDataMap.ContainsKey(next))
-                {
-                    visited.Add(next);
-                    queue.Enqueue(next);
-                }
-            }
-        }
-    }
-
-    // ── civID 영토의 모든 경계 타일에서 미점령 인접 타일 1칸씩 확장 ──
-    // 매 턴 자동 영토 확장 처리에 사용 (미구현)
-    public void ExpandTerritory(int civID)
-    {
-        List<Vector3Int> toAdd = new List<Vector3Int>();
-        Vector3Int[] dirs = { Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down };
-
-        foreach (KeyValuePair<Vector3Int, TileData> pair in tileDataMap)
-        {
-            if (pair.Value.ownerCivID != civID) continue;
-
-            foreach (Vector3Int dir in dirs)
-            {
-                Vector3Int neighbor = pair.Key + dir;
-                if (tileDataMap.TryGetValue(neighbor, out TileData neighborData) && neighborData.ownerCivID == -1)
-                    toAdd.Add(neighbor);
-            }
-        }
-
-        foreach (Vector3Int pos in toAdd)
-            SetOwner(pos, civID);
-    }
-
-    // ── 도시 점령 시 패배 문명의 모든 영토를 승리 문명으로 이전 ──
-    public void TransferTerritory(int fromCivID, int toCivID)
-    {
-        List<Vector3Int> targets = new List<Vector3Int>();
-
-        foreach (KeyValuePair<Vector3Int, TileData> pair in tileDataMap)
-        {
-            if (pair.Value.ownerCivID == fromCivID)
-                targets.Add(pair.Key);
-        }
-
-        foreach (Vector3Int pos in targets)
-            SetOwner(pos, toCivID);
-    }
-
     // ── 영토 오버레이 색상 갱신 ─────────────────────────────────
     // SetOwner() 호출 시 자동으로 불림 — 외부에서 직접 호출 불필요
     private void RefreshTerritoryVisual(Vector3Int pos, int civID)
@@ -306,7 +226,6 @@ public class TileMapManager : Singleton<TileMapManager>
     }
 
     // ── 특정 타일에 있는 BuildingInstance 반환 (없으면 null) ────
-    // FogManager에서 건물 렌더링 시 사용
     public BuildingInstance GetBuildingAt(Vector3Int pos)
     {
         return buildingInstanceMap.TryGetValue(pos, out BuildingInstance b) ? b : null;
@@ -320,7 +239,6 @@ public class TileMapManager : Singleton<TileMapManager>
 
     // 외부에서 직접 생성한 BuildingInstance를 등록
     // 영주성처럼 BuildingData 없이 코드로 생성하는 특수 건물에 사용
-    // FogManager 연동(OnBuildingPlaced)은 호출부에서 직접 처리
     public void RegisterBuildingInstance(BuildingInstance instance)
     {
         if (instance == null) return;
@@ -340,16 +258,6 @@ public class TileMapManager : Singleton<TileMapManager>
     {
         Vector3Int origin = GetOrigin(clickPos, building);
 
-        // 버려진 영지 위 소규모 영지 배치 특수 케이스
-        // 점령 후 잔해 origin과 정확히 일치하면 allowedTiles 체크를 건너뜀
-        bool isRuinsPlacement = false;
-        if (building.buildingType == BuildingType.Outpost)
-        {
-            var ruins = AbandonedTerritoryManager.Instance;
-            if (ruins != null && ruins.CanPlaceOutpostHere(origin, 0))
-                isRuinsPlacement = true;
-        }
-
         for (int x = 0; x < building.width; x++)
         {
             for (int y = 0; y < building.height; y++)
@@ -360,56 +268,13 @@ public class TileMapManager : Singleton<TileMapManager>
                 if (riverTilemap != null && riverTilemap.HasTile(checkPos)) return false;
                 if (buildingMap.ContainsKey(checkPos)) return false;
 
-                // 잔해 위 배치는 타일 타입 무관하게 허용 (Plain이 아닌 잔해 위에도 배치 가능)
-                if (!isRuinsPlacement)
+                TileType tileType = GetTileType(checkPos);
+                bool allowed = false;
+                foreach (TileType t in building.allowedTiles)
                 {
-                    TileType tileType = GetTileType(checkPos);
-                    bool allowed = false;
-                    foreach (TileType t in building.allowedTiles)
-                    {
-                        if (tileType == t) { allowed = true; break; }
-                    }
-                    if (!allowed) return false;
+                    if (tileType == t) { allowed = true; break; }
                 }
-            }
-        }
-
-        // [Outpost 전용 추가 검사]
-        // 소규모 영지는 설치 시 주변에 8×8 City 영역 + 3칸 Farmland 테두리가 생성되므로
-        // 1×1 클릭 타일만 검사하면 부족함. 아래 범위를 추가로 검사한다.
-        //
-        //   ┌──────────────────────────────┐  ← dy = +7
-        //   │  [Farmland 테두리 3칸]        │
-        //   │  ┌──────────────────────┐    │  ← dy = +4
-        //   │  │   [8×8 City 영역]   │    │
-        //   │  │        [X]          │    │  ← origin (클릭 지점)
-        //   │  │   8×8 내부 전체     │    │
-        //   │  └──────────────────────┘    │  ← dy = -3
-        //   │  [Farmland 테두리 3칸]        │
-        //   └──────────────────────────────┘  ← dy = -6
-        //   dx: -6 ~ +7  (총 14칸)
-        //
-        // 8×8 내부(dx -3~+4, dy -3~+4): 강 또는 기존 건물 있으면 배치 불가
-        // Farmland 테두리(그 외):        기존 건물 있으면 배치 불가 (다른 영지 침범 방지)
-        if (building.buildingType == BuildingType.Outpost && !isRuinsPlacement)
-        {
-            for (int dx = -6; dx <= 7; dx++)
-            for (int dy = -6; dy <= 7; dy++)
-            {
-                Vector3Int checkPos = origin + new Vector3Int(dx, dy, 0);
-                bool isInCityZone = dx >= -3 && dx <= 4 && dy >= -3 && dy <= 4;
-
-                if (isInCityZone)
-                {
-                    // 8×8 내부: 강 또는 기존 건물 있으면 불가
-                    if (riverTilemap != null && riverTilemap.HasTile(checkPos)) return false;
-                    if (buildingMap.ContainsKey(checkPos)) return false;
-                }
-                else
-                {
-                    // Farmland 테두리: 기존 건물과 겹치면 불가 (다른 영지 침범 방지)
-                    if (buildingMap.ContainsKey(checkPos)) return false;
-                }
+                if (!allowed) return false;
             }
         }
 
@@ -442,7 +307,6 @@ public class TileMapManager : Singleton<TileMapManager>
             origin = origin,
             footprint = footprint,
             ownerCivID = civID,
-            wasEverSeen = (civID == 0), // 내 건물은 항상 표시
             visual = visual
         };
 
@@ -450,30 +314,6 @@ public class TileMapManager : Singleton<TileMapManager>
         foreach (Vector3Int pos in footprint)
             buildingInstanceMap[pos] = instance;
 
-        // [Outpost 전용 처리 — 직접 호출 불필요, PlaceBuilding이 자동으로 수행]
-        // 소규모 영지 카드를 사용하면 아래 순서로 자동 실행됨:
-        //   1. ExpandOutpostArea  : origin 기준 8×8 City + 2칸 Farmland 타일 생성
-        //   2. FogManager         : 8×8 영역 안개 영구 해제
-        //   3. AbandonedTerritory : 버려진 영지 위 배치라면 완전 점령 처리
-        //   4. PlaceOutpostManor  : origin 자리에 2×2 영주성 자동 등록 (비용 없음)
-        if (building.buildingType == BuildingType.Outpost)
-        {
-            // 버려진 영지 위 배치 여부 확인
-            var ruins = AbandonedTerritoryManager.Instance;
-            bool isRuinsPlacement = ruins != null && ruins.CanPlaceOutpostHere(origin, civID);
-
-            ExpandOutpostArea(origin);
-            FogManager.Instance?.OnOutpostBuilt(new Vector3Int(origin.x - 3, origin.y - 3, 0), 8);
-
-            // 잔해 위라면 버려진 영지 완전 점령 처리 (외벽 설치 등)
-            if (isRuinsPlacement)
-                ruins.OnRuinsOutpostBuilt(civID);
-
-            // Outpost 1×1 자리에 2×2 영주성 자동 배치 (비용 없음)
-            PlaceOutpostManor(origin, civID);
-        }
-
-        FogManager.Instance?.OnBuildingPlaced(instance);
         BuildingRegistry.Instance?.Register(instance);
 
         //// 농장이면 자신 + 인접 농장 스프라이트 갱신
@@ -519,7 +359,6 @@ public class TileMapManager : Singleton<TileMapManager>
         // BuildingInstance 정리
         if (buildingInstanceMap.TryGetValue(position, out BuildingInstance instance))
         {
-            FogManager.Instance?.OnBuildingDestroyed(instance);
             allBuildings.Remove(instance);
             foreach (Vector3Int pos in instance.footprint)
                 buildingInstanceMap.Remove(pos);
@@ -703,125 +542,6 @@ public class TileMapManager : Singleton<TileMapManager>
             0f);
     }
 
-    // ── 소규모 영지 확장 ─────────────────────────────────────────
-    // origin 기준 8×8 City 타일 생성 + 3칸 Farmland 테두리 생성
-    private void ExpandOutpostArea(Vector3Int origin)
-    {
-        // 8×8 City 영역 (origin 기준 -3 ~ +4)
-        for (int dx = -3; dx <= 4; dx++)
-        for (int dy = -3; dy <= 4; dy++)
-        {
-            SetCityTile(origin + new Vector3Int(dx, dy, 0));
-        }
-
-        // 3칸 Farmland 테두리 (14×14 외곽 - 8×8 내부)
-        for (int dx = -6; dx <= 7; dx++)
-        for (int dy = -6; dy <= 7; dy++)
-        {
-            if (dx >= -3 && dx <= 4 && dy >= -3 && dy <= 4) continue;
-            SetFarmlandTile(origin + new Vector3Int(dx, dy, 0));
-        }
-    }
-
-    // Outpost 1×1 자리를 정리하고 중앙에 LordCastle(2×2) 영주성을 생성
-    //
-    // [호출 불필요 — PlaceBuilding이 자동으로 처리]
-    // LordCastle.tileSize = 2로 8×8 영지 중앙에 정확히 배치됨.
-    // buildingMap에는 null로 등록 (CanPlace 충돌 검사용, BuildingData 불필요)
-    // BuildingInstance.data = null, visual = LordCastle GameObject (FogManager 연동)
-    private void PlaceOutpostManor(Vector3Int origin, int civID)
-    {
-        if (outpostManorPrefab == null)
-        {
-            Debug.LogWarning("[TileMapManager] outpostManorPrefab이 연결되지 않았습니다. 인스펙터에서 LordCastle 프리팹을 연결하세요.");
-            return;
-        }
-
-        // 1×1 Outpost가 점유한 origin 타일 정리
-        if (buildingInstanceMap.TryGetValue(origin, out BuildingInstance outpostInst))
-        {
-            allBuildings.Remove(outpostInst);
-            buildingInstanceMap.Remove(origin);
-        }
-        buildingMap.Remove(origin);
-
-        if (buildingObjects.TryGetValue(origin, out GameObject outpostObj))
-        {
-            Destroy(outpostObj);
-            buildingObjects.Remove(origin);
-        }
-
-        // LordCastle 프리팹 생성 및 초기화
-        // ExpandOutpostArea가 생성한 8×8 영역의 BoundsInt를 넘겨 2×2 중앙 배치
-        GameObject manorObj = Instantiate(outpostManorPrefab, Vector3.zero, Quaternion.identity, buildingContainer);
-        manorObj.name = $"OutpostManor_{origin.x}_{origin.y}";
-
-        LordCastle lordCastle = manorObj.GetComponent<LordCastle>();
-        if (lordCastle != null)
-        {
-            lordCastle.tileSize = 2;
-            BoundsInt areaBounds = new BoundsInt(origin.x - 3, origin.y - 3, 0, 8, 8, 1);
-            Sprite sprite = (outpostManorSprites != null && civID < outpostManorSprites.Length)
-                ? outpostManorSprites[civID]
-                : null;
-            lordCastle.Initialize(sprite, groundTilemap, areaBounds, outpostManorHP);
-        }
-
-        // 2×2 footprint를 buildingMap에 null로 등록 (CanPlace 충돌 차단용)
-        List<Vector3Int> footprint = new List<Vector3Int>();
-        for (int x = 0; x < 2; x++)
-        for (int y = 0; y < 2; y++)
-        {
-            Vector3Int pos = origin + new Vector3Int(x, y, 0);
-            buildingMap[pos] = null;
-            footprint.Add(pos);
-        }
-
-        // BuildingInstance 등록 (data=null, FogManager 연동용)
-        BuildingInstance manor = new BuildingInstance
-        {
-            data        = null,
-            origin      = origin,
-            footprint   = footprint,
-            ownerCivID  = civID,
-            wasEverSeen = (civID == 0),
-            visual      = manorObj
-        };
-
-        allBuildings.Add(manor);
-        foreach (Vector3Int pos in footprint)
-            buildingInstanceMap[pos] = manor;
-
-        buildingObjects[origin] = manorObj;
-        FogManager.Instance?.OnBuildingPlaced(manor);
-    }
-
-    // City 타일 1칸 설정 (강 위 / 맵 밖 스킵)
-    private void SetCityTile(Vector3Int pos)
-    {
-        if (cityTileAsset == null) return;
-        if (!tileDataMap.ContainsKey(pos)) return;
-        if (riverTilemap != null && riverTilemap.HasTile(pos)) return;
-
-        cityTilemap.SetTile(pos, cityTileAsset);
-        cityTilemap.SetTileFlags(pos, TileFlags.None);
-        tileDataMap[pos].type = TileType.City;
-    }
-
-    // Farmland 타일 1칸 설정 (강 / City / 맵 밖 스킵, 중복 배치 방지)
-    private void SetFarmlandTile(Vector3Int pos)
-    {
-        if (farmlandTileAsset == null) return;
-        if (!tileDataMap.ContainsKey(pos)) return;
-        if (riverTilemap != null && riverTilemap.HasTile(pos)) return;
-        if (cityTilemap != null && cityTilemap.HasTile(pos)) return;
-        if (farmlandTilemap != null && farmlandTilemap.HasTile(pos)) return;
-
-        farmlandTilemap.SetTile(pos, farmlandTileAsset);
-        farmlandTilemap.SetTileFlags(pos, TileFlags.None);
-        tileDataMap[pos].type = TileType.Farmland;
-    }
-
     //----------------------------적 전용 건물 설치하는거임 건들 ㄴㄴㄴㄴㄴ-------------------------------------------------
     public bool PlaceBuildingForAI(Vector3Int clickPos, BuildingData building, int civID)
     {
@@ -857,7 +577,6 @@ public class TileMapManager : Singleton<TileMapManager>
             origin = origin,
             footprint = footprint,
             ownerCivID = civID,
-            wasEverSeen = true, // AI 건물은 처음엔 플레이어 시야 기준 미확인 처리 가능 일단 테스트 용으로 true로 했음
             visual = visual
         };
 
@@ -868,22 +587,6 @@ public class TileMapManager : Singleton<TileMapManager>
             buildingInstanceMap[pos] = instance;
         }
 
-        // Outpost 특수 처리도 동일하게 유지
-        if (building.buildingType == BuildingType.Outpost)
-        {
-            var ruins = AbandonedTerritoryManager.Instance;
-            bool isRuinsPlacement = ruins != null && ruins.CanPlaceOutpostHere(origin, civID);
-
-            ExpandOutpostArea(origin);
-            FogManager.Instance?.OnOutpostBuilt(new Vector3Int(origin.x - 3, origin.y - 3, 0), 8);
-
-            if (isRuinsPlacement)
-                ruins.OnRuinsOutpostBuilt(civID);
-
-            PlaceOutpostManor(origin, civID);
-        }
-
-        FogManager.Instance?.OnBuildingPlaced(instance);
         BuildingRegistry.Instance?.Register(instance);
 
         //// 농장이면 자신 + 인접 농장 스프라이트 갱신
@@ -1101,5 +804,64 @@ public class TileMapManager : Singleton<TileMapManager>
             if (existing == unit) //등록된 유닛이 맞으면 해제
                 occupiedCells.Remove(cell);//점유 해제
         }
+    }
+
+    // ── NodeDataManager 연동 — 노드 진입/이탈 시 호출 ─────────────
+
+    // 씬의 지형 Tilemap을 모두 비움 (노드 이탈 시)
+    public void ClearAllTerrainTiles()
+    {
+        groundTilemap?.ClearAllTiles();
+        farmlandTilemap?.ClearAllTiles();
+        riverTilemap?.ClearAllTiles();
+        cityTilemap?.ClearAllTiles();
+        tileDataMap.Clear();
+    }
+
+    // 배치된 건물 시각화를 모두 Destroy하고 관련 컬렉션을 초기화 (노드 이탈 시)
+    public void ClearAllBuildings()
+    {
+        foreach (GameObject obj in buildingObjects.Values)
+        {
+            if (obj != null) Destroy(obj);
+        }
+        buildingObjects.Clear();
+        buildingMap.Clear();
+        buildingInstanceMap.Clear();
+        allBuildings.Clear();
+    }
+
+    // tileDataMap을 지형 Tilemap 기준으로 재초기화 (지형 복사 후 호출)
+    public void ReinitializeTileDataMap()
+    {
+        tileDataMap.Clear();
+        InitializeTileDataMap();
+    }
+
+    // 저장된 BuildingInstance의 시각화를 재생성하고 컬렉션에 등록 (노드 진입 시)
+    public void RestoreBuildingInstance(BuildingInstance instance)
+    {
+        if (instance == null || instance.data == null) return;
+
+        // footprint 재계산 (저장 시 유지된 origin 기반)
+        List<Vector3Int> footprint = new List<Vector3Int>();
+        for (int x = 0; x < instance.data.width; x++)
+        for (int y = 0; y < instance.data.height; y++)
+        {
+            Vector3Int pos = instance.origin + new Vector3Int(x, y, 0);
+            footprint.Add(pos);
+            buildingMap[pos] = instance.data;
+        }
+        instance.footprint = footprint;
+
+        // 시각화 재생성
+        instance.visual = CreateBuildingVisual(instance.origin, instance.data);
+
+        // 컬렉션 등록
+        allBuildings.Add(instance);
+        foreach (Vector3Int pos in footprint)
+            buildingInstanceMap[pos] = instance;
+
+        BuildingRegistry.Instance?.Register(instance);
     }
 }

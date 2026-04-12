@@ -1,0 +1,30 @@
+using System.Collections.Generic;
+
+// ============================================================
+// NodeData — 월드맵 노드 1개의 런타임 상태
+//
+// WorldMapManager.allNodes 리스트에서 nodeID로 관리됨.
+// 영지 진입/이탈 시 NodeDataManager가 이 데이터를 기반으로
+// 타일맵 복원 및 건물 저장·복원을 처리한다.
+// ============================================================
+[System.Serializable]
+public class NodeData
+{
+    public int nodeID;
+
+    // 인접 노드 ID 목록 — 공격 선언 및 이동 가능 여부 판단에 사용
+    public List<int> adjacentNodeIDs = new List<int>();
+
+    // 소유 문명 ID
+    // -1 = 빈 노드 / 0 = 플레이어 / 1~3 = AI
+    public int ownerCivID = -1;
+
+    // 영주성 재건 여부
+    // false이면 영지 진입 후 배치 UI 전체 잠금
+    public bool isMansionBuilt = false;
+
+    // 현재 이 노드에 배치된 건물 목록
+    // 영지 이탈 시 TileMapManager의 allBuildings가 여기에 저장됨
+    // visual 필드는 이탈 시 null로 클리어됨 (재진입 시 재생성)
+    public List<BuildingInstance> buildings = new List<BuildingInstance>();
+}

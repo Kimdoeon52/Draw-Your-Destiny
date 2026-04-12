@@ -15,8 +15,9 @@ using UnityEngine;
 public class BuildingData : ScriptableObject
 {
     [Header("기본 정보")]
+    public string id;                    // 직렬화 키 (BuildingInstance 저장/복원용)
     public string buildingName;
-    public BuildingType buildingType;   // 코드에서 타입 분기 시 사용 (Outpost 등)
+    public BuildingType buildingType;    // 코드에서 타입 분기 시 사용
     public Sprite sprite;               // 배치 시 표시될 스프라이트
 
     [Header("시대 조건")]
@@ -35,11 +36,16 @@ public class BuildingData : ScriptableObject
 
     [Header("배치 제약")]
     // 이 배열에 포함된 TileType 위에만 배치 가능
-    // 일반 건물: City / 농장: Farmland / Outpost: Plain
+    // 일반 건물: City / 농장: Farmland / 영주성: City (중앙 고정)
     public TileType[] allowedTiles;
+
+    // 영지당 최대 설치 수 (-1 = 무제한)
+    // Farm: 2 / Lab: 게임 전체 1 / Mansion: 1
+    public int maxPerTerritory = -1;
 
     [Header("생산 효과 (턴당)")]
     public int goldPerTurn;             // 매 턴 금 생산량
+    public int researchPerTurn;         // 매 턴 연구 포인트 생산량 (연구소 전용)
     public int populationCapBonus;      // 배치 즉시 인구 한도 증가 (민가 전용)
 
     [Header("군사")]

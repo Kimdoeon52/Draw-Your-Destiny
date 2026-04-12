@@ -11,16 +11,13 @@ using UnityEngine.Tilemaps;
 //   3. 미선택 도시 영역의 city/farmland 타일을 맵에서 제거
 //   4. 선택된 각 도시에 문명 ID(civID) 할당, 영토 점령, 플레이어 안개 해제
 //
-// [DefaultExecutionOrder(10)] — TileMapManager/FogManager 초기화 후 실행
+// [DefaultExecutionOrder(10)] — TileMapManager 초기화 후 실행
 //
 // 씬에 미리 깔아 둔 city 타일 영역 수가 4개 미만이면 에러 로그 출력
 // ============================================================
 [DefaultExecutionOrder(10)]
 public class CitySpawnManager : MonoBehaviour
 {
-    [Header("시야 설정")]
-    public int initialVisionRadius = 12; // 플레이어 초기 안개 해제 반경 (도시 중심 기준)
-
     private TileMapManager tileMapManager;
 
     // 씬 시작 후 배치된 도시의 중심 좌표 목록 (civID 순서: 0=플레이어, 1~3=AI)
@@ -46,37 +43,26 @@ public class CitySpawnManager : MonoBehaviour
 
         List<List<Vector3Int>> cityRegions = FindCityRegions();
 
-        // 2. 버려진 영지(잔해)와 겹치는 영역은 시작 도시 후보에서 제외
-        //    잔해 영역은 중립 거점이므로 제거하지 않고 그대로 둠
-        AbandonedTerritoryManager ruins = AbandonedTerritoryManager.Instance;
-        List<List<Vector3Int>> eligibleRegions = new List<List<Vector3Int>>();
-        foreach (var region in cityRegions)
+        if (cityRegions.Count < 4)
         {
-            bool isRuins = ruins != null && region.Exists(pos => ruins.IsInRuins(pos));
-            if (!isRuins)
-                eligibleRegions.Add(region);
-        }
-
-        if (eligibleRegions.Count < 4)
-        {
-            Debug.LogError($"[CitySpawnManager] 시작 가능한 도시 영역 {eligibleRegions.Count}개 감지 — 최소 4개 필요. (잔해 영역 제외 후)");
+            Debug.LogError($"[CitySpawnManager] 도시 영역 {cityRegions.Count}개 감지 — 최소 4개 필요.");
             return;
         }
 
-        // 3. 랜덤으로 4개 인덱스 선택 (잔해 영역 제외 후보에서만)
-        List<int> selectedIdx = PickRandomIndices(eligibleRegions.Count, 4);
+        // 3. 랜덤으로 4개 인덱스 선택
+        List<int> selectedIdx = PickRandomIndices(cityRegions.Count, 4);
 
-        // 4. 미사용 도시 제거 (선택 안 된 eligible 영역만, 잔해는 건드리지 않음)
-        for (int i = 0; i < eligibleRegions.Count; i++)
+        // 4. 미사용 도시 제거
+        for (int i = 0; i < cityRegions.Count; i++)
         {
             if (!selectedIdx.Contains(i))
-                RemoveCityRegion(eligibleRegions[i]);
+                RemoveCityRegion(cityRegions[i]);
         }
 
         // 5. 선택된 도시에 문명 배치
         for (int i = 0; i < selectedIdx.Count; i++)
         {
-            List<Vector3Int> region = eligibleRegions[selectedIdx[i]];
+            List<Vector3Int> region = cityRegions[selectedIdx[i]];
             Vector3Int center = GetCenter(region);
             BoundsInt bounds = GetBounds(region);
             spawnedCityCenters.Add(center);
@@ -162,16 +148,11 @@ public class CitySpawnManager : MonoBehaviour
             tileMapManager.EraseTile(tileMapManager.farmlandTilemap, pos);
     }
 
-    // 문명 초기 배치: 도시 영역 전체 영토 점령 + 플레이어 안개 해제
+    // 문명 초기 배치: 도시 영역 전체 영토 점령
     private void SpawnCivilization(List<Vector3Int> region, Vector3Int center, int civID)
     {
-        // 도시 타일 전체를 해당 문명 영토로 등록
         foreach (Vector3Int pos in region)
             tileMapManager.SetOwner(pos, civID);
-
-        // 플레이어(civID 0)만 안개 해제
-        if (civID == 0)
-            FogManager.Instance?.SetVisible(center, initialVisionRadius);
     }
 
     // 영역의 평균 중심 좌표
