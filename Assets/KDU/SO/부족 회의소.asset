@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
+  m_Name: "\uBD80\uC871 \uD68C\uC758\uC18C"
+  m_EditorClassIdentifier: 
+  id: 
+  buildingName: "\uBD80\uC871 \uD68C\uC758\uC18C"
+  buildingType: 9
+  sprite: {fileID: 8284690431070618562, guid: 20d6cce5c7ac33b4e97f0f98a09aa347, type: 3}
+  requiredEra: 0
+  isAutoUpgrade: 0
+  upgradesTo: {fileID: 0}
+  goldCost: 0
+  width: 1
+  height: 1
+  allowedTiles: 04000000
+  maxPerTerritory: -1
+  goldPerTurn: 0
+  researchPerTurn: 0
+  populationCapBonus: 0
+  soldierCapacity: 0

@@ -12,16 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
   m_Name: "\uD759 \uBCBD\uB3CC\uC9D1 \uAC74\uC124"
   m_EditorClassIdentifier: 
-  <cardID>k__BackingField: 0
-  cardName: 
-  <cardType>k__BackingField: 0
+  <cardID>k__BackingField: 1451
+  cardName: "\uD759 \uBCBD\uB3CC\uC9D1 \uAC74\uC124"
+  <cardType>k__BackingField: 3
+  <cardUseType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 0}
-  <Cost>k__BackingField: 0
-  description: 
+  <Cost>k__BackingField: 3
+  description: "\uCD5C\uB300 \uC778\uAD6C \uC218\uB97C 7\uBA85 \uB298\uB824\uC8FC\uB294
+    \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4."
   <Effects>k__BackingField:
-  - rid: -2
+  - rid: 5056991827551584332
+  - rid: 5056991827551584336
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 5056991827551584332
+      type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
+      data:
+        buildingData: {fileID: 11400000, guid: 9c905a8031c89c5428721f7d0d09585e, type: 2}
+    - rid: 5056991827551584336
+      type: {class: IncreasePopulationffect, ns: , asm: Assembly-CSharp}
+      data:
+        increasePopulationAmount: 7
