@@ -68,16 +68,16 @@ public class RockWarrior : HumanBase, IFightable
     public void Move(Vector3Int targetCell) //임시로 만들어둔 움직이는 함수 일단 클릭하고 옆 타일로 이동하게 만들었음
     {
         if(!isSelected) return; //유닛이 선택되지 않았으면 이동하지 않음
-        Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치 셀 좌표 넣기
-        int dx = Mathf.Abs(targetCell.x - currentCell.x);
-        int dy = Mathf.Abs(targetCell.y - currentCell.y);
-        if (dx + dy != 1) //한 칸 만 이동할 수 있게
-        {
-            Debug.Log("한 칸만 이동 가능");
-            return;
-        }
-        Vector3 targetWorld = TileMapManager.Instance.groundTilemap.GetCellCenterWorld(targetCell);//타일 중앙으로 이동하게
-        transform.position = targetWorld;
+        //Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position); //현재 위치 셀 좌표 넣기
+        //int dx = Mathf.Abs(targetCell.x - currentCell.x);
+        //int dy = Mathf.Abs(targetCell.y - currentCell.y);
+        //if (dx + dy != 1) //한 칸 만 이동할 수 있게
+        //{
+        //    Debug.Log("한 칸만 이동 가능");
+        //    return;
+        //}
+        //Vector3 targetWorld = TileMapManager.Instance.groundTilemap.GetCellCenterWorld(targetCell);//타일 중앙으로 이동하게
+        //transform.position = targetWorld;
 
         isSelected = false; // 이동 후 선택 해제
     }

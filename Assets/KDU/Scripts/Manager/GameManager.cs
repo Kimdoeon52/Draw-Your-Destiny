@@ -73,7 +73,7 @@ public class GameManager : PersistentSingleton<GameManager>
         if (tileMapManager == null)
             tileMapManager = TileMapManager.Instance;
 
-        if (tileMapManager == null || tileMapManager.buildingTilemap == null)
+        if (tileMapManager == null || tileMapManager.cityTilemap == null)
         {
             Debug.LogWarning("[GameManager] 플레이어 영주성 배치에 필요한 TileMapManager를 찾을 수 없습니다.");
             yield break;
@@ -81,7 +81,7 @@ public class GameManager : PersistentSingleton<GameManager>
 
         if (citySpawnManager.TryGetSpawnedCityBounds(0, out BoundsInt cityBounds))
         {
-            playerLordCastle.Initialize(tileMapManager.buildingTilemap, cityBounds);
+            playerLordCastle.Initialize(tileMapManager.cityTilemap, cityBounds);
 
             if (cam == null) cam = Camera.main;
             if (cam != null)

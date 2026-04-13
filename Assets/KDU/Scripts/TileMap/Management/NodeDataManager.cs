@@ -27,14 +27,10 @@ public class NodeDataManager : Singleton<NodeDataManager>
     public class NodeTerrainSource
     {
         public int nodeID;
-        [Tooltip("NodePrefab_XX의 Tilemap_Ground")]
-        public Tilemap groundTilemap;
-        [Tooltip("NodePrefab_XX의 Tilemap_Farmland")]
-        public Tilemap farmlandTilemap;
-        [Tooltip("NodePrefab_XX의 Tilemap_River")]
-        public Tilemap riverTilemap;
         [Tooltip("NodePrefab_XX의 Tilemap_City")]
         public Tilemap cityTilemap;
+        [Tooltip("NodePrefab_XX의 Tilemap_Farmland")]
+        public Tilemap farmlandTilemap;
     }
 
     [Header("노드 지형 소스 — nodeID 순서대로 연결")]
@@ -69,10 +65,8 @@ public class NodeDataManager : Singleton<NodeDataManager>
         NodeTerrainSource src = FindTerrain(nodeData.nodeID);
         if (src != null)
         {
-            CopyTilemap(src.groundTilemap,    tileMapManager.groundTilemap);
-            CopyTilemap(src.farmlandTilemap,  tileMapManager.farmlandTilemap);
-            CopyTilemap(src.riverTilemap,     tileMapManager.riverTilemap);
-            CopyTilemap(src.cityTilemap,      tileMapManager.cityTilemap);
+            CopyTilemap(src.cityTilemap,     tileMapManager.cityTilemap);
+            CopyTilemap(src.farmlandTilemap, tileMapManager.farmlandTilemap);
         }
         else
         {
