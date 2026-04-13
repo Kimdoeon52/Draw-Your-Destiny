@@ -87,8 +87,8 @@ public class BuildingPlacementService : MonoBehaviour
     // tilePos: ?�재 마우?��? 가리키???�??좌표 (GetMouseTilePos()�??�음)
     public void UpdatePreview(Vector3Int tilePos)
     {
-        if (!isPlacing || buildingPreview == null || currentBuilding == null
-            || tileMapManager == null || tileMapManager.groundTilemap == null) return;
+        //if (!isPlacing || buildingPreview == null || currentBuilding == null
+            //|| tileMapManager == null || tileMapManager.groundTilemap == null) return;
 
         // ?�리뷰�? ?�제�??�용 중인 좌표�??�기??currentPreviewTilePos???�??
         currentPreviewTilePos = tilePos;
@@ -148,12 +148,12 @@ public class BuildingPlacementService : MonoBehaviour
         // HINT: ???�수??"?�재 마우???�치�??�시 계산"?�니??
         // ?�리뷰�? ?�정 좌표�??�일?�려�?카드 ?�정 ?�에?????�수 ?�??
         // 마�?�??�리�?좌표�?반환?�는 getter�??�는 ?�이 ???�정?�입?�다.
-        if (mainCamera == null || tileMapManager == null || tileMapManager.groundTilemap == null)
+        if (mainCamera == null || tileMapManager == null || tileMapManager.cityTilemap == null)
             return Vector3Int.zero;
 
         Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0;
-        return tileMapManager.groundTilemap.WorldToCell(mouseWorld);
+        return tileMapManager.cityTilemap.WorldToCell(mouseWorld);
     }
 }
 

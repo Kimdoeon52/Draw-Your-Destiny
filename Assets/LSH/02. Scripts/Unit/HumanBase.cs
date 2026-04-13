@@ -203,7 +203,7 @@ namespace Base
         }
         protected virtual void TryRandomStepMove() //랜덤 이동 시도
         {
-            Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+            //Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
 
             Vector3Int[] directions =
             {
@@ -221,13 +221,13 @@ namespace Base
 
             foreach (var dir in directions)
             {
-                Vector3Int nextCell = currentCell + dir;
+                //Vector3Int nextCell = currentCell + dir;
 
                 // 타일 검사 
-                if (!CanMoveToCell(nextCell))
-                    continue;
+                //if (!CanMoveToCell(nextCell))
+                //    continue;
 
-                possibleMoves.Add(nextCell);
+                //possibleMoves.Add(nextCell);
             }
 
             if (possibleMoves.Count == 0)
