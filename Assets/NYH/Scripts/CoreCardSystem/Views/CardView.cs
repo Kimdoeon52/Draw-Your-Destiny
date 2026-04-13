@@ -149,6 +149,7 @@
             transform.SetAsLastSibling();
 
             CardViewHoverSystem.Instance?.Hide();
+            cachedHandView = ResolveHandView();
             if (cachedHandView != null)
             {
                 originalHandIndex = cachedHandView.GetCardIndex(this);
@@ -239,6 +240,7 @@
 
                 if (placementService == null || !placementService.IsPlacing)
                 {
+                    ReturnToHand();
                     return;
                 }
 
@@ -381,6 +383,7 @@
             transform.localScale = Vector3.one;
             transform.rotation = Quaternion.identity;
 
+            cachedHandView = ResolveHandView();
             if (cachedHandView != null)
             {
                 if (originalHandIndex >= 0)
@@ -394,6 +397,22 @@
 
                 originalHandIndex = -1;
             }
+        }
+
+        private HandView ResolveHandView()
+        {
+            if (cachedHandView != null)
+            {
+                return cachedHandView;
+            }
+
+            HandView parentHandView = GetComponentInParent<HandView>();
+            if (parentHandView != null)
+            {
+                return parentHandView;
+            }
+
+            return FindFirstObjectByType<HandView>();
         }
     }
 }

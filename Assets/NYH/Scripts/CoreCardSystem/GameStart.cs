@@ -41,6 +41,7 @@ public class GameStarter : MonoBehaviour
         bool consumed = deckStateStore.TryConsume(out CardPileRuntimeState storedState);
 
         Debug.Log($"GameStarter: 덱 상태 저장소에 저장된 상태가 {(hasStoredState ? "있습니다" : "없습니다")}. TryConsume 결과: {(consumed ? "성공" : "실패")}. storedState는 {(storedState != null ? "유효합니다" : "null입니다")}.");
+        Debug.Log($"[GameStarter] TryConsume로 꺼낸 문명 덱 상태: {FormatState(storedState)}");
 
 
         if (CardSystem.Instance != null && consumed)
@@ -68,6 +69,22 @@ public class GameStarter : MonoBehaviour
         {
             Debug.LogError("GameStarter: 덱 정보가 없거나 CardSystem이 없습니다."); 
         }
+    }
+
+    private static string FormatState(CardPileRuntimeState state)
+    {
+        if (state == null)
+        {
+            return "state=NULL";
+        }
+
+        int draw = state.DrawPile != null ? state.DrawPile.Count : 0;
+        int hand = state.Hand != null ? state.Hand.Count : 0;
+        int discard = state.DiscardPile != null ? state.DiscardPile.Count : 0;
+        int extinction = state.ExtinctionPile != null ? state.ExtinctionPile.Count : 0;
+        int total = draw + hand + discard + extinction;
+
+        return $"draw={draw}, hand={hand}, discard={discard}, extinction={extinction}, total={total}";
     }
 
     private void EndTurnCard()

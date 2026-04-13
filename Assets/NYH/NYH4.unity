@@ -1766,8 +1766,6 @@ RectTransform:
   - {fileID: 782640804}
   - {fileID: 1569363604}
   - {fileID: 1824678537}
-  - {fileID: 702734383}
-  - {fileID: 966492438}
   - {fileID: 639051865}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4565,7 +4563,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 349516731}
+  m_Father: {fileID: 1480699177}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &720449665
 GameObject:
@@ -5042,8 +5040,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1603369654}
-  - {fileID: 876008700}
-  - {fileID: 1728094268}
   - {fileID: 848536207}
   m_Father: {fileID: 349516731}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5386,15 +5382,15 @@ RectTransform:
   m_GameObject: {fileID: 876008699}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.125, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 454988485}
-  m_Father: {fileID: 813062962}
+  m_Father: {fileID: 1480699177}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -11.399939, y: -7.5250015}
+  m_AnchoredPosition: {x: 569.00073, y: -415.40125}
   m_SizeDelta: {x: 194.09, y: 76.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &876008701
@@ -5453,7 +5449,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1319902114}
         m_TargetAssemblyTypeName: NYH.CoreCardSystem.CardSystem, Assembly-CSharp
         m_MethodName: ShowDeck
         m_Mode: 1
@@ -6060,138 +6056,6 @@ Transform:
   - {fileID: 1371717843}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &948258189
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 948258191}
-  - component: {fileID: 948258190}
-  m_Layer: 0
-  m_Name: Spline
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &948258190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948258189}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dab5c7d4c32e743048dfca98e2d5914f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Spline:
-    m_EditModeType: 1
-    m_Knots: []
-    m_MetaData: []
-    m_Closed: 0
-    m_IntData:
-      m_Data: []
-    m_FloatData:
-      m_Data: []
-    m_Float4Data:
-      m_Data: []
-    m_ObjectData:
-      m_Data: []
-  m_Splines:
-  - m_EditModeType: 1
-    m_Knots:
-    - Position:
-        x: 0
-        y: 0
-        z: 0
-      TangentIn:
-        x: -0
-        y: -0
-        z: -72.43345
-      TangentOut:
-        x: 0
-        y: 0
-        z: 72.43345
-      Rotation:
-        value:
-          x: 0.55362386
-          y: -0.43988696
-          z: 0.43988702
-          w: -0.55362386
-    - Position:
-        x: 705.5944
-        y: 163.6979
-        z: 0
-      TangentIn:
-        x: 0
-        y: 0
-        z: -609.6401
-      TangentOut:
-        x: 0
-        y: 0
-        z: 609.6401
-      Rotation:
-        value:
-          x: 0.49884105
-          y: -0.5011561
-          z: 0.5011561
-          w: -0.49884132
-    - Position:
-        x: 1414.0112
-        y: 8.467133
-        z: 0
-      TangentIn:
-        x: -0
-        y: -0
-        z: -72.52248
-      TangentOut:
-        x: 0
-        y: 0
-        z: 72.52248
-      Rotation:
-        value:
-          x: -0.4432705
-          y: 0.5509186
-          z: -0.5509185
-          w: 0.44327056
-    m_MetaData:
-    - Mode: 0
-      Tension: 0.5
-    - Mode: 2
-      Tension: 0.5
-    - Mode: 0
-      Tension: 0.5
-    m_Closed: 0
-    m_IntData:
-      m_Data: []
-    m_FloatData:
-      m_Data: []
-    m_Float4Data:
-      m_Data: []
-    m_ObjectData:
-      m_Data: []
-  m_Knots:
-    m_KnotsLink: []
---- !u!4 &948258191
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948258189}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -664.3586, y: -648.07513, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1480699177}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &966492437
 GameObject:
   m_ObjectHideFlags: 0
@@ -6222,7 +6086,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 349516731}
+  m_Father: {fileID: 1480699177}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &966492439
 MonoBehaviour:
@@ -230379,50 +230243,6 @@ Transform:
   - {fileID: 1098325359}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1475789860
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1475789862}
-  - component: {fileID: 1475789861}
-  m_Layer: 0
-  m_Name: FogManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1475789861
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1475789860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e17208587871ae46b5c9442e3d07fef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1475789862
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1475789860}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -69.614006, y: 54.35879, z: 0.3341471}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1480699173
 GameObject:
   m_ObjectHideFlags: 0
@@ -230520,9 +230340,12 @@ RectTransform:
   - {fileID: 1319902122}
   - {fileID: 1740292036}
   - {fileID: 687016046}
-  - {fileID: 948258191}
   - {fileID: 1003438753}
   - {fileID: 1846216619}
+  - {fileID: 966492438}
+  - {fileID: 702734383}
+  - {fileID: 876008700}
+  - {fileID: 1728094268}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -231990,15 +231813,15 @@ RectTransform:
   m_GameObject: {fileID: 1728094267}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.125, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 177241023}
-  m_Father: {fileID: 813062962}
+  m_Father: {fileID: 1480699177}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 11.800013, y: -7.5250015}
+  m_AnchoredPosition: {x: 801.00024, y: -415.40125}
   m_SizeDelta: {x: 194.09, y: 76.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1728094269
@@ -232057,7 +231880,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1319902114}
         m_TargetAssemblyTypeName: NYH.CoreCardSystem.CardSystem, Assembly-CSharp
         m_MethodName: ShowGraveyard
         m_Mode: 1
@@ -372892,7 +372715,6 @@ SceneRoots:
   - {fileID: 1395773283}
   - {fileID: 522887710}
   - {fileID: 349516731}
-  - {fileID: 1475789862}
   - {fileID: 1098538681}
   - {fileID: 130960060}
   - {fileID: 162743831}
