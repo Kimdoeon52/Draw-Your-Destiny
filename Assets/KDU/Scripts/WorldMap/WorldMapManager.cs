@@ -75,6 +75,12 @@ public class WorldMapManager : Singleton<WorldMapManager>
         return allNodes.Find(n => n.nodeID == nodeID);
     }
 
+    // civID를 소유한 첫 번째 노드 반환
+    public NodeData GetNodeByCivID(int civID)
+    {
+        return allNodes.Find(n => n.ownerCivID == civID);
+    }
+
     // ── NodeButton → 클릭 처리 진입점 ────────────────────────────
     public void OnNodeClicked(int nodeID)
     {
@@ -87,9 +93,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
             return;
         }
 
-        if (node.ownerCivID == 0)
+        // 아군 노드이거나 유닛이 주둔 중이면 영지 진입
+        if (node.ownerCivID == 0 || node.hasPlayerUnits)
         {
-            // 아군 노드 → 영지 뷰 진입
             StartCoroutine(EnterTerritoryCoroutine(node));
         }
         else if (node.ownerCivID == -1)
@@ -252,6 +258,17 @@ public class WorldMapManager : Singleton<WorldMapManager>
         if (node == null) return;
         node.ownerCivID = civID;
         if (civID != 0) node.isMansionBuilt = false; // 점령당하면 영주성 초기화
+        RefreshAllNodeButtons();
+    }
+
+    // ── 유닛 주둔 상태 변경 (전투 시스템에서 호출) ───────────────
+    // 전투 승리 후 유닛이 해당 노드에 진입할 때 true
+    // 유닛이 모두 철수하거나 전멸하면 false
+    public void SetPlayerUnitsPresent(int nodeID, bool present)
+    {
+        NodeData node = GetNode(nodeID);
+        if (node == null) return;
+        node.hasPlayerUnits = present;
         RefreshAllNodeButtons();
     }
 

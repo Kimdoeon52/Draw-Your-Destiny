@@ -105,6 +105,14 @@ public class NodeDataManager : Singleton<NodeDataManager>
         tileMapManager.ClearAllTerrainTiles();
     }
 
+    // 특정 노드의 cityTilemap 반환 (CitySpawnManager에서 bounds 계산용)
+    public bool TryGetCityTilemap(int nodeID, out Tilemap tilemap)
+    {
+        NodeTerrainSource src = FindTerrain(nodeID);
+        tilemap = src?.cityTilemap;
+        return tilemap != null;
+    }
+
     // ── 지형 소스 조회 ────────────────────────────────────────────
     private NodeTerrainSource FindTerrain(int nodeID)
     {
