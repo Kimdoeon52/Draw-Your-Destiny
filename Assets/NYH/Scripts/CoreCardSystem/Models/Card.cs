@@ -9,7 +9,6 @@
         None,
         Fight,
         Money,
-        Science,
         Normal,
         Common
     }

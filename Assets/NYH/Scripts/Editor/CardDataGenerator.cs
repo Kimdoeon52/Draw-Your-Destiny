@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using NYH.CoreCardSystem;
@@ -188,3 +188,4 @@ public class CardDataGenerator : EditorWindow
             description="매해 연구 포인트를 30씩 획득합니다.(1개씩만 건설 가능)" },
     };
 }
+*/

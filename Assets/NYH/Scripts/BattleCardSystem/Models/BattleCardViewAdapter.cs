@@ -88,7 +88,7 @@ namespace NYH.BattleCardSystem
                 case BattleCardType.Move:
                     return CardType.Normal;
                 case BattleCardType.Skill:
-                    return CardType.Science;
+                    return CardType.Normal;
                 case BattleCardType.Potion:
                     return CardType.Common;
                 default:

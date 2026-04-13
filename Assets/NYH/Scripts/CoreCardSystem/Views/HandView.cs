@@ -3,6 +3,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using DG.Tweening;
     using UnityEngine;
     using UnityEngine.Splines;
@@ -16,19 +17,20 @@
 
         public IEnumerator AddCard(CardView cardView)
         {
-            cardView.transform.SetParent(this.transform);
+            cardView.transform.SetParent(this.transform, false);
 
             if (!cards.Contains(cardView))
             {
                 cards.Add(cardView);
             }
 
+            DebugHandState($"AddCard before layout: {cardView.Card?.Title}");
             yield return UpdateCardPositions(0.15f);
         }
 
         public IEnumerator InsertCard(CardView cardView, int index)
         {
-            cardView.transform.SetParent(this.transform);
+            cardView.transform.SetParent(this.transform, false);
 
             if (cards.Contains(cardView))
             {
@@ -38,6 +40,7 @@
             index = Mathf.Clamp(index, 0, cards.Count);
             cards.Insert(index, cardView);
 
+            DebugHandState($"InsertCard before layout: {cardView.Card?.Title}, targetIndex={index}");
             yield return UpdateCardPositions(0.15f);
         }
 
@@ -50,7 +53,7 @@
             }
 
             cards.Remove(cardView);
-            StartCoroutine(UpdateCardPositions(0.15f));
+            DebugHandState($"RemoveCard: {cardView.Card?.Title}");
 
             return cardView;
         }
@@ -58,6 +61,25 @@
         public int GetCardIndex(CardView cardView)
         {
             return cards.IndexOf(cardView);
+        }
+
+        public void RebuildCardListFromChildren()
+        {
+            cards.Clear();
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
+                CardView cardView = child.GetComponent<CardView>();
+                if (cardView == null || cardView.IsHoverPreview)
+                {
+                    continue;
+                }
+
+                cards.Add(cardView);
+            }
+
+            DebugHandState("RebuildCardListFromChildren");
         }
 
         private CardView GetCardView(Card card)
@@ -99,7 +121,9 @@
                 cards[i].transform.DOScale(Vector3.one, duration);
             }
 
+            DebugHandState($"UpdateCardPositions queued duration={duration}");
             yield return new WaitForSeconds(duration);
+            DebugHandState($"UpdateCardPositions completed duration={duration}");
         }
 
         private bool TryGetSpline(out Spline spline)
@@ -126,6 +150,7 @@
 
             Debug.LogWarning("[HandView] splineContainer가 비어 있거나 Knot가 없어 직선 배치 대체를 사용합니다.");
             yield return new WaitForSeconds(duration);
+            DebugHandState($"LayoutCardsInStraightLine completed duration={duration}");
         }
 
         public void ClearAllCardsImmediate()
@@ -141,6 +166,28 @@
             }
 
             cards.Clear();
+        }
+
+        private void DebugHandState(string label)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"[HandView] {label}");
+
+            for (int i = 0; i < cards.Count; i++)
+            {
+                CardView cv = cards[i];
+                if (cv == null)
+                {
+                    sb.AppendLine($"  listIndex={i}, card=NULL");
+                    continue;
+                }
+
+                string title = cv.Card != null ? cv.Card.Title : "NULL";
+                sb.AppendLine(
+                    $"  listIndex={i}, title={title}, sibling={cv.transform.GetSiblingIndex()}, localPos={cv.transform.localPosition}");
+            }
+
+            Debug.Log(sb.ToString());
         }
     }
 }
