@@ -4401,6 +4401,7 @@ MonoBehaviour:
   lordCastleSprite: {fileID: -6578267993364069794, guid: 1c9bc0d104c01934da10d4333b9dc48b,
     type: 3}
   lordCastleMaxHP: 100
+  lordCastle: {fileID: 0}
 --- !u!114 &179692528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4447,53 +4448,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 179692526}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &372505343
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 372505344}
-  - component: {fileID: 372505345}
-  m_Layer: 0
-  m_Name: EnemyAWizzardBuilding
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &372505344
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 372505343}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 681470320}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &372505345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 372505343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 124602cb36d7b4c4690a3e3cea92ebd0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyUnitPrefab: {fileID: 0}
-  poolSize: 20
-  poolParent: {fileID: 372505344}
 --- !u!1 &447492988
 GameObject:
   m_ObjectHideFlags: 0
@@ -37426,53 +37380,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1 &464298815
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 464298816}
-  - component: {fileID: 464298817}
-  m_Layer: 0
-  m_Name: EnemyASuperUnitBuilding
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &464298816
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 464298815}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 681470320}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &464298817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 464298815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4f61ccffc68e094d8b5fcc8068c2ebe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyUnitPrefab: {fileID: 0}
-  poolSize: 20
-  poolParent: {fileID: 464298816}
 --- !u!1 &495627504
 GameObject:
   m_ObjectHideFlags: 0
@@ -37546,13 +37453,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9299b94f1ec3d96499a046c6b3cfdf80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundTilemap: {fileID: 1465248518}
+  cityTilemap: {fileID: 106214498}
   farmlandTilemap: {fileID: 748231234}
-  riverTilemap: {fileID: 2122143346}
-  goldMineTilemap: {fileID: 447492991}
-  cityTilemap: {fileID: 460022354}
-  buildingTilemap: {fileID: 913323702}
-  territoryTilemap: {fileID: 1383522490}
 --- !u!4 &535769638
 Transform:
   m_ObjectHideFlags: 0
@@ -37632,7 +37534,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e17208587871ae46b5c9442e3d07fef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugToggleKey: 282
 --- !u!4 &609677874
 Transform:
   m_ObjectHideFlags: 0
@@ -37646,42 +37547,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &681470319
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 681470320}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &681470320
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 681470319}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.35310572, y: -0.4838985, z: 0.9036802}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1646488518}
-  - {fileID: 1808695362}
-  - {fileID: 817910312}
-  - {fileID: 464298816}
-  - {fileID: 372505344}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &736750469
@@ -52136,6 +52001,7 @@ MonoBehaviour:
   buildTryCount: 30
   lordCastleSprite: {fileID: 21300000, guid: e15a0aaf619d8aa429bd091186fb29a2, type: 3}
   lordCastleMaxHP: 100
+  lordCastle: {fileID: 0}
 --- !u!114 &802174097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52151,53 +52017,6 @@ MonoBehaviour:
   maxHP: 100
   currentHP: 0
   tileSize: 4
---- !u!1 &817910311
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 817910312}
-  - component: {fileID: 817910313}
-  m_Layer: 0
-  m_Name: EnemyAHorseWarriorBuilding
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &817910312
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 817910311}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 681470320}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &817910313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 817910311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f1120c50d742224ca1cf8a457c8e693, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyUnitPrefab: {fileID: 0}
-  poolSize: 20
-  poolParent: {fileID: 817910312}
 --- !u!1 &913323699
 GameObject:
   m_ObjectHideFlags: 0
@@ -52534,37 +52353,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1209372389}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1148056920
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1148056921}
-  m_Layer: 0
-  m_Name: EnemyAArcher
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1148056921
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1148056920}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.35310572, y: -0.4838985, z: 0.9036802}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1209372388
@@ -275319,53 +275107,6 @@ MonoBehaviour:
   - {fileID: 5877644716001515087, guid: 9340d12fc0b206a4c94c5c13da6889b2, type: 3}
   poolParent: {fileID: 1420618455}
   poolSize: 100
---- !u!1 &1646488517
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1646488518}
-  - component: {fileID: 1646488519}
-  m_Layer: 0
-  m_Name: EnemyAArcherBuilding
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1646488518
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646488517}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.0720766, y: 0.29818168, z: -0.016343534}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 681470320}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1646488519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1646488517}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0bb8fbdc0540bb4e996e430f0f14193, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyUnitPrefab: {fileID: 0}
-  poolSize: 20
-  poolParent: {fileID: 1646488518}
 --- !u!1 &1729810487
 GameObject:
   m_ObjectHideFlags: 0
@@ -275416,53 +275157,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1808695361
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1808695362}
-  - component: {fileID: 1808695363}
-  m_Layer: 0
-  m_Name: EnemyAHealerBuilding
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1808695362
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1808695361}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 681470320}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1808695363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1808695361}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1647fe947de7484b9f02cb6b17b5b74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyUnitPrefab: {fileID: 0}
-  poolSize: 20
-  poolParent: {fileID: 1808695362}
 --- !u!1 &2067566031
 GameObject:
   m_ObjectHideFlags: 0
@@ -320235,5 +319929,3 @@ SceneRoots:
   - {fileID: 495627506}
   - {fileID: 1488662309}
   - {fileID: 561679659}
-  - {fileID: 681470320}
-  - {fileID: 1148056921}
