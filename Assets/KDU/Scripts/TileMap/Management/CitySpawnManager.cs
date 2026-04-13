@@ -3,76 +3,74 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // ============================================================
-// CitySpawnManager — 게임 시작 시 도시(문명) 초기 배치 담당
+// CitySpawnManager — 문명별 시작 도시 좌표/범위 제공
 //
-// 흐름:
-//   1. cityTilemap에서 BFS로 연결된 city 타일 그룹을 "도시 영역" 단위로 탐지
-//   2. 탐지된 영역 중 4개를 랜덤 선택 (플레이어 1 + AI 3)
-//   3. 미선택 도시 영역의 city/farmland 타일을 맵에서 제거
-//   4. 선택된 각 도시에 문명 ID(civID) 할당, 영토 점령, 플레이어 안개 해제
+// 이전: 씬에 깔린 단일 cityTilemap을 BFS로 스캔해 도시 영역 탐지
+// 현재: WorldMapManager.allNodes의 ownerCivID를 기준으로
+//       NodeDataManager의 소스 타일맵에서 bounds를 읽어 저장
 //
-// [DefaultExecutionOrder(10)] — TileMapManager 초기화 후 실행
+// 외부 사용:
+//   TryGetSpawnedCityBounds(civID) — PlayerLordCastle 위치 계산
+//   SpawnedCityCenters[civID]      — GetManorOuterTiles 기준점
 //
-// 씬에 미리 깔아 둔 city 타일 영역 수가 4개 미만이면 에러 로그 출력
+// [DefaultExecutionOrder(10)] — WorldMapManager/NodeDataManager 이후 실행
 // ============================================================
 [DefaultExecutionOrder(10)]
 public class CitySpawnManager : MonoBehaviour
 {
-    private TileMapManager tileMapManager;
-
-    // 씬 시작 후 배치된 도시의 중심 좌표 목록 (civID 순서: 0=플레이어, 1~3=AI)
-    // 외부에서 각 문명의 수도 위치를 참조할 때 사용
+    // civID 순서: 0=플레이어, 1~3=AI
     private List<Vector3Int> spawnedCityCenters = new List<Vector3Int>();
     public List<Vector3Int> SpawnedCityCenters => spawnedCityCenters;
-    // 시작 도시 영역의 bounds 목록
-    // 영주성처럼 영역 중심 배치가 필요한 곳에서 사용
-    // 나중에 소규모 영지(예: 8x8)도 bounds만 넘기면 같은 계산을 재사용 가능
+
     private List<BoundsInt> spawnedCityBounds = new List<BoundsInt>();
 
     private void Start()
     {
-        tileMapManager = TileMapManager.Instance;
         InitializeCities();
     }
 
     private void InitializeCities()
     {
-        // 1. BFS로 도시 타일을 연결된 영역 단위로 묶음 (20x20 → 1개 영역)
         spawnedCityCenters.Clear();
         spawnedCityBounds.Clear();
 
-        List<List<Vector3Int>> cityRegions = FindCityRegions();
+        WorldMapManager worldMap = WorldMapManager.Instance;
+        NodeDataManager nodeDataMgr = NodeDataManager.Instance;
 
-        if (cityRegions.Count < 4)
+        if (worldMap == null || nodeDataMgr == null)
         {
-            Debug.LogError($"[CitySpawnManager] 도시 영역 {cityRegions.Count}개 감지 — 최소 4개 필요.");
+            Debug.LogError("[CitySpawnManager] WorldMapManager 또는 NodeDataManager를 찾을 수 없습니다.");
             return;
         }
 
-        // 3. 랜덤으로 4개 인덱스 선택
-        List<int> selectedIdx = PickRandomIndices(cityRegions.Count, 4);
-
-        // 4. 미사용 도시 제거
-        for (int i = 0; i < cityRegions.Count; i++)
+        // civID 0~3 순서대로 소유 노드의 city 범위 수집
+        for (int civID = 0; civID < 4; civID++)
         {
-            if (!selectedIdx.Contains(i))
-                RemoveCityRegion(cityRegions[i]);
-        }
+            NodeData node = worldMap.GetNodeByCivID(civID);
+            if (node == null)
+            {
+                // 해당 civID 소유 노드 없음 — 빈 값으로 채움
+                spawnedCityCenters.Add(Vector3Int.zero);
+                spawnedCityBounds.Add(new BoundsInt());
+                continue;
+            }
 
-        // 5. 선택된 도시에 문명 배치
-        for (int i = 0; i < selectedIdx.Count; i++)
-        {
-            List<Vector3Int> region = cityRegions[selectedIdx[i]];
-            Vector3Int center = GetCenter(region);
-            BoundsInt bounds = GetBounds(region);
-            spawnedCityCenters.Add(center);
-            spawnedCityBounds.Add(bounds);
-            SpawnCivilization(region, center, civID: i);
+            if (nodeDataMgr.TryGetCityTilemap(node.nodeID, out Tilemap cityTilemap))
+            {
+                cityTilemap.CompressBounds();
+                BoundsInt bounds = cityTilemap.cellBounds;
+                spawnedCityCenters.Add(GetCenter(bounds));
+                spawnedCityBounds.Add(bounds);
+            }
+            else
+            {
+                spawnedCityCenters.Add(Vector3Int.zero);
+                spawnedCityBounds.Add(new BoundsInt());
+                Debug.LogWarning($"[CitySpawnManager] civID {civID} 노드({node.nodeID})의 cityTilemap을 찾을 수 없습니다.");
+            }
         }
     }
 
-    // BFS로 연결된 city 타일 그룹 탐지
-    // 특정 문명의 시작 도시 bounds 반환
     public bool TryGetSpawnedCityBounds(int civID, out BoundsInt bounds)
     {
         if (civID < 0 || civID >= spawnedCityBounds.Count)
@@ -80,127 +78,14 @@ public class CitySpawnManager : MonoBehaviour
             bounds = default;
             return false;
         }
-
         bounds = spawnedCityBounds[civID];
         return true;
     }
 
-    private List<List<Vector3Int>> FindCityRegions()
+    private Vector3Int GetCenter(BoundsInt bounds)
     {
-        Tilemap cityTilemap = tileMapManager.cityTilemap;
-        HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
-        List<List<Vector3Int>> regions = new List<List<Vector3Int>>();
-        Vector3Int[] dirs = { Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down };
-
-        BoundsInt bounds = cityTilemap.cellBounds;
-        foreach (Vector3Int startPos in bounds.allPositionsWithin)
-        {
-            if (!cityTilemap.HasTile(startPos) || visited.Contains(startPos)) continue;
-
-            List<Vector3Int> region = new List<Vector3Int>();
-            Queue<Vector3Int> queue = new Queue<Vector3Int>();
-            queue.Enqueue(startPos);
-            visited.Add(startPos);
-
-            while (queue.Count > 0)
-            {
-                Vector3Int cur = queue.Dequeue();
-                region.Add(cur);
-
-                foreach (Vector3Int dir in dirs)
-                {
-                    Vector3Int next = cur + dir;
-                    if (cityTilemap.HasTile(next) && !visited.Contains(next))
-                    {
-                        visited.Add(next);
-                        queue.Enqueue(next);
-                    }
-                }
-            }
-
-            regions.Add(region);
-        }
-
-        return regions;
-    }
-
-    // 미사용 도시: city 타일 전체 제거 + 주변 3칸 farmland 제거
-    private void RemoveCityRegion(List<Vector3Int> region)
-    {
-        // city 타일 전체 제거
-        foreach (Vector3Int pos in region)
-            tileMapManager.EraseTile(tileMapManager.cityTilemap, pos);
-
-        // 도시 영역의 각 타일 기준 3칸 안의 farmland 제거
-        HashSet<Vector3Int> toRemove = new HashSet<Vector3Int>();
-        foreach (Vector3Int cityPos in region)
-        {
-            for (int dx = -3; dx <= 3; dx++)
-            for (int dy = -3; dy <= 3; dy++)
-            {
-                Vector3Int pos = cityPos + new Vector3Int(dx, dy, 0);
-                if (tileMapManager.farmlandTilemap != null && tileMapManager.farmlandTilemap.HasTile(pos))
-                    toRemove.Add(pos);
-            }
-        }
-
-        foreach (Vector3Int pos in toRemove)
-            tileMapManager.EraseTile(tileMapManager.farmlandTilemap, pos);
-    }
-
-    // 문명 초기 배치: 도시 영역 전체 영토 점령
-    private void SpawnCivilization(List<Vector3Int> region, Vector3Int center, int civID)
-    {
-        foreach (Vector3Int pos in region)
-            tileMapManager.SetOwner(pos, civID);
-    }
-
-    // 영역의 평균 중심 좌표
-    private Vector3Int GetCenter(List<Vector3Int> region)
-    {
-        BoundsInt bounds = GetBounds(region);
-
-        // 짝수 크기 영역은 중앙 2x2 중 좌하단 타일을 기준점으로 사용
         int centerX = bounds.xMin + (bounds.size.x - 1) / 2;
         int centerY = bounds.yMin + (bounds.size.y - 1) / 2;
         return new Vector3Int(centerX, centerY, 0);
-    }
-
-    // 연결된 도시 영역의 최소/최대 범위를 bounds로 계산
-    private BoundsInt GetBounds(List<Vector3Int> region)
-    {
-        if (region == null || region.Count == 0)
-            return new BoundsInt();
-
-        int minX = region[0].x;
-        int maxX = region[0].x;
-        int minY = region[0].y;
-        int maxY = region[0].y;
-
-        foreach (Vector3Int pos in region)
-        {
-            if (pos.x < minX) minX = pos.x;
-            if (pos.x > maxX) maxX = pos.x;
-            if (pos.y < minY) minY = pos.y;
-            if (pos.y > maxY) maxY = pos.y;
-        }
-
-        return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
-    }
-
-    // total개 중 count개 랜덤 비복원 추출
-    private List<int> PickRandomIndices(int total, int count)
-    {
-        List<int> pool = new List<int>();
-        for (int i = 0; i < total; i++) pool.Add(i);
-
-        List<int> result = new List<int>();
-        for (int i = 0; i < count; i++)
-        {
-            int idx = Random.Range(0, pool.Count);
-            result.Add(pool[idx]);
-            pool.RemoveAt(idx);
-        }
-        return result;
     }
 }

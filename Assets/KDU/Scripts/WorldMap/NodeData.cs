@@ -23,6 +23,11 @@ public class NodeData
     // false이면 영지 진입 후 배치 UI 전체 잠금
     public bool isMansionBuilt = false;
 
+    // 플레이어 유닛 주둔 여부
+    // ownerCivID와 무관하게 유닛이 있으면 영지 진입 가능
+    // 전투 승리 시 true, 유닛 철수 시 false
+    public bool hasPlayerUnits = false;
+
     // 현재 이 노드에 배치된 건물 목록
     // 영지 이탈 시 TileMapManager의 allBuildings가 여기에 저장됨
     // visual 필드는 이탈 시 null로 클리어됨 (재진입 시 재생성)

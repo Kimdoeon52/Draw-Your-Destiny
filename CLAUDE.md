@@ -44,28 +44,44 @@ Unity로 개발 중인 턴제 전략 + 덱빌딩 게임 프로젝트입니다.
 
 ```
 게임 전체
-├── 월드맵 뷰 (UI Canvas 기반)
-│   ├── 배경: 손그림 스타일 지도 이미지
-│   ├── 노드: 버튼/이미지 컴포넌트 (30개 이하)
-│   ├── 노드 연결선: UI Line 또는 이미지로 인접 관계 표시
+├── WorldMapView (UI Canvas 기반) ← SetActive로 전환
+│   ├── MapBackground: 손그림 스타일 지도 이미지
+│   ├── Nodes/
+│   │   ├── NodeButton_101 ~ NodeButton_110  // NodeButton.cs 부착
+│   │   └── (노드 연결선 — 추후 추가)
 │   └── HUD: 재화, 턴 수, 카드 UI 등
 │
-└── 영지 뷰 (Tilemap 기반) ← 노드 클릭 시 페이드 전환
-    ├── ProductionArea (건물/생산 공간 20×20)
-    │   ├── Tilemap_Ground
-    │   ├── Tilemap_Farmland
-    │   ├── Tilemap_River
-    │   ├── Tilemap_City
-    │   └── Tilemap_Buildings
-    └── CombatArea (전투 공간 20×20)
-        ├── Tilemap_Ground
-        ├── Tilemap_Forest    // 이동 불가
-        ├── Tilemap_River     // 이동 2칸 소비
-        └── Tilemap_Units
+├── TerritoryView (Tilemap 기반) ← SetActive로 전환 (기본 비활성)
+│   ├── Grid
+│   │   ├── ProductionArea (활성)
+│   │   │   ├── Tilemap_City        // 도시 타일 (일반 건물 배치)
+│   │   │   ├── Tilemap_Farmland    // 농경지 (Farm 전용)
+│   │   │   └── Tilemap_Buildings   // 런타임 건물 GO 부모
+│   │   └── CombatArea (비활성, 전투 시 전환)
+│   │       ├── Tilemap_Ground
+│   │       ├── Tilemap_Forest      // 이동 불가
+│   │       ├── Tilemap_River       // 이동 2칸 소비
+│   │       └── Tilemap_Units
+│   └── ExitButton  // WorldMapManager.ExitTerritoryView() 연결
+│
+├── NodePrefabs/ (모두 비활성 — NodeDataManager 지형 소스용)
+│   ├── NodePrefab_01 ~ NodePrefab_10
+│   │   ├── ProductionArea
+│   │   │   ├── Tilemap_City
+│   │   │   └── Tilemap_Farmland
+│   │   └── CombatArea
+│   │       ├── Tilemap_Ground
+│   │       ├── Tilemap_Forest
+│   │       ├── Tilemap_River
+│   │       └── Tilemap_Units
+│   └── ...
+│
+└── FadeCanvas
+    └── FadePanel  // CanvasGroup 컴포넌트 (alpha=0 시작)
 ```
 
 - 월드맵은 UI Canvas 기반. 타일맵 사용 안함.
-- 영지 뷰는 씬 상주 NodePrefab 인스턴스 1개를 재사용 (풀링).
+- TerritoryView는 NodePrefab 타일을 복사받는 단일 공유 뷰 (풀링).
 - 평소에는 ProductionArea 활성화, 전투 선언 시 CombatArea로 전환.
 - 안개 전쟁 없음. 모든 노드 항상 공개.
 - 미니맵 없음.
@@ -130,6 +146,7 @@ Assets/KDU/Scripts/
 │   ├── Management/
 │   │   ├── TileMapManager.cs       // 타일맵 관리 싱글톤
 │   │   ├── NodeDataManager.cs      // 노드 진입/이탈 저장·복원
+│   │   ├── CitySpawnManager.cs     // 문명별 시작 도시 좌표/범위 제공
 │   │   ├── BuildingPlacementService.cs
 │   │   └── BuildingPlacementController.cs
 │   └── Visualization/
@@ -144,15 +161,21 @@ Assets/KDU/Scripts/
 
 ## 노드 시스템
 
+### 노드 구성
+
+- 총 10개, nodeID = 101 ~ 110
+- NodePrefab_01 → nodeID 101, NodePrefab_02 → nodeID 102, ... NodePrefab_10 → nodeID 110
+
 ### NodeData
 
 ```csharp
 public class NodeData
 {
     public int nodeID;
-    public List<int> adjacentNodeIDs;       // 인접 노드 ID (공격 가능 여부 판단)
-    public int ownerCivID;                  // -1 = 빈 노드, 0~3 = 문명 ID
-    public bool isMansionBuilt;             // 영주성 재건 여부
+    public List<int> adjacentNodeIDs;   // 인접 노드 ID (공격/점령 가능 여부 판단)
+    public int ownerCivID;              // -1 = 빈 노드, 0~3 = 문명 ID
+    public bool isMansionBuilt;         // 영주성 재건 여부 (false면 배치 UI 잠금)
+    public bool hasPlayerUnits;         // 플레이어 유닛 주둔 여부 (ownerCivID 무관하게 진입 허용)
     public List<BuildingInstance> buildings;
 }
 ```
@@ -163,78 +186,114 @@ civID: 0=플레이어(파랑), 1=AI1(빨강), 2=AI2(초록), 3=AI3(노랑)
 
 | 종류 | 설명 |
 |------|------|
-| 아군 노드 | 플레이어 소유. 영지 진입 및 건물 배치 가능 |
+| 아군 노드 | ownerCivID==0. 영지 진입 및 건물 배치 가능 |
+| 유닛 주둔 노드 | hasPlayerUnits==true. ownerCivID 무관하게 진입 가능. 배치는 isMansionBuilt 여부에 따름 |
 | 적 노드 | AI 소유. 인접 아군 노드에서 공격 선언 가능 |
 | 빈 노드 | 미점령. 재화 n 소모 후 즉시 점령. 점령 후 isMansionBuilt = false |
+
+### 노드 진입 조건
+
+```
+ownerCivID == 0  →  영지 진입 가능
+hasPlayerUnits == true  →  영지 진입 가능 (적/빈 노드여도)
+그 외  →  진입 불가
+```
 
 ### 노드 진입/이탈 흐름
 
 ```
-월드맵에서 아군 노드 클릭
+월드맵에서 진입 가능 노드 클릭
  → 페이드 아웃
- → 씬 상주 NodePrefab 인스턴스 재사용 (Instantiate 없음)
- → 타일맵 클리어 → NodePrefab_XX 지형 데이터 복사
- → NodeData에서 buildings 복원 (BuildingData.id 기반 재생성)
+ → TerritoryView 활성, WorldMapView 비활성
+ → TileMapManager 클리어 → NodePrefab_XX에서 cityTilemap/farmlandTilemap 복사
+ → NodeData.buildings 복원 (RestoreBuildingInstance)
  → isMansionBuilt == false → 배치 UI 전체 잠금
- → 페이드 인 → 영지 뷰 활성화
+ → 페이드 인
 
-영지 뷰에서 나가기
+영지 뷰에서 ExitButton 클릭
  → NodeData에 현재 buildings 저장
- → 타일맵 클리어
- → 페이드 → 월드맵 뷰 복귀
+ → TileMapManager 클리어
+ → TerritoryView 비활성, WorldMapView 활성
+ → 페이드 인
 ```
 
 ### 영주성 재건 카드 흐름
 
 ```
-빈 노드 점령
- → ownerCivID = 플레이어, isMansionBuilt = false
- → 노드 진입 가능하나 배치 UI 전체 잠금
+빈 노드 점령 또는 전투 승리 후 hasPlayerUnits = true
+ → 노드 진입 가능, 배치 UI 잠금 상태
 
 영지 뷰 진입 후 영주성 재건 카드 사용
- → 영주성 GameObject 중앙 배치
+ → WorldMapManager.OnMansionRebuilt() 호출
  → isMansionBuilt = true
  → 배치 UI 잠금 해제
  → 이후 건물/농장 배치 가능
 ```
 
+### WorldMapManager 주요 메서드
+
+```csharp
+OnNodeClicked(int nodeID)               // 노드 버튼 클릭 진입점
+ExitTerritoryView()                     // ExitButton에서 호출
+OnMansionRebuilt()                      // 영주성 재건 카드에서 호출
+SetNodeOwner(int nodeID, int civID)     // 전투 결과 등에서 소유권 변경
+SetPlayerUnitsPresent(int nodeID, bool) // 전투 승리/철수 시 유닛 주둔 상태 변경
+GetNode(int nodeID)                     // nodeID로 NodeData 조회
+GetNodeByCivID(int civID)               // civID로 첫 번째 소유 NodeData 조회
+```
+
 ### NodeDataManager 역할
 
-- 씬 상주 NodePrefab 인스턴스 1개 보유 (GC 방지 풀링)
-- 노드 진입 시: 타일맵 클리어 → 해당 프리팹 지형 복사 → buildings 복원
-- 노드 이탈 시: 현재 buildings → NodeData 저장
+- Inspector: `nodeTerrains` 배열에 nodeID + NodePrefab_XX의 cityTilemap/farmlandTilemap 연결
+- 노드 진입 시: TileMapManager 클리어 → 지형 복사 → tileDataMap 재초기화 → buildings 복원
+- 노드 이탈 시: buildings → NodeData 저장 → TileMapManager 클리어
 - Tilemap은 View 전용. 상태 변경은 반드시 NodeDataManager를 통해서만.
+
+### CitySpawnManager 역할
+
+- 게임 시작 시 WorldMapManager.allNodes에서 civID 0~3 소유 노드를 찾아 city bounds 계산
+- 직접 cityTilemap을 스캔하지 않음 — NodeDataManager 소스 타일맵에서 bounds 읽음
+- `TryGetSpawnedCityBounds(civID)` — PlayerLordCastle 위치 계산에 사용
+- `SpawnedCityCenters[civID]` — GetManorOuterTiles 기준점에 사용
 
 ---
 
 ## 영지 프리팹 구조
 
 노드마다 프리팹 1개. 지형은 Unity 에디터에서 직접 타일 찍어 고정.
+NodePrefab_XX는 항상 비활성 상태 유지 — NodeDataManager가 지형 소스로만 참조.
 
 ```
 NodePrefab_XX
-├── ProductionArea          // 건물/생산 공간 (20×20)
-│   ├── Tilemap_Ground      // 평지
-│   ├── Tilemap_Farmland    // 농경지 (Farm 전용)
-│   ├── Tilemap_River       // 강 (이동/건설 불가)
-│   ├── Tilemap_City        // 도시 (일반 건물 배치 가능)
-│   └── Tilemap_Buildings   // 런타임 건물 생성 레이어
-└── CombatArea              // 전투 공간 (20×20)
+├── ProductionArea
+│   ├── Tilemap_City        // 도시 타일 (일반 건물 배치 가능)
+│   └── Tilemap_Farmland    // 농경지 (Farm 전용)
+└── CombatArea              // 전투 시스템 구현 시 사용 예정
     ├── Tilemap_Ground
     ├── Tilemap_Forest      // 이동 불가
     ├── Tilemap_River       // 이동 2칸 소비
     └── Tilemap_Units       // 런타임 유닛 배치 레이어
 ```
 
+※ Tilemap_Buildings는 TileMapManager가 런타임에 GO로 생성하므로 NodePrefab에 불필요.
+
 ### 타일 종류 (TileType)
 
 | 타입 | 건설 가능 | 특성 |
 |------|------|------|
-| Plain | X | 일반 지형. 건물 배치 불가 |
-| River | X | 이동 불가, 건설 불가 |
 | Farmland | △ | Farm(농장) 전용 |
 | City | O | 일반 건물 배치 가능 |
+| River | X | 타일 없는 위치의 기본값. 이동/건설 불가 |
 | Forest | X | 전투 공간 전용. 이동 불가 |
+
+※ Plain / Resource 타입은 현재 미사용 (Ground/Gold 타일맵 제거됨)
+
+### TileMapManager Inspector 연결 필드
+
+```
+cityTilemap     → TerritoryView/Grid/ProductionArea/Tilemap_City
+farmlandTilemap → TerritoryView/Grid/ProductionArea/Tilemap_Farmland
+```
 
 ---
 
@@ -248,7 +307,7 @@ Mansion,  // 영주성 — 영주성 재건 카드로만 설치. 영지 잠금 �
 House,    // 민가 — 인구 한도 증가
 Market,   // 상점 — 매 턴 금 획득
 Lab,      // 연구소 — 매 턴 연구 포인트 획득. 게임당 1개 제한
-Farm,     // 농장 — 매 턴 식량 획득. 영지당 최대 2개 제한 (2×2 크기)
+Farm,     // 농장 — 매 턴 식량 획득. 영지당 최대 2개 제한 (3×3 크기)
 
 // 군사 건물 — 시대별 자동 업그레이드 체인
 TribePracticeGround → TrainingCamp → Barracks  // 돌도끼병
@@ -303,15 +362,31 @@ int maxPerTerritory;        // 영지당 최대 설치 수 (-1 = 무제한)
 
 ### 배치 가능 조건
 
-1. 맵 범위 안
-2. Tilemap_River에 타일 없음
-3. 해당 위치에 건물 없음
-4. BuildingData.allowedTiles에 타일 타입 포함
+1. tileDataMap에 등록된 위치 (City 또는 Farmland 타일)
+2. 해당 위치에 건물 없음
+3. BuildingData.allowedTiles에 타일 타입 포함
    - 일반 건물: allowedTiles = [City]
    - Farm: allowedTiles = [Farmland]
    - Mansion: allowedTiles = [City] (중앙 고정 배치)
-5. isMansionBuilt == true (Mansion 자신 제외)
-6. maxPerTerritory 초과 여부 확인
+4. isMansionBuilt == true (Mansion 자신 제외)
+5. maxPerTerritory 초과 여부 확인
+
+※ River 타일 체크 별도 불필요 — River/Ground 타일맵이 없으므로 IsValidPosition으로 통합 처리
+
+### 농장(Farm) 스프라이트 오토타일링
+
+Farm 건물 배치/제거 시 자신과 인접 Farm의 스프라이트를 자동 갱신.
+8방향 연결 여부에 따라 18종 스프라이트 중 자동 선택.
+
+```
+TileMapManager.farmSprites[18] — Inspector에서 스프라이트 연결
+  0~2:  좌끝/우끝/가로중앙 (수평 줄)
+  3~5:  상끝/하끝/세로중앙 (수직 줄)
+  6~8:  우하 코너 (외부/내부 대각/T자)
+  9~11: 좌하 코너 동일
+  12~14: 우상 코너 동일
+  15~17: 좌상 코너 동일
+```
 
 ### 건물 배치 흐름
 
@@ -321,9 +396,8 @@ int maxPerTerritory;        // 영지당 최대 설치 수 (-1 = 무제한)
  → 마우스 따라다니는 프리뷰 (초록/빨강)
  → 좌클릭: 배치 시도
  → TileMapManager.PlaceBuilding()
- → BuildingInstance 생성
- → GameObject 생성 (Tilemap_Buildings 컨테이너)
- → NodeData.buildings에 추가
+ → BuildingInstance 생성 + GameObject 생성
+ → NodeData.buildings에 추가 (노드 이탈 시 저장됨)
  → 재화 차감 및 효과 적용
 ```
 
@@ -337,7 +411,7 @@ int maxPerTerritory;        // 영지당 최대 설치 수 (-1 = 무제한)
 월드맵에서 인접 적 노드 공격 선언
  → 영지 뷰 진입 (CombatArea 활성화)
  → 전투 진행 (카드 기반 독립 턴제)
- → 공격자 승리 (방어 유닛 전멸): ownerCivID 변경 → 월드맵 복귀
+ → 공격자 승리 (방어 유닛 전멸): SetNodeOwner() + SetPlayerUnitsPresent() 호출 → 월드맵 복귀
  → 방어자 승리 (공격 유닛 전멸 또는 식량 고갈): 공격 유닛 전부 소멸 → 월드맵 복귀
 ```
 
@@ -480,41 +554,48 @@ public class EventData : ScriptableObject
 
 ## 구현 현황
 
-### ✅ 구현 완료 (코드)
+### ✅ 구현 완료
 
 **레거시 정리 완료**
-- FogManager.cs / AbandonedTerritoryManager.cs / FOG_OF_WAR.md 삭제
-- Enums.cs — FogState 제거, Wall/Outpost BuildingType 제거, UnitRole Textile 제거, Mansion 추가, 군사 건물 전체 반영
-- TileData.cs — fogState 필드 및 생성자 파라미터 제거
+- FogManager.cs / AbandonedTerritoryManager.cs 삭제
+- Enums.cs — FogState 제거, Mansion 추가, 군사 건물 전체 반영
+- TileData.cs — fogState 필드 제거
 - BuildingInstance.cs — wasEverSeen 필드 제거
 - BuildingData.cs — id / maxPerTerritory / researchPerTurn 필드 추가
-- TileMapManager.cs — ClaimTerritory/ExpandTerritory/TransferTerritory/ExpandOutpostArea/FogManager 호출부 제거, ClearAllTerrainTiles/ClearAllBuildings/ReinitializeTileDataMap/RestoreBuildingInstance 추가
-- CitySpawnManager.cs — AbandonedTerritoryManager/FogManager 호출 제거
-- BuildingPlacementController.cs — LockPlacement/UnlockPlacement/IsPlacementLocked 추가
+
+**타일맵 구조 단순화**
+- ProductionArea: Tilemap_City / Tilemap_Farmland / Tilemap_Buildings만 유지
+- Ground / River / Gold / Territory / Fog 타일맵 제거
+- TileMapManager Inspector 필드: cityTilemap / farmlandTilemap 두 개만
+- NodeDataManager.NodeTerrainSource: cityTilemap / farmlandTilemap 두 개만
 
 **건물 배치 시스템 (도언)**
-- 건물 배치 시스템 (StarCraft 방식) — TileMapManager, BuildingPlacementService
+- StarCraft 방식 배치 — TileMapManager, BuildingPlacementService
 - Unity Tilemap 기반 배치 감지 / 반투명 프리뷰 (초록/빨강)
 - 건물 크기별 기준점 계산 (1×1, 2×2, 3×3, 4×4)
-- 재화 차감 및 효과 적용 / 성능 최적화 (CanPlace 캐싱) / 입력·로직 분리
-- 프리뷰 위치 버그 수정 (RoundToInt 오차 제거 — 짝수 크기 건물 반 타일 밀림 해결)
+- 재화 차감 및 효과 적용 / 입력·로직 분리
 - 건물 자동 업그레이드 데이터 구조 (BuildingData 체인 / upgradesTo)
+- Farm 8방향 스프라이트 오토타일링 (18종)
 
-**월드맵 시스템 코드 (도언) — 코드만 완료, Unity 에디터 연결 미완료**
-- NodeData.cs — 노드 런타임 상태 클래스
-- WorldMapManager.cs — 노드 목록 관리, 페이드 전환, 영지 진입/이탈, 빈 노드 점령, OnMansionRebuilt()
-- NodeButton.cs — 노드 UI 버튼 동작, 문명 색상 갱신
-- NodeDataManager.cs — 지형 타일맵 복사, 건물 저장/복원
+**월드맵 + 영지 전환 시스템 (도언) ✅ 씬 연결 완료**
+- WorldMapView Canvas — NodeButton_101~110 배치 완료
+- TerritoryView (Grid) — ProductionArea/CombatArea 구조 완료
+- FadeCanvas/FadePanel (CanvasGroup) 연결 완료
+- WorldMapManager Inspector 연결 완료 (worldMapView/territoryView/fadePanel/allNodes)
+- NodeDataManager nodeTerrains 연결 완료 (nodeID 101~110)
+- NodeButton nodeID 연결 완료
+- 노드 진입/이탈 페이드 전환 동작 확인
+- CitySpawnManager 재설계 — NodeData 기반으로 city bounds 계산 (라이브 타일맵 스캔 제거)
+- NodeData.hasPlayerUnits — 유닛 주둔 시 ownerCivID 무관 진입 허용
 
 ---
 
 ### ❌ 미구현 / 미연결
 
 **도언 담당**
-- 노드별 영지 프리팹 제작 및 지형 편집 (Unity 에디터 작업)
-- Unity 씬 Hierarchy 구성 — WorldMapView/TerritoryRoot/NodePrefab_XX/FadeCanvas
-- Inspector 연결 — WorldMapManager(worldMapView/territoryView/fadePanel/allNodes), NodeButton(nodeID), NodeDataManager(nodeTerrains)
-- 영주성 재건 카드 동작 (카드 시스템 연동 — 카드 쪽에서 WorldMapManager.OnMansionRebuilt() 호출만 하면 됨)
+- 영주성 재건 카드 동작 (카드 쪽에서 WorldMapManager.OnMansionRebuilt() 호출)
+- 전투 승리 시 WorldMapManager.SetPlayerUnitsPresent() 연동
+- CombatArea 타일맵 NodeDataManager 복사 로직 (전투 시스템 구현 시)
 - AI 노드 확장 로직
 
 **타 팀원 담당 (연동 필요)**
@@ -530,7 +611,7 @@ public class EventData : ScriptableObject
 
 | 항목 | 상태 |
 |------|------|
-| 노드 수 및 배치 | 30개 이하 예정, 미확정 |
+| 노드 수 및 배치 | ✅ 10개 확정, nodeID 101~110 |
 | 빈 노드 점령 재화 비용 | 미확정 |
 | 인구 한도 민가당 증가량 (시대별) | ✅ +5/+7/+10 |
 | 시대 전환 연구 포인트 | ✅ 청동기 100 / 철기 200 |
@@ -539,7 +620,3 @@ public class EventData : ScriptableObject
 | 전투 중 식량 소모량 (유닛 수 × n) | 미확정 |
 | goldPerTurn / researchPerTurn 수치 | 미확정 |
 | 카드 목록 전체 (기본 카드 8장 포함) | 미확정 |
-
-## ✅ 레거시 코드 정리 완료 (v0.6 전환 작업)
-
-기획 v0.6 전환 시 제거 대상이었던 모든 파일·코드 정리 완료.
