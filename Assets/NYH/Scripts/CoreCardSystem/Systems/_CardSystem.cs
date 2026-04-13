@@ -145,7 +145,7 @@
                 yield return buildingPerformer.Perform(playBuildingGA);
                 yield break;
             }
-    
+
         }
 
         public bool TryQueuePlacementCard(Card sourceCard, Vector3Int targetPos, bool isTargetingMode)
