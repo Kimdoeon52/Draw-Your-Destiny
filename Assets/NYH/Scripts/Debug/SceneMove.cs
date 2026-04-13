@@ -17,7 +17,9 @@ public class SceneMove : MonoBehaviour
         if (CardSystem.Instance != null)
         {
             CivilizationDeckStateStore stateStore = CivilizationDeckStateStore.GetOrCreate();
-            stateStore.Store(CardSystem.Instance.CaptureRuntimeState());
+            CardPileRuntimeState runtimeState = CardSystem.Instance.CaptureRuntimeState();
+            Debug.Log($"[SceneMove] 전투 진입 직전 문명 덱 상태: {FormatState(runtimeState)}");
+            stateStore.Store(runtimeState);
             Debug.Log("[SceneMove] 문명 덱 런타임 상태 저장 완료");
         }
         else
@@ -30,6 +32,22 @@ public class SceneMove : MonoBehaviour
     }
     public void moveMainScene()
     {
-        SceneManager.LoadScene("NYH2");
+        SceneManager.LoadScene("NYH4");
+    }
+
+    private static string FormatState(CardPileRuntimeState state)
+    {
+        if (state == null)
+        {
+            return "state=NULL";
+        }
+
+        int draw = state.DrawPile != null ? state.DrawPile.Count : 0;
+        int hand = state.Hand != null ? state.Hand.Count : 0;
+        int discard = state.DiscardPile != null ? state.DiscardPile.Count : 0;
+        int extinction = state.ExtinctionPile != null ? state.ExtinctionPile.Count : 0;
+        int total = draw + hand + discard + extinction;
+
+        return $"draw={draw}, hand={hand}, discard={discard}, extinction={extinction}, total={total}";
     }
 }
