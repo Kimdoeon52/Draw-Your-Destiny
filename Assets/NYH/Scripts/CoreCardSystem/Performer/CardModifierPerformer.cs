@@ -39,7 +39,8 @@ namespace NYH.CoreCardSystem
         public bool CanHandle(GameAction action)
         {
             return action is SetCardTypeMultiplierGA
-                || action is DisableCardTypeGA;
+                || action is DisableCardTypeGA
+                || action is ContinueBehaviourByBuildingGA;
         }
 
         public IEnumerator Perform(GameAction action)
@@ -60,6 +61,11 @@ namespace NYH.CoreCardSystem
                     disableCardTypeGA.DurationTurns);
                 refreshCardViews?.Invoke();
                 yield return null;
+            }
+
+            else if (action is ContinueBehaviourByBuildingGA continueBehaviourGA)
+            {
+
             }
         }
     }

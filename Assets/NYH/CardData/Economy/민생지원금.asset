@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
-  m_Name: "\uD48D\uC791"
+  m_Name: "\uBBFC\uC0DD\uC9C0\uC6D0\uAE08"
   m_EditorClassIdentifier: 
-  <cardID>k__BackingField: 3106
-  cardName: "\uD48D\uC791"
+  <cardID>k__BackingField: 3405
+  cardName: "\uBBFC\uC0DD\uC9C0\uC6D0\uAE08"
   <cardType>k__BackingField: 2
-  <Image>k__BackingField: {fileID: 21300000, guid: e15a0aaf619d8aa429bd091186fb29a2,
-    type: 3}
-  <Cost>k__BackingField: 0
-  description: "\uC2DD\uB7C9\uC744 {foodAmount}\uAC1C \uD68D\uB4DD\uD569\uB2C8\uB2E4."
+  <cardUseType>k__BackingField: 04000000
+  <Image>k__BackingField: {fileID: 0}
+  <Cost>k__BackingField: 1
+  description: "\uC2DD\uB7C9\uC744 10 \uD68D\uB4DD\uD569\uB2C8\uB2E4."
   <Effects>k__BackingField:
-  - rid: 5056991553752137803
+  - rid: 3255626751485935703
   references:
     version: 2
     RefIds:
-    - rid: 5056991553752137803
+    - rid: 3255626751485935703
       type: {class: IncreaseFoodEffect, ns: , asm: Assembly-CSharp}
       data:
-        foodAmount: 5
+        foodAmount: 10

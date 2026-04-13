@@ -47,6 +47,7 @@ namespace NYH.CoreCardSystem
             ActionSystem.AttachPerformer<SetCardTypeMultiplierGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<DisableCardTypeGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<ContinueBehaviourGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<ContinueBehaviourByBuildingGA>(action => cardSystem.Perform(action));
         }
     }
 }

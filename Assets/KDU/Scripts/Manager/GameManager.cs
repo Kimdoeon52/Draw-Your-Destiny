@@ -139,6 +139,7 @@ public class GameManager : PersistentSingleton<GameManager>
         CardModifierSystem.OnTurnEnd();
         CardSystem.Instance?.RefreshVisibleCardViews();
         checkResearch();
+        OngoingEffectSystem.Instance.OnTurnStartOrEnd();
 
         // 현재 진입 중인 노드의 건물 턴 처리 (Behaviour.OnTurnEnd)
         if (tileMapManager != null)

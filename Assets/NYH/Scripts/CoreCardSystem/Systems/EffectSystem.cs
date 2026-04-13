@@ -7,14 +7,15 @@ public class EffectSystem : MonoBehaviour
     private void OnEnable()
     {
         ActionSystem.AttachPerformer<PerformEffectGA>(PerformEffectPerformer);
-        // ContinueBehaviourGA도 여기서 처리하도록 등록!
         ActionSystem.AttachPerformer<ContinueBehaviourGA>(PerformContinuePerformer);
+        ActionSystem.AttachPerformer<ContinueBehaviourByBuildingGA>(PerformContinueByBuildingPerformer);
     }
 
     private void OnDisable()
     {
         ActionSystem.DetachPerformer<PerformEffectGA>();
         ActionSystem.DetachPerformer<ContinueBehaviourGA>();
+        ActionSystem.DetachPerformer<ContinueBehaviourByBuildingGA>();
     }
 
     private IEnumerator PerformEffectPerformer(PerformEffectGA performEffectGA)
@@ -34,13 +35,22 @@ public class EffectSystem : MonoBehaviour
         yield return null;
     }
 
-    // CardSystem에 있던 로직을 이쪽으로 이사 왔습니다.
     private IEnumerator PerformContinuePerformer(ContinueBehaviourGA continueGA)
     {
         OngoingEffectSystem.Instance.Register(
             continueGA.SourceCard,
             continueGA.StartEffectIndex,
             continueGA.TurnAmount
+        );
+        yield return null;
+    }
+
+    private IEnumerator PerformContinueByBuildingPerformer(ContinueBehaviourByBuildingGA continueBGA)
+    {
+        OngoingEffectSystem.Instance.Register(
+            continueBGA.SourceCard,
+            continueBGA.StartEffectIndex,
+            continueBGA.TargetBuildingType
         );
         yield return null;
     }

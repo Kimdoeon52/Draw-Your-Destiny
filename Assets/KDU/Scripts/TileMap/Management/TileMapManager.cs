@@ -707,4 +707,21 @@ public class TileMapManager : Singleton<TileMapManager>
 
         //BuildingRegistry.Instance?.Register(instance);
     }
+
+    // 특정 타입의 건물이 있는지 모든 건물 인스턴스를 조회해 찾는 함수.
+    public static bool HasBuildingOfType(BuildingType targetBuildingType)
+    {
+        List<BuildingInstance> allBuildings = TileMapManager.Instance.GetAllBuildings();
+
+        if (allBuildings.Count == 0) return false;
+        foreach (var building in allBuildings)
+        {
+            if (building.data.buildingType == targetBuildingType)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

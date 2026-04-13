@@ -30,7 +30,7 @@
         public List<Effect> Effects => data.Effects;
         public int CardID => data.cardID;
         public CardType _CardType => data.cardType;
-        public CardUseType _CardUseType => data.cardUseType;
+        public CardUseType[] _CardUseType => data.cardUseType;
 
         public int Cost { get; set; }
         public CardData data { get; private set; }

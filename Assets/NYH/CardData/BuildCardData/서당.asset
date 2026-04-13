@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
+  m_Name: "\uC11C\uB2F9"
+  m_EditorClassIdentifier: 
+  <cardID>k__BackingField: 4002
+  cardName: "\uC11C\uB2F9"
+  <cardType>k__BackingField: 3
+  <cardUseType>k__BackingField: 0000000001000000
+  <Image>k__BackingField: {fileID: 0}
+  <Cost>k__BackingField: 3
+  description: "\uB9E4\uD134 \uC5F0\uAD6C\uD3EC\uC778\uD2B8\uB97C 30\uC529 \uD68D\uB4DD\uD558\uB294
+    \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4."
+  <Effects>k__BackingField:
+  - rid: 3255626751485935705
+  - rid: 3255626751485935726
+  - rid: 3255626751485935727
+  references:
+    version: 2
+    RefIds:
+    - rid: 3255626751485935705
+      type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
+      data:
+        buildingData: {fileID: 11400000, guid: b1eeb0dba970e9d4495e5d6a8fe5b5b9, type: 2}
+    - rid: 3255626751485935726
+      type: {class: ContinueBehaviourByBuildingEffect, ns: , asm: Assembly-CSharp}
+      data:
+        buildingType: 4
+    - rid: 3255626751485935727
+      type: {class: ResearchpointsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        resarchPointAmount: 30

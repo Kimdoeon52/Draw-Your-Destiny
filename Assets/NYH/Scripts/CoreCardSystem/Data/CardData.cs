@@ -10,7 +10,7 @@
         [field: SerializeField] public int cardID { get; private set; }
         [field: SerializeField] public string cardName;
         [field: SerializeField] public CardType cardType { get; private set; }
-        [field: SerializeField] public CardUseType cardUseType { get; private set; }
+        [field: SerializeField] public CardUseType[] cardUseType { get; private set; }
         [field: SerializeField] public Sprite Image { get; private set; }
         [field: SerializeField] public int Cost { get; private set; }
         [field: SerializeField]
