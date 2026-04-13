@@ -84204,9 +84204,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9e6006e65dba349b2a79e7b0051b72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldMapView: {fileID: 0}
-  territoryView: {fileID: 0}
-  fadePanel: {fileID: 0}
+  worldMapView: {fileID: 319991847}
+  territoryView: {fileID: 1425922010}
+  fadePanel: {fileID: 584070444}
   fadeDuration: 0.4
   claimCost: 30
   allNodes: []
