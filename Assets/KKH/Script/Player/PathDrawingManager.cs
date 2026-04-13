@@ -230,7 +230,18 @@ public class PathDrawingManager : MonoBehaviour
         if (blueTilePrefab != null)
         {
             Vector3 centerPos = grid.GetCellCenterWorld(cell);
+            // ★ Z를 -1로 고정하여 타일맵보다 확실히 카메라 앞에 렌더링
+            centerPos.z = -1f;
+
             GameObject visual = Instantiate(blueTilePrefab, centerPos, Quaternion.identity);
+
+            // ★ SpriteRenderer sortingOrder를 코드에서도 강제 설정 (프리팹 설정과 무관하게 안정적으로 표시)
+            SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.sortingOrder = 100;
+            }
+
             pathVisuals.Add(visual);
         }
     }
