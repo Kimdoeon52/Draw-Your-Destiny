@@ -6,7 +6,9 @@ namespace PoolBase
 {
     public class HumanPool : MonoBehaviour, IHumanPool
     {
+        [Header("유닛")]
         public GameObject humanPrefab;
+        [Header("최대 생성")]
         public int poolSize = 20;
         public Transform poolParent;
         private Queue<GameObject> pool = new Queue<GameObject>();

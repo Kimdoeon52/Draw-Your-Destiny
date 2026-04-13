@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using EnemyAPool;
+using PoolBase;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum EnemyAction
@@ -40,7 +42,7 @@ public class EnemyBrainBase : MonoBehaviour
     [SerializeField] protected int enemyLevel; //적의 시대를 나타낼 레벨임
 
     [Header("적의 번호")]
-    [SerializeField] protected int enemyID; //적의 번호를 나타낼 변수임
+    [SerializeField] public int enemyID; //적의 번호를 나타낼 변수임
 
     [Header("턴 진행 여부")] //적 종류마다 다르게 설정할꺼임.
     [SerializeField] protected int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
@@ -51,6 +53,13 @@ public class EnemyBrainBase : MonoBehaviour
         InitializeActionCases();
     }
 
+    //=============================개인 팀 골드 등록==============================
+    protected EnemyResources faction; //적의 골드와 식량을 관리하는 클래스 참조
+
+    public void SetFaction(EnemyResources f) //적의 골드와 식량을 관리하는 클래스 참조 설정
+    {
+        faction = f;//적의 골드와 식량을 관리하는 클래스 참조 설정
+    }
 
     //=============================적 행동 확률====================================
 
@@ -84,6 +93,8 @@ public class EnemyBrainBase : MonoBehaviour
 
         return EnemyAction.GetGold;
     }
+    
+    
     //==============================적 행동 실행====================================
     protected virtual void StartEnemyTurn()
     {
@@ -108,8 +119,10 @@ public class EnemyBrainBase : MonoBehaviour
     {
         switch (action)
         {
-            case EnemyAction.Building: return gold >= 300;//골드가 없으면 건물 지어야댐
-            case EnemyAction.GetGold: return true;
+            case EnemyAction.Building:
+                return faction.enemygold >= 300;//골드가 없으면 건물 지어야댐
+            case EnemyAction.GetGold:
+                return true;
         }
         return false;
     }
@@ -190,12 +203,19 @@ public class EnemyBrainBase : MonoBehaviour
     //==============================골드 및 식량 얻기====================================
     protected virtual void GetGold()
     {
-        //짜피 Enemy마다 overide 하면 댐.
-        gold += 100; //일단 100씩
-        food += 50; //일단 50씩
+        
     }
     //==============================점령 시도===========================================
     //적이 영지 점령 시도하는 행동 구현
+    protected virtual bool TryToOccupy()
+    {
+        //적이 영지 점령 시도하는 행동 구현
+        if (food > 200)
+        {
+            return true; //식량이 충분하면 점령 시도
+        }
+        return false;
+    }
     //인접한 노드 탐색
     //조건1: 인접한 노드가 비어있는가. <- 비어있다면 해당 노드에 있는 Brain Active를 킨다. 키면 해당 영지는 본인 것으로 설정.
     //조건2: 인접한 노드가 플레이어의 영지인가. <- 플레이어의 영지라면 전투로 진입.
