@@ -13,6 +13,15 @@
         Common
     }
 
+    public enum CardUseType
+    {
+        Building,   // 건물
+        Remove,     // 소멸
+        Volatile,   // 휘발성
+        Forever,    // 영구
+        Skill       // 스킬
+    }
+
     public class Card : IRuntimeCard
     {
         public string Title => data.cardName;
@@ -21,6 +30,7 @@
         public List<Effect> Effects => data.Effects;
         public int CardID => data.cardID;
         public CardType _CardType => data.cardType;
+        public CardUseType _CardUseType => data.cardUseType;
 
         public int Cost { get; set; }
         public CardData data { get; private set; }

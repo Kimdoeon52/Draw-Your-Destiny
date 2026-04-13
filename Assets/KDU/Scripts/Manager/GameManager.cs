@@ -165,7 +165,7 @@ public class GameManager : PersistentSingleton<GameManager>
     public void IncreasePopulationCap(int amount)
     {
         ResourceManager.Instance.AddMaxPopulation(amount);
-        Debug.Log($"인구 한도 증가:{amount} / 현재 인구:{ResourceManager.Instance.Population}");
+        Debug.LogError($"인구 한도 증가:{amount} / 현재 인구:{ResourceManager.Instance.Population}");
     }
 
     // 인간 생성 카드 효과 처리 후 CardSystem에서 호출
