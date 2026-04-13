@@ -62,14 +62,12 @@
             CardActionRegistrar.RegisterAll(this);
 
             RefreshPileCounts();
-            Debug.Log("[_CardSystem] 책임 분리 버전 초기화 완료");
         }
 
         public void Setup(List<CardData> initialDeck)
         {
             pileState.Setup(initialDeck);
             RefreshPileCounts();
-            Debug.Log($"[_CardSystem] 덱 세팅 완료: {pileState.DrawPileCount}장");
         }
 
         public CardPileRuntimeState CaptureRuntimeState()
@@ -88,7 +86,6 @@
             RefreshPileCounts();
             StartCoroutine(RebuildHandViewFromRuntimeState());
             RefreshVisibleCardViews();
-            Debug.Log("[_CardSystem] 저장된 문명 덱 상태를 복원했습니다.");
             return true;
         }
 

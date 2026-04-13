@@ -12,16 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
   m_Name: "\uCD08\uAC00\uC9D1 \uAC74\uC124"
   m_EditorClassIdentifier: 
-  <cardID>k__BackingField: 0
-  cardName: 
+  <cardID>k__BackingField: 4001
+  cardName: "\uCD08\uAC00\uC9D1 \uAC74\uC124"
   <cardType>k__BackingField: 0
-  <Image>k__BackingField: {fileID: 0}
-  <Cost>k__BackingField: 0
-  description: 
+  <Image>k__BackingField: {fileID: 21300000, guid: e15a0aaf619d8aa429bd091186fb29a2,
+    type: 3}
+  <Cost>k__BackingField: 3
+  description: "\uCD5C\uB300 \uC778\uAD6C \uC218\uB97C {increasePopulationAmount}\uBA85
+    \uB298\uB824\uC8FC\uB294 \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4."
   <Effects>k__BackingField:
-  - rid: -2
+  - rid: 7216728271782674510
+  - rid: 7216728271782674511
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 7216728271782674510
+      type: {class: IncreasePopulationffect, ns: , asm: Assembly-CSharp}
+      data:
+        increasePopulationAmount: 10
+    - rid: 7216728271782674511
+      type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
+      data:
+        buildingData: {fileID: 11400000, guid: 5d99c4a3e2e5b5849b5cad5988e0d8eb, type: 2}

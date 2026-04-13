@@ -155,8 +155,14 @@
                 }
             }
 
+            if (handView != null)
+            {
+                yield return handView.UpdateCardPositions(0.15f);
+            }
+
             bool isExtinction = false;
             bool isReturnToHand = false;
+            bool hasBuildingPopulationBonus = false;
 
             if (playCardGA.Card?.Effects != null)
             {
@@ -171,6 +177,13 @@
                     if (effect is ReturnToHandEffect)
                     {
                         isReturnToHand = true;
+                    }
+
+                    if (effect is InstallBuildingEffect installBuildingEffect
+                        && installBuildingEffect.buildingData != null
+                        && installBuildingEffect.buildingData.populationCapBonus > 0)
+                    {
+                        hasBuildingPopulationBonus = true;
                     }
                 }
             }
@@ -196,6 +209,11 @@
                 {
                     var effect = playCardGA.Card.Effects[i];
                     if (effect is InstallBuildingEffect)
+                    {
+                        continue;
+                    }
+
+                    if (hasBuildingPopulationBonus && effect is IncreasePopulationffect)
                     {
                         continue;
                     }

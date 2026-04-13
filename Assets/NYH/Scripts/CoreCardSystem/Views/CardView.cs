@@ -148,19 +148,15 @@
             transform.DOKill();
             transform.SetAsLastSibling();
 
-            Debug.Log($"[CardView] OnPointerDown title={Card?.Title}, originalHandIndex={originalHandIndex}, sibling={transform.GetSiblingIndex()}");
             CardViewHoverSystem.Instance?.Hide();
             if (cachedHandView != null)
             {
                 originalHandIndex = cachedHandView.GetCardIndex(this);
                 if (originalHandIndex < 0)
                 {
-                    Debug.LogWarning($"[CardView] HandView list desynced. Rebuilding... title={Card?.Title}");
                     cachedHandView.RebuildCardListFromChildren();
                     originalHandIndex = cachedHandView.GetCardIndex(this);
                 }
-
-                Debug.Log($"[CardView] Cached index from HandView title={Card?.Title}, index={originalHandIndex}");
             }
             cachedHandView?.RemoveCard(Card);
         }
@@ -384,8 +380,6 @@
 
             transform.localScale = Vector3.one;
             transform.rotation = Quaternion.identity;
-
-            Debug.Log($"[CardView] ReturnToHand title={Card?.Title}, originalHandIndex={originalHandIndex}, sibling={transform.GetSiblingIndex()}");
 
             if (cachedHandView != null)
             {
