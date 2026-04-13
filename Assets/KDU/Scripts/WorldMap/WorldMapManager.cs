@@ -31,6 +31,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
     [Header("빈 노드 점령 비용")]
     public int claimCost = 30;          // 빈 노드 즉시 점령에 필요한 금
 
+    [Header("디버그")]
+    public bool debugFreeEntry = false; // true면 적/빈 노드도 영지 진입 허용
+
     // 문명 ID별 노드 배경 색상 (0=플레이어 파랑, 1=AI 빨강, 2=AI 초록, 3=AI 노랑, -1=중립 회색)
     public static readonly Color[] CivColors =
     {
@@ -59,7 +62,11 @@ public class WorldMapManager : Singleton<WorldMapManager>
         // 기본 상태: 월드맵 뷰 활성, 영지 뷰 비활성
         if (worldMapView  != null) worldMapView.SetActive(true);
         if (territoryView != null) territoryView.SetActive(false);
-        if (fadePanel     != null) fadePanel.alpha = 0f;
+        if (fadePanel     != null)
+        {
+            fadePanel.alpha = 0f;
+            fadePanel.blocksRaycasts = false; // 투명할 때 클릭 차단 방지
+        }
     }
 
     private void Start()
@@ -92,6 +99,16 @@ public class WorldMapManager : Singleton<WorldMapManager>
             Debug.LogWarning($"[WorldMapManager] nodeID {nodeID} 를 찾을 수 없습니다.");
             return;
         }
+
+        // [디버그] debugFreeEntry가 켜져 있으면 모든 노드 진입 허용
+#if UNITY_EDITOR
+        if (debugFreeEntry)
+        {
+            Debug.Log($"[WorldMapManager] 디버깅용 노드 {nodeID} 진입");
+            StartCoroutine(EnterTerritoryCoroutine(node));
+            return;
+        }
+#endif
 
         // 아군 노드이거나 유닛이 주둔 중이면 영지 진입
         if (node.ownerCivID == 0 || node.hasPlayerUnits)
@@ -200,7 +217,11 @@ public class WorldMapManager : Singleton<WorldMapManager>
     private IEnumerator FadeTo(float targetAlpha)
     {
         if (fadePanel == null) yield break;
+        // 페이드 시작 전: 불투명해질 때만 raycast 차단 활성화
+        if (targetAlpha > 0f) fadePanel.blocksRaycasts = true;
         yield return fadePanel.DOFade(targetAlpha, fadeDuration).WaitForCompletion();
+        // 페이드 완료 후: 완전히 투명해지면 raycast 차단 해제
+        if (targetAlpha <= 0f) fadePanel.blocksRaycasts = false;
     }
 
     // ── NodeButton 전체 갱신 ──────────────────────────────────────
@@ -258,7 +279,63 @@ public class WorldMapManager : Singleton<WorldMapManager>
         if (node == null) return;
         node.ownerCivID = civID;
         if (civID != 0) node.isMansionBuilt = false; // 점령당하면 영주성 초기화
+        RebalanceUniqueGlobalBuildings();             // isUniqueGlobal 건물 active 상태 재조정
         RefreshAllNodeButtons();
+    }
+
+    // 플레이어 소유 노드 전체에 해당 buildingType 건물이 존재하는지 확인 (TileMapManager.CanPlace에서 사용)
+    public bool HasUniqueGlobalBuilding(BuildingType type)
+    {
+        foreach (NodeData node in allNodes)
+        {
+            if (node.ownerCivID != 0) continue;
+            foreach (BuildingInstance b in node.buildings)
+            {
+                if (b.data != null && b.data.buildingType == type)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    // isUniqueGlobal 건물(Lab 등) 활성화 상태 재조정
+    // 플레이어 소유 노드에서 같은 buildingType은 1개만 active=true, 나머지는 false
+    // 소유권 변경(점령/피탈)마다 호출 → active였던 건물을 잃으면 남은 것이 자동 활성화
+    private void RebalanceUniqueGlobalBuildings()
+    {
+        // buildingType별로 플레이어 소유 노드의 isUniqueGlobal 건물 수집
+        var grouped = new System.Collections.Generic.Dictionary<BuildingType, System.Collections.Generic.List<BuildingInstance>>();
+
+        foreach (NodeData node in allNodes)
+        {
+            if (node.ownerCivID != 0) continue; // 플레이어 노드만
+            foreach (BuildingInstance b in node.buildings)
+            {
+                if (b.data == null || !b.data.isUniqueGlobal) continue;
+                BuildingType t = b.data.buildingType;
+                if (!grouped.ContainsKey(t))
+                    grouped[t] = new System.Collections.Generic.List<BuildingInstance>();
+                grouped[t].Add(b);
+            }
+        }
+
+        foreach (var pair in grouped)
+        {
+            var list = pair.Value;
+
+            // 이미 active인 건물이 있으면 그것을 유지, 없으면 첫 번째를 활성화
+            BuildingInstance activeOne = null;
+            foreach (BuildingInstance b in list)
+            {
+                if (b.isActive) { activeOne = b; break; }
+            }
+            if (activeOne == null)
+                activeOne = list[0];
+
+            // active 하나만 남기고 나머지 비활성
+            foreach (BuildingInstance b in list)
+                b.isActive = (b == activeOne);
+        }
     }
 
     // ── 유닛 주둔 상태 변경 (전투 시스템에서 호출) ───────────────
@@ -270,6 +347,39 @@ public class WorldMapManager : Singleton<WorldMapManager>
         if (node == null) return;
         node.hasPlayerUnits = present;
         RefreshAllNodeButtons();
+    }
+
+    // ── 오프스크린 건물 턴 처리 ──────────────────────────────────
+    // GameManager.EndTurn()에서 호출.
+    // 플레이어가 진입 중이지 않은 노드의 건물 savedState.tick을 직접 가산.
+    // 시각 없이 숫자만 처리 (프리팹 비활성 상태이므로 SpawnUnit 호출 안 함).
+    public void TickOffscreenBuildings()
+    {
+        foreach (NodeData node in allNodes)
+        {
+            if (node.nodeID == currentNodeID) continue; // 진입 중인 노드는 GameManager에서 이미 처리
+            foreach (BuildingInstance b in node.buildings)
+                TickOffscreen(b);
+        }
+    }
+
+    private static void TickOffscreen(BuildingInstance b)
+    {
+        if (b == null || b.data == null) return;
+        if (b.data.unitCapacity <= 0) return; // 생산 건물 아님
+
+        var state = b.savedState;
+        state.tick++;
+
+        int interval = b.data.productionInterval;
+        if (interval <= 0) interval = 3;
+        if (state.tick < interval) return;
+
+        state.tick = 0;
+        if (state.activeCount < b.data.unitCapacity)
+            state.activeCount++;
+        else
+            state.waiting++;
     }
 
     // ── 현재 진입 중인 노드 ───────────────────────────────────────

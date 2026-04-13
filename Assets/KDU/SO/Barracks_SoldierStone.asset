@@ -10,24 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
-  m_Name: House_Stone
+  m_Name: Barracks_SoldierStone
   m_EditorClassIdentifier: 
   id: 
-  buildingName: "\uBBFC\uAC00(\uC11D\uAE30)"
-  buildingType: 1
-  sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
+  buildingName: "\uBD80\uC871 \uD6C8\uB828\uC9C0"
+  buildingType: 6
+  sprite: {fileID: -1576980807942169303, guid: 8c388fa22c4ee0e41aa2578512daaa89, type: 3}
   requiredEra: 0
   isAutoUpgrade: 1
-  upgradesTo: {fileID: 11400000, guid: 9c905a8031c89c5428721f7d0d09585e, type: 2}
-  goldCost: 100
+  upgradesTo: {fileID: 11400000, guid: e110e8fa3f8664f4abddf8e2e231a3c4, type: 2}
+  goldCost: 0
   width: 1
   height: 1
   allowedTiles: 04000000
   maxPerTerritory: -1
-  isUniqueGlobal: 0
   goldPerTurn: 0
   researchPerTurn: 0
-  populationCapBonus: 5
+  populationCapBonus: 0
   visualPrefab: {fileID: 0}
   productionInterval: 3
   unitCapacity: 0

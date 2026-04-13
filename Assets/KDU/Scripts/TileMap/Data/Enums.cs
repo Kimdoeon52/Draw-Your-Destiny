@@ -29,17 +29,27 @@ public enum BuildingType
     Lab,        // 연구소 — 턴마다 연구 포인트(research) 생산
     Farm,       // 농장  — Farmland 전용, 식량 생산
 
-    // 군사 건물 — 시대 전환 시 자동 업그레이드 체인
-    // BuildingData.isAutoUpgrade = true, upgradesTo = 다음 단계 SO
-    TribePracticeGround,    // 부족 훈련지 (석기시대)
-    TrainingCamp,           // 훈련소   (청동기시대로 자동 업그레이드)
-    Barracks,               // 병영    (철기시대로 자동 업그레이드, 최종 단계)
-    ArcheryRange,           // 사격장  (청동기~)
-    MedicBarracks,          // 의무병 막사 (청동기~)
-    StableBarracks,         // 기마병 막사 (철기)
-    GiantBarracks,          // 자이언트 막사 (철기)
-    MageBarracks,           // 마법사 막사 (철기, 연구포인트 200 필요)
-    PotionBuilding          // 포션 건물 (청동기~)
+    // 군사 건물 — 근접 체인 (석기→청동기→철기 자동 업그레이드)
+    Barracks_SoldierStone,    // 부족 훈련지 (석기)   isAutoUpgrade=true, upgradesTo=Barracks_SoldierBronze
+    Barracks_SoldierBronze,           // 훈련소     (청동기)  isAutoUpgrade=true, upgradesTo=Barracks_SoldierIron
+    Barracks_SoldierIron,               // 병영       (철기)   최종 단계
+
+    // 군사 건물 — 궁수 체인 (청동기→철기 자동 업그레이드)
+    Barracks_ArcheryRange,           // 사격장         (청동기) isAutoUpgrade=true, upgradesTo=ArcheryRangeElite
+    Barracks_ArcheryRangeElite,      // 정예 사격장     (철기)  최종 단계
+
+    // 군사 건물 — 힐러 체인 (청동기→철기 자동 업그레이드)
+    Barracks_Medic,          // 의무병 막사     (청동기) isAutoUpgrade=true, upgradesTo=Barracks_MedicElite
+    Barracks_MedicElite,     // 정예 의무병 막사 (철기)  최종 단계
+
+    // 군사 건물 — 단일 (철기부터)
+    Barracks_Stable,         // 기마병 막사   (철기)
+    Barracks_Knight,         // 기사단 막사   (철기) — 풀플레이트 아머 기사
+    Barracks_Giant,          // 자이언트 막사 (철기, 연구포인트 200 도달 시부터 유닛 생산 시작)
+
+    // 지원 건물
+    PotionBuilding,         // 포션 가게  (청동기~) — 매 턴 덱에 랜덤 포션 카드 추가
+    TrapWorkshop            // 덫 공방    (청동기~) — 매 턴 덱에 랜덤 덫 카드 추가
 }
 
 // ── 시대 ─────────────────────────────────────────────────

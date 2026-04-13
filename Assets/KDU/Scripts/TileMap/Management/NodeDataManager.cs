@@ -96,6 +96,9 @@ public class NodeDataManager : Singleton<NodeDataManager>
         foreach (BuildingInstance instance in current)
         {
             if (instance == null) continue;
+            // Behaviour 상태를 스냅샷으로 저장
+            if (instance.behaviour != null)
+                instance.savedState = instance.behaviour.SaveState();
             // visual은 ClearAllBuildings에서 Destroy됨 — 저장 전에 null 처리
             instance.visual = null;
             nodeData.buildings.Add(instance);

@@ -39,15 +39,20 @@ public class BuildingData : ScriptableObject
     // 일반 건물: City / 농장: Farmland / 영주성: City (중앙 고정)
     public TileType[] allowedTiles;
 
-    // 영지당 최대 설치 수 (-1 = 무제한)
-    // Farm: 2 / Lab: 게임 전체 1 / Mansion: 1
+    // 영지당 최대 설치 수 (-1 = 무제한). Farm: 2 / Mansion: 1
     public int maxPerTerritory = -1;
+
+    // true면 게임 전체에서 1개만 허용 (Lab 전용)
+    // maxPerTerritory와 별개로, 다른 노드에도 동일 buildingType이 없어야 배치 가능
+    public bool isUniqueGlobal;
 
     [Header("생산 효과 (턴당)")]
     public int goldPerTurn;             // 매 턴 금 생산량
     public int researchPerTurn;         // 매 턴 연구 포인트 생산량 (연구소 전용)
     public int populationCapBonus;      // 배치 즉시 인구 한도 증가 (민가 전용)
 
-    [Header("군사")]
-    public int soldierCapacity;         // 이 건물이 수용할 수 있는 병사 수 (군사 건물 전용)
+    [Header("프리팹 & 생산")]
+    public GameObject visualPrefab;       // null이면 기존 빈 GO 방식으로 fallback
+    public int productionInterval = 3;    // 몇 턴마다 유닛 1명 생산
+    public int unitCapacity = 0;          // 최대 수용치 (0이면 생산 건물 아님). 군사 건물도 이걸 사용
 }

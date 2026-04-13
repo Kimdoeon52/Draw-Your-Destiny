@@ -4991,13 +4991,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -10161,13 +10161,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -15358,13 +15358,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -24593,7 +24593,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 413, y: -193}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &527775639
 MonoBehaviour:
@@ -24690,7 +24690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 109
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 100859569}
   mansionIcon: {fileID: 0}
 --- !u!1 &553488620
@@ -24731,7 +24731,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -105, y: -190}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &553488622
 MonoBehaviour:
@@ -24828,7 +24828,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 105
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 1633476676}
   mansionIcon: {fileID: 0}
 --- !u!1 &555909714
@@ -29148,7 +29148,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &584070441
 RectTransform:
   m_ObjectHideFlags: 0
@@ -39110,7 +39110,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -380, y: 219}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &762674761
 MonoBehaviour:
@@ -39207,7 +39207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 102
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 1036983623}
   mansionIcon: {fileID: 0}
 --- !u!1 &837435538
@@ -39281,7 +39281,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -377, y: -183}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &838025874
 MonoBehaviour:
@@ -39378,7 +39378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 103
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 2101729062}
   mansionIcon: {fileID: 0}
 --- !u!1 &852165608
@@ -57469,13 +57469,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -61948,7 +61948,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 724, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1123479302
 MonoBehaviour:
@@ -62045,7 +62045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 110
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 392378207}
   mansionIcon: {fileID: 0}
 --- !u!1 &1125273227
@@ -62086,7 +62086,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -727, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1125273229
 MonoBehaviour:
@@ -62183,7 +62183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 101
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 1647773481}
   mansionIcon: {fileID: 0}
 --- !u!1 &1128289305
@@ -62224,7 +62224,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 125, y: -184}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1128289307
 MonoBehaviour:
@@ -62321,7 +62321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 107
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 1967070390}
   mansionIcon: {fileID: 0}
 --- !u!1 &1131746162
@@ -62408,13 +62408,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -67387,13 +67387,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -77492,13 +77492,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -77628,13 +77628,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -82017,7 +82017,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 416, y: 223}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1683579160
 MonoBehaviour:
@@ -82114,7 +82114,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 108
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 287453947}
   mansionIcon: {fileID: 0}
 --- !u!1 &1691935796
@@ -86621,47 +86621,58 @@ MonoBehaviour:
   fadePanel: {fileID: 584070444}
   fadeDuration: 0.4
   claimCost: 30
+  debugFreeEntry: 0
   allNodes:
   - nodeID: 101
     adjacentNodeIDs: 6600000067000000
     ownerCivID: 0
     isMansionBuilt: 1
+    hasPlayerUnits: 0
   - nodeID: 102
     adjacentNodeIDs: 6500000068000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 103
     adjacentNodeIDs: 6500000069000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 104
     adjacentNodeIDs: 660000006a000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 105
     adjacentNodeIDs: 670000006b000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 106
     adjacentNodeIDs: 680000006c000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 107
     adjacentNodeIDs: 690000006d000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 108
     adjacentNodeIDs: 6a0000006e000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 109
     adjacentNodeIDs: 6b0000006e000000
     ownerCivID: -1
     isMansionBuilt: 0
+    hasPlayerUnits: 0
   - nodeID: 110
     adjacentNodeIDs: 6c0000006d000000
     ownerCivID: 1
     isMansionBuilt: 1
+    hasPlayerUnits: 0
 --- !u!4 &1752384589
 Transform:
   m_ObjectHideFlags: 0
@@ -87270,7 +87281,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 131, y: 220}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1821084637
 MonoBehaviour:
@@ -87367,7 +87378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 106
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 1131746164}
   mansionIcon: {fileID: 0}
 --- !u!1 &1823117636
@@ -96881,13 +96892,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -97572,7 +97583,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -85, y: 219}
-  m_SizeDelta: {x: 160, y: 30}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2073917159
 MonoBehaviour:
@@ -97669,7 +97680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 104
-  backgroundImage: {fileID: 1891252794}
+  backgroundImage: {fileID: 0}
   nameLabel: {fileID: 1266219268}
   mansionIcon: {fileID: 0}
 --- !u!1 &2094011795
@@ -101932,13 +101943,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -106166,11 +106177,11 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
-  - {fileID: 319991851}
   - {fileID: 1166881269}
-  - {fileID: 1425922014}
   - {fileID: 1299100653}
   - {fileID: 1169971045}
+  - {fileID: 319991851}
+  - {fileID: 1425922014}
   - {fileID: 1395773283}
   - {fileID: 522887710}
   - {fileID: 1098538681}

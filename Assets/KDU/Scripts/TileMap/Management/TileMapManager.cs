@@ -177,8 +177,25 @@ public class TileMapManager : Singleton<TileMapManager>
     // ── 건물 배치 가능 여부 확인 ─────────────────────────────────
     // clickPos 기준으로 origin을 계산한 뒤 footprint 전체를 검사
     // 조건: 맵 안 + 강 없음 + 건물 없음 + allowedTiles 타입 일치
+    //       + maxPerTerritory 영지 내 제한 + isUniqueGlobal 게임 전체 제한
     public bool CanPlace(Vector3Int clickPos, BuildingData building)
     {
+        // 영지 내 최대 설치 수 검사
+        if (building.maxPerTerritory >= 0)
+        {
+            int count = 0;
+            foreach (BuildingInstance b in allBuildings)
+            {
+                if (b.data != null && b.data.buildingType == building.buildingType)
+                    count++;
+            }
+            if (count >= building.maxPerTerritory) return false;
+        }
+
+        // 게임 전체 유일성 검사 (Lab 등)
+        if (building.isUniqueGlobal && IsAlreadyBuiltGlobally(building))
+            return false;
+
         Vector3Int origin = GetOrigin(clickPos, building);
 
         for (int x = 0; x < building.width; x++)
@@ -201,6 +218,24 @@ public class TileMapManager : Singleton<TileMapManager>
         }
 
         return true;
+    }
+
+    // 게임 전체 노드에서 동일 buildingType 건물이 이미 존재하는지 검사
+    // 현재 노드(allBuildings, 라이브)와 저장된 전 노드(WorldMapManager 경유)를 모두 확인
+    private bool IsAlreadyBuiltGlobally(BuildingData building)
+    {
+        // 현재 진입 중인 노드 (라이브 상태 — NodeData.buildings보다 최신)
+        foreach (BuildingInstance b in allBuildings)
+        {
+            if (b.data != null && b.data.buildingType == building.buildingType)
+                return true;
+        }
+
+        // 저장된 모든 플레이어 노드 (마지막 이탈 시 스냅샷)
+        if (WorldMapManager.Instance != null)
+            return WorldMapManager.Instance.HasUniqueGlobalBuilding(building.buildingType);
+
+        return false;
     }
 
     // ── 건물 배치 ───────────────────────────────────────────────
@@ -232,6 +267,14 @@ public class TileMapManager : Singleton<TileMapManager>
             visual = visual
         };
 
+        // Behaviour 캐싱 & 초기화
+        instance.behaviour = visual.GetComponent<BuildingBehaviour>();
+        if (instance.behaviour != null)
+        {
+            instance.behaviour.instance = instance;
+            instance.behaviour.OnPlaced();
+        }
+
         allBuildings.Add(instance);
         foreach (Vector3Int pos in footprint)
             buildingInstanceMap[pos] = instance;
@@ -251,14 +294,30 @@ public class TileMapManager : Singleton<TileMapManager>
     }
 
     // ── 건물 시각화 생성 ─────────────────────────────────────────
+    // BuildingData.visualPrefab이 있으면 프리팹 인스턴스화, 없으면 빈 GO 방식 fallback
     private GameObject CreateBuildingVisual(Vector3Int origin, BuildingData building)
     {
-        GameObject buildingObj = new GameObject($"{building.buildingName}_{origin.x}_{origin.y}");
-        buildingObj.transform.SetParent(buildingContainer);
+        GameObject buildingObj;
 
-        SpriteRenderer spriteRenderer = buildingObj.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = building.sprite;
-        spriteRenderer.sortingOrder = 100; //건물 오더레이어
+        if (building.visualPrefab != null)
+        {
+            buildingObj = Instantiate(building.visualPrefab, buildingContainer);
+            buildingObj.name = $"{building.buildingName}_{origin.x}_{origin.y}";
+
+            // 프리팹의 SpriteRenderer에 SO 스프라이트 적용
+            // 프리팹은 구조(컴포넌트/Behaviour)만 담고, 스프라이트는 SO가 관리
+            SpriteRenderer sr = buildingObj.GetComponent<SpriteRenderer>();
+            if (sr != null && building.sprite != null)
+                sr.sprite = building.sprite;
+        }
+        else
+        {
+            buildingObj = new GameObject($"{building.buildingName}_{origin.x}_{origin.y}");
+            buildingObj.transform.SetParent(buildingContainer);
+            SpriteRenderer sr = buildingObj.AddComponent<SpriteRenderer>();
+            sr.sprite = building.sprite;
+            sr.sortingOrder = 100;
+        }
 
         buildingObj.transform.position = GetBuildingWorldCenter(origin, building);
         buildingObj.transform.localScale = new Vector3(building.width, building.height, 1);
@@ -502,6 +561,14 @@ public class TileMapManager : Singleton<TileMapManager>
             visual = visual
         };
 
+        // Behaviour 캐싱 & 초기화
+        instance.behaviour = visual.GetComponent<BuildingBehaviour>();
+        if (instance.behaviour != null)
+        {
+            instance.behaviour.instance = instance;
+            instance.behaviour.OnPlaced();
+        }
+
         allBuildings.Add(instance);
 
         foreach (Vector3Int pos in footprint)
@@ -624,6 +691,14 @@ public class TileMapManager : Singleton<TileMapManager>
 
         // 시각화 재생성
         instance.visual = CreateBuildingVisual(instance.origin, instance.data);
+
+        // Behaviour 캐싱 & 저장된 상태 복원
+        instance.behaviour = instance.visual != null ? instance.visual.GetComponent<BuildingBehaviour>() : null;
+        if (instance.behaviour != null)
+        {
+            instance.behaviour.instance = instance;
+            instance.behaviour.LoadState(instance.savedState);
+        }
 
         // 컬렉션 등록
         allBuildings.Add(instance);

@@ -139,6 +139,20 @@ public class GameManager : PersistentSingleton<GameManager>
         CardModifierSystem.OnTurnEnd();
         CardSystem.Instance?.RefreshVisibleCardViews();
         checkResearch();
+
+        // 현재 진입 중인 노드의 건물 턴 처리 (Behaviour.OnTurnEnd)
+        if (tileMapManager != null)
+        {
+            foreach (BuildingInstance b in tileMapManager.GetAllBuildings())
+            {
+                if (b.behaviour != null)
+                    b.behaviour.OnTurnEnd();
+            }
+        }
+
+        // 비활성 노드의 건물 오프스크린 tick 처리
+        if (WorldMapManager.Instance != null)
+            WorldMapManager.Instance.TickOffscreenBuildings();
     }
 
     // ── 재화 관리 ─────────────────────────────────────────────

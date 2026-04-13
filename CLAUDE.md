@@ -306,26 +306,33 @@ farmlandTilemap → TerritoryView/Grid/ProductionArea/Tilemap_Farmland
 Mansion,  // 영주성 — 영주성 재건 카드로만 설치. 영지 잠금 해제 조건
 House,    // 민가 — 인구 한도 증가
 Market,   // 상점 — 매 턴 금 획득
-Lab,      // 연구소 — 매 턴 연구 포인트 획득. 게임당 1개 제한
+Lab,      // 연구소 — 매 턴 연구 포인트 획득. 게임당 1개 제한 (isUniqueGlobal=true)
+          //         3단계 자동 업그레이드 체인: Lab(석기)→LabBronze(청동기)→LabIron(철기)
+          //         buildingType은 세 단계 모두 Lab 유지 (LabBehaviour 공유, researchPerTurn만 다름)
 Farm,     // 농장 — 매 턴 식량 획득. 영지당 최대 2개 제한 (3×3 크기)
 
-// 군사 건물 — 시대별 자동 업그레이드 체인
-TribePracticeGround → TrainingCamp → Barracks  // 돌도끼병
-ArcheryRange                                    // 궁수 (청동기~)
-MedicBarracks                                   // 의무병 (청동기~)
-StableBarracks                                  // 기마병 (철기)
-GiantBarracks                                   // 자이언트 (철기)
-MageBarracks                                    // 마법사 (철기, 연구포인트 200 필요)
-PotionBuilding                                  // 포션 건물 (청동기~)
+// 군사 건물 — 자동 업그레이드 체인
+TribePracticeGround → TrainingCamp → Barracks   // 근접(돌도끼병): 석기→청동기→철기
+ArcheryRange → ArcheryRangeElite                 // 궁수: 청동기→철기
+MedicBarracks → MedicBarracksElite               // 의무병: 청동기→철기
+
+// 군사 건물 — 단일 (철기)
+StableBarracks                                   // 기마병
+KnightBarracks                                   // 풀플레이트 아머 기사
+GiantBarracks                                    // 자이언트 (연구포인트 200 도달 시 생산 시작)
+
+// 지원 건물
+PotionBuilding                                   // 포션 가게 (청동기~) — 매 턴 랜덤 포션 카드 추가
+TrapWorkshop                                     // 덫 공방   (청동기~) — 매 턴 랜덤 덫 카드 추가
 ```
 
 ### 건물 제한
 
 | 건물 | 제한 |
 |------|------|
-| 농장 (Farm) | 영지당 최대 2개 |
-| 연구소 (Lab) | 게임 전체에서 1개 |
-| 영주성 (Mansion) | 영지당 1개. 영주성 재건 카드로만 설치 |
+| 농장 (Farm) | 영지당 최대 2개 (maxPerTerritory=2) |
+| 연구소 (Lab) | 게임 전체에서 1개 (isUniqueGlobal=true, 3단계 자동 업그레이드 체인) |
+| 영주성 (Mansion) | 영지당 1개. 영주성 재건 카드로만 설치 (maxPerTerritory=1) |
 
 ### 자동 업그레이드 체인
 
@@ -344,11 +351,14 @@ Era requiredEra;            // 설치 가능 최소 시대
 bool isAutoUpgrade;
 BuildingData upgradesTo;
 int goldCost;
-int soldierCapacity;        // 군사 건물 전용
+GameObject visualPrefab;    // 건물 시각 프리팹 (BuildingBehaviour 부착). null이면 빈 GO fallback
+int productionInterval;     // 몇 턴마다 유닛 1명 생산 (기본 3)
+int unitCapacity;           // 최대 수용 유닛 수. 0이면 생산 건물 아님. 군사 건물 포함 모든 생산 건물에 사용
 int goldPerTurn;
 int researchPerTurn;
 int populationCapBonus;     // 민가 전용
-int maxPerTerritory;        // 영지당 최대 설치 수 (-1 = 무제한)
+int maxPerTerritory;        // 영지당 최대 설치 수 (-1 = 무제한). Farm: 2 / Mansion: 1
+bool isUniqueGlobal;        // true면 게임 전체에 1개만 허용 (Lab 전용)
 ```
 
 ### 건물 기준점 계산 (StarCraft 방식)
@@ -369,7 +379,8 @@ int maxPerTerritory;        // 영지당 최대 설치 수 (-1 = 무제한)
    - Farm: allowedTiles = [Farmland]
    - Mansion: allowedTiles = [City] (중앙 고정 배치)
 4. isMansionBuilt == true (Mansion 자신 제외)
-5. maxPerTerritory 초과 여부 확인
+5. maxPerTerritory 초과 여부 확인 (영지 내 buildingType 카운트)
+6. isUniqueGlobal == true이면 전체 노드 스캔 후 동일 buildingType 없어야 배치 가능
 
 ※ River 타일 체크 별도 불필요 — River/Ground 타일맵이 없으므로 IsValidPosition으로 통합 처리
 
@@ -431,8 +442,8 @@ TileMapManager.farmSprites[18] — Inspector에서 스프라이트 연결
 | 의무병 | 청동기 | 힐러. 아군 체력 회복 |
 | 궁수 | 청동기 | 원거리 공격 유닛 |
 | 기마병 | 철기 | 고속 이동. 말 체력 소진 시 근접 유닛으로 전환 |
-| 자이언트 | 철기 | 대형 고체력 근접 유닛 |
-| 마법사 | 철기 | 광역 공격. 연구포인트 200 달성 후 건물 설치 가능 |
+| 풀플레이트 아머 기사 | 철기 | 고방어 근접 유닛 |
+| 자이언트 | 철기 | 대형 고체력 근접 유닛. 연구포인트 200 도달 시 생산 시작 |
 
 ※ 성별 개념 없음.
 
@@ -559,9 +570,11 @@ public class EventData : ScriptableObject
 **레거시 정리 완료**
 - FogManager.cs / AbandonedTerritoryManager.cs 삭제
 - Enums.cs — FogState 제거, Mansion 추가, 군사 건물 전체 반영
+- Enums.cs — MageBarracks 제거, ArcheryRangeElite / MedicBarracksElite / KnightBarracks / TrapWorkshop 추가
 - TileData.cs — fogState 필드 제거
 - BuildingInstance.cs — wasEverSeen 필드 제거
-- BuildingData.cs — id / maxPerTerritory / researchPerTurn 필드 추가
+- BuildingData.cs — id / maxPerTerritory / researchPerTurn / visualPrefab / productionInterval / unitCapacity / isUniqueGlobal 필드 추가
+- BuildingInstance.cs — behaviour / savedState / isActive 필드 추가
 
 **타일맵 구조 단순화**
 - ProductionArea: Tilemap_City / Tilemap_Farmland / Tilemap_Buildings만 유지
@@ -576,6 +589,8 @@ public class EventData : ScriptableObject
 - 재화 차감 및 효과 적용 / 입력·로직 분리
 - 건물 자동 업그레이드 데이터 구조 (BuildingData 체인 / upgradesTo)
 - Farm 8방향 스프라이트 오토타일링 (18종)
+- CanPlace() — maxPerTerritory 영지 내 제한 + isUniqueGlobal 게임 전체 제한 검사 추가
+- CreateBuildingVisual() — 프리팹 인스턴스화 후 SO 스프라이트 자동 적용 (프리팹은 구조, 스프라이트는 SO 관리)
 
 **월드맵 + 영지 전환 시스템 (도언) ✅ 씬 연결 완료**
 - WorldMapView Canvas — NodeButton_101~110 배치 완료
@@ -587,14 +602,42 @@ public class EventData : ScriptableObject
 - 노드 진입/이탈 페이드 전환 동작 확인
 - CitySpawnManager 재설계 — NodeData 기반으로 city bounds 계산 (라이브 타일맵 스캔 제거)
 - NodeData.hasPlayerUnits — 유닛 주둔 시 ownerCivID 무관 진입 허용
+- WorldMapManager.SetNodeOwner() — 소유권 변경 시 isUniqueGlobal 건물 active 상태 자동 재조정
+- WorldMapManager.RebalanceUniqueGlobalBuildings() — 플레이어 노드 스캔, 동일 buildingType 1개만 active 유지
+- WorldMapManager.HasUniqueGlobalBuilding() — TileMapManager용 게임 전체 건물 존재 여부 공개 조회
+
+**건물 Behaviour 시스템 (도언) ✅ 코드 완료 / 에디터 연결 대기**
+- BuildingBehaviour / UnitProducerBehaviour 추상 클래스 계층 구조 구현
+- Behaviour 구현 완료 (14개):
+  - BarracksBehaviour (근접 체인 TribePracticeGround→TrainingCamp→Barracks 공유)
+  - ArcherBarracksBehaviour (궁수 체인 ArcheryRange→ArcheryRangeElite 공유)
+  - HealerBarracksBehaviour (힐러 체인 MedicBarracks→MedicBarracksElite 공유)
+  - CavalryBarracksBehaviour / KnightBarracksBehaviour / GiantBarracksBehaviour (철기 단일)
+  - GiantBarracksBehaviour — 연구 포인트 200 미달 시 생산 대기 게이트 포함
+  - FarmBehaviour / MarketBehaviour / LabBehaviour / MansionBehaviour
+  - PotionShopBehaviour / TrapWorkshopBehaviour
+- BuildingRuntimeState — 노드 이탈/재진입 시 tick/activeCount/waiting 직렬화
+- BuildingInstance.isActive — isUniqueGlobal 건물 중복 보유 시 활성/비활성 제어
+- TileMapManager — visualPrefab 프리팹 분기 + Behaviour 캐싱/OnPlaced/LoadState 연결
+- NodeDataManager.ExitNode — SaveState() 스냅샷 저장
+- GameManager.EndTurn — 현재 노드 OnTurnEnd() + 오프스크린 노드 tick 가산
+- MansionBehaviour.OnPlaced() → WorldMapManager.OnMansionRebuilt() 자동 호출 (카드 시스템 별도 호출 불필요)
 
 ---
 
 ### ❌ 미구현 / 미연결
 
-**도언 담당**
-- 영주성 재건 카드 동작 (카드 쪽에서 WorldMapManager.OnMansionRebuilt() 호출)
+**도언 담당 — 에디터 작업**
+- 건물 프리팹 제작 (SpriteRenderer + Behaviour 스크립트 부착. 스프라이트는 SO에서 관리)
+- BuildingData SO 생성 및 연결:
+  - 신규: ArcheryRangeElite / MedicBarracksElite / KnightBarracks / TrapWorkshop
+  - 체인 SO: Lab×3 / Mansion×3 / PotionBuilding×2 / TrapWorkshop×2 (시대별 스프라이트 + researchPerTurn 등 수치 입력)
+  - 기존 SO: upgradesTo 체인 링크 + visualPrefab / unitCapacity / productionInterval 입력
+  - Lab / Mansion SO: isUniqueGlobal = true 체크
+
+**도언 담당 — 코드**
 - 전투 승리 시 WorldMapManager.SetPlayerUnitsPresent() 연동
+- 노드 피탈 시 건물 처리 (파괴 vs 유지 — 회의 후 구현)
 - CombatArea 타일맵 NodeDataManager 복사 로직 (전투 시스템 구현 시)
 - AI 노드 확장 로직
 
@@ -604,6 +647,8 @@ public class EventData : ScriptableObject
 - 전투 시스템 (카드 기반 독립 턴, 부대 이동/공격)
 - 이벤트 시스템 (5턴마다 1회 보장 + 15% 확률)
 - 턴 흐름 전체 GameManager 연결
+- 카드 시스템 연동 후 PotionShopBehaviour / TrapWorkshopBehaviour TODO 완성
+- 카드 시스템 연동 후 영주성 재건 카드 → TileMapManager.PlaceBuilding(center, mansionSO) 호출
 
 ---
 
@@ -616,7 +661,8 @@ public class EventData : ScriptableObject
 | 인구 한도 민가당 증가량 (시대별) | ✅ +5/+7/+10 |
 | 시대 전환 연구 포인트 | ✅ 청동기 100 / 철기 200 |
 | 카드 3택 가중치 수치 | 미확정 |
-| 자동 업그레이드 대상 건물 종류 (군사 외) | 미확정 |
+| 자동 업그레이드 대상 건물 종류 (군사 외) | ✅ Lab×3단계 / Mansion×3단계 / PotionBuilding×2단계 / TrapWorkshop×2단계 확정. Market / House / Farm 미확정 |
 | 전투 중 식량 소모량 (유닛 수 × n) | 미확정 |
 | goldPerTurn / researchPerTurn 수치 | 미확정 |
 | 카드 목록 전체 (기본 카드 8장 포함) | 미확정 |
+| 노드 피탈 시 건물 처리 방식 | 미확정 — 회의 필요. 선택지: ①파괴(빈 땅, 적이 재점령 후 자기 시대에 맞게 재건) vs ②업그레이드 상태 유지(적이 상위 티어 건물 그대로 획득). 점령 시 플레이어 시대로 자동 업그레이드는 두 선택지 모두 동일 |

@@ -31,6 +31,18 @@ public class BuildingInstance
     // 화면에 표시되는 스프라이트 오브젝트 (SpriteRenderer 포함)
     public GameObject visual;
 
+    // visual에 부착된 BuildingBehaviour 캐시 (프리팹 기반 건물만 존재, 빈 GO 방식은 null)
+    [System.NonSerialized]
+    public BuildingBehaviour behaviour;
+
+    // 노드 이탈 시 저장되는 런타임 상태 스냅샷 (재진입 시 LoadState로 복원)
+    public BuildingRuntimeState savedState = new BuildingRuntimeState();
+
+    // isUniqueGlobal 건물(Lab 등)이 중복 보유될 때 활성화 여부
+    // WorldMapManager.RebalanceUniqueGlobalBuildings()가 소유권 변경 시마다 재조정
+    // false = 건물은 존재하지만 효과를 내지 않음 (플레이어가 같은 타입 건물을 이미 다른 노드에 보유 중)
+    public bool isActive = true;
+
     // 현재 건물 타입 — data가 null이면 None 반환
     public BuildingType type => data != null ? data.buildingType : BuildingType.None;
 }

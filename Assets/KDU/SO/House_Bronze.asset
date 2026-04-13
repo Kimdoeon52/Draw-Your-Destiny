@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
   m_Name: House_Bronze
   m_EditorClassIdentifier: 
-  buildingName: "\uBBFC\uAC00"
+  id: 
+  buildingName: "\uBBFC\uAC00(\uCCAD\uB3D9\uAE30)"
   buildingType: 1
   sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
   requiredEra: 1
@@ -21,7 +22,12 @@ MonoBehaviour:
   goldCost: 100
   width: 1
   height: 1
-  allowedTiles: 0400000000000000
+  allowedTiles: 04000000
+  maxPerTerritory: -1
+  isUniqueGlobal: 0
   goldPerTurn: 0
+  researchPerTurn: 0
   populationCapBonus: 10
-  soldierCapacity: 0
+  visualPrefab: {fileID: 0}
+  productionInterval: 3
+  unitCapacity: 0

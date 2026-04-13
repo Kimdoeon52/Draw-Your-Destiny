@@ -10,18 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
-  m_Name: Outpost
+  m_Name: PotionBuilding_Iron
   m_EditorClassIdentifier: 
-  buildingName: "\uC18C\uADDC\uBAA8 \uC601\uC9C0"
-  buildingType: 8
-  sprite: {fileID: 8284690431070618562, guid: 20d6cce5c7ac33b4e97f0f98a09aa347, type: 3}
-  requiredEra: 0
+  id: 
+  buildingName: "\uD3EC\uC158\uAC00\uAC8C(\uCCA0\uAE30)"
+  buildingType: 16
+  sprite: {fileID: 0}
+  requiredEra: 2
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
   goldCost: 0
-  width: 8
-  height: 8
-  allowedTiles: 00000000
+  width: 1
+  height: 1
+  allowedTiles: 04000000
+  maxPerTerritory: -1
+  isUniqueGlobal: 0
   goldPerTurn: 0
+  researchPerTurn: 0
   populationCapBonus: 0
-  soldierCapacity: 0
+  visualPrefab: {fileID: 0}
+  productionInterval: 3
+  unitCapacity: 0
