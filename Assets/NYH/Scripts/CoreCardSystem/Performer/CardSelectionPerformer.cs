@@ -250,5 +250,15 @@
                 discardCountText.text = $"{pileState.DiscardPileCount}장";
             }
         }
+
+
+        // 내 덱에 원하는 카드 추가하는 함수
+        public IEnumerator AddCardInMyDeck(CardData targetCard, int addAmount)
+        {
+            for(int i = 0; i < addAmount; i++)
+                pileState.AddToDrawPile(new Card(targetCard));
+
+            yield break;
+        }
     }
 }

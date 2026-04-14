@@ -71,6 +71,11 @@
         {
             if (action is DrawCardsGA drawCardsGA)
             {
+                if (CardModifierSystem.IsDrawLocked == true)
+                {
+                    yield break;
+                }
+
                 for (int i = 0; i < drawCardsGA.Amount; i++)
                 {
                     if (pileState.DrawPileCount == 0)

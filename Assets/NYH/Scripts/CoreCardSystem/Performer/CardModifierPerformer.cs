@@ -1,4 +1,4 @@
-namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System.Collections;
 
@@ -60,6 +60,10 @@ namespace NYH.CoreCardSystem
                     disableCardTypeGA.DurationTurns);
                 refreshCardViews?.Invoke();
                 yield return null;
+            }
+            else if(action is LockDrawGA lockDrawGA)
+            {
+                CardModifierSystem.DrawLock();
             }
         }
     }

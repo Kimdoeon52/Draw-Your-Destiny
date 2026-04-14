@@ -1,4 +1,4 @@
-namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     /*
      * CardActionRegistrar
@@ -46,6 +46,8 @@ namespace NYH.CoreCardSystem
             ActionSystem.AttachPerformer<PlayBuildingGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<SetCardTypeMultiplierGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<DisableCardTypeGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<AddCardGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<LockDrawGA>(action => cardSystem.Perform(action));
         }
     }
 }

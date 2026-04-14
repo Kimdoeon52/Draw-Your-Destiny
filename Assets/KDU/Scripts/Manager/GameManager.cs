@@ -129,7 +129,8 @@ public class GameManager : PersistentSingleton<GameManager>
         startTurn = true;
         endTurn = false;
         currentTurn++;
-       /* OngoingEffectSystem.Instance.OnTurnStartOrEnd();*/
+        /* OngoingEffectSystem.Instance.OnTurnStartOrEnd();*/
+        CardModifierSystem.IsDrawLocked = false; // 턴 시작 시 드로우 잠금 해제
     }
 
     public void EndTurn()
