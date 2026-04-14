@@ -24,6 +24,11 @@ public class TileMapManager : Singleton<TileMapManager>
     public Tilemap cityTilemap;         // Tilemap_City     — City 타일 (일반 건물 배치 가능)
     public Tilemap farmlandTilemap;     // Tilemap_Farmland — Farmland 지형 (Farm 전용)
 
+    [Header("전투 지형 레이어 — CombatArea Tilemap 연결")]
+    public Tilemap groundTilemap;       // Tilemap_Ground   — 평지 (이동 1칸)
+    public Tilemap forestTilemap;       // Tilemap_Forest   — 숲 (이동 불가)
+    public Tilemap riverTilemap;        // Tilemap_River    — 강 (이동 2칸 소비)
+
     // ── 건물 관련 컬렉션 ──────────────────────────────────────
     // buildingMap: footprint의 모든 타일 좌표를 키로 BuildingData를 저장
     //              CanPlace에서 충돌 검사 시 사용
@@ -648,8 +653,11 @@ public class TileMapManager : Singleton<TileMapManager>
     // 씬의 지형 Tilemap을 모두 비움 (노드 이탈 시)
     public void ClearAllTerrainTiles()
     {
-        cityTilemap?.ClearAllTiles();
-        farmlandTilemap?.ClearAllTiles();
+        if (cityTilemap     != null) cityTilemap.ClearAllTiles();
+        if (farmlandTilemap != null) farmlandTilemap.ClearAllTiles();
+        if (groundTilemap   != null) groundTilemap.ClearAllTiles();
+        if (forestTilemap   != null) forestTilemap.ClearAllTiles();
+        if (riverTilemap    != null) riverTilemap.ClearAllTiles();
         tileDataMap.Clear();
     }
 

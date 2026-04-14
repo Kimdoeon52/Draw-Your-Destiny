@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
   m_Name: Barracks_SoldierBronze
   m_EditorClassIdentifier: 
+  id: 
   buildingName: "\uD6C8\uB828\uC18C"
   buildingType: 6
   sprite: {fileID: 0}
@@ -22,6 +23,12 @@ MonoBehaviour:
   width: 1
   height: 1
   allowedTiles: 04000000
+  maxPerTerritory: -1
+  isUniqueGlobal: 0
   goldPerTurn: 0
+  researchPerTurn: 0
   populationCapBonus: 0
-  soldierCapacity: 5
+  visualPrefab: {fileID: 5658404864989583499, guid: 3e72d4ae7537e594ba6bd4b493d64192,
+    type: 3}
+  productionInterval: 3
+  unitCapacity: 0

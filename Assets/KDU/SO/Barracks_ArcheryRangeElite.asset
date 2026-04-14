@@ -24,9 +24,11 @@ MonoBehaviour:
   height: 1
   allowedTiles: 04000000
   maxPerTerritory: -1
+  isUniqueGlobal: 0
   goldPerTurn: 0
   researchPerTurn: 0
   populationCapBonus: 0
-  visualPrefab: {fileID: 0}
+  visualPrefab: {fileID: 4618862662295205576, guid: 96b557e8338de724fad9d5de55d457ac,
+    type: 3}
   productionInterval: 3
   unitCapacity: 0

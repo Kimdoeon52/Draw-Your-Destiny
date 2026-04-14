@@ -28,6 +28,7 @@ MonoBehaviour:
   goldPerTurn: 0
   researchPerTurn: 0
   populationCapBonus: 0
-  visualPrefab: {fileID: 0}
+  visualPrefab: {fileID: 7979314954103132623, guid: b533ea723e6f3cd4a8d8920cfef695b5,
+    type: 3}
   productionInterval: 3
   unitCapacity: 0

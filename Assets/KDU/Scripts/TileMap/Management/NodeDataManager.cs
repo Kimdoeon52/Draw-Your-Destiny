@@ -31,6 +31,12 @@ public class NodeDataManager : Singleton<NodeDataManager>
         public Tilemap cityTilemap;
         [Tooltip("NodePrefab_XX의 Tilemap_Farmland")]
         public Tilemap farmlandTilemap;
+        [Tooltip("NodePrefab_XX의 CombatArea/Tilemap_Ground")]
+        public Tilemap groundTilemap;
+        [Tooltip("NodePrefab_XX의 CombatArea/Tilemap_Forest")]
+        public Tilemap forestTilemap;
+        [Tooltip("NodePrefab_XX의 CombatArea/Tilemap_River")]
+        public Tilemap riverTilemap;
     }
 
     [Header("노드 지형 소스 — nodeID 순서대로 연결")]
@@ -67,6 +73,9 @@ public class NodeDataManager : Singleton<NodeDataManager>
         {
             CopyTilemap(src.cityTilemap,     tileMapManager.cityTilemap);
             CopyTilemap(src.farmlandTilemap, tileMapManager.farmlandTilemap);
+            CopyTilemap(src.groundTilemap,   tileMapManager.groundTilemap);
+            CopyTilemap(src.forestTilemap,   tileMapManager.forestTilemap);
+            CopyTilemap(src.riverTilemap,    tileMapManager.riverTilemap);
         }
         else
         {
