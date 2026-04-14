@@ -100,6 +100,12 @@ public class PathDrawingManager : MonoBehaviour
     /// <summary>유닛이 이동 중이면 true. 이동 중에는 모든 입력을 차단한다.</summary>
     private bool isMoving = false;
 
+    /// <summary>드래그 중 마지막으로 처리한 셀 (같은 셀 중복 처리 방지).</summary>
+    private Vector3Int lastDragCell = new Vector3Int(int.MinValue, int.MinValue, 0);
+
+    /// <summary>현재 마우스를 드래그(홀드) 중인지 여부.</summary>
+    private bool isDragging = false;
+
     #endregion
 
     // =====================================================================
@@ -112,12 +118,34 @@ public class PathDrawingManager : MonoBehaviour
             mainCamera = Camera.main;
     }
 
-    private void FixedUpdate()
+    /// <summary>
+    /// ★ 입력 처리는 반드시 Update에서 수행해야 한다.
+    /// FixedUpdate는 물리 업데이트 주기(기본 50fps)로 실행되므로
+    /// Input.GetMouseButtonDown 등의 프레임 단위 입력을 놓칠 수 있다.
+    /// </summary>
+    private void Update()
     {
         if (isMoving) return;
 
+        // ── 마우스 좌클릭 시작: 첫 타일 처리 + 드래그 모드 진입 ──
         if (Input.GetMouseButtonDown(0))
-            HandleMouseClick();
+        {
+            isDragging = true;
+            lastDragCell = new Vector3Int(int.MinValue, int.MinValue, 0);
+            HandleMouseInput();
+        }
+
+        // ── 마우스 좌클릭 홀드 중: 드래그로 인접 타일 연속 추가 ──
+        if (Input.GetMouseButton(0) && isDragging)
+        {
+            HandleMouseInput();
+        }
+
+        // ── 마우스 좌클릭 해제: 드래그 모드 종료 ──
+        if (Input.GetMouseButtonUp(0))
+        {
+            isDragging = false;
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
             TryExecuteMove();
@@ -132,14 +160,15 @@ public class PathDrawingManager : MonoBehaviour
     #endregion
 
     // =====================================================================
-    #region ── 입력 처리: 마우스 클릭 → 경로 추가 / Undo ──
+    #region ── 입력 처리: 마우스 클릭/드래그 → 경로 추가 / Undo ──
     // =====================================================================
 
     /// <summary>
-    /// 마우스 좌클릭 시 호출. 클릭 위치를 Grid 셀로 변환한 뒤
-    /// 유효성 검사(범위·인접·중복·적 존재)를 거쳐 경로에 추가한다.
+    /// 마우스 입력(클릭 또는 드래그) 시 호출.
+    /// 마우스 위치를 Grid 셀로 변환한 뒤 유효성 검사를 거쳐 경로에 추가한다.
+    /// 드래그 중에는 같은 셀을 중복 처리하지 않으며, Undo는 클릭 시에만 동작한다.
     /// </summary>
-    private void HandleMouseClick()
+    private void HandleMouseInput()
     {
         // ① 스크린 → 월드 좌표 변환
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -148,46 +177,43 @@ public class PathDrawingManager : MonoBehaviour
         // ② 월드 → Grid 셀 좌표 변환
         Vector3Int clickedCell = grid.WorldToCell(mouseWorldPos);
 
-        // ③ 타일맵 범위 검증 (음수 좌표 포함, 범위 밖 차단)
-        if (!tilemap.HasTile(clickedCell))
-        {
-            Debug.LogWarning($"[PathDrawingManager] 셀 {clickedCell} — 타일 없음. 타일맵 범위 내만 선택 가능.");
+        // ③ 드래그 중 같은 셀 위에 머무르고 있으면 중복 처리 방지
+        if (clickedCell == lastDragCell)
             return;
-        }
+        lastDragCell = clickedCell;
 
-        // ④ 이미 경로에 있는 타일 → Undo (해당 지점부터 끝까지 제거)
+        // ④ 타일맵 범위 검증 (음수 좌표 포함, 범위 밖 차단)
+        if (!tilemap.HasTile(clickedCell))
+            return; // 드래그 중 범위 밖은 조용히 무시
+
+        // ⑤ 이미 경로에 있는 타일 → Undo (드래그 중에는 Undo하지 않음 — 클릭만)
         int existingIndex = pathCells.IndexOf(clickedCell);
         if (existingIndex >= 0)
         {
-            UndoPathFrom(existingIndex);
-            Debug.Log($"[PathDrawingManager] Undo → 셀 {clickedCell} 이후 제거. 남은 경로: {pathCells.Count}");
+            // 드래그 중에는 Undo 방지 (의도치 않은 경로 삭제 방지)
+            if (!isDragging || Input.GetMouseButtonDown(0))
+            {
+                UndoPathFrom(existingIndex);
+                Debug.Log($"[PathDrawingManager] Undo → 셀 {clickedCell} 이후 제거. 남은 경로: {pathCells.Count}");
+            }
             return;
         }
 
-        // ⑤ 최대 이동 칸 수 초과 확인
+        // ⑥ 최대 이동 칸 수 초과 확인
         if (pathCells.Count >= testMaxMove)
-        {
-            Debug.LogWarning($"[PathDrawingManager] 최대 이동 칸 수({testMaxMove})에 도달.");
             return;
-        }
 
-        // ⑥ 인접성 검증 (상하좌우만 허용, 대각선 불가)
+        // ⑦ 인접성 검증 (상하좌우만 허용, 대각선 불가)
         Vector3Int lastCell = GetLastPathCell();
         if (!IsAdjacent(lastCell, clickedCell))
-        {
-            Debug.LogWarning($"[PathDrawingManager] 셀 {clickedCell} — {lastCell}과 인접하지 않음.");
-            return;
-        }
+            return; // 드래그 중 비인접 셀은 조용히 무시
 
-        // ⑦ 유닛 현재 위치와 동일한 타일 차단
+        // ⑧ 유닛 현재 위치와 동일한 타일 차단
         Vector3Int unitCell = grid.WorldToCell(playerUnit.position);
         if (clickedCell == unitCell)
-        {
-            Debug.LogWarning("[PathDrawingManager] 유닛 현재 위치에는 경로를 추가할 수 없습니다.");
             return;
-        }
 
-        // ⑧ 적군 유닛 존재 여부 (Physics2D 콜라이더 검사)
+        // ⑨ 적군 유닛 존재 여부 (Physics2D 콜라이더 검사)
         Vector3 cellCenter = grid.GetCellCenterWorld(clickedCell);
         if (Physics2D.OverlapPoint(cellCenter, enemyLayerMask) != null)
         {
@@ -195,7 +221,7 @@ public class PathDrawingManager : MonoBehaviour
             return;
         }
 
-        // ⑨ 모든 검증 통과 → 경로에 추가
+        // ⑩ 모든 검증 통과 → 경로에 추가
         AddCellToPath(clickedCell);
         Debug.Log($"[PathDrawingManager] 경로 추가: {clickedCell} ({pathCells.Count}/{testMaxMove})");
     }

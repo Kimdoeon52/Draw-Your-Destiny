@@ -113,6 +113,26 @@ public class EnemyAIManager : MonoBehaviour
     #endregion
 
     // =====================================================================
+    #region ── 테스트용 입력 (턴 시스템 미구현 시 사용) ──
+    // =====================================================================
+
+    /// <summary>
+    /// V키로 적 AI 턴을 수동 실행한다.
+    /// 턴 시스템이 완성되면 이 메서드를 제거하고
+    /// 턴 매니저에서 ExecuteAITurnAsync()를 직접 호출한다.
+    /// </summary>
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.V) && !isExecutingTurn)
+        {
+            Debug.Log("[EnemyAIManager] V키 입력 — 적 AI 턴 수동 실행");
+            ExecuteAITurnAsync().Forget();
+        }
+    }
+
+    #endregion
+
+    // =====================================================================
     #region ── 1. 턴 관리 및 AI 실행 시작 (Turn Check) ──
     // =====================================================================
 
@@ -266,12 +286,9 @@ public class EnemyAIManager : MonoBehaviour
             {
                 Vector3Int nextPos = current.pos + dir;
 
-                // 이미 방문했거나, 타일맵 밖이거나, 장애물이면 무시 (통행 가능 여부 뼈대인 IsCellWalkable 사용 권장)
+                // 이미 방문했거나 통행 불가능한 셀이면 무시 (목표 셀은 예외적으로 허용)
                 if (closedSet.Contains(nextPos)) continue;
-                if (!tilemap.HasTile(nextPos)) continue;
-
-                // TODO: 나중에 적/아군 등에 의한 길막힘 로직을 추가할 거면 아래 주석 해제
-                // if (!IsCellWalkable(nextPos) && nextPos != targetCell) continue;
+                if (!IsCellWalkable(nextPos) && nextPos != targetCell) continue;
 
                 int newG = current.G + 1;
 
@@ -308,7 +325,14 @@ public class EnemyAIManager : MonoBehaviour
             }
         }
 
-        // 6. 턴당 최대 이동 칸수(maxMovePerTurn)만큼만 자르기
+        // 6. 경로 마지막 셀이 플레이어 위치와 같으면 제거
+        //    → 적이 플레이어 타일 위로 올라가지 않고 바로 옆에서 멈춤
+        if (resultPath.Count > 0 && resultPath[resultPath.Count - 1] == targetCell)
+        {
+            resultPath.RemoveAt(resultPath.Count - 1);
+        }
+
+        // 7. 턴당 최대 이동 칸수(maxMovePerTurn)만큼만 자르기
         if (resultPath.Count > maxMovePerTurn)
         {
             resultPath = resultPath.GetRange(0, maxMovePerTurn);
@@ -316,16 +340,6 @@ public class EnemyAIManager : MonoBehaviour
 
         return resultPath;
     }
-
-    // TODO: A* 알고리즘을 이용해 플레이어에게 다가가는 최단 경로 계산 (장애물 우회)
-    // ──────────────────────────────────────────────────────────────
-    // 구현 시 참고 사항:
-    //   - tilemap.HasTile() 로 유효한 타일인지 확인
-    //   - enemyLayerMask 를 활용하여 아군 유닛이 점유한 셀 회피
-    //   - 20x20 그리드 범위 내에서 탐색
-    //   - 반환 경로는 maxMovePerTurn 칸까지만 잘라서 반환
-    //   - 상하좌우 4방향 이동만 허용 (대각선 불가)
-    // ──────────────────────────────────────────────────────────────
 
 
     #endregion
@@ -344,23 +358,11 @@ public class EnemyAIManager : MonoBehaviour
     {
         Debug.Log($"[EnemyAIManager] ▶ 유닛 이동 시작 — 경로 {path.Count}칸");
 
-        // TODO: 프로젝트 내의 'UnitMoveWithUniTask' 로직을 호출하여 이동 처리
-        // ──────────────────────────────────────────────────────────────
-        // 구현 시 참고 사항:
-        //   - path 리스트의 각 셀을 순차적으로 await 하며 이동
-        //   - 각 셀의 월드 좌표는 grid.GetCellCenterWorld(cell) + unitPositionOffset
-        //   - moveSpeed 를 사용하여 이동 속도 조절
-        //   - 셀 도착 시 위치 스냅 처리
-        //
-        // 예시 구조:
-        //   foreach (Vector3Int cell in path)
-        //   {
-        //       Vector3 targetPos = grid.GetCellCenterWorld(cell) + unitPositionOffset;
-        //       await MoveToCell(unit, targetPos);
-        //   }
-        // ──────────────────────────────────────────────────────────────
-
-        await UniTask.CompletedTask; // 구현 전 컴파일 오류 방지용 (구현 시 제거)
+        foreach (Vector3Int cell in path)
+        {
+            Vector3 targetPos = CellToWorldPosition(cell);
+            await MoveToCell(unit, targetPos);
+        }
 
         Debug.Log("[EnemyAIManager] ■ 유닛 이동 완료");
     }
@@ -372,20 +374,23 @@ public class EnemyAIManager : MonoBehaviour
     /// <param name="unit">이동시킬 유닛의 Transform.</param>
     /// <param name="targetPos">목표 월드 좌표.</param>
     /// <remarks>
-    /// ★ 기존 PathDrawingManager.MoveToNextCell 패턴과 동일한 구조.
+    /// ★ PathDrawingManager.MoveToNextCell 패턴과 동일한 구조.
     /// ★ 프로젝트 내 공용 이동 유틸리티가 완성되면 해당 메서드로 교체 가능.
     /// </remarks>
     private async UniTask MoveToCell(Transform unit, Vector3 targetPos)
     {
-        // TODO: 유닛을 targetPos까지 MoveTowards 또는 기존 이동 시스템으로 이동
-        // ──────────────────────────────────────────────────────────────
-        // 구현 시 참고 사항:
-        //   - Vector3.MoveTowards + UniTask.Yield 패턴 사용
-        //   - 또는 기존 프로젝트의 이동 함수를 await 호출
-        //   - 이동 완료 후 unit.position = targetPos; 로 위치 스냅
-        // ──────────────────────────────────────────────────────────────
+        while (Vector3.Distance(unit.position, targetPos) > 0.01f)
+        {
+            unit.position = Vector3.MoveTowards(
+                unit.position,
+                targetPos,
+                moveSpeed * Time.deltaTime
+            );
+            await UniTask.Yield();
+        }
 
-        await UniTask.CompletedTask; // 구현 전 컴파일 오류 방지용 (구현 시 제거)
+        // 최종 위치 스냅
+        unit.position = targetPos;
     }
 
     #endregion
@@ -403,30 +408,54 @@ public class EnemyAIManager : MonoBehaviour
     /// <returns>공격에 성공하면 true, 범위 내에 플레이어가 없으면 false.</returns>
     private bool TryAttackNearbyPlayer(Transform unit, Vector3Int unitCell)
     {
-        // TODO: 유닛 현재 위치 기준 상, 하, 좌, 우 4방향 attackRange칸 이내 선형 탐색 후 공격 처리
-        // ──────────────────────────────────────────────────────────────
-        // 구현 시 참고 사항:
-        //   - 4방향 방향 벡터: Vector3Int.up, down, left, right
-        //   - 각 방향으로 1~attackRange 칸을 순차 탐색
-        //   - playerLayerMask 를 활용하여 Physics2D.OverlapPoint 로 플레이어 감지
-        //   - 또는 grid.WorldToCell(playerUnit.position) 과 좌표 비교
-        //   - 장애물(벽 타일 등)에 막히면 해당 방향 탐색 중단
-        //   - 플레이어 발견 시 데미지 처리 로직 호출 후 true 반환
-        //
-        // 예시 구조:
-        //   Vector3Int[] directions = { Vector3Int.up, Vector3Int.down,
-        //                               Vector3Int.left, Vector3Int.right };
-        //   foreach (var dir in directions)
-        //   {
-        //       for (int dist = 1; dist <= attackRange; dist++)
-        //       {
-        //           Vector3Int checkCell = unitCell + dir * dist;
-        //           // ... 탐색 및 공격 로직 ...
-        //       }
-        //   }
-        // ──────────────────────────────────────────────────────────────
+        Vector3Int[] directions = { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right };
+        Vector3Int playerCell = grid.WorldToCell(playerUnit.position);
+
+        foreach (Vector3Int dir in directions)
+        {
+            for (int dist = 1; dist <= attackRange; dist++)
+            {
+                Vector3Int checkCell = unitCell + dir * dist;
+
+                // 타일맵 밖이면 해당 방향 탐색 중단
+                if (!tilemap.HasTile(checkCell))
+                    break;
+
+                // 장애물(적 아군 유닛)이 중간에 있으면 해당 방향 탐색 중단
+                // (단, 플레이어 셀은 통과 가능하도록 플레이어 체크를 먼저 수행)
+                if (checkCell == playerCell)
+                {
+                    // ★ 플레이어 발견! → 공격 실행
+                    ExecuteAttack(unit, playerUnit);
+                    return true;
+                }
+
+                // Physics2D로 해당 셀에 장애물(적 아군)이 있는지 확인
+                Vector3 checkWorldPos = grid.GetCellCenterWorld(checkCell);
+                Collider2D obstacle = Physics2D.OverlapPoint(checkWorldPos, enemyLayerMask);
+                if (obstacle != null)
+                    break; // 아군 유닛이 가로막고 있으면 이 방향 더 이상 탐색 불가
+            }
+        }
 
         return false;
+    }
+
+    /// <summary>
+    /// 실제 공격 처리를 수행한다.
+    /// 데미지 시스템이 완성되면 이 메서드 내부를 교체한다.
+    /// </summary>
+    /// <param name="attacker">공격하는 적 유닛.</param>
+    /// <param name="target">공격 대상 플레이어 유닛.</param>
+    /// <remarks>
+    /// ★ 데미지 시스템 연동 시 교체 포인트 ★
+    ///   target.GetComponent&lt;Health&gt;().TakeDamage(attackDamage);
+    /// </remarks>
+    private void ExecuteAttack(Transform attacker, Transform target)
+    {
+        // TODO: 데미지 시스템 연동 시 아래 로그를 실제 데미지 처리로 교체
+        float distance = Vector3.Distance(attacker.position, target.position);
+        Debug.Log($"[EnemyAIManager] ⚔ {attacker.name} → {target.name} 공격! (거리: {distance:F1})");
     }
 
     #endregion
@@ -491,15 +520,17 @@ public class EnemyAIManager : MonoBehaviour
     /// <returns>통행 가능하면 true, 장애물이 있으면 false.</returns>
     private bool IsCellWalkable(Vector3Int cell)
     {
-        // TODO: 셀의 통행 가능 여부를 판단하는 로직
-        // ──────────────────────────────────────────────────────────────
-        // 구현 시 참고 사항:
-        //   - tilemap.HasTile(cell) 로 타일 존재 여부 확인
-        //   - Physics2D.OverlapPoint 로 해당 위치의 콜라이더(장애물) 확인
-        //   - enemyLayerMask 를 사용하여 아군 유닛 점유 셀 차단
-        // ──────────────────────────────────────────────────────────────
+        // ① 타일맵에 타일이 없으면 통행 불가
+        if (!tilemap.HasTile(cell))
+            return false;
 
-        return false;
+        // ② 해당 셀에 적 아군 유닛(Collider)이 점유 중이면 통행 불가
+        Vector3 worldPos = grid.GetCellCenterWorld(cell);
+        Collider2D blocker = Physics2D.OverlapPoint(worldPos, enemyLayerMask);
+        if (blocker != null)
+            return false;
+
+        return true;
     }
 
     #endregion
