@@ -28,6 +28,11 @@ public class NodeData
     // 전투 승리 시 true, 유닛 철수 시 false
     public bool hasPlayerUnits = false;
 
+    // 노드 보유 자원
+    public int gold = 0;
+    public int food = 0;
+    public int research = 0;
+
     // 현재 이 노드에 배치된 건물 목록
     // 영지 이탈 시 TileMapManager의 allBuildings가 여기에 저장됨
     // visual 필드는 이탈 시 null로 클리어됨 (재진입 시 재생성)

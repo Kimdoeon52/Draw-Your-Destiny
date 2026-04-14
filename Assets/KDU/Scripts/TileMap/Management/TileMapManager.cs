@@ -34,7 +34,7 @@ public class TileMapManager : Singleton<TileMapManager>
     //              CanPlace에서 충돌 검사 시 사용
     private Dictionary<Vector3Int, BuildingData> buildingMap = new Dictionary<Vector3Int, BuildingData>();
 
-    // buildingObjects: origin 좌표 → 화면에 표시되는 GameObject (SpriteRenderer)
+    // buildingObjects: origin 좌표   → 화면에 표시되는 GameObject (SpriteRenderer)
     private Dictionary<Vector3Int, GameObject> buildingObjects = new Dictionary<Vector3Int, GameObject>();
 
     // 건물 오브젝트를 묶는 빈 부모 GameObject (Hierarchy 정리용)

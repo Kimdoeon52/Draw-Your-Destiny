@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
+  m_Name: Bank_Stone
+  m_EditorClassIdentifier: 
+  id: 
+  buildingName: "\uC740\uD589(\uC11D\uAE30)"
+  buildingType: 6
+  sprite: {fileID: 0}
+  requiredEra: 0
+  isAutoUpgrade: 1
+  upgradesTo: {fileID: 11400000, guid: 82692aa732aaa4548bcc6a3e30ad49c1, type: 2}
+  goldCost: 0
+  width: 1
+  height: 1
+  allowedTiles: 04000000
+  maxPerTerritory: 1
+  isUniqueGlobal: 0
+  goldPerTurn: 0
+  researchPerTurn: 0
+  populationCapBonus: 0
+  visualPrefab: {fileID: 3163926620669233600, guid: 613e86ec8bc754a47b638d8b53bc790f,
+    type: 3}
+  productionInterval: 3
+  unitCapacity: 0

@@ -28,6 +28,7 @@ public enum BuildingType
     Market,     // 시장  — 턴마다 금(gold) 생산
     Lab,        // 연구소 — 턴마다 연구 포인트(research) 생산
     Farm,       // 농장  — Farmland 전용, 식량 생산
+    Bank,       // 은행  — 인접 자기 노드로 자원 운송 (턴당 1회)
 
     // 군사 건물 — 근접 체인 (석기→청동기→철기 자동 업그레이드)
     Barracks_SoldierStone,    // 부족 훈련지 (석기)   isAutoUpgrade=true, upgradesTo=Barracks_SoldierBronze
