@@ -22,6 +22,8 @@ public class ActionCases
     public EnemyState state;
     [Range(0, 100)] public int weight; //행동 확률
 }
+
+
 public class EnemyBrainBase : MonoBehaviour
 {
     [Header("적 행동 확률")]
@@ -47,18 +49,21 @@ public class EnemyBrainBase : MonoBehaviour
     [Header("턴 진행 여부")] //적 종류마다 다르게 설정할꺼임.
     [SerializeField] protected int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
 
+
+    public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음. 
     protected virtual void OnEnable()
     {
         //적 행동 초기화
         InitializeActionCases();
+        Debug.Log("{enemyID} 턴 시작");
     }
-
-    //=============================개인 팀 골드 등록==============================
-    protected EnemyResources faction; //적의 골드와 식량을 관리하는 클래스 참조
-
-    public void SetFaction(EnemyResources f) //적의 골드와 식량을 관리하는 클래스 참조 설정
+    //=============================임시 턴 시작 함수==============================
+    protected virtual void Update()
     {
-        faction = f;//적의 골드와 식량을 관리하는 클래스 참조 설정
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            StartEnemyTurn();
+        }
     }
 
     //=============================적 행동 확률====================================
@@ -66,7 +71,7 @@ public class EnemyBrainBase : MonoBehaviour
     protected void InitializeActionCases()
     {
         actionCases.Clear();//일단 비워주고
-
+        enemyLevel = 1;
         //적 행동 확률 초기화
         actionCases.Add(new ActionCases { action = EnemyAction.Building, state = EnemyState.Defend, weight = 50 });
         actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 50 });
@@ -102,25 +107,33 @@ public class EnemyBrainBase : MonoBehaviour
         bool actionCheck = CheckAction(action); //돈없으면 건물 못짓게 하기
         if (!actionCheck)
         {
+            Debug.Log("<color=yellow>[돈이 없어서 강제로 골드]</color> ");
             action = EnemyAction.GetGold; //조건이 안맞으면 골드 얻는 행동으로 강제 변경
         }
         switch (action) //일단 50대 50임
         {
            case EnemyAction.Building: //건물 짓기
+                Debug.Log("<color=red>[건물 짓기 시도]</color> ");
                 CheckWhichBuilding(); //어떤 건물을 지을껀지 판단
                 break;
            case EnemyAction.GetGold: //금과 식량 얻기
+                Debug.Log("<color=red>[돈이 없어서...]</color> ");
                 GetGold();
                 break;
         }
+        countEnemyTurn++;
+        Debug.Log("<color=cyan>[턴 이벤트 발생]</color>");
+        OnTurnPassed?.Invoke();
     }
     
     protected virtual bool CheckAction(EnemyAction action) //행동 조건 검사
     {
+        Debug.Log("<color=red>[행동 체크 들어감...]</color> ");
         switch (action)
         {
             case EnemyAction.Building:
-                return faction.enemygold >= 300;//골드가 없으면 건물 지어야댐
+                Debug.Log("<color=red>[돈이 있어]</color> ");
+                return gold >= 300;//골드가 없으면 건물 못 지음
             case EnemyAction.GetGold:
                 return true;
         }
@@ -132,6 +145,7 @@ public class EnemyBrainBase : MonoBehaviour
         switch(enemyLevel) //적의 시대에 따른 건물 짓기
         {
             case 1: //석기 시대
+                Debug.Log("<color=yellow>[건물 짓자.]</color> ");
                 BuildLevelOne();
                 break;
             case 2: //청동기 시대
@@ -149,13 +163,16 @@ public class EnemyBrainBase : MonoBehaviour
         switch (buildingChoice)
         {
             case 0: //농장 건물
-                Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                Debug.Log("<color=yellow>[농장 건물 짓자.]</color> ");
+                //SpawnBuilding(FarmPrefabs);
                 break;
             case 1: //상점 건물
+                Debug.Log("<color=yellow>[상점 건물 짓자.]</color> ");
                 Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
                 break;
             case 2: //병영 건물
-                Instantiate(BarracksPrefabs[0], GetRandomPosition(), Quaternion.identity); //석기 시대 병영
+                Debug.Log("<color=yellow>[병영 짓자.]</color> ");
+                SpawnBuilding(BarracksPrefabs[0]);
                 break;
         }
     }
@@ -193,17 +210,30 @@ public class EnemyBrainBase : MonoBehaviour
                 break;
         }
     }
-    protected Vector3 GetRandomPosition() //설치 위치임.
+    protected virtual Vector3 GetRandomPosition() //설치 위치임.
     {
         //적이 건물을 지을 위치를 랜덤으로 결정하는 함수
-        float x = Random.Range(-10f, 10f); //적의 건물 위치 범위 설정
-        float z = Random.Range(-10f, 10f);
+        float x = Random.Range(-5f, 5f); //적의 건물 위치 범위 설정
+        float z = Random.Range(-5f, 5f);
         return new Vector3(x, 0, z); //y축은 0으로 고정
+    }
+    
+    protected GameObject SpawnBuilding(GameObject prefab)
+    {
+        GameObject building = Instantiate(prefab, GetRandomPosition(), Quaternion.identity);
+
+        var enemyBuilding = building.GetComponent<IEnemyBuilding>();
+        if (enemyBuilding != null)
+        {
+            enemyBuilding.Init(this);
+        }
+
+        return building;
     }
     //==============================골드 및 식량 얻기====================================
     protected virtual void GetGold()
     {
-        
+        //여기는 각각 Enemy마다 override하는걸로
     }
     //==============================점령 시도===========================================
     //적이 영지 점령 시도하는 행동 구현

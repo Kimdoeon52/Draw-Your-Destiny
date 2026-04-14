@@ -293,8 +293,8 @@ public class EnemyUnitBase : MonoBehaviour
         if (!TileMapManager.Instance.IsValidPosition(cell)) //유효한 위치인지 검사
             return false;
 
-        if (TileMapManager.Instance.GetOwner(cell) != enemyUnitID) //내 영지만 허용
-            return false;
+        //if (TileMapManager.Instance.GetOwner(cell) != enemyUnitID) //내 영지만 허용
+        //    return false;
 
         TileType tileType = TileMapManager.Instance.GetTileType(cell); //타일 타입 받아와서
 
