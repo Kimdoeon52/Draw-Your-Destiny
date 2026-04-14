@@ -8,7 +8,14 @@ public class SceneMove : MonoBehaviour
 {
     public void moveBattleScene()
     {
-    
+        BattleSessionController battleSession = FindFirstObjectByType<BattleSessionController>(FindObjectsInactive.Include);
+        if (battleSession != null)
+        {
+            Debug.Log("[SceneMove] BattleSessionController를 사용해 같은 씬에서 전투 모드로 전환합니다.");
+            battleSession.EnterBattle();
+            return;
+        }
+
         if (BattleDeckCollection.Instance != null)
         {
             Debug.Log($"[SceneMove] 배틀 덱 상태: baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
@@ -32,6 +39,14 @@ public class SceneMove : MonoBehaviour
     }
     public void moveMainScene()
     {
+        BattleSessionController battleSession = FindFirstObjectByType<BattleSessionController>(FindObjectsInactive.Include);
+        if (battleSession != null && battleSession.IsBattleActive)
+        {
+            Debug.Log("[SceneMove] BattleSessionController를 사용해 문명 모드로 복귀합니다.");
+            battleSession.ExitBattle();
+            return;
+        }
+
         SceneManager.LoadScene("NYH4");
     }
 

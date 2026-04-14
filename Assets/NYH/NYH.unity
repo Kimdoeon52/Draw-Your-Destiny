@@ -2066,15 +2066,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentTurn: 0
-  playerGold: 500
-  playerResearch: 0
-  Food: 0
-  playerPopulation: 0
-  playerPopulationCap: 10
   endTurn: 0
   startTurn: 0
   playerEra: 0
-  humanGenPoints: []
+  lordCastleSize: 4
+  playerLordCastle: {fileID: 0}
 --- !u!4 &1169971045
 Transform:
   m_ObjectHideFlags: 0
@@ -2926,23 +2922,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9299b94f1ec3d96499a046c6b3cfdf80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundTilemap: {fileID: 2037018944}
-  farmlandTilemap: {fileID: 0}
-  riverTilemap: {fileID: 0}
-  goldMineTilemap: {fileID: 0}
   cityTilemap: {fileID: 0}
-  buildingTilemap: {fileID: 1560795505}
-  fogTilemap: {fileID: 0}
-  territoryTilemap: {fileID: 0}
-  cityTileAsset: {fileID: 0}
-  farmlandTileAsset: {fileID: 0}
-  outpostManorPrefab: {fileID: 0}
-  outpostManorSprites:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  outpostManorHP: 50
+  farmlandTilemap: {fileID: 0}
 --- !u!4 &1395773283
 Transform:
   m_ObjectHideFlags: 0
@@ -3928,6 +3909,7 @@ MonoBehaviour:
   discardPilePoint: {fileID: 318577942}
   deackCount: {fileID: 1176276858}
   discardCount: {fileID: 2044909670}
+  eraCards: []
 --- !u!114 &1698640419
 MonoBehaviour:
   m_ObjectHideFlags: 0

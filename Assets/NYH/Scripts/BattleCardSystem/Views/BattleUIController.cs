@@ -141,6 +141,24 @@
             }
         }
 
+        public void RefreshBattlePresentation()
+        {
+            RefreshHud();
+            RefreshHandView();
+        }
+
+        public void ClearSharedHandView()
+        {
+            CancelAttackTargeting();
+
+            if (handView != null)
+            {
+                handView.ClearAllCardsImmediate();
+            }
+
+            RefreshHud();
+        }
+
         public void HandleBattleCardClicked(BattleCard battleCard)
         {
             if (battleCard == null)
