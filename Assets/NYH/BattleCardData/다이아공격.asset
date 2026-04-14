@@ -20,11 +20,12 @@ MonoBehaviour:
   <ActionPointCost>k__BackingField: 1
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 1
+  <TargetingMode>k__BackingField: 4
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 5001
-  - rid: 7001
-  - rid: 1104878662439927924
+  - rid: 3212137787988901985
+  - rid: 3212137787988901986
   description: "\uC120\uD0DD\uD55C \uC801\uC5D0\uAC8C {damage}\uC758 \uD53C\uD574\uB97C
     \uC90D\uB2C8\uB2E4."
   references:
@@ -33,25 +34,25 @@ MonoBehaviour:
     - rid: 5001
       type: {class: BattleMoveEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
-        targetType: 0
+        targetType: 1
         amount: 5
         includeSourceUnitSpeed: 1
-    - rid: 7001
+    - rid: 3212137787988901985
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
-        targetType: 2
+        targetType: 1
         range: 5
         targetCount: 1
         hitsAllTargetsInRange: 0
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: 8052a4feadd557947b535d3bb96ef7d4,
           type: 2}
-    - rid: 1104878662439927924
+    - rid: 3212137787988901986
       type: {class: BattleDamageEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 2
-        scalingMode: 2
+        scalingMode: 1
         valueSourceUnit: 0
         valueType: 0
-        amount: 0
+        amount: 1
         multiplier: 1

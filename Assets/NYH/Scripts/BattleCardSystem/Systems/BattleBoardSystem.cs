@@ -83,7 +83,12 @@ namespace NYH.BattleCardSystem
             return unitMap.TryGetValue(position, out var unit) ? unit : null;
         }
 
-        public bool TryMoveUnit(BattleUnit unit, Vector2Int targetPosition, int moveBudget, bool syncTransform = true)
+        public bool TryMoveUnit(
+            BattleUnit unit,
+            Vector2Int targetPosition,
+            int moveBudget,
+            bool syncTransform = true,
+            IReadOnlyList<Vector2Int> plannedPath = null)
         {
             if (unit == null || !unit.IsAlive || moveBudget < 0)
             {
@@ -105,7 +110,11 @@ namespace NYH.BattleCardSystem
                 return false;
             }
 
-            int requiredCost = CalculateMoveCost(startPosition, targetPosition);
+            // 드래그로 그린 실제 경로가 있으면 그 경로 비용으로 검증해야
+            // "목적지는 같지만 중간에 강/우회 때문에 비용이 더 드는" 경우를 막을 수 있습니다.
+            int requiredCost = plannedPath != null && plannedPath.Count > 0
+                ? CalculatePathCost(startPosition, targetPosition, plannedPath)
+                : CalculateMoveCost(startPosition, targetPosition);
             if (requiredCost > moveBudget)
             {
                 return false;
@@ -293,17 +302,29 @@ namespace NYH.BattleCardSystem
 
         public List<BattleUnit> GetUnitsInAttackArea(BattleUnit attacker, Vector2Int targetPosition, BattleAttackGA attackGA)
         {
+            Vector2Int attackerPosition = attacker != null ? attacker.GridPosition : Vector2Int.zero;
+            return GetUnitsInAttackArea(attacker, attackerPosition, targetPosition, attackGA);
+        }
+
+        public List<BattleUnit> GetUnitsInAttackArea(
+            BattleUnit attacker,
+            Vector2Int attackerPosition,
+            Vector2Int targetPosition,
+            BattleAttackGA attackGA)
+        {
             List<BattleUnit> result = new();
             if (attacker == null || attackGA == null)
             {
                 return result;
             }
 
+            // 이동 후 공격 미리보기에서는 "아직 보드에 적용되지 않은 가상 위치"에서
+            // 공격 범위를 계산해야 하므로 attackerPosition을 별도로 받습니다.
             BattleTeam targetTeam = attacker.Team == BattleTeam.Player ? BattleTeam.Enemy : BattleTeam.Player;
             HashSet<Vector2Int> customPatternCells = null;
             if (attackGA.CustomAttackPattern != null)
             {
-                customPatternCells = ResolvePatternCells(attacker.GridPosition, targetPosition, attackGA.CustomAttackPattern);
+                customPatternCells = ResolvePatternCells(attackerPosition, targetPosition, attackGA.CustomAttackPattern);
             }
 
             foreach (var pair in unitMap)
@@ -321,15 +342,15 @@ namespace NYH.BattleCardSystem
                         result.Add(unit);
                     }
                 }
-                else if (IsInAttackArea(attacker.GridPosition, targetPosition, unit.GridPosition, attackGA))
+                else if (IsInAttackArea(attackerPosition, targetPosition, unit.GridPosition, attackGA))
                 {
                     result.Add(unit);
                 }
             }
 
             result.Sort((a, b) =>
-                ManhattanDistance(a.GridPosition, attacker.GridPosition).CompareTo(
-                    ManhattanDistance(b.GridPosition, attacker.GridPosition)));
+                ManhattanDistance(a.GridPosition, attackerPosition).CompareTo(
+                    ManhattanDistance(b.GridPosition, attackerPosition)));
 
             if (!attackGA.HitsAllTargetsInRange && attackGA.TargetCount > 0 && result.Count > attackGA.TargetCount)
             {
@@ -340,6 +361,15 @@ namespace NYH.BattleCardSystem
         }
 
         public HashSet<Vector2Int> GetSelectableAttackCells(BattleUnit attacker, BattleCard battleCard)
+        {
+            Vector2Int attackerPosition = attacker != null ? attacker.GridPosition : Vector2Int.zero;
+            return GetSelectableAttackCells(attacker, attackerPosition, battleCard);
+        }
+
+        public HashSet<Vector2Int> GetSelectableAttackCells(
+            BattleUnit attacker,
+            Vector2Int attackerPosition,
+            BattleCard battleCard)
         {
             HashSet<Vector2Int> result = new();
             if (attacker == null || battleCard == null)
@@ -353,8 +383,8 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            Vector2Int attackerPosition = attacker.GridPosition;
-
+            // 공격 가능 셀 후보만 계산하는 단계입니다.
+            // 실제로 적을 맞출 수 있는지 여부는 UI 쪽에서 한 번 더 필터링합니다.
             if (attackEffect.CustomAttackPattern != null)
             {
                 AddCustomPatternCells(attackerPosition, attackEffect.CustomAttackPattern, result);
@@ -482,6 +512,33 @@ namespace NYH.BattleCardSystem
             BattleTileType targetTile = GetTile(target);
             int tileCost = targetTile == BattleTileType.River ? 2 : 1;
             return steps * tileCost;
+        }
+
+        private int CalculatePathCost(
+            Vector2Int start,
+            Vector2Int target,
+            IReadOnlyList<Vector2Int> plannedPath)
+        {
+            if (plannedPath == null || plannedPath.Count == 0)
+            {
+                return CalculateMoveCost(start, target);
+            }
+
+            int totalCost = 0;
+            Vector2Int current = start;
+            for (int i = 0; i < plannedPath.Count; i++)
+            {
+                Vector2Int next = plannedPath[i];
+                if (ManhattanDistance(current, next) != 1)
+                {
+                    return int.MaxValue;
+                }
+
+                totalCost += GetStepCost(next);
+                current = next;
+            }
+
+            return current == target ? totalCost : int.MaxValue;
         }
 
         private bool IsInAttackArea(Vector2Int attackerPos, Vector2Int targetPos, Vector2Int unitPos, BattleAttackGA attackGA)

@@ -5,13 +5,18 @@
 
     public enum BattleUnitStatusType
     {
+        [InspectorName("기절")]
         Stun,
+
+        [InspectorName("무장해제")]
         Disarm,
     }
 
     [System.Serializable]
     public class BattleStatusEffect : BattleEffect
     {
+        [Header("상태이상")]
+        [Tooltip("대상에게 부여할 상태이상 종류입니다.")]
         [SerializeField] private BattleUnitStatusType statusType = BattleUnitStatusType.Stun;
 
         public override void Apply(BattleEffectContext context, IReadOnlyList<BattleUnit> resolvedTargets)

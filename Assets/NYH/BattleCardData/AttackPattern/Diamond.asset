@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80a2c4a2899c2504b8ba19c9a34e7b20, type: 3}
   m_Name: Diamond
   m_EditorClassIdentifier: 
-  patternName: 
+  patternName: "\uB2E4\uC774\uC544\uBAAC\uB4DC"
   editorGridSize: {x: 11, y: 11}
   rotateToFacing: 1
   cells:

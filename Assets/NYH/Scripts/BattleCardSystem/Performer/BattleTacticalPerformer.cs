@@ -53,8 +53,17 @@
                 moveGA.Unit,
                 moveGA.TargetPosition,
                 moveGA.FinalMoveAmount,
-                syncTransform: false);
+                syncTransform: false,
+                plannedPath: moveGA.PlannedPath);
             moveGA.WasMoved = moved;
+
+            if (!moved)
+            {
+                // 이동이 막혔는데 후속 공격까지 실행되면
+                // 하이브리드 카드가 의도와 다르게 동작하므로 연쇄 반응을 정리합니다.
+                moveGA.PerformReactions.Clear();
+                moveGA.PostReactions.Clear();
+            }
 
             if (EnableMoveDebug)
             {
@@ -184,6 +193,13 @@
             {
                 if (effect is not BattleEffect battleEffect)
                 {
+                    continue;
+                }
+
+                if (battleEffect is BattleMoveEffect or BattleAttackEffect)
+                {
+                    // 이동/공격 자체는 GA 체인에서 이미 처리되므로,
+                    // 여기서는 피해/상태 같은 부가 이펙트만 적용합니다.
                     continue;
                 }
 

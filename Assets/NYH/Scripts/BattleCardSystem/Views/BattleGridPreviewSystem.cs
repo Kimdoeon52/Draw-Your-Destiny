@@ -12,6 +12,7 @@ namespace NYH.BattleCardSystem
         [SerializeField] private Color attackPreviewColor = new(1f, 0f, 0f, 0.95f);
         [SerializeField] private Color pathPreviewColor = new(0f, 0.75f, 1f, 1f);
         [SerializeField] private Color unitHighlightColor = new(0.15f, 0.15f, 0.15f, 1f);
+        [SerializeField] private Color impactBorderColor = new(1f, 0.35f, 0.2f, 1f);
         [SerializeField] private Vector3 cellScale = new(1.25f, 1.25f, 1f);
         [SerializeField] private int sortingOrder = 2000;
         [SerializeField] private int pathSortingOrder = 2100;
@@ -21,6 +22,7 @@ namespace NYH.BattleCardSystem
         private readonly List<GameObject> activeAttackPreviewCells = new();
         private readonly List<GameObject> activePathPreviewCells = new();
         private readonly List<GameObject> activeUnitBorders = new();
+        private readonly List<GameObject> activeImpactUnitBorders = new();
         private readonly Dictionary<SpriteRenderer, Color> highlightedUnitColors = new();
         private static Sprite cachedPreviewSprite;
 
@@ -48,6 +50,7 @@ namespace NYH.BattleCardSystem
         {
             ClearAllPreviewCells();
             ClearUnitBorders();
+            ClearImpactUnitBorders();
             ClearUnitHighlights();
         }
 
@@ -67,6 +70,27 @@ namespace NYH.BattleCardSystem
                 }
 
                 CreateBorder(unit.GridPosition, Color.white);
+            }
+        }
+
+        public void ShowImpactUnitBorders(IEnumerable<BattleUnit> units)
+        {
+            ClearImpactUnitBorders();
+            if (units == null)
+            {
+                return;
+            }
+
+            // 공격 범위 전체와 별도로,
+            // 현재 마우스가 가리키는 타일로 실제 타격되는 적만 강조합니다.
+            foreach (BattleUnit unit in units)
+            {
+                if (unit == null)
+                {
+                    continue;
+                }
+
+                CreateBorder(unit.GridPosition, impactBorderColor, activeImpactUnitBorders, pathSortingOrder + 2);
             }
         }
 
@@ -182,15 +206,39 @@ namespace NYH.BattleCardSystem
             activeUnitBorders.Clear();
         }
 
-        private void CreateBorder(Vector2Int centerCell, Color color)
+        private void ClearImpactUnitBorders()
         {
-            CreateBorderSegment(centerCell, new Vector3(0f, 0.52f, previewZ), new Vector3(1.18f, 0.12f, 1f), color);
-            CreateBorderSegment(centerCell, new Vector3(0f, -0.52f, previewZ), new Vector3(1.18f, 0.12f, 1f), color);
-            CreateBorderSegment(centerCell, new Vector3(-0.52f, 0f, previewZ), new Vector3(0.12f, 1.18f, 1f), color);
-            CreateBorderSegment(centerCell, new Vector3(0.52f, 0f, previewZ), new Vector3(0.12f, 1.18f, 1f), color);
+            for (int i = 0; i < activeImpactUnitBorders.Count; i++)
+            {
+                if (activeImpactUnitBorders[i] != null)
+                {
+                    Destroy(activeImpactUnitBorders[i]);
+                }
+            }
+
+            activeImpactUnitBorders.Clear();
         }
 
-        private void CreateBorderSegment(Vector2Int centerCell, Vector3 localOffset, Vector3 scale, Color color)
+        private void CreateBorder(Vector2Int centerCell, Color color)
+        {
+            CreateBorder(centerCell, color, activeUnitBorders, pathSortingOrder + 1);
+        }
+
+        private void CreateBorder(Vector2Int centerCell, Color color, List<GameObject> targetList, int borderSortingOrder)
+        {
+            CreateBorderSegment(centerCell, new Vector3(0f, 0.52f, previewZ), new Vector3(1.18f, 0.12f, 1f), color, targetList, borderSortingOrder);
+            CreateBorderSegment(centerCell, new Vector3(0f, -0.52f, previewZ), new Vector3(1.18f, 0.12f, 1f), color, targetList, borderSortingOrder);
+            CreateBorderSegment(centerCell, new Vector3(-0.52f, 0f, previewZ), new Vector3(0.12f, 1.18f, 1f), color, targetList, borderSortingOrder);
+            CreateBorderSegment(centerCell, new Vector3(0.52f, 0f, previewZ), new Vector3(0.12f, 1.18f, 1f), color, targetList, borderSortingOrder);
+        }
+
+        private void CreateBorderSegment(
+            Vector2Int centerCell,
+            Vector3 localOffset,
+            Vector3 scale,
+            Color color,
+            List<GameObject> targetList,
+            int borderSortingOrder)
         {
             GameObject border = new("BattleUnitBorder");
             border.transform.SetParent(transform, false);
@@ -200,9 +248,9 @@ namespace NYH.BattleCardSystem
             SpriteRenderer spriteRenderer = border.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = GetPreviewSprite();
             spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = pathSortingOrder + 1;
+            spriteRenderer.sortingOrder = borderSortingOrder;
 
-            activeUnitBorders.Add(border);
+            targetList.Add(border);
         }
 
         private void LogPathPreviewDiagnostics(

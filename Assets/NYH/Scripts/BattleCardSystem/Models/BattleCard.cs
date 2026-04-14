@@ -15,6 +15,7 @@
         public string Description => BuildDescription();
         public Sprite Image => Data.Image;
         public BattleCardType CardType => Data.CardType;
+        public BattleCardTargetingMode TargetingMode => Data != null ? Data.TargetingMode : BattleCardTargetingMode.Auto;
         public bool IgnoresDeckLimit => Data.IgnoresDeckLimit || Data.CardType == BattleCardType.Potion;
         public bool IsConsumable => Data.IsConsumable;
         public IReadOnlyList<BattleCardKeyword> Keywords => Data.Keywords;
@@ -64,7 +65,79 @@
                 }
             }
 
-            return builder.ToString();
+            return NormalizeDescriptionText(builder.ToString());
+        }
+
+        private static string NormalizeDescriptionText(string description)
+        {
+            if (string.IsNullOrEmpty(description))
+            {
+                return string.Empty;
+            }
+
+            return description.Replace("?꾩옱?띾룄", "현재속도");
+        }
+    }
+
+    public static class BattleCardTargetingUtility
+    {
+        public static BattleCardTargetingMode ResolveTargetingMode(BattleCard card)
+        {
+            if (card == null)
+            {
+                return BattleCardTargetingMode.DirectEffect;
+            }
+
+            if (card.TargetingMode != BattleCardTargetingMode.Auto)
+            {
+                return card.TargetingMode;
+            }
+
+            // 기존 카드 자산을 전부 손대지 않아도 되도록
+            // 이동/공격 관련 이펙트를 보고 하이브리드 모드를 자동 추론합니다.
+            // 순서가 중요한 카드(예: 공격 후 이동)는 자산에서 수동 지정이 필요합니다.
+            bool hasMove = card.CardType == BattleCardType.Move || HasEffect<BattleMoveEffect>(card);
+            bool hasAttack = card.CardType == BattleCardType.Attack
+                || BattleEffectResolver.GetAttackEffect(card) != null
+                || HasEffect<BattleDamageEffect>(card)
+                || HasEffect<BattleStatusEffect>(card)
+                || HasEffect<BattleStatModifierEffect>(card);
+
+            if (hasMove && hasAttack)
+            {
+                return BattleCardTargetingMode.MoveThenAttack;
+            }
+
+            if (hasMove)
+            {
+                return BattleCardTargetingMode.MoveOnly;
+            }
+
+            if (hasAttack)
+            {
+                return BattleCardTargetingMode.AttackOnly;
+            }
+
+            return BattleCardTargetingMode.DirectEffect;
+        }
+
+        private static bool HasEffect<TEffect>(BattleCard card)
+            where TEffect : BattleEffect
+        {
+            if (card?.RuntimeEffects == null)
+            {
+                return false;
+            }
+
+            foreach (var effect in card.RuntimeEffects)
+            {
+                if (effect is TEffect)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -5,36 +5,71 @@
 
     public enum BattleDamageScalingMode
     {
+        [InspectorName("고정 수치만 사용")]
         Fixed,
+
+        [InspectorName("참조 스탯 x 배율")]
         SourceUnitValue,
+
+        [InspectorName("고정 수치 + 참조 스탯 x 배율")]
         FixedPlusSourceUnitValue,
     }
 
     public enum BattleDamageValueSourceUnit
     {
+        [InspectorName("카드 사용 유닛")]
         SourceUnit,
+
+        [InspectorName("직접 선택 대상")]
         PrimaryTarget,
+
+        [InspectorName("범위 판정 첫 대상")]
         FirstResolvedTarget,
     }
 
     public enum BattleUnitValueType
     {
+        [InspectorName("현재 공격력")]
         CurrentAttackPower,
+
+        [InspectorName("기본 공격력")]
         BaseAttackPower,
+
+        [InspectorName("현재 속도")]
         CurrentSpeed,
+
+        [InspectorName("기본 속도")]
         BaseSpeed,
+
+        [InspectorName("현재 체력")]
         CurrentHealth,
+
+        [InspectorName("잃은 체력")]
         MissingHealth,
+
+        [InspectorName("최대 체력")]
         MaxHealth,
     }
 
     [System.Serializable]
     public class BattleDamageEffect : BattleEffect
     {
+        [Header("피해 계산 방식")]
+        [Tooltip("고정 피해인지, 특정 유닛의 스탯을 참조해서 계산할지 정합니다.")]
         [SerializeField] private BattleDamageScalingMode scalingMode = BattleDamageScalingMode.FixedPlusSourceUnitValue;
+
+        [Header("참조할 유닛 / 스탯")]
+        [Tooltip("스탯을 읽어올 기준 유닛입니다.\n카드 사용 유닛: 카드를 쓴 아군/적 유닛\n직접 선택 대상: 플레이어가 직접 찍은 대상\n범위 판정 첫 대상: 범위 계산 후 가장 먼저 잡힌 대상")]
         [SerializeField] private BattleDamageValueSourceUnit valueSourceUnit = BattleDamageValueSourceUnit.SourceUnit;
+
+        [Tooltip("피해 계산에 사용할 스탯 종류입니다. 공격력, 속도, 현재 체력 등을 선택할 수 있습니다.")]
         [SerializeField] private BattleUnitValueType valueType = BattleUnitValueType.CurrentAttackPower;
+
+        [Header("수치")]
+        [Tooltip("고정 피해값입니다.\n'고정 수치만 사용' 또는 '고정 수치 + 참조 스탯 x 배율' 방식에서 사용됩니다.")]
         [SerializeField] private int amount = 0;
+
+        [Tooltip("참조한 스탯에 곱할 배율입니다.\n'참조 스탯 x 배율' 또는 '고정 수치 + 참조 스탯 x 배율' 방식에서 사용됩니다.")]
         [SerializeField] private float multiplier = 1f;
 
         public override void Apply(BattleEffectContext context, IReadOnlyList<BattleUnit> resolvedTargets)

@@ -13,6 +13,8 @@ namespace NYH.BattleCardSystem
         public IReadOnlyList<Vector2Int> PlannedPath { get; }
         public int UserCurrentHealth { get; }
         public int UserUnitSpeed { get; }
+        public bool SkipFollowUpAttack { get; }
+        public bool SkipPostAttackMove { get; }
 
         public bool WasPlayed { get; set; }
         public bool PaidByActionPoints { get; set; }
@@ -27,7 +29,9 @@ namespace NYH.BattleCardSystem
             Vector2Int targetPosition,
             IReadOnlyList<Vector2Int> plannedPath,
             int userCurrentHealth,
-            int userUnitSpeed = 0)
+            int userUnitSpeed = 0,
+            bool skipFollowUpAttack = false,
+            bool skipPostAttackMove = false)
         {
             Card = card;
             UserUnit = userUnit;
@@ -36,6 +40,8 @@ namespace NYH.BattleCardSystem
             PlannedPath = plannedPath;
             UserCurrentHealth = userCurrentHealth;
             UserUnitSpeed = userUnitSpeed;
+            SkipFollowUpAttack = skipFollowUpAttack;
+            SkipPostAttackMove = skipPostAttackMove;
         }
     }
 }

@@ -7,7 +7,11 @@ namespace NYH.BattleCardSystem
     [System.Serializable]
     public class BattleMoveEffect : BattleEffect
     {
+        [Header("이동 수치")]
+        [Tooltip("기본 이동 칸 수입니다.")]
         [SerializeField] private int amount = 1;
+
+        [Tooltip("체크하면 실제 이동량 = 기본 이동 칸 수 + 사용 유닛의 현재 속도 입니다.")]
         [SerializeField] private bool includeSourceUnitSpeed = true;
 
         public int Amount => amount;

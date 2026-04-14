@@ -133,6 +133,23 @@
                 return;
             }
 
+            BattleCardTargetingMode targetingMode = BattleCardTargetingUtility.ResolveTargetingMode(playCardGA.Card);
+            if (targetingMode == BattleCardTargetingMode.MoveThenAttack)
+            {
+                // 이동 후 공격 카드는 단일 액션처럼 보이더라도
+                // 내부적으로는 이동 GA에 공격 GA를 반응으로 연결해 순서를 보장합니다.
+                QueueMoveThenAttack(playCardGA);
+                return;
+            }
+
+            if (targetingMode == BattleCardTargetingMode.AttackThenMove)
+            {
+                // 공격 후 이동 카드도 순서를 보장하기 위해
+                // 공격 GA 뒤에 이동 GA를 연결하는 방식으로 처리합니다.
+                QueueAttackThenMove(playCardGA);
+                return;
+            }
+
             if (HasBattleEffects(playCardGA.Card))
             {
                 ApplyDirectBattleEffects(playCardGA);
@@ -177,6 +194,107 @@
             }
 
             ApplyDirectBattleEffects(playCardGA);
+        }
+
+        private static void QueueMoveThenAttack(BattlePlayCardGA playCardGA)
+        {
+            if (playCardGA?.Card == null || playCardGA.UserUnit == null)
+            {
+                return;
+            }
+
+            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(playCardGA.Card);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+
+            if (moveEffect == null || attackEffect == null)
+            {
+                Debug.LogWarning($"[BattleCardSystem] 이동 후 공격 구성이 불완전합니다: {playCardGA.Card.Title}");
+                ApplyDirectBattleEffects(playCardGA);
+                return;
+            }
+
+            BattleMoveGA moveGA = new(
+                playCardGA.Card,
+                playCardGA.UserUnit,
+                // 하이브리드 카드에서는 클릭한 공격 칸이 아니라
+                // 실제 이동 경로의 마지막 칸이 이동 목적지입니다.
+                playCardGA.PlannedPath != null && playCardGA.PlannedPath.Count > 0
+                    ? playCardGA.PlannedPath[playCardGA.PlannedPath.Count - 1]
+                    : playCardGA.UserUnit.GridPosition,
+                playCardGA.PlannedPath,
+                moveEffect.Amount,
+                moveEffect.IncludeSourceUnitSpeed ? playCardGA.UserUnitSpeed : 0);
+
+            if (playCardGA.SkipFollowUpAttack)
+            {
+                // 후속 공격 대상이 없을 때는 이동만 처리하고 카드를 종료합니다.
+                ActionSystem.Instance.AddReaction(moveGA);
+                return;
+            }
+
+            // 공격은 이동이 끝난 뒤 현재 위치를 기준으로 다시 판정되도록 후속 반응으로 등록합니다.
+            moveGA.PerformReactions.Add(
+                new BattleAttackGA(
+                    playCardGA.Card,
+                    playCardGA.UserUnit,
+                    playCardGA.TargetUnit,
+                    playCardGA.TargetPosition,
+                    0,
+                    attackEffect.Range,
+                    attackEffect.TargetCount,
+                    attackEffect.HitsAllTargetsInRange,
+                    attackEffect.AttackPattern,
+                    attackEffect.CustomAttackPattern));
+
+            ActionSystem.Instance.AddReaction(moveGA);
+        }
+
+        private static void QueueAttackThenMove(BattlePlayCardGA playCardGA)
+        {
+            if (playCardGA?.Card == null || playCardGA.UserUnit == null)
+            {
+                return;
+            }
+
+            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(playCardGA.Card);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+
+            if (moveEffect == null || attackEffect == null)
+            {
+                Debug.LogWarning($"[BattleCardSystem] 공격 후 이동 구성이 불완전합니다: {playCardGA.Card.Title}");
+                ApplyDirectBattleEffects(playCardGA);
+                return;
+            }
+
+            BattleAttackGA attackGA = new(
+                playCardGA.Card,
+                playCardGA.UserUnit,
+                playCardGA.TargetUnit,
+                playCardGA.TargetPosition,
+                0,
+                attackEffect.Range,
+                attackEffect.TargetCount,
+                attackEffect.HitsAllTargetsInRange,
+                attackEffect.AttackPattern,
+                attackEffect.CustomAttackPattern);
+
+            if (playCardGA.SkipPostAttackMove || playCardGA.PlannedPath == null || playCardGA.PlannedPath.Count == 0)
+            {
+                // 이동 경로를 고르지 않았거나 이동을 생략한 경우에는 공격만 처리합니다.
+                ActionSystem.Instance.AddReaction(attackGA);
+                return;
+            }
+
+            BattleMoveGA moveGA = new(
+                playCardGA.Card,
+                playCardGA.UserUnit,
+                playCardGA.PlannedPath[playCardGA.PlannedPath.Count - 1],
+                playCardGA.PlannedPath,
+                moveEffect.Amount,
+                moveEffect.IncludeSourceUnitSpeed ? playCardGA.UserUnitSpeed : 0);
+
+            attackGA.PerformReactions.Add(moveGA);
+            ActionSystem.Instance.AddReaction(attackGA);
         }
 
         private static void ApplyDirectBattleEffects(BattlePlayCardGA playCardGA)

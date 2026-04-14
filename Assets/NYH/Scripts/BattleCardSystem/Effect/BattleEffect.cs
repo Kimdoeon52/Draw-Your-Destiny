@@ -6,14 +6,21 @@
 
     public enum BattleEffectTargetType
     {
+        [InspectorName("자기 자신")]
         Self,
+
+        [InspectorName("직접 선택 대상 1명")]
         PrimaryTarget,
+
+        [InspectorName("범위 판정 대상들")]
         ResolvedTargets,
     }
 
     [System.Serializable]
     public abstract class BattleEffect : Effect
     {
+        [Header("대상 지정")]
+        [Tooltip("이 이펙트를 누구에게 적용할지 정합니다.\n자기 자신: 카드를 사용한 유닛\n직접 선택 대상 1명: 플레이어가 직접 찍은 대상\n범위 판정 대상들: 공격/범위 판정으로 실제 맞은 대상들")]
         [SerializeField] private BattleEffectTargetType targetType = BattleEffectTargetType.ResolvedTargets;
 
         public BattleEffectTargetType TargetType => targetType;

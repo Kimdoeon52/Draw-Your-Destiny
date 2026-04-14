@@ -20,6 +20,7 @@ MonoBehaviour:
   <ActionPointCost>k__BackingField: 1
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
+  <TargetingMode>k__BackingField: 2
   <Keywords>k__BackingField: 
   <AttackRange>k__BackingField: 1
   <AttackTargetCount>k__BackingField: 1

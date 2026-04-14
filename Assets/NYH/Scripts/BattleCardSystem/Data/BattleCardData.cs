@@ -28,10 +28,38 @@
 
     public enum BattleAttackPattern
     {
+        [InspectorName("없음/기본 단일")]
         None,
+
+        [InspectorName("상하좌우 인접 4칸")]
         Adjacent4,
+
+        [InspectorName("직선")]
         Line,
+
+        [InspectorName("범위")]
         Area,
+    }
+
+    public enum BattleCardTargetingMode
+    {
+        [InspectorName("자동")]
+        Auto,
+
+        [InspectorName("직접 효과")]
+        DirectEffect,
+
+        [InspectorName("이동 전용")]
+        MoveOnly,
+
+        [InspectorName("공격 전용")]
+        AttackOnly,
+
+        [InspectorName("이동 후 공격")]
+        MoveThenAttack,
+
+        [InspectorName("공격 후 이동")]
+        AttackThenMove,
     }
 
     [CreateAssetMenu(menuName = "Data/Battle Card")]
@@ -48,6 +76,11 @@
         [field: SerializeField] public int ActionPointCost { get; private set; }
         [field: SerializeField] public bool IgnoresDeckLimit { get; private set; }
         [field: SerializeField] public bool IsConsumable { get; private set; } = false;
+
+        [Header("타게팅 방식")]
+        // Auto는 카드 이펙트를 보고 기존 카드도 자동으로 분류하도록 두고,
+        // 필요할 때만 자산에서 강제로 모드를 지정합니다.
+        [field: SerializeField] public BattleCardTargetingMode TargetingMode { get; private set; } = BattleCardTargetingMode.Auto;
 
         [Header("키워드")]
         [field: SerializeField] public List<BattleCardKeyword> Keywords { get; private set; } = new();

@@ -55233,12 +55233,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 590872b5f6e79494e93c6afbeb8a0f78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previewColor: {r: 0, g: 1, b: 0, a: 0.95}
-  attackPreviewColor: {r: 1, g: 0, b: 0, a: 0.95}
-  pathPreviewColor: {r: 0, g: 0.75, b: 1, a: 1}
-  unitHighlightColor: {r: 0.15, g: 0.15, b: 0.15, a: 1}
-  cellScale: {x: 1.25, y: 1.25, z: 1}
+  previewColor: {r: 0, g: 1, b: 0, a: 0.47058824}
+  attackPreviewColor: {r: 1, g: 0, b: 0, a: 0.47058824}
+  pathPreviewColor: {r: 0, g: 0.75, b: 1, a: 0.47058824}
+  unitHighlightColor: {r: 0.15, g: 0.15, b: 0.15, a: 0.47058824}
+  impactBorderColor: {r: 1, g: 0.35, b: 0.2, a: 0.47058824}
+  cellScale: {x: 1, y: 1, z: 1}
   sortingOrder: 2000
+  pathSortingOrder: 2100
   previewZ: -0.25
 --- !u!1 &968860953
 GameObject:
@@ -64480,6 +64482,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c3db1ed9a61447c6a2b8d4b9f4f0a1d2, type: 2}
   - {fileID: 11400000, guid: 1bc551fb61d931b418d87544608e03f5, type: 2}
   - {fileID: 11400000, guid: 1bc551fb61d931b418d87544608e03f5, type: 2}
+  - {fileID: 11400000, guid: e869f286f0b234a48a424868b6b21c5a, type: 2}
 --- !u!4 &1089494668
 Transform:
   m_ObjectHideFlags: 0
@@ -90615,51 +90618,81 @@ MonoBehaviour:
     ownerCivID: 0
     isMansionBuilt: 1
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 102
     adjacentNodeIDs: 6500000068000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 103
     adjacentNodeIDs: 6500000069000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 104
     adjacentNodeIDs: 660000006a000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 105
     adjacentNodeIDs: 670000006b000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 106
     adjacentNodeIDs: 680000006c000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 107
     adjacentNodeIDs: 690000006d000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 108
     adjacentNodeIDs: 6a0000006e000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 109
     adjacentNodeIDs: 6b0000006e000000
     ownerCivID: -1
     isMansionBuilt: 0
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
   - nodeID: 110
     adjacentNodeIDs: 6c0000006d000000
     ownerCivID: 1
     isMansionBuilt: 1
     hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
 --- !u!4 &1752384589
 Transform:
   m_ObjectHideFlags: 0
