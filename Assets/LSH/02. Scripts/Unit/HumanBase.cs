@@ -203,31 +203,31 @@ namespace Base
         }
         protected virtual void TryRandomStepMove() //랜덤 이동 시도
         {
-            //Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+            Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
 
             Vector3Int[] directions =
             {
-        new Vector3Int(1, 0, 0),
-        new Vector3Int(-1, 0, 0),
-        new Vector3Int(0, 1, 0),
-        new Vector3Int(0, -1, 0),
-        new Vector3Int(1, 1, 0),
-        new Vector3Int(-1, -1, 0),
-        new Vector3Int(1, -1, 0),
-        new Vector3Int(-1, 1, 0)
-    };
+                new Vector3Int(1, 0, 0),
+                new Vector3Int(-1, 0, 0),
+                new Vector3Int(0, 1, 0),
+                new Vector3Int(0, -1, 0),
+                new Vector3Int(1, 1, 0),
+                new Vector3Int(-1, -1, 0),
+                new Vector3Int(1, -1, 0),
+                new Vector3Int(-1, 1, 0)
+            };
 
             List<Vector3Int> possibleMoves = new List<Vector3Int>();
 
             foreach (var dir in directions)
             {
-                //Vector3Int nextCell = currentCell + dir;
+                Vector3Int nextCell = currentCell + dir;
 
-                // 타일 검사 
-                //if (!CanMoveToCell(nextCell))
-                //    continue;
+                //타일 검사
+                if (!CanMoveToCell(nextCell))
+                    continue;
 
-                //possibleMoves.Add(nextCell);
+                possibleMoves.Add(nextCell);
             }
 
             if (possibleMoves.Count == 0)
@@ -288,13 +288,13 @@ namespace Base
         private bool CanMoveToCell(Vector3Int cell) //셀 받아서
         {
             if (!TileMapManager.Instance.IsValidPosition(cell)) //유효한 위치인지 검사
+            {
+                Debug.Log("못움직임임");
                 return false;
-
-            if (TileMapManager.Instance.GetOwner(cell) != ownerCivID) //내 영지만 허용
-                return false;
+            }
 
             TileType tileType = TileMapManager.Instance.GetTileType(cell); //타일 타입 받아와서
-
+            Debug.Log("움직이이이이임");
             return tileType == TileType.Plain //평지, 도시, 농지 허용
                 || tileType == TileType.City
                 || tileType == TileType.Farmland;
