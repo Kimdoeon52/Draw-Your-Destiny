@@ -83,7 +83,7 @@ namespace NYH.BattleCardSystem
             return unitMap.TryGetValue(position, out var unit) ? unit : null;
         }
 
-        public bool TryMoveUnit(BattleUnit unit, Vector2Int targetPosition, int moveBudget)
+        public bool TryMoveUnit(BattleUnit unit, Vector2Int targetPosition, int moveBudget, bool syncTransform = true)
         {
             if (unit == null || !unit.IsAlive || moveBudget < 0)
             {
@@ -115,8 +115,180 @@ namespace NYH.BattleCardSystem
             unitMap[targetPosition] = unit;
             reverseUnitMap[unit] = targetPosition;
             unit.SetGridPosition(targetPosition);
-            unit.transform.position = new Vector3(targetPosition.x, targetPosition.y, unit.transform.position.z);
+
+            if (syncTransform)
+            {
+                unit.transform.position = new Vector3(targetPosition.x, targetPosition.y, unit.transform.position.z);
+            }
+
             return true;
+        }
+
+        public bool CanStepTo(BattleUnit unit, Vector2Int fromPosition, Vector2Int targetPosition)
+        {
+            if (unit == null || !unit.IsAlive)
+            {
+                return false;
+            }
+
+            if (ManhattanDistance(fromPosition, targetPosition) != 1)
+            {
+                return false;
+            }
+
+            if (unitMap.TryGetValue(targetPosition, out var occupant) && occupant != null && occupant != unit)
+            {
+                return false;
+            }
+
+            return CanEnter(targetPosition);
+        }
+
+        public int GetStepCost(Vector2Int targetPosition)
+        {
+            BattleTileType targetTile = GetTile(targetPosition);
+            return targetTile == BattleTileType.River ? 2 : 1;
+        }
+
+        public bool TryBuildMovePath(
+            BattleUnit unit,
+            Vector2Int startPosition,
+            Vector2Int targetPosition,
+            int moveBudget,
+            out List<Vector2Int> path)
+        {
+            path = new List<Vector2Int>();
+            if (unit == null || !unit.IsAlive || moveBudget < 0)
+            {
+                return false;
+            }
+
+            if (startPosition == targetPosition)
+            {
+                return true;
+            }
+
+            Queue<Vector2Int> frontier = new();
+            Dictionary<Vector2Int, Vector2Int> cameFrom = new();
+            Dictionary<Vector2Int, int> costSoFar = new();
+
+            frontier.Enqueue(startPosition);
+            costSoFar[startPosition] = 0;
+
+            Vector2Int[] directions =
+            {
+                Vector2Int.up,
+                Vector2Int.right,
+                Vector2Int.down,
+                Vector2Int.left,
+            };
+
+            while (frontier.Count > 0)
+            {
+                Vector2Int current = frontier.Dequeue();
+                if (current == targetPosition)
+                {
+                    break;
+                }
+
+                foreach (Vector2Int direction in directions)
+                {
+                    Vector2Int next = current + direction;
+                    if (!CanStepTo(unit, current, next))
+                    {
+                        continue;
+                    }
+
+                    int newCost = costSoFar[current] + GetStepCost(next);
+                    if (newCost > moveBudget)
+                    {
+                        continue;
+                    }
+
+                    if (costSoFar.TryGetValue(next, out int existingCost) && existingCost <= newCost)
+                    {
+                        continue;
+                    }
+
+                    costSoFar[next] = newCost;
+                    cameFrom[next] = current;
+                    frontier.Enqueue(next);
+                }
+            }
+
+            if (!costSoFar.ContainsKey(targetPosition))
+            {
+                return false;
+            }
+
+            Vector2Int trace = targetPosition;
+            List<Vector2Int> reversePath = new();
+            while (trace != startPosition)
+            {
+                reversePath.Add(trace);
+                trace = cameFrom[trace];
+            }
+
+            reversePath.Reverse();
+            path = reversePath;
+            return true;
+        }
+
+        public HashSet<Vector2Int> GetSelectableMoveCells(BattleUnit unit, int moveBudget)
+        {
+            HashSet<Vector2Int> result = new();
+            if (unit == null || !unit.IsAlive || moveBudget < 0)
+            {
+                return result;
+            }
+
+            Vector2Int startPosition = reverseUnitMap.TryGetValue(unit, out var registeredPosition)
+                ? registeredPosition
+                : unit.GridPosition;
+
+            Queue<Vector2Int> frontier = new();
+            Dictionary<Vector2Int, int> costSoFar = new();
+            frontier.Enqueue(startPosition);
+            costSoFar[startPosition] = 0;
+
+            Vector2Int[] directions =
+            {
+                Vector2Int.up,
+                Vector2Int.right,
+                Vector2Int.down,
+                Vector2Int.left,
+            };
+
+            while (frontier.Count > 0)
+            {
+                Vector2Int current = frontier.Dequeue();
+
+                foreach (Vector2Int direction in directions)
+                {
+                    Vector2Int next = current + direction;
+                    if (!CanStepTo(unit, current, next))
+                    {
+                        continue;
+                    }
+
+                    int newCost = costSoFar[current] + GetStepCost(next);
+                    if (newCost > moveBudget)
+                    {
+                        continue;
+                    }
+
+                    if (costSoFar.TryGetValue(next, out int existingCost) && existingCost <= newCost)
+                    {
+                        continue;
+                    }
+
+                    costSoFar[next] = newCost;
+                    frontier.Enqueue(next);
+                    result.Add(next);
+                }
+            }
+
+            return result;
         }
 
         public List<BattleUnit> GetUnitsInAttackArea(BattleUnit attacker, Vector2Int targetPosition, BattleAttackGA attackGA)
@@ -175,25 +347,31 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            Vector2Int attackerPosition = attacker.GridPosition;
-
-            if (battleCard.CustomAttackPattern != null)
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            if (attackEffect == null)
             {
-                AddCustomPatternCells(attackerPosition, battleCard.CustomAttackPattern, result);
                 return result;
             }
 
-            switch (battleCard.AttackPattern)
+            Vector2Int attackerPosition = attacker.GridPosition;
+
+            if (attackEffect.CustomAttackPattern != null)
+            {
+                AddCustomPatternCells(attackerPosition, attackEffect.CustomAttackPattern, result);
+                return result;
+            }
+
+            switch (attackEffect.AttackPattern)
             {
                 case BattleAttackPattern.Line:
-                    AddLineCells(attackerPosition, Mathf.Max(1, battleCard.AttackRange), result);
+                    AddLineCells(attackerPosition, attackEffect.Range, result);
                     break;
 
                 case BattleAttackPattern.Area:
                 case BattleAttackPattern.Adjacent4:
                 case BattleAttackPattern.None:
                 default:
-                    AddDiamondCells(attackerPosition, Mathf.Max(1, battleCard.AttackRange), result);
+                    AddDiamondCells(attackerPosition, attackEffect.Range, result);
                     break;
             }
 

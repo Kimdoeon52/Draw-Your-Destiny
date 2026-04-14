@@ -47,21 +47,10 @@
         [field: FormerlySerializedAs("<FoodCost>k__BackingField")]
         [field: SerializeField] public int ActionPointCost { get; private set; }
         [field: SerializeField] public bool IgnoresDeckLimit { get; private set; }
-        [field: SerializeField] public bool IsConsumable { get; private set; } = true;
+        [field: SerializeField] public bool IsConsumable { get; private set; } = false;
 
         [Header("키워드")]
         [field: SerializeField] public List<BattleCardKeyword> Keywords { get; private set; } = new();
-
-        [Header("이동 카드 설정")]
-        [field: SerializeField] public int MoveAmount { get; private set; }
-
-        [Header("공격 카드 설정")]
-        [field: SerializeField] public int AttackDamage { get; private set; }
-        [field: SerializeField] public int AttackRange { get; private set; } = 1;
-        [field: SerializeField] public int AttackTargetCount { get; private set; } = 1;
-        [field: SerializeField] public bool HitsAllTargetsInRange { get; private set; }
-        [field: SerializeField] public BattleAttackPattern AttackPattern { get; private set; } = BattleAttackPattern.None;
-        [field: SerializeField] public AttackPatternData CustomAttackPattern { get; private set; }
 
         [Header("추가 이펙트")]
         [field: SerializeReference, SR] public List<Effect> Effects { get; private set; }

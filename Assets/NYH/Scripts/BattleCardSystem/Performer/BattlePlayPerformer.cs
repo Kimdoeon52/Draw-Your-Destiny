@@ -97,7 +97,12 @@
                 return false;
             }
 
-            if (playCardGA.Card.CardType == BattleCardType.Attack)
+            bool requiresAttackCapability = playCardGA.Card.CardType == BattleCardType.Attack
+                || HasEffect<BattleDamageEffect>(playCardGA.Card);
+            bool requiresMoveCapability = playCardGA.Card.CardType == BattleCardType.Move
+                || HasEffect<BattleMoveEffect>(playCardGA.Card);
+
+            if (requiresAttackCapability)
             {
                 if (userUnit.IsStunned)
                 {
@@ -112,7 +117,7 @@
                 }
             }
 
-            if (playCardGA.Card.CardType == BattleCardType.Move && userUnit.IsStunned)
+            if (requiresMoveCapability && userUnit.IsStunned)
             {
                 Debug.LogWarning("[BattleCardSystem] 기절 상태라 이동 카드를 사용할 수 없습니다.");
                 return false;
@@ -128,20 +133,33 @@
                 return;
             }
 
+            if (HasBattleEffects(playCardGA.Card))
+            {
+                ApplyDirectBattleEffects(playCardGA);
+                return;
+            }
+
             if (playCardGA.Card.CardType == BattleCardType.Attack)
             {
+                BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+                if (attackEffect == null)
+                {
+                    Debug.LogWarning($"[BattleCardSystem] 공격 카드에 BattleAttackEffect가 없습니다: {playCardGA.Card.Title}");
+                    return;
+                }
+
                 ActionSystem.Instance.AddReaction(
                     new BattleAttackGA(
                         playCardGA.Card,
                         playCardGA.UserUnit,
                         playCardGA.TargetUnit,
                         playCardGA.TargetPosition,
-                        playCardGA.Card.AttackDamage,
-                        playCardGA.Card.AttackRange,
-                        playCardGA.Card.AttackTargetCount,
-                        playCardGA.Card.HitsAllTargetsInRange,
-                        playCardGA.Card.AttackPattern,
-                        playCardGA.Card.CustomAttackPattern));
+                        0,
+                        attackEffect.Range,
+                        attackEffect.TargetCount,
+                        attackEffect.HitsAllTargetsInRange,
+                        attackEffect.AttackPattern,
+                        attackEffect.CustomAttackPattern));
                 return;
             }
 
@@ -152,7 +170,8 @@
                         playCardGA.Card,
                         playCardGA.UserUnit,
                         playCardGA.TargetPosition,
-                        playCardGA.Card.MoveAmount,
+                        playCardGA.PlannedPath,
+                        ResolveLegacyMoveAmount(playCardGA.Card),
                         playCardGA.UserUnitSpeed));
                 return;
             }
@@ -167,17 +186,14 @@
                 return;
             }
 
-            List<BattleUnit> resolvedTargets = new();
-            if (playCardGA.TargetUnit != null)
-            {
-                resolvedTargets.Add(playCardGA.TargetUnit);
-            }
+            List<BattleUnit> resolvedTargets = ResolveEffectTargets(playCardGA);
 
             BattleEffectContext context = new(
                 playCardGA.Card,
                 playCardGA.UserUnit,
                 playCardGA.TargetUnit,
                 playCardGA.TargetPosition,
+                playCardGA.PlannedPath,
                 BattleBoardSystem.Instance,
                 BattleCardSystem.Instance);
 
@@ -190,6 +206,97 @@
 
                 battleEffect.Apply(context, resolvedTargets);
             }
+        }
+
+        private static List<BattleUnit> ResolveEffectTargets(BattlePlayCardGA playCardGA)
+        {
+            List<BattleUnit> resolvedTargets = new();
+            if (playCardGA?.Card == null)
+            {
+                return resolvedTargets;
+            }
+
+            if (ShouldResolveAttackArea(playCardGA))
+            {
+                BattleBoardSystem boardSystem = BattleBoardSystem.Instance;
+                if (boardSystem != null && playCardGA.UserUnit != null)
+                {
+                    BattleAttackGA previewAttack = new(
+                        playCardGA.Card,
+                        playCardGA.UserUnit,
+                        playCardGA.TargetUnit,
+                        playCardGA.TargetPosition,
+                        0,
+                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.Range ?? 1,
+                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.TargetCount ?? 1,
+                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.HitsAllTargetsInRange ?? false,
+                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.AttackPattern ?? BattleAttackPattern.None,
+                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.CustomAttackPattern);
+
+                    resolvedTargets.AddRange(
+                        boardSystem.GetUnitsInAttackArea(
+                            playCardGA.UserUnit,
+                            playCardGA.TargetPosition,
+                            previewAttack));
+                }
+
+                return resolvedTargets;
+            }
+
+            if (playCardGA.TargetUnit != null)
+            {
+                resolvedTargets.Add(playCardGA.TargetUnit);
+            }
+
+            return resolvedTargets;
+        }
+
+        private static bool ShouldResolveAttackArea(BattlePlayCardGA playCardGA)
+        {
+            return playCardGA?.Card != null
+                && (playCardGA.Card.CardType == BattleCardType.Attack || HasEffect<BattleDamageEffect>(playCardGA.Card));
+        }
+
+        private static bool HasBattleEffects(BattleCard card)
+        {
+            if (card?.RuntimeEffects == null)
+            {
+                return false;
+            }
+
+            foreach (var effect in card.RuntimeEffects)
+            {
+                if (effect is BattleEffect)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasEffect<TEffect>(BattleCard card)
+            where TEffect : BattleEffect
+        {
+            if (card?.RuntimeEffects == null)
+            {
+                return false;
+            }
+
+            foreach (var effect in card.RuntimeEffects)
+            {
+                if (effect is TEffect)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static int ResolveLegacyMoveAmount(BattleCard card)
+        {
+            return BattleEffectResolver.GetMoveEffect(card)?.Amount ?? 0;
         }
     }
 }

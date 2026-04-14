@@ -1,5 +1,6 @@
 namespace NYH.BattleCardSystem
 {
+    using System.Collections.Generic;
     using NYH.CoreCardSystem;
     using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace NYH.BattleCardSystem
         public BattleUnit UserUnit { get; }
         public BattleUnit TargetUnit { get; }
         public Vector2Int TargetPosition { get; }
+        public IReadOnlyList<Vector2Int> PlannedPath { get; }
         public int UserCurrentHealth { get; }
         public int UserUnitSpeed { get; }
 
@@ -23,6 +25,7 @@ namespace NYH.BattleCardSystem
             BattleUnit userUnit,
             BattleUnit targetUnit,
             Vector2Int targetPosition,
+            IReadOnlyList<Vector2Int> plannedPath,
             int userCurrentHealth,
             int userUnitSpeed = 0)
         {
@@ -30,6 +33,7 @@ namespace NYH.BattleCardSystem
             UserUnit = userUnit;
             TargetUnit = targetUnit;
             TargetPosition = targetPosition;
+            PlannedPath = plannedPath;
             UserCurrentHealth = userCurrentHealth;
             UserUnitSpeed = userUnitSpeed;
         }

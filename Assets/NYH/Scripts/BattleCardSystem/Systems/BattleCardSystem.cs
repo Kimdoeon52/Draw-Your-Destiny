@@ -193,13 +193,14 @@ namespace NYH.BattleCardSystem
             BattleCard card,
             BattleUnit userUnit,
             Vector2Int targetPosition,
+            IReadOnlyList<Vector2Int> plannedPath,
             BattleUnit targetUnit = null,
             System.Action onFinished = null)
         {
             int currentHealth = userUnit != null ? userUnit.CurrentHealth : 0;
             int unitSpeed = userUnit != null ? userUnit.CurrentSpeed : 0;
             ActionSystem.Instance.Perform(
-                new BattlePlayCardGA(card, userUnit, targetUnit, targetPosition, currentHealth, unitSpeed),
+                new BattlePlayCardGA(card, userUnit, targetUnit, targetPosition, plannedPath, currentHealth, unitSpeed),
                 onFinished);
         }
 

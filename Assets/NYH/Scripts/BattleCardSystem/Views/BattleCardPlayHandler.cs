@@ -29,7 +29,7 @@ namespace NYH.BattleCardSystem
                 return false;
             }
 
-            return owner.HandleBattleCardReleased(boundBattleCard, screenPosition, wasDragged);
+            return owner.HandleBattleCardReleased(boundBattleCard, cardView, screenPosition, wasDragged);
         }
     }
 }

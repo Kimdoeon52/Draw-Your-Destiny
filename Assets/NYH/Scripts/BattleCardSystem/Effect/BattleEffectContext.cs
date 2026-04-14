@@ -1,5 +1,6 @@
 namespace NYH.BattleCardSystem
 {
+    using System.Collections.Generic;
     using UnityEngine;
 
     public class BattleEffectContext
@@ -8,6 +9,7 @@ namespace NYH.BattleCardSystem
         public BattleUnit SourceUnit { get; }
         public BattleUnit TargetUnit { get; }
         public Vector2Int TargetPosition { get; }
+        public IReadOnlyList<Vector2Int> PlannedPath { get; }
         public BattleBoardSystem BoardSystem { get; }
         public BattleCardSystem CardSystem { get; }
 
@@ -16,6 +18,7 @@ namespace NYH.BattleCardSystem
             BattleUnit sourceUnit,
             BattleUnit targetUnit,
             Vector2Int targetPosition,
+            IReadOnlyList<Vector2Int> plannedPath,
             BattleBoardSystem boardSystem,
             BattleCardSystem cardSystem)
         {
@@ -23,6 +26,7 @@ namespace NYH.BattleCardSystem
             SourceUnit = sourceUnit;
             TargetUnit = targetUnit;
             TargetPosition = targetPosition;
+            PlannedPath = plannedPath;
             BoardSystem = boardSystem;
             CardSystem = cardSystem;
         }

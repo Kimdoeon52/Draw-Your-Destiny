@@ -168,9 +168,45 @@
             if (!UseBuiltInInteractions) return;
             if (eventData.button != PointerEventData.InputButton.Left || !isDragging) return;
 
+            bool wasDragged = Vector3.Distance(Input.mousePosition, pointerDownMousePos) > clickThreshold;
+            if (wasDragged)
+            {
+                isDragging = false;
+                TryPlayCard();
+                return;
+            }
+
+            if (customPlayHandler != null)
+            {
+                isDragging = false;
+                TryPlayCard();
+                return;
+            }
+
             isDragging = false;
-            if (Vector3.Distance(Input.mousePosition, pointerDownMousePos) > clickThreshold) TryPlayCard();
-            else isPickedUp = true;
+            isPickedUp = true;
+        }
+
+        public void BeginExternalSelection()
+        {
+            CardViewHoverSystem.Instance?.Hide();
+            UseBuiltInInteractions = false;
+            transform.DOKill();
+            transform.SetAsLastSibling();
+            transform.DOMove(targetingCenterPos, 0.25f).SetEase(Ease.OutBack);
+            transform.DOScale(1.15f, 0.25f);
+            transform.DORotate(Vector3.zero, 0.2f);
+
+            isDragging = false;
+            isPickedUp = false;
+            isTargetingMode = false;
+            AnyCardPickedUp = false;
+        }
+
+        public void CancelExternalSelection()
+        {
+            UseBuiltInInteractions = true;
+            ReturnToHand();
         }
 
         private void TryPlayCard()

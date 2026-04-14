@@ -29,6 +29,8 @@ public class CameraMove : MonoBehaviour
 	[SerializeField] private float edgeSize = 20f;          // 화면 끝 감지 범위(px)
 	[SerializeField] private float edgeScrollSpeed = 25f;   // 이동 속도
 
+	public bool move = false;
+
 	private Vector3 dragOrigin;
 	private int currentZoomStepIndex;
 
@@ -41,8 +43,11 @@ public class CameraMove : MonoBehaviour
 
 	private void Update()
 	{
-		CamZoominZoomOut();
-		CamMove();
+		if (move == true)
+		{
+			CamZoominZoomOut();
+			CamMove();
+		}
 	}
 
 	private void LateUpdate()

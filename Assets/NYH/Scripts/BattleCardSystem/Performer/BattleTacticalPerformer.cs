@@ -7,6 +7,8 @@
 
     public class BattleTacticalPerformer
     {
+        private const bool EnableMoveDebug = true;
+
         public bool CanHandle(GameAction action)
         {
             return action is BattleAttackGA || action is BattleMoveGA;
@@ -21,30 +23,108 @@
             }
             else if (action is BattleMoveGA moveGA)
             {
-                ResolveMove(moveGA);
-                yield return null;
+                yield return ResolveMove(moveGA);
             }
         }
 
-        private void ResolveMove(BattleMoveGA moveGA)
+        private IEnumerator ResolveMove(BattleMoveGA moveGA)
         {
             if (moveGA.Unit == null)
             {
                 Debug.LogWarning("[BattleCardSystem] 이동할 유닛이 없습니다.");
-                return;
+                yield break;
             }
 
             if (BattleBoardSystem.Instance == null)
             {
                 Debug.LogWarning("[BattleCardSystem] BattleBoardSystem이 없어 이동을 처리할 수 없습니다.");
-                return;
+                yield break;
             }
 
-            bool moved = BattleBoardSystem.Instance.TryMoveUnit(moveGA.Unit, moveGA.TargetPosition, moveGA.FinalMoveAmount);
+            if (EnableMoveDebug)
+            {
+                Debug.Log(
+                    $"[BattleMoveDebug] ResolveMove start unit={moveGA.Unit.name}, currentWorld={moveGA.Unit.transform.position}, currentGrid={moveGA.Unit.GridPosition}, target={moveGA.TargetPosition}, finalMove={moveGA.FinalMoveAmount}, pathCount={(moveGA.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}, path={BuildPathDebugText(moveGA.PlannedPath)}");
+            }
+
+            yield return AnimateMove(moveGA);
+
+            bool moved = BattleBoardSystem.Instance.TryMoveUnit(
+                moveGA.Unit,
+                moveGA.TargetPosition,
+                moveGA.FinalMoveAmount,
+                syncTransform: false);
             moveGA.WasMoved = moved;
 
-            Debug.Log(
-                $"[BattleCardSystem] 이동 처리: unit={moveGA.Unit.name}, target={moveGA.TargetPosition}, finalMove={moveGA.FinalMoveAmount}, moved={moved}");
+            if (EnableMoveDebug)
+            {
+                Debug.Log(
+                    $"[BattleMoveDebug] ResolveMove end unit={moveGA.Unit.name}, moved={moved}, finalWorld={moveGA.Unit.transform.position}, finalGrid={moveGA.Unit.GridPosition}");
+            }
+        }
+
+        private static IEnumerator AnimateMove(BattleMoveGA moveGA)
+        {
+            if (moveGA?.Unit == null || moveGA.PlannedPath == null || moveGA.PlannedPath.Count == 0)
+            {
+                if (EnableMoveDebug)
+                {
+                    Debug.LogWarning(
+                        $"[BattleMoveDebug] AnimateMove skipped unit={(moveGA?.Unit != null ? moveGA.Unit.name : "null")}, pathCount={(moveGA?.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}");
+                }
+
+                yield break;
+            }
+
+            Transform unitTransform = moveGA.Unit.transform;
+            float moveSpeed = 3.75f;
+            Vector3 currentPosition = unitTransform.position;
+
+            for (int i = 0; i < moveGA.PlannedPath.Count; i++)
+            {
+                Vector2Int pathCell = moveGA.PlannedPath[i];
+                Vector3 targetWorld = new(pathCell.x, pathCell.y, unitTransform.position.z);
+
+                if (EnableMoveDebug)
+                {
+                    Debug.Log($"[BattleMoveDebug] AnimateMove waypoint index={i}, cell={pathCell}, targetWorld={targetWorld}");
+                }
+
+                while (Vector3.Distance(currentPosition, targetWorld) > 0.01f)
+                {
+                    currentPosition = Vector3.MoveTowards(
+                        currentPosition,
+                        targetWorld,
+                        moveSpeed * Time.deltaTime);
+                    unitTransform.position = currentPosition;
+                    yield return null;
+                }
+
+                currentPosition = targetWorld;
+                unitTransform.position = currentPosition;
+                yield return null;
+            }
+        }
+
+        private static string BuildPathDebugText(IReadOnlyList<Vector2Int> path)
+        {
+            if (path == null || path.Count == 0)
+            {
+                return "(empty)";
+            }
+
+            System.Text.StringBuilder builder = new();
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (builder.Length > 0)
+                {
+                    builder.Append(" -> ");
+                }
+
+                builder.Append(path[i]);
+            }
+
+            return builder.ToString();
         }
 
         private void ResolveAttack(BattleAttackGA attackGA)
@@ -96,6 +176,7 @@
                 attackGA.Attacker,
                 attackGA.PrimaryTarget,
                 attackGA.TargetPosition,
+                null,
                 BattleBoardSystem.Instance,
                 BattleCardSystem.Instance);
 
