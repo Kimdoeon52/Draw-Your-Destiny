@@ -963,7 +963,7 @@ Transform:
   m_GameObject: {fileID: 462121143}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.8467073, y: -0.33077955, z: 0}
+  m_LocalPosition: {x: -2.49, y: -0.53, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -368225,6 +368225,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cityTilemap: {fileID: 1123239247}
   farmlandTilemap: {fileID: 1195923094}
+  groundTilemap: {fileID: 0}
+  forestTilemap: {fileID: 0}
+  riverTilemap: {fileID: 0}
 --- !u!4 &1395773283
 Transform:
   m_ObjectHideFlags: 0
@@ -373459,9 +373462,9 @@ MonoBehaviour:
   blueTilePrefab: {fileID: 4068533167194397681, guid: c382b32bd3fcd774d9d43505754c6636,
     type: 3}
   mainCamera: {fileID: 519420031}
-  testMaxMove: 4
+  testMaxMove: 10
   moveSpeed: 5
-  unitPositionOffset: {x: 0, y: 0.5, z: 0}
+  unitPositionOffset: {x: 0, y: 0, z: 0}
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 256
@@ -375322,8 +375325,8 @@ Transform:
   m_GameObject: {fileID: 4601516374399516889}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.9479, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

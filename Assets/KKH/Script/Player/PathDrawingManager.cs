@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 /// Spacebar 입력 시 유닛을 해당 경로를 따라 비동기(UniTask)로 이동시키는 테스트용 매니저.
 /// 카드 SO가 완성되기 전까지 Inspector의 testMaxMove 값으로 이동 칸 수를 대체한다.
 /// </summary>
+
 /// <remarks>
 /// ──────────────────────────────────────────────────────────────
 /// ■ 씬 배치 가이드
@@ -111,7 +112,7 @@ public class PathDrawingManager : MonoBehaviour
             mainCamera = Camera.main;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (isMoving) return;
 

@@ -1,4 +1,18 @@
 {
     "dotnet.preferCSharpExtension": true,
-    "csharp.msbuild.useBundledOnly": true
+    "csharp.msbuild.useBundledOnly": true,
+    "csharp.address": "localhost:5000",
+    "editor.fontFamily": "'Cascadia Code', monospace",
+    "editor.fontSize": 15,
+    "editor.lineHeight": 1.6,
+    "editor.letterSpacing": 0.5,
+    "editor.fontLigatures": true,
+    "editor.formatOnSave": true,
+    "[csharp]": {
+        "editor.defaultFormatter": "ms-dotnettools.csharp"
+    },
+    "csharp.format.enable": true,
+    "omnisharp.formattingOptions.enableEditorConfigSupport": true,
+    "editor.acceptSuggestionOnEnter": "off",
+    "editor.tabCompletion": "on"
 }
