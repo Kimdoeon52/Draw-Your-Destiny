@@ -144,5 +144,12 @@
 
             return false;
         }
+
+        // 한턴동안 드로우하지 못하도록 막는 부분
+        public static bool IsDrawLocked = false;
+        public static void DrawLock()
+        {
+            IsDrawLocked = true;
+        }
     }
 }

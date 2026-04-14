@@ -13,10 +13,10 @@
     [System.Serializable]
     public class CardPileRuntimeState
     {
-        public List<CardRuntimeStateEntry> DrawPile = new();
-        public List<CardRuntimeStateEntry> Hand = new();
-        public List<CardRuntimeStateEntry> DiscardPile = new();
-        public List<CardRuntimeStateEntry> ExtinctionPile = new();
+        public List<CardRuntimeStateEntry> DrawPile = new();        // 덱 내
+        public List<CardRuntimeStateEntry> Hand = new();            // 내 패손
+        public List<CardRuntimeStateEntry> DiscardPile = new();     // 덤무
+        public List<CardRuntimeStateEntry> ExtinctionPile = new();  // 소멸 미더
     }
 
     public class CardPileState : CardPileStateBase<Card>
@@ -24,11 +24,11 @@
         private readonly List<Card> extinctionPile = new();
 
         public int ExtinctionPileCount => extinctionPile.Count;
-
+        //난 남윤호다
         public void Setup(List<CardData> initialDeck)
         {
-            ClearMainPiles();
-            extinctionPile.Clear();
+            ClearMainPiles(); //이건 뭐죠
+            extinctionPile.Clear(); //이건 뭐죠
 
             foreach (var data in initialDeck)
             {

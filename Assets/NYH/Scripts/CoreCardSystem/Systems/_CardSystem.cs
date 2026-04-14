@@ -146,6 +146,12 @@
                 yield break;
             }
 
+            if (action is AddCardGA addCardGA)
+            {
+                yield return selectionPerformer.AddCardInMyDeck(addCardGA.SourceCard, addCardGA.AddAmount);
+                yield break;
+            }
+
         }
 
         public bool TryQueuePlacementCard(Card sourceCard, Vector3Int targetPos, bool isTargetingMode)
