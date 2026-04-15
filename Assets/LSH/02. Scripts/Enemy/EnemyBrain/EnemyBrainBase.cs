@@ -242,7 +242,7 @@ public class EnemyBrainBase : MonoBehaviour
         BuildingInstance instance = new BuildingInstance
         {
             data = buildingData, // 건물 데이터 할당
-            origin = Vector3Int.zero, // 건물의 위치는 나중에 타일맵에서 결정하므로 일단 (0,0,0)으로 초기화
+            origin = pos, // 건물의 위치는 나중에 타일맵에서 결정하므로 일단 (0,0,0)으로 초기화
             footprint = new List<Vector3Int>(), 
             ownerCivID = node.ownerCivID, // 건물의 소유자는 노드의 소유자와 동일하게 설정
             visual = null // 시각적 표현은 나중에 타일맵에서 처리하므로 일단 null로 초기화
@@ -256,16 +256,58 @@ public class EnemyBrainBase : MonoBehaviour
 
     protected virtual Vector3Int FindRandomPlace(BuildingData data)
     {
-        for(int i = 0; i <50; i++)
+        // 적 자기 노드의 city 타일맵을 소스에서 가져옴
+        if (!NodeDataManager.Instance.TryGetCityTilemap(currentNodeID, out var cityTilemap))
+            return Vector3Int.zero;
+
+        cityTilemap.CompressBounds(); // 타일맵의 실제 타일이 있는 영역으로 Bounds를 압축
+        BoundsInt bounds = cityTilemap.cellBounds; // 타일맵의 셀 범위를 나타내는 BoundsInt 가져오기
+
+        NodeData node = WorldMapManager.Instance.GetNode(currentNodeID);
+
+        for (int i = 0; i < 50; i++)
         {
-            int x = Random.Range(0, 10);
-            int y = Random.Range(0, 10);
+            int x = Random.Range(bounds.xMin, bounds.xMax); // Bounds의 xMin과 xMax 사이에서 랜덤한 x 좌표 생성
+            int y = Random.Range(bounds.yMin, bounds.yMax); // Bounds의 yMin과 yMax 사이에서 랜덤한 y 좌표 생성
             Vector3Int pos = new Vector3Int(x, y, 0);
-            if (TileMapManager.Instance.CanPlace(pos, data))
-                return pos;
+
+            // 1) 이 셀에 city 타일이 실제로 있는가
+            if (cityTilemap.GetTile(pos) == null) continue;
+
+            // 2) 건물 footprint 전체가 타일 안에 들어가는가
+            bool ok = true;
+            for (int dx = 0; dx < data.width && ok; dx++)
+                for (int dy = 0; dy < data.height && ok; dy++)
+                    if (cityTilemap.GetTile(pos + new Vector3Int(dx, dy, 0)) == null)
+                        ok = false;
+            if (!ok) continue;
+
+            // 3) 이 노드에 이미 있는 다른 건물과 겹치는지 검사
+            if (OverlapsExisting(node, pos, data)) continue;
+
+            return pos;
         }
         return Vector3Int.zero;
     }
+
+    private bool OverlapsExisting(NodeData node, Vector3Int origin, BuildingData data)
+    {
+        foreach (var b in node.buildings)
+        {
+            if (b?.data == null) continue;
+            for (int x = 0; x < data.width; x++)
+                for (int y = 0; y < data.height; y++)
+                {
+                    Vector3Int p = origin + new Vector3Int(x, y, 0);
+                    for (int bx = 0; bx < b.data.width; bx++)
+                        for (int by = 0; by < b.data.height; by++)
+                            if (p == b.origin + new Vector3Int(bx, by, 0))
+                                return true;
+                }
+        }
+        return false;
+    }
+
     //protected void SpawnBuilding(BuildingData data)
     //{
     //    Vector3Int cellPos = GetRandomCellPosition(data);
