@@ -30,11 +30,14 @@ public class EnemyBrainBase : MonoBehaviour
     [SerializeField] protected List<ActionCases> actionCases = new List<ActionCases>();
 
     [Header("농장 건물")]
-    [SerializeField] protected GameObject FarmPrefabs;
+    //[SerializeField] protected GameObject FarmPrefabs;
+    [SerializeField] protected BuildingData farmData;
     [Header("상점 건물")]
-    [SerializeField] protected GameObject MarketPrefabs;
+    //[SerializeField] protected GameObject MarketPrefabs;
+    [SerializeField] protected BuildingData marketData;
     [Header("병영 건물")] //0번은 석기시대 병영 1번 2번은 청동기 3,4,5번은 철기
-    [SerializeField] protected List<GameObject> BarracksPrefabs = new List<GameObject>();
+    //[SerializeField] protected List<GameObject> BarracksPrefabs = new List<GameObject>();
+    [SerializeField] protected List<BuildingData> barracksData = new List<BuildingData>();
 
     [Header("골드 및 식량")]
     [SerializeField] protected int gold;
@@ -165,14 +168,16 @@ public class EnemyBrainBase : MonoBehaviour
             case 0: //농장 건물
                 Debug.Log("<color=yellow>[농장 건물 짓자.]</color> ");
                 //SpawnBuilding(FarmPrefabs);
+                SpawnBuilding(farmData);
                 break;
             case 1: //상점 건물
                 Debug.Log("<color=yellow>[상점 건물 짓자.]</color> ");
-                Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                SpawnBuilding(marketData);
                 break;
             case 2: //병영 건물
                 Debug.Log("<color=yellow>[병영 짓자.]</color> ");
-                SpawnBuilding(BarracksPrefabs[0]);
+                SpawnBuilding(barracksData[0]); //석기 시대 병영
                 break;
         }
     }
@@ -183,13 +188,16 @@ public class EnemyBrainBase : MonoBehaviour
         switch (buildingChoice)
         {
             case 0: //농장 건물
-                Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                SpawnBuilding(farmData);
                 break;
             case 1: //상점 건물
-                Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                SpawnBuilding(marketData);
                 break;
             case 2: //병영 건물
-                Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                SpawnBuilding(barracksData[Random.Range(1, 3)]); //청동기 시대 병영
                 break;
         }
     }
@@ -200,36 +208,56 @@ public class EnemyBrainBase : MonoBehaviour
         switch (buildingChoice)
         {
             case 0: //농장 건물
-                Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                SpawnBuilding(farmData);
                 break;
             case 1: //상점 건물
-                Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                SpawnBuilding(marketData);
                 break;
             case 2: //병영 건물
-                Instantiate(BarracksPrefabs[Random.Range(3, 6)], GetRandomPosition(), Quaternion.identity); //철기 시대 병영
+                //Instantiate(BarracksPrefabs[Random.Range(3, 6)], GetRandomPosition(), Quaternion.identity); //철기 시대 병영
+                SpawnBuilding(barracksData[Random.Range(3, 6)]); //철기 시대 병영
                 break;
         }
     }
-    protected virtual Vector3 GetRandomPosition() //설치 위치임.
+    protected virtual Vector3Int GetRandomCellPosition(BuildingData data) //설치 위치임.
     {
         //적이 건물을 지을 위치를 랜덤으로 결정하는 함수
-        float x = Random.Range(-5f, 5f); //적의 건물 위치 범위 설정
-        float z = Random.Range(-5f, 5f);
-        return new Vector3(x, 0, z); //y축은 0으로 고정
-    }
-    
-    protected GameObject SpawnBuilding(GameObject prefab)
-    {
-        GameObject building = Instantiate(prefab, GetRandomPosition(), Quaternion.identity);
-
-        var enemyBuilding = building.GetComponent<IEnemyBuilding>();
-        if (enemyBuilding != null)
+        for (int i = 0; i < 20; i++) // 넉넉히 20번 시도
         {
-            enemyBuilding.Init(this);
+            int x = Random.Range(0, 10);
+            int y = Random.Range(0, 10);
+
+            Vector3Int pos = new Vector3Int(x, y, 0);
+
+            if (TileMapManager.Instance.CanPlace(pos, data)) //놓을 수 있는 곳이라면?
+                return pos; //놓을 수 있는 위치 반환 
         }
 
-        return building;
+        Debug.LogWarning("설치 가능한 위치 못 찾음 염병");
+        return new Vector3Int(0, 0, 0); // fallback
     }
+
+    protected void SpawnBuilding(BuildingData data)
+    {
+        Vector3Int cellPos = GetRandomCellPosition(data);
+
+        TileMapManager.Instance.EnemyPlaceBuilding(cellPos, data, this, enemyID);
+    }
+    
+    //protected GameObject SpawnBuilding(GameObject prefab)
+    //{
+    //    GameObject building = Instantiate(prefab, GetRandomPosition(), Quaternion.identity);
+
+    //    var enemyBuilding = building.GetComponent<IEnemyBuilding>();
+    //    if (enemyBuilding != null)
+    //    {
+    //        enemyBuilding.Init(this);
+    //    }
+
+    //    return building;
+    //}
     //==============================골드 및 식량 얻기====================================
     protected virtual void GetGold()
     {

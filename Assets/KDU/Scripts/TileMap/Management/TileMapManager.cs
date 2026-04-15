@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EnemyAPool;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -188,23 +189,30 @@ public class TileMapManager : Singleton<TileMapManager>
         // 영지 내 최대 설치 수 검사
         if (building.maxPerTerritory >= 0)
         {
+            Debug.LogError("2");
             int count = 0;
             foreach (BuildingInstance b in allBuildings)
             {
+                Debug.LogError("3");
                 if (b.data != null && b.data.buildingType == building.buildingType)
                     count++;
+                Debug.LogError("4");
             }
             if (count >= building.maxPerTerritory) return false;
+            Debug.LogError("5");
         }
 
         // 게임 전체 유일성 검사 (Lab 등)
         if (building.isUniqueGlobal && IsAlreadyBuiltGlobally(building))
             return false;
+        Debug.LogError("6");
 
         Vector3Int origin = GetOrigin(clickPos, building);
+        Debug.LogError("7");
 
         for (int x = 0; x < building.width; x++)
         {
+            Debug.LogError("8");
             for (int y = 0; y < building.height; y++)
             {
                 Vector3Int checkPos = origin + new Vector3Int(x, y, 0);
@@ -297,7 +305,65 @@ public class TileMapManager : Singleton<TileMapManager>
             gameManager.IncreasePopulationCap(building.populationCapBonus);
         }
     }
+    public void EnemyPlaceBuilding(Vector3Int clickPos, BuildingData building, EnemyBrainBase brain, int civID)
+    {
+        Debug.Log("0");
+        if(clickPos == null || building == null)
+        if (!CanPlace(clickPos, building)) return;
+        Debug.Log("1");
+        Vector3Int origin = GetOrigin(clickPos, building);
+        List<Vector3Int> footprint = new List<Vector3Int>();
+        Debug.Log("2");
+        for (int x = 0; x < building.width; x++)
+        {
+            for (int y = 0; y < building.height; y++)
+            {
+                Vector3Int pos = origin + new Vector3Int(x, y, 0);
+                buildingMap[pos] = building;
+                footprint.Add(pos);
+            }
+        }
+        Debug.Log("3");
+        GameObject visual = CreateBuildingVisual(origin, building);
+        Debug.Log("건물 생성됨: " + visual.name);
+        Debug.Log("위치: " + visual.transform.position);
+        BuildingInstance instance = new BuildingInstance
+        {
+            data = building,
+            origin = origin,
+            footprint = footprint,
+            ownerCivID = civID,
+            visual = visual
+        };
 
+        // Behaviour 캐싱 & 초기화
+        instance.behaviour = visual.GetComponent<BuildingBehaviour>();
+        if (instance.behaviour != null)
+        {
+            instance.behaviour.instance = instance;
+            instance.behaviour.OnPlaced();
+            Debug.Log("4");
+        }
+        if (instance.behaviour == null)
+        {
+            Debug.LogWarning("건물 시각화에 BuildingBehaviour 컴포넌트가 없음: " + visual.name);
+        }
+        var enemyBuilding = visual.GetComponent<IEnemyBuilding>();
+        if (enemyBuilding != null)
+        {
+            enemyBuilding.Init(brain);
+        }
+        allBuildings.Add(instance);
+        foreach (Vector3Int pos in footprint)
+            buildingInstanceMap[pos] = instance;
+        Debug.Log("5");
+        //BuildingRegistry.Instance?.Register(instance);
+
+        //// 농장이면 자신 + 인접 농장 스프라이트 갱신
+        //if (building.buildingType == BuildingType.Farm)
+        //    RefreshFarmAndNeighbors(origin);
+
+    }
     // ── 건물 시각화 생성 ─────────────────────────────────────────
     // BuildingData.visualPrefab이 있으면 프리팹 인스턴스화, 없으면 빈 GO 방식 fallback
     private GameObject CreateBuildingVisual(Vector3Int origin, BuildingData building)

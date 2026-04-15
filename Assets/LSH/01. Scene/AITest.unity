@@ -35634,7 +35634,7 @@ Transform:
   m_GameObject: {fileID: 561679658}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.64, y: 0, z: 0}
+  m_LocalPosition: {x: 21, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -35653,17 +35653,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionCases: []
-  FarmPrefabs: {fileID: 2700972397872473142, guid: da037e29a3f1aef43a1115a17d20ffb4,
-    type: 3}
-  MarketPrefabs: {fileID: 4723955363742426938, guid: c03f29875abe431428c75125a4eb4eb3,
-    type: 3}
-  BarracksPrefabs:
-  - {fileID: 375015307261114755, guid: 6587e723cf5c67341bf120cbd5d0985b, type: 3}
-  - {fileID: 540754806412210765, guid: be2fda9de7e70a7418a8016121360eb4, type: 3}
-  - {fileID: 568260878782044169, guid: 385f0ce98a9558549b50476ba93062a6, type: 3}
-  - {fileID: 3889724432833660657, guid: 6662cdd89b8ced448b2ce6b10384cb03, type: 3}
-  - {fileID: 3550241417254697532, guid: 1ec33267f3c098b42b6820940a828bc1, type: 3}
-  - {fileID: 5024997674719483606, guid: 4fb439a395abcba429952b4f44f6f652, type: 3}
+  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
+  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
+  barracksData:
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
   gold: 0
   food: 0
   enemyLevel: 0

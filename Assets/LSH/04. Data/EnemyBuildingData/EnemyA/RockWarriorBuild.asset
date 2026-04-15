@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
+  m_Name: RockWarriorBuild
+  m_EditorClassIdentifier: 
+  id: 
+  buildingName: 
+  buildingType: 7
+  sprite: {fileID: 8284690431070618562, guid: 20d6cce5c7ac33b4e97f0f98a09aa347, type: 3}
+  requiredEra: 0
+  isAutoUpgrade: 0
+  upgradesTo: {fileID: 0}
+  goldCost: 0
+  width: 1
+  height: 1
+  allowedTiles: 
+  maxPerTerritory: -1
+  isUniqueGlobal: 0
+  goldPerTurn: 0
+  researchPerTurn: 0
+  populationCapBonus: 0
+  visualPrefab: {fileID: 375015307261114755, guid: 6587e723cf5c67341bf120cbd5d0985b,
+    type: 3}
+  productionInterval: 3
+  unitCapacity: 0
