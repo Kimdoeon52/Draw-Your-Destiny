@@ -10,6 +10,7 @@ namespace NYH.BattleCardSystem
         public BattleUnit UserUnit { get; }
         public BattleUnit TargetUnit { get; }
         public Vector2Int TargetPosition { get; }
+        public IReadOnlyList<Vector2Int> AttackTargetPositions { get; }
         public IReadOnlyList<Vector2Int> PlannedPath { get; }
         public int UserCurrentHealth { get; }
         public int UserUnitSpeed { get; }
@@ -27,6 +28,7 @@ namespace NYH.BattleCardSystem
             BattleUnit userUnit,
             BattleUnit targetUnit,
             Vector2Int targetPosition,
+            IReadOnlyList<Vector2Int> attackTargetPositions,
             IReadOnlyList<Vector2Int> plannedPath,
             int userCurrentHealth,
             int userUnitSpeed = 0,
@@ -37,6 +39,7 @@ namespace NYH.BattleCardSystem
             UserUnit = userUnit;
             TargetUnit = targetUnit;
             TargetPosition = targetPosition;
+            AttackTargetPositions = attackTargetPositions;
             PlannedPath = plannedPath;
             UserCurrentHealth = userCurrentHealth;
             UserUnitSpeed = userUnitSpeed;

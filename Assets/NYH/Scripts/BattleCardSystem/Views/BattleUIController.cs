@@ -10,10 +10,10 @@
     /*
      * BattleUIController
      *
-     * 역할:
-     * - BattleManager/BattleCardSystem의 상태를 공용 카드 UI에 연결합니다.
-     * - 드로우된 전투 카드를 기존 CardView 프리팹으로 생성해 HandView에 배치합니다.
-     * - 턴/행동력 HUD를 갱신하고, 카드 드롭 시 실제 전투 카드 사용까지 연결합니다.
+     * ??釉?
+     * - BattleManager/BattleCardSystem???怨밴묶???⑤벊??燁삳?諭?UI???怨뚭퍙??몃빍??
+     * - ??뺤쨮?怨뺣쭆 ?袁る떮 燁삳?諭띄몴?疫꿸퀣??CardView ?袁ⓥ봺?諭?앮에???밴쉐??HandView??獄쏄퀣???몃빍??
+     * - ????곕짗??HUD??揶쏄퉮???랁? 燁삳?諭???뺚댘 ????쇱젫 ?袁る떮 燁삳?諭????쒏틦?? ?怨뚭퍙??몃빍??
      */
     public class BattleUIController : MonoBehaviour
     {
@@ -55,6 +55,7 @@
         private HashSet<Vector2Int> selectableAttackCells = new();
         private readonly List<Vector2Int> drawnMovePath = new();
         private readonly List<Vector2Int> confirmedMovePath = new();
+        private readonly List<Vector2Int> selectedAttackTargetPositions = new();
         private BattleUnit confirmedAttackTargetUnit;
         private bool hasConfirmedAttackTarget;
         private Vector2Int confirmedAttackTargetGrid;
@@ -139,6 +140,21 @@
 
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
+                if (targetingPhase == CardTargetingPhase.SelectAttackTarget
+                    && selectedAttackTargetPositions.Count > 0)
+                {
+                    selectedAttackTargetPositions.RemoveAt(selectedAttackTargetPositions.Count - 1);
+                    confirmedAttackTargetGrid = selectedAttackTargetPositions.Count > 0
+                        ? selectedAttackTargetPositions[selectedAttackTargetPositions.Count - 1]
+                        : Vector2Int.zero;
+                    hasConfirmedAttackTarget = selectedAttackTargetPositions.Count > 0;
+                    confirmedAttackTargetUnit = hasConfirmedAttackTarget
+                        ? BattleBoardSystem.Instance?.GetUnitAt(confirmedAttackTargetGrid)
+                        : null;
+                    RefreshAttackPreview(hasLastAttackHoverCell && wasLastAttackHoverValid ? lastHoveredAttackCell : (Vector2Int?)null);
+                    return;
+                }
+
                 CancelCardTargeting();
                 return;
             }
@@ -223,7 +239,7 @@
 
             if (battleManager.CurrentPhase != BattlePhase.PlayerTurn || battleManager.IsBattleEnded)
             {
-                Debug.LogWarning($"[BattleUI] 카드를 사용할 수 없는 상태입니다: phase={battleManager.CurrentPhase}, ended={battleManager.IsBattleEnded}");
+                Debug.LogWarning($"[BattleUI] 燁삳?諭띄몴??????????용뮉 ?怨밴묶??낅빍?? phase={battleManager.CurrentPhase}, ended={battleManager.IsBattleEnded}");
                 return false;
             }
 
@@ -262,7 +278,7 @@
             ClearTargetingState(false);
             CardViewHoverSystem.Instance?.Hide();
             RefreshHud();
-            Debug.Log($"[BattleUI] 전투 종료: victory={result.IsVictory}, turn={result.TurnCount}");
+            Debug.Log($"[BattleUI] ?袁る떮 ?ル굝利? victory={result.IsVictory}, turn={result.TurnCount}");
         }
 
         private void HandleEndTurnClicked()
@@ -274,7 +290,7 @@
 
             if (targetingPhase != CardTargetingPhase.None || CardView.AnyCardPickedUp)
             {
-                Debug.Log("[BattleUI] 카드 사용/타게팅 중에는 턴을 종료할 수 없습니다.");
+                Debug.Log("[BattleUI] 燁삳?諭???????野껊슦??餓λ쵐肉????곸뱽 ?ル굝利??????곷뮸??덈뼄.");
                 return;
             }
 
@@ -338,7 +354,7 @@
 
             if (handView == null || cardViewCreator == null || battleCardSystem == null)
             {
-                Debug.LogWarning($"[BattleUI] RefreshHandView 중단: handView={(handView != null)}, cardViewCreator={(cardViewCreator != null)}, battleCardSystem={(battleCardSystem != null)}");
+                Debug.LogWarning($"[BattleUI] RefreshHandView 餓λ쵎?? handView={(handView != null)}, cardViewCreator={(cardViewCreator != null)}, battleCardSystem={(battleCardSystem != null)}");
                 return;
             }
 
@@ -416,6 +432,7 @@
             selectableAttackCells.Clear();
             drawnMovePath.Clear();
             confirmedMovePath.Clear();
+            selectedAttackTargetPositions.Clear();
             confirmedAttackTargetUnit = null;
             hasConfirmedAttackTarget = false;
             confirmedAttackTargetGrid = Vector2Int.zero;
@@ -463,13 +480,13 @@
         {
             if (clickedUnit == null || clickedUnit.Team != BattleTeam.Player || !clickedUnit.IsAlive)
             {
-                Debug.Log("[BattleUI] 카드를 사용할 아군 유닛을 클릭하세요.");
+                Debug.Log("[BattleUI] 燁삳?諭띄몴???????袁㏓럵 ?醫딅뻺???????뤾쉭??");
                 return;
             }
 
             if (selectableUnits.Count > 0 && !selectableUnits.Contains(clickedUnit))
             {
-                Debug.Log("[BattleUI] 현재 카드로 사용할 수 있는 아군 유닛을 선택하세요.");
+                Debug.Log("[BattleUI] ?袁⑹삺 燁삳?諭뜻에??????????덈뮉 ?袁㏓럵 ?醫딅뻺???醫뤾문??뤾쉭??");
                 return;
             }
 
@@ -514,6 +531,7 @@
                     ? ResolveMoveBudget(pendingBattleCard, clickedUnit)
                     : 0;
                 confirmedMovePath.Clear();
+                selectedAttackTargetPositions.Clear();
                 confirmedAttackTargetUnit = null;
                 hasConfirmedAttackTarget = false;
                 hasLastMoveHoverCell = false;
@@ -523,7 +541,7 @@
                 return;
             }
 
-            PlayPendingCard(clickedUnit.GridPosition, clickedUnit, null);
+            PlayPendingCard(clickedUnit.GridPosition, clickedUnit, null, null);
         }
 
         private void HandleMoveTargetHover(Vector2 screenPosition)
@@ -590,7 +608,7 @@
 
             if (!selectableMoveCells.Contains(clickedGrid))
             {
-                Debug.Log("[BattleUI] 이동 가능한 칸을 클릭하세요.");
+                Debug.Log("[BattleUI] ??猷?揶쎛?館釉?燁삳챷???????뤾쉭??");
                 return;
             }
 
@@ -607,7 +625,7 @@
                 return;
             }
 
-            Debug.Log("[BattleUI] 해당 칸까지의 경로를 만들 수 없습니다.");
+            Debug.Log("[BattleUI] ????燁삳㈇?댐쭪???野껋럥以덄몴?筌띾슢諭?????곷뮸??덈뼄.");
         }
 
         private void HandleMovePathDrag(Vector2 screenPosition)
@@ -670,19 +688,19 @@
                     finalCell,
                     pendingBattleCard);
 
-                // SRPG처럼 "이동을 끝낸 다음 그 위치에서 실제로 때릴 수 있는지"를 먼저 확인하고
-                // 가능할 때만 공격 선택 단계로 넘깁니다.
+                // SRPG筌ｌ꼶??"??猷????멸땋 ??쇱벉 域??袁⑺뒄?癒?퐣 ??쇱젫嚥????뵭 ????덈뮉筌왖"???믪눘? ?類ㅼ뵥??랁?
+                // 揶쎛?館釉????춸 ?⑤벀爰??醫뤾문 ??ｍ롦에???랁돥??덈뼄.
                 if (attackCells.Count == 0)
                 {
                     if (drawnMovePath.Count > 0)
                     {
-                        // 이동 후 공격 카드라도 사정권에 적이 없으면
-                        // 공격 단계를 생략하고 이동만 수행할 수 있게 둡니다.
-                        PlayPendingCard(finalCell, null, drawnMovePath, skipFollowUpAttack: true);
+                        // ??猷????⑤벀爰?燁삳?諭??곕즲 ???숁쾮??퓠 ?怨몄뵠 ??곸몵筌?
+                        // ?⑤벀爰???ｍ롧몴???몄셽??랁???猷욑쭕???묐뻬??????뉗쓺 ??볥빍??
+                        PlayPendingCard(finalCell, null, null, drawnMovePath, skipFollowUpAttack: true);
                         return;
                     }
 
-                    Debug.Log("[BattleUI] 현재 위치에서는 공격 가능한 적이 없습니다. 이동 경로를 그리거나 다른 유닛을 선택하세요.");
+                    Debug.Log("[BattleUI] ?袁⑹삺 ?袁⑺뒄?癒?퐣???⑤벀爰?揶쎛?館釉??怨몄뵠 ??곷뮸??덈뼄. ??猷?野껋럥以덄몴?域밸챶?곩쳞怨뺢돌 ??삘뀲 ?醫딅뻺???醫뤾문??뤾쉭??");
                     RefreshMovePreview();
                     return;
                 }
@@ -704,13 +722,14 @@
             {
                 if (!hasConfirmedAttackTarget)
                 {
-                    Debug.Log("[BattleUI] 먼저 공격 대상을 선택하세요.");
+                    Debug.Log("[BattleUI] ?믪눘? ?⑤벀爰????怨몄뱽 ?醫뤾문??뤾쉭??");
                     return;
                 }
 
                 PlayPendingCard(
                     confirmedAttackTargetGrid,
                     confirmedAttackTargetUnit,
+                    selectedAttackTargetPositions,
                     drawnMovePath.Count > 0 ? drawnMovePath : null,
                     skipPostAttackMove: drawnMovePath.Count == 0);
                 return;
@@ -718,210 +737,12 @@
 
             if (drawnMovePath.Count == 0)
             {
-                Debug.Log("[BattleUI] 먼저 이동 경로를 그려주세요.");
+                Debug.Log("[BattleUI] ?믪눘? ??猷?野껋럥以덄몴?域밸챶??틠?깃쉭??");
                 return;
             }
 
             Vector2Int finalMoveCell = drawnMovePath[drawnMovePath.Count - 1];
-            PlayPendingCard(finalMoveCell, null, drawnMovePath);
-        }
-
-        private void TrySelectAttackTarget(Vector2Int clickedGrid, BattleUnit clickedUnit)
-        {
-            if (pendingBattleCard == null || pendingUserUnit == null)
-            {
-                CancelCardTargeting();
-                return;
-            }
-
-            bool isGroundTargetAttack = IsGroundTargetAttack(pendingBattleCard);
-            if (!IsValidAttackHover(clickedGrid, clickedUnit))
-            {
-                Debug.Log(isGroundTargetAttack
-                    ? "[BattleUI] 공격 범위 안의 타일 또는 적 유닛을 선택하세요."
-                    : "[BattleUI] 공격할 적 유닛 위에 마우스를 올리고 선택하세요.");
-                return;
-            }
-
-            List<BattleUnit> previewTargets = ResolvePreviewAttackTargets(clickedGrid);
-            if (!isGroundTargetAttack)
-            {
-                if (previewTargets.Count == 0)
-                {
-                    Debug.Log("[BattleUI] 단일 공격 카드는 범위 안의 적 유닛을 클릭해야 합니다.");
-                    return;
-                }
-            }
-
-            BattleUnit resolvedTarget = null;
-            if (!isGroundTargetAttack)
-            {
-                if (clickedUnit != null && clickedUnit.Team == BattleTeam.Enemy && clickedUnit.IsAlive)
-                {
-                    resolvedTarget = clickedUnit;
-                }
-                else
-                {
-                    resolvedTarget = previewTargets[0];
-                }
-            }
-
-            if (pendingTargetingMode != BattleCardTargetingMode.AttackThenMove)
-            {
-                PlayPendingCard(
-                    clickedGrid,
-                    isGroundTargetAttack ? null : resolvedTarget,
-                    confirmedMovePath.Count > 0 ? confirmedMovePath : null);
-                return;
-            }
-
-            if (BattleBoardSystem.Instance == null)
-            {
-                CancelCardTargeting();
-                return;
-            }
-
-            confirmedAttackTargetGrid = clickedGrid;
-            confirmedAttackTargetUnit = isGroundTargetAttack ? null : resolvedTarget;
-            hasConfirmedAttackTarget = true;
-            drawnMovePath.Clear();
-            confirmedMovePath.Clear();
-            hasLastDragCell = false;
-            selectableMoveCells = BattleBoardSystem.Instance.GetSelectableMoveCells(pendingUserUnit, currentMoveBudget);
-
-            if (selectableMoveCells.Count == 0)
-            {
-                PlayPendingCard(
-                    confirmedAttackTargetGrid,
-                    confirmedAttackTargetUnit,
-                    null,
-                    skipPostAttackMove: true);
-                return;
-            }
-
-            targetingPhase = CardTargetingPhase.SelectMoveTarget;
-            RefreshMovePreview();
-        }
-
-        private void PlayPendingCard(
-            Vector2Int targetGrid,
-            BattleUnit targetUnit,
-            IReadOnlyList<Vector2Int> plannedPath,
-            bool skipFollowUpAttack = false,
-            bool skipPostAttackMove = false)
-        {
-            if (pendingBattleCard == null || pendingUserUnit == null)
-            {
-                CancelCardTargeting();
-                return;
-            }
-
-            BattleCard cardToPlay = pendingBattleCard;
-            BattleUnit userUnit = pendingUserUnit;
-            CardView playedCardView = pendingCardView;
-            List<Vector2Int> plannedPathSnapshot = plannedPath != null
-                ? new List<Vector2Int>(plannedPath)
-                : (confirmedMovePath.Count > 0 ? new List<Vector2Int>(confirmedMovePath) : null);
-
-            CardViewHoverSystem.Instance?.Hide();
-            if (playedCardView != null)
-            {
-                handView?.RemoveCard(playedCardView.Card);
-            }
-
-            //if (EnableMoveDebug)
-            //{
-            //    Debug.Log(
-            //        $"[BattleMoveDebug] PlayPendingCard card={(cardToPlay != null ? cardToPlay.Title : "null")}," +
-            //        $" unit={(userUnit != null ? userUnit.name : "null")}, target={targetGrid}, pathCount={(plannedPathSnapshot != null ? plannedPathSnapshot.Count : 0)}, path={BuildPathDebugText(plannedPathSnapshot)}");
-            //}
-
-            ClearTargetingState(false);
-
-            battleCardSystem.PlayCard(
-                cardToPlay,
-                userUnit,
-                targetGrid,
-                plannedPathSnapshot,
-                targetUnit,
-                skipFollowUpAttack,
-                skipPostAttackMove,
-                () =>
-                {
-                    StartCoroutine(HandlePlayedCardResolved(playedCardView));
-                });
-        }
-
-        private void CancelCardTargeting()
-        {
-            ClearTargetingState(true);
-        }
-
-        private void ClearTargetingState(bool returnCardToHand)
-        {
-            CardViewHoverSystem.Instance?.Hide();
-
-            if (returnCardToHand && pendingCardView != null)
-            {
-                pendingCardView.CancelExternalSelection();
-            }
-
-            targetingPhase = CardTargetingPhase.None;
-            pendingBattleCard = null;
-            pendingTargetingMode = BattleCardTargetingMode.Auto;
-            pendingCardView = null;
-            pendingUserUnit = null;
-            selectableUnits.Clear();
-            selectableMoveCells.Clear();
-            selectableAttackCells.Clear();
-            drawnMovePath.Clear();
-            confirmedMovePath.Clear();
-            confirmedAttackTargetUnit = null;
-            hasConfirmedAttackTarget = false;
-            confirmedAttackTargetGrid = Vector2Int.zero;
-            currentMoveBudget = 0;
-            hasLastDragCell = false;
-            hasLastMoveHoverCell = false;
-            hasLastAttackHoverCell = false;
-            wasLastAttackHoverValid = false;
-            gridPreviewSystem?.Clear();
-        }
-
-        private IEnumerator HandlePlayedCardResolved(CardView playedCardView)
-        {
-            CardViewHoverSystem.Instance?.Hide();
-
-            if (playedCardView != null)
-            {
-                if (discardPilePoint != null)
-                {
-                    yield return CardViewAnimationUtility.AnimateDiscard(playedCardView, discardPilePoint);
-                }
-                else
-                {
-                    Destroy(playedCardView.gameObject);
-                }
-            }
-
-            battleManager.CheckBattleEnd();
-            RefreshHandView();
-            RefreshHud();
-        }
-
-        private static bool RequiresMoveTargetSelection(BattleCard battleCard)
-        {
-            BattleCardTargetingMode targetingMode = BattleCardTargetingUtility.ResolveTargetingMode(battleCard);
-            return targetingMode == BattleCardTargetingMode.MoveOnly
-                || targetingMode == BattleCardTargetingMode.MoveThenAttack
-                || targetingMode == BattleCardTargetingMode.AttackThenMove;
-        }
-
-        private static bool RequiresAttackTargetSelection(BattleCard battleCard)
-        {
-            BattleCardTargetingMode targetingMode = BattleCardTargetingUtility.ResolveTargetingMode(battleCard);
-            return targetingMode == BattleCardTargetingMode.AttackOnly
-                || targetingMode == BattleCardTargetingMode.MoveThenAttack
-                || targetingMode == BattleCardTargetingMode.AttackThenMove;
+            PlayPendingCard(finalMoveCell, null, null, drawnMovePath);
         }
 
         private static int ResolveMoveBudget(BattleCard battleCard, BattleUnit userUnit)
@@ -943,25 +764,6 @@
             }
 
             return 0;
-        }
-
-        private static bool HasEffect<TEffect>(BattleCard battleCard)
-            where TEffect : BattleEffect
-        {
-            if (battleCard?.RuntimeEffects == null)
-            {
-                return false;
-            }
-
-            foreach (var effect in battleCard.RuntimeEffects)
-            {
-                if (effect is TEffect)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         private static List<BattleUnit> FindUsablePlayerUnits(BattleCard battleCard)
@@ -996,8 +798,6 @@
                             unit.GridPosition,
                             battleCard).Count > 0;
 
-                        // 이제는 "이동 후 공격" 카드도 공격 대상이 없으면 이동만 가능하므로
-                        // 현재 위치에서 공격 가능하거나, 최소한 한 칸이라도 이동 가능하면 선택 가능하게 둡니다.
                         if (!canAttackFromCurrent && moveCells.Count == 0)
                         {
                             continue;
@@ -1022,23 +822,8 @@
 
                 result.Add(unit);
             }
+
             return result;
-        }
-
-        private static bool IsAreaAttack(BattleCard battleCard)
-        {
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
-            if (attackEffect == null)
-            {
-                return false;
-            }
-
-            if (attackEffect.HitsAllTargetsInRange || attackEffect.AttackPattern == BattleAttackPattern.Area)
-            {
-                return true;
-            }
-
-            return attackEffect.CustomAttackPattern != null && attackEffect.CustomAttackPattern.Cells.Count > 1;
         }
 
         private static Vector2Int ResolveTargetGridPosition(Vector2 screenPosition)
@@ -1095,11 +880,6 @@
                     remainingBudget,
                     out List<Vector2Int> pathSegment))
             {
-                //if (EnableMoveDebug)
-                //{
-                //    Debug.Log(
-                //        $"[BattleUI] 드래그 경로 확장 실패: start={segmentStart}, hovered={hoveredGrid}, remainingBudget={remainingBudget}");
-                //}
                 return false;
             }
 
@@ -1124,12 +904,6 @@
 
         private void RefreshMovePreview()
         {
-            //if (EnableMoveDebug)
-            //{
-            //    Debug.Log(
-            //        $"[BattleMoveDebug] RefreshMovePreview unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, budget={currentMoveBudget}, cost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={BuildPathDebugText(drawnMovePath)}, analysis={AnalyzePathDebug(drawnMovePath)}");
-            //}
-
             gridPreviewSystem?.ShowMoveCells(selectableMoveCells);
             gridPreviewSystem?.ShowHoverCellBorder(
                 hasLastMoveHoverCell && selectableMoveCells.Contains(lastHoveredMoveCell)
@@ -1137,6 +911,7 @@
                     : (Vector2Int?)null);
             gridPreviewSystem?.ShowUnitHighlights(new[] { pendingUserUnit });
             gridPreviewSystem?.ShowImpactUnitBorders(null);
+            gridPreviewSystem?.ShowAttackSelectionOrder(selectedAttackTargetPositions);
 
             if (drawnMovePath.Count > 0)
             {
@@ -1152,8 +927,6 @@
                 && pendingUserUnit != null
                 && BattleBoardSystem.Instance != null)
             {
-                // 경로를 그리는 동안에도 최종 도착 예정 칸 기준으로
-                // 다음 공격 가능 셀을 같이 보여줘서 SRPG식 흐름을 유지합니다.
                 Vector2Int previewOrigin = drawnMovePath.Count > 0
                     ? drawnMovePath[drawnMovePath.Count - 1]
                     : pendingUserUnit.GridPosition;
@@ -1201,13 +974,197 @@
             RefreshAttackPreview(hoveredGrid);
         }
 
+        private void TrySelectAttackTarget(Vector2Int clickedGrid, BattleUnit clickedUnit)
+        {
+            if (pendingBattleCard == null || pendingUserUnit == null)
+            {
+                CancelCardTargeting();
+                return;
+            }
+
+            bool isGroundTargetAttack = IsGroundTargetAttack(pendingBattleCard);
+            if (!IsValidAttackHover(clickedGrid, clickedUnit))
+            {
+                Debug.Log(isGroundTargetAttack
+                    ? "[BattleUI] 공격 가능한 칸을 선택해야 합니다."
+                    : "[BattleUI] 공격 가능한 적이 있는 칸을 선택해야 합니다.");
+                return;
+            }
+
+            List<BattleUnit> previewTargets = ResolvePreviewAttackTargets(clickedGrid);
+            BattleUnit resolvedTarget = null;
+            if (!isGroundTargetAttack && previewTargets.Count > 0)
+            {
+                if (clickedUnit != null && clickedUnit.Team == BattleTeam.Enemy && clickedUnit.IsAlive)
+                {
+                    resolvedTarget = clickedUnit;
+                }
+                else
+                {
+                    resolvedTarget = previewTargets[0];
+                }
+            }
+
+            selectedAttackTargetPositions.Add(clickedGrid);
+            confirmedAttackTargetGrid = clickedGrid;
+            confirmedAttackTargetUnit = isGroundTargetAttack ? null : resolvedTarget;
+            hasConfirmedAttackTarget = true;
+
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(pendingBattleCard);
+            int requiredSelectionCount = attackEffect != null ? attackEffect.SelectionCount : 1;
+            if (selectedAttackTargetPositions.Count < requiredSelectionCount)
+            {
+                RefreshAttackPreview(clickedGrid);
+                return;
+            }
+
+            if (pendingTargetingMode != BattleCardTargetingMode.AttackThenMove)
+            {
+                PlayPendingCard(
+                    clickedGrid,
+                    isGroundTargetAttack ? null : resolvedTarget,
+                    selectedAttackTargetPositions,
+                    confirmedMovePath.Count > 0 ? confirmedMovePath : null);
+                return;
+            }
+
+            if (BattleBoardSystem.Instance == null)
+            {
+                CancelCardTargeting();
+                return;
+            }
+
+            drawnMovePath.Clear();
+            confirmedMovePath.Clear();
+            hasLastDragCell = false;
+            selectableMoveCells = BattleBoardSystem.Instance.GetSelectableMoveCells(pendingUserUnit, currentMoveBudget);
+
+            if (selectableMoveCells.Count == 0)
+            {
+                PlayPendingCard(
+                    confirmedAttackTargetGrid,
+                    confirmedAttackTargetUnit,
+                    selectedAttackTargetPositions,
+                    null,
+                    skipPostAttackMove: true);
+                return;
+            }
+
+            targetingPhase = CardTargetingPhase.SelectMoveTarget;
+            RefreshMovePreview();
+        }
+
+        private void PlayPendingCard(
+            Vector2Int targetGrid,
+            BattleUnit targetUnit,
+            IReadOnlyList<Vector2Int> attackTargetPositions,
+            IReadOnlyList<Vector2Int> plannedPath,
+            bool skipFollowUpAttack = false,
+            bool skipPostAttackMove = false)
+        {
+            if (pendingBattleCard == null || pendingUserUnit == null)
+            {
+                CancelCardTargeting();
+                return;
+            }
+
+            BattleCard cardToPlay = pendingBattleCard;
+            BattleUnit userUnit = pendingUserUnit;
+            CardView playedCardView = pendingCardView;
+            List<Vector2Int> attackTargetSnapshot = attackTargetPositions != null
+                ? new List<Vector2Int>(attackTargetPositions)
+                : (selectedAttackTargetPositions.Count > 0 ? new List<Vector2Int>(selectedAttackTargetPositions) : null);
+            List<Vector2Int> plannedPathSnapshot = plannedPath != null
+                ? new List<Vector2Int>(plannedPath)
+                : (confirmedMovePath.Count > 0 ? new List<Vector2Int>(confirmedMovePath) : null);
+
+            CardViewHoverSystem.Instance?.Hide();
+            if (playedCardView != null)
+            {
+                handView?.RemoveCard(playedCardView.Card);
+            }
+
+            ClearTargetingState(false);
+
+            battleCardSystem.PlayCard(
+                cardToPlay,
+                userUnit,
+                targetGrid,
+                attackTargetSnapshot,
+                plannedPathSnapshot,
+                targetUnit,
+                skipFollowUpAttack,
+                skipPostAttackMove,
+                () =>
+                {
+                    StartCoroutine(HandlePlayedCardResolved(playedCardView));
+                });
+        }
+
+        private void CancelCardTargeting()
+        {
+            ClearTargetingState(true);
+        }
+
+        private void ClearTargetingState(bool returnCardToHand)
+        {
+            CardViewHoverSystem.Instance?.Hide();
+
+            if (returnCardToHand && pendingCardView != null)
+            {
+                pendingCardView.CancelExternalSelection();
+            }
+
+            targetingPhase = CardTargetingPhase.None;
+            pendingBattleCard = null;
+            pendingTargetingMode = BattleCardTargetingMode.Auto;
+            pendingCardView = null;
+            pendingUserUnit = null;
+            selectableUnits.Clear();
+            selectableMoveCells.Clear();
+            selectableAttackCells.Clear();
+            drawnMovePath.Clear();
+            confirmedMovePath.Clear();
+            selectedAttackTargetPositions.Clear();
+            confirmedAttackTargetUnit = null;
+            hasConfirmedAttackTarget = false;
+            confirmedAttackTargetGrid = Vector2Int.zero;
+            currentMoveBudget = 0;
+            hasLastDragCell = false;
+            hasLastMoveHoverCell = false;
+            hasLastAttackHoverCell = false;
+            wasLastAttackHoverValid = false;
+            gridPreviewSystem?.Clear();
+        }
+
+        private IEnumerator HandlePlayedCardResolved(CardView playedCardView)
+        {
+            CardViewHoverSystem.Instance?.Hide();
+
+            if (playedCardView != null)
+            {
+                if (discardPilePoint != null)
+                {
+                    yield return CardViewAnimationUtility.AnimateDiscard(playedCardView, discardPilePoint);
+                }
+                else
+                {
+                    Destroy(playedCardView.gameObject);
+                }
+            }
+
+            battleManager.CheckBattleEnd();
+            RefreshHandView();
+            RefreshHud();
+        }
+
         private void RefreshAttackPreview(Vector2Int? hoveredGrid)
         {
-            bool isGroundTargetAttack = IsGroundTargetAttack(pendingBattleCard);
             gridPreviewSystem?.ShowMoveCells(null);
             gridPreviewSystem?.ShowUnitHighlights(new[] { pendingUserUnit });
+            gridPreviewSystem?.ShowAttackCells(selectableAttackCells);
+            gridPreviewSystem?.ShowAttackSelectionOrder(selectedAttackTargetPositions);
             gridPreviewSystem?.ShowHoverCellBorder(null);
-            gridPreviewSystem?.ShowAttackCells(isGroundTargetAttack ? selectableAttackCells : null);
 
             if (confirmedMovePath.Count > 0)
             {
@@ -1232,38 +1189,13 @@
                 }
             }
 
-            if (!isGroundTargetAttack)
-            {
-                gridPreviewSystem?.ShowAttackCells(null);
-            }
-
             gridPreviewSystem?.ShowAttackImpactCells(null);
             gridPreviewSystem?.ShowImpactUnitBorders(null);
-            gridPreviewSystem?.ShowHoverCellBorder(null);
         }
 
         private bool IsValidAttackHover(Vector2Int hoveredGrid, BattleUnit hoveredUnit)
         {
-            if (!selectableAttackCells.Contains(hoveredGrid))
-            {
-                return false;
-            }
-
-            if (IsGroundTargetAttack(pendingBattleCard))
-            {
-                return true;
-            }
-
-            List<BattleUnit> previewTargets = ResolvePreviewAttackTargets(hoveredGrid);
-            if (previewTargets.Count == 0)
-            {
-                return false;
-            }
-
-            return hoveredUnit != null
-                && hoveredUnit.IsAlive
-                && hoveredUnit.Team == BattleTeam.Enemy
-                && previewTargets.Contains(hoveredUnit);
+            return selectableAttackCells.Contains(hoveredGrid);
         }
 
         private static bool IsGroundTargetAttack(BattleCard battleCard)
@@ -1274,10 +1206,30 @@
                 return false;
             }
 
-            return attackEffect.CustomAttackPattern != null
-                || attackEffect.AttackPattern == BattleAttackPattern.Area
-                || attackEffect.AttackPattern == BattleAttackPattern.Line
-                || attackEffect.AttackPattern == BattleAttackPattern.Adjacent4;
+            return attackEffect.CustomTargetingPattern != null
+                || attackEffect.TargetingPattern == BattleAttackPattern.Area
+                || attackEffect.TargetingPattern == BattleAttackPattern.Line
+                || attackEffect.TargetingPattern == BattleAttackPattern.Adjacent4
+                || attackEffect.CustomImpactPattern != null
+                || attackEffect.ImpactPattern == BattleAttackPattern.Area
+                || attackEffect.ImpactPattern == BattleAttackPattern.Line
+                || attackEffect.ImpactPattern == BattleAttackPattern.Adjacent4;
+        }
+
+        private static bool IsAreaAttack(BattleCard battleCard)
+        {
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            if (attackEffect == null)
+            {
+                return false;
+            }
+
+            if (attackEffect.HitsAllTargetsInRange || attackEffect.ImpactPattern == BattleAttackPattern.Area)
+            {
+                return true;
+            }
+
+            return attackEffect.CustomImpactPattern != null && attackEffect.CustomImpactPattern.Cells.Count > 1;
         }
 
         private HashSet<Vector2Int> ResolvePreviewAttackCells(Vector2Int targetGrid)
@@ -1299,22 +1251,22 @@
                 ? confirmedMovePath[confirmedMovePath.Count - 1]
                 : pendingUserUnit.GridPosition;
 
-            if (attackEffect.CustomAttackPattern != null)
+            if (attackEffect.CustomImpactPattern != null)
             {
                 return BattleBoardSystem.Instance.ResolvePatternCells(
                     attackOrigin,
                     targetGrid,
-                    attackEffect.CustomAttackPattern);
+                    attackEffect.CustomImpactPattern);
             }
 
-            switch (attackEffect.AttackPattern)
+            switch (attackEffect.ImpactPattern)
             {
                 case BattleAttackPattern.Area:
-                    AddDiamondCells(targetGrid, attackEffect.Range, result);
+                    AddDiamondCells(targetGrid, attackEffect.ImpactRange, result);
                     break;
 
                 case BattleAttackPattern.Line:
-                    AddLineCellsTowardsTarget(attackOrigin, targetGrid, attackEffect.Range, result);
+                    AddLineCellsTowardsTarget(attackOrigin, targetGrid, attackEffect.ImpactRange, result);
                     break;
 
                 case BattleAttackPattern.Adjacent4:
@@ -1407,23 +1359,7 @@
                 return result;
             }
 
-            HashSet<Vector2Int> candidateCells = boardSystem.GetSelectableAttackCells(attacker, attackOrigin, battleCard);
-            if (IsGroundTargetAttack(battleCard))
-            {
-                return candidateCells;
-            }
-
-            foreach (Vector2Int candidateCell in candidateCells)
-            {
-                // 단순 사거리 셀이 아니라 "이 칸을 고르면 최소 한 명은 맞는가"를 기준으로
-                // 실제 선택 가능한 공격 타일만 남깁니다.
-                if (ResolvePreviewAttackTargets(boardSystem, attacker, attackOrigin, battleCard, candidateCell).Count > 0)
-                {
-                    result.Add(candidateCell);
-                }
-            }
-
-            return result;
+            return boardSystem.GetSelectableAttackCells(attacker, attackOrigin, battleCard);
         }
 
         private static List<BattleUnit> ResolvePreviewAttackTargets(
@@ -1445,18 +1381,17 @@
                 return result;
             }
 
-            // 실제 액션을 만들기 전, 보드 판정 로직을 재사용하기 위한 미리보기용 공격 GA입니다.
             BattleAttackGA previewAttack = new(
                 battleCard,
                 attacker,
                 null,
                 targetGrid,
                 0,
-                attackEffect.Range,
+                attackEffect.ImpactRange,
                 attackEffect.TargetCount,
                 attackEffect.HitsAllTargetsInRange,
-                attackEffect.AttackPattern,
-                attackEffect.CustomAttackPattern);
+                attackEffect.ImpactPattern,
+                attackEffect.CustomImpactPattern);
 
             result.AddRange(boardSystem.GetUnitsInAttackArea(
                 attacker,
@@ -1557,7 +1492,7 @@
             //if (EnableMoveDebug)
             //{
             //    Debug.Log(
-            //        $"[BattleUI] MovePath 상태: unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, currentBudget={currentMoveBudget}, currentCost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={builder}");
+            //        $"[BattleUI] MovePath ?怨밴묶: unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, currentBudget={currentMoveBudget}, currentCost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={builder}");
             //}
         }
 
@@ -1657,3 +1592,5 @@
         }
     }
 }
+
+
