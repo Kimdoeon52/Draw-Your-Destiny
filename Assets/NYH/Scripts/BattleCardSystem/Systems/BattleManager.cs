@@ -33,13 +33,12 @@ namespace NYH.BattleCardSystem
     /*
      * BattleManager
      *
-     * 역할:
-     * - 전투 한 판의 흐름을 총괄하는 상태 관리자입니다.
-     * - 전투 초기화, 멀리건, 플레이어/적 턴 전환, 승패 판정, 종료 결과 생성을 담당합니다.
+     * Coordinates the battle flow for the scene.
+     * Handles setup, mulligan, turn changes, and battle results.
      *
-     * 현재 단계:
-     * - 뼈대용 매니저입니다.
-     * - 실제 적 AI, UI 반영, 씬 전환은 이후 이 매니저를 기준으로 연결하면 됩니다.
+     * Current scope:
+     * - Board state and turn sequencing
+     * - Enemy AI and richer UI hooks can be layered on later
      */
     public class BattleManager : MonoBehaviour
     {
@@ -71,12 +70,12 @@ namespace NYH.BattleCardSystem
             if (battleCardSystem == null)
             {
                 battleCardSystem = BattleCardSystem.Instance;
-                Debug.Log($"[BattleManager] BattleCardSystem 재조회: caller={caller}, success={(battleCardSystem != null)}");
+                Debug.Log($"[BattleManager] BattleCardSystem ????? caller={caller}, success={(battleCardSystem != null)}");
             }
 
             if (battleCardSystem == null)
             {
-                Debug.LogWarning($"[BattleManager] BattleCardSystem을 찾지 못했습니다: caller={caller}");
+                Debug.LogWarning($"[BattleManager] BattleCardSystem??筌≪뼚? 筌륁궢六??щ빍?? caller={caller}");
                 return false;
             }
 
@@ -90,7 +89,7 @@ namespace NYH.BattleCardSystem
                 battleCardSystem = BattleCardSystem.Instance;
             }
 
-            Debug.Log($"[BattleManager] Awake 완료: scene={gameObject.scene.name}, hasBattleCardSystem={(battleCardSystem != null)}");
+            Debug.Log($"[BattleManager] Awake ?袁⑥┷: scene={gameObject.scene.name}, hasBattleCardSystem={(battleCardSystem != null)}");
         }
 
         private void Start()
@@ -111,10 +110,10 @@ namespace NYH.BattleCardSystem
             }
 
             BattleStartContext resolvedContext = context ?? defaultStartContext ?? new BattleStartContext();
-            Debug.Log($"[BattleManager] SetupBattle 시작: startWithMulligan={resolvedContext.StartWithMulligan}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
+            Debug.Log($"[BattleManager] SetupBattle ??뽰삂: startWithMulligan={resolvedContext.StartWithMulligan}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
             if (BattleDeckCollection.Instance != null)
             {
-                Debug.Log($"[BattleManager] 배틀 덱 상태: baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
+                Debug.Log($"[BattleManager] 獄쏄퀬? ???怨밴묶: baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
             }
 
             ResetBattleState();
@@ -167,7 +166,7 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            Debug.Log("[BattleManager] 멀리건 시작");
+            Debug.Log("[BattleManager] 筌렺?귐덇탷 ??뽰삂");
             IsMulliganPhase = true;
             SetPhase(BattlePhase.Mulligan);
             DrawOpeningHand();
@@ -203,7 +202,8 @@ namespace NYH.BattleCardSystem
             }
 
             RebuildUnitLists();
-            Debug.Log($"[BattleManager] StartPlayerTurn 직전 유닛 상태: alivePlayerUnitTypes={GetAlivePlayerUnitTypeCount()}, playerUnits={playerUnits.Count}, enemyUnits={enemyUnits.Count}");
+            Debug.Log($"[BattleManager] StartPlayerTurn 筌욊낯???醫딅뻺 ?怨밴묶: " +
+                $"alivePlayerUnitTypes={GetAlivePlayerUnitTypeCount()}, playerUnits={playerUnits.Count}, enemyUnits={enemyUnits.Count}");
             if (CheckBattleEnd())
             {
                 return;
@@ -214,7 +214,8 @@ namespace NYH.BattleCardSystem
             SetPhase(BattlePhase.PlayerTurn);
 
             battleCardSystem?.GainTurnActionPoints(BattleTurn);
-            Debug.Log($"[BattleManager] 플레이어 턴 시작: turn={BattleTurn}, actionPoints={battleCardSystem?.CurrentActionPoints ?? 0}, hasOpeningHandPrepared={hasOpeningHandPrepared}");
+            Debug.Log($"[BattleManager] ???쟿??곷선 ????뽰삂: turn={BattleTurn}," +
+                $" actionPoints={battleCardSystem?.CurrentActionPoints ?? 0}, hasOpeningHandPrepared={hasOpeningHandPrepared}");
 
             if (hasOpeningHandPrepared)
             {
@@ -268,7 +269,7 @@ namespace NYH.BattleCardSystem
             SetPhase(BattlePhase.EnemyTurn);
             OnTurnStarted?.Invoke(BattleTurn, CurrentTurnTeam);
 
-            // 적 AI가 아직 없으므로 현재는 빈 턴으로 넘깁니다.
+            // Enemy AI is not implemented yet, so control returns externally.
         }
 
         public void EndEnemyTurn()
@@ -295,7 +296,7 @@ namespace NYH.BattleCardSystem
 
             int drawCount = GetAlivePlayerUnitTypeCount();
             var drawnCards = battleCardSystem.DrawOpeningHand(drawCount);
-            Debug.Log($"[BattleManager] 오프닝 핸드 드로우: unitTypes={drawCount}, drawn={drawnCards.Count}, hand={battleCardSystem.PileState.HandCount}, drawPile={battleCardSystem.PileState.DrawPileCount}");
+            Debug.Log($"[BattleManager] ??쎈늄???紐껊굡 ??뺤쨮?? unitTypes={drawCount}, drawn={drawnCards.Count}, hand={battleCardSystem.PileState.HandCount}, drawPile={battleCardSystem.PileState.DrawPileCount}");
             hasOpeningHandPrepared = true;
             NotifyHandStateChanged();
         }
@@ -309,7 +310,7 @@ namespace NYH.BattleCardSystem
 
             int drawCount = GetAlivePlayerUnitTypeCount();
             var drawnCards = battleCardSystem.DrawTurnCards(drawCount);
-            Debug.Log($"[BattleManager] 턴 드로우: unitTypes={drawCount}, drawn={drawnCards.Count}, hand={battleCardSystem.PileState.HandCount}, drawPile={battleCardSystem.PileState.DrawPileCount}");
+            Debug.Log($"[BattleManager] ????뺤쨮?? unitTypes={drawCount}, drawn={drawnCards.Count}, hand={battleCardSystem.PileState.HandCount}, drawPile={battleCardSystem.PileState.DrawPileCount}");
             NotifyHandStateChanged();
         }
 
@@ -338,8 +339,6 @@ namespace NYH.BattleCardSystem
 
             bool playerAlive = HasAliveUnits(playerUnits);
             bool enemyAlive = HasAliveUnits(enemyUnits);
-            Debug.Log($"[BattleManager] 승패 체크: playerUnits={playerUnits.Count}, enemyUnits={enemyUnits.Count}, playerAlive={playerAlive}, enemyAlive={enemyAlive}");
-
             if (!playerAlive)
             {
                 HandleDefeat();
@@ -425,10 +424,7 @@ namespace NYH.BattleCardSystem
                     enemyUnits.Add(unit);
                 }
             }
-
-            Debug.Log($"[BattleManager] RebuildUnitLists: total={allUnits.Length}, player={playerUnits.Count}, enemy={enemyUnits.Count}");
         }
-
         private void SetPhase(BattlePhase phase)
         {
             CurrentPhase = phase;
@@ -468,3 +464,4 @@ namespace NYH.BattleCardSystem
         }
     }
 }
+

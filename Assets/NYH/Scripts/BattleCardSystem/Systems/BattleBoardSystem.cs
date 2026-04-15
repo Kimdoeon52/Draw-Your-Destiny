@@ -546,7 +546,7 @@ namespace NYH.BattleCardSystem
             switch (attackGA.AttackPattern)
             {
                 case BattleAttackPattern.Adjacent4:
-                    return ManhattanDistance(attackerPos, unitPos) <= Mathf.Max(1, attackGA.Range);
+                    return ManhattanDistance(targetPos, unitPos) <= 1;
 
                 case BattleAttackPattern.Line:
                     if (attackerPos.x != targetPos.x && attackerPos.y != targetPos.y)

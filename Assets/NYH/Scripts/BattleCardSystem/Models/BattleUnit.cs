@@ -11,23 +11,24 @@ namespace NYH.BattleCardSystem
     /*
      * BattleUnit
      *
-     * 역할:
-     * - 전투에 참여하는 유닛 1개의 체력, 공격력, 속도, 팀, 그리드 좌표를 보관합니다.
-     * - BattleBoardSystem에 자신을 등록하고, 피격/이동 시 현재 상태를 갱신합니다.
+     * Holds the runtime battle state for a single unit.
+     * Tracks health, attack, speed, team, and grid position.
      *
-     * 인스펙터에서 넣는 것:
-     * - Team: 플레이어/적 구분
-     * - Max Health: 최대 체력
-     * - Attack Power: 기본 공격력
-     * - Speed: 이동 카드 사용 시 추가 이동량 계산용 속도
-     * - Grid Position: 전투 시작 위치
+     * Inspector fields:
+     * - Team: Player or Enemy
+     * - Max Health: starting and maximum HP
+     * - Attack Power: base attack value
+     * - Speed: base move contribution for battle cards
+     * - Grid Position: starting tile in the battle grid
      *
-     * 사용하는 법:
-     * - 전투 씬의 유닛 오브젝트마다 붙입니다.
-     * - BattleBoardSystem이 있어야 정상 등록됩니다.
+     * Usage:
+     * - Attach to each unit GameObject used in battle.
+     * - Registers itself with BattleBoardSystem while enabled.
      */
     public class BattleUnit : MonoBehaviour
     {
+        private const bool EnableDamageDebug = false;
+
         [SerializeField] private string unitId;
         [SerializeField] private BattleTeam team;
         [SerializeField] private int maxHealth = 10;
@@ -112,7 +113,17 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
+            int previousHealth = CurrentHealth;
             CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
+
+            //if (EnableDamageDebug)
+            //{
+            //    if (previousHealth > 0 && CurrentHealth == 0)
+            //    {
+            //        Debug.Log(
+            //            $"[BattleUnitDebug] ??彛? unit={name}, team={team}, grid={gridPosition}");
+            //    }
+            //}
         }
 
         public void TakePercentDamage(float ratio)
@@ -127,3 +138,4 @@ namespace NYH.BattleCardSystem
         }
     }
 }
+

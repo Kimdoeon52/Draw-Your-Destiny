@@ -35,9 +35,9 @@ MonoBehaviour:
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 1
-        range: 50
-        targetCount: 1
-        hitsAllTargetsInRange: 0
+        range: 20
+        targetCount: 99
+        hitsAllTargetsInRange: 1
         attackPattern: 1
         customAttackPattern: {fileID: 0}
     - rid: 7216728472994972377

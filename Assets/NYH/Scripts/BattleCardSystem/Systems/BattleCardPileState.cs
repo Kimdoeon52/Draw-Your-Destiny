@@ -128,6 +128,7 @@
         public void SendToDiscard(BattleCard card)
         {
             AddToDiscard(card);
+            RefillDeckFromDiscardIfNeeded();
         }
 
         public void Exhaust(BattleCard card)
@@ -142,6 +143,7 @@
         {
             discardPile.AddRange(hand);
             hand.Clear();
+            RefillDeckFromDiscardIfNeeded();
         }
 
         public List<BattleCard> GetLimitedDeckCards()
@@ -161,6 +163,16 @@
             }
 
             base.RefillDeckFromDiscard();
+        }
+
+        private void RefillDeckFromDiscardIfNeeded()
+        {
+            if (drawPile.Count > 0 || discardPile.Count == 0)
+            {
+                return;
+            }
+
+            RefillDeckFromDiscard();
         }
 
         private bool RemoveFromAnyPlayablePile(BattleCard target)

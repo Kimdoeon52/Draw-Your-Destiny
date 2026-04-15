@@ -42,7 +42,7 @@ MonoBehaviour:
       data:
         targetType: 1
         range: 0
-        targetCount: 1
+        targetCount: 99
         hitsAllTargetsInRange: 0
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: 8052a4feadd557947b535d3bb96ef7d4,

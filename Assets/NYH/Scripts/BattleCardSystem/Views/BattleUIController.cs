@@ -42,7 +42,7 @@
         [SerializeField] private Button endTurnButton;
         [SerializeField] private Button mulliganConfirmButton;
 
-        private const bool EnableMoveDebug = true;
+        private const bool EnableMoveDebug = false;
 
         private bool isResolvingEndTurnDiscard;
         private CardTargetingPhase targetingPhase = CardTargetingPhase.None;
@@ -212,8 +212,6 @@
             {
                 return;
             }
-
-            Debug.Log($"[BattleUI] 카드 클릭: {battleCard.Title}");
         }
 
         public bool HandleBattleCardReleased(BattleCard battleCard, CardView cardView, Vector2 screenPosition, bool wasDragged)
@@ -344,7 +342,6 @@
                 return;
             }
 
-            Debug.Log($"[BattleUI] 손패 갱신 시작: handCount={battleCardSystem.PileState.HandCount}");
             StopAllCoroutines();
             StartCoroutine(RebuildHandRoutine());
         }
@@ -384,7 +381,6 @@
                 createdCount++;
             }
 
-            Debug.Log($"[BattleUI] 손패 갱신 완료: createdViews={createdCount}");
             RefreshHud();
         }
 
@@ -430,7 +426,6 @@
 
             CardViewHoverSystem.Instance?.Hide();
             pendingCardView?.BeginExternalSelection();
-            Debug.Log($"[BattleUI] 카드 타겟팅 시작: card={battleCard.Title}, mode={pendingTargetingMode}, selectableUnits={selectableUnits.Count}. 먼저 아군 유닛을 선택하세요.");
         }
 
         private void HandleBoardTargetingClick(Vector2 screenPosition)
@@ -504,7 +499,6 @@
                 gridPreviewSystem?.ShowAttackCells(null);
                 gridPreviewSystem?.ShowImpactUnitBorders(null);
                 gridPreviewSystem?.ShowUnitHighlights(new[] { clickedUnit });
-                Debug.Log($"[BattleUI] 유닛 선택 완료: unit={clickedUnit.name}, moveCells={selectableMoveCells.Count}, moveBudget={currentMoveBudget}");
                 return;
             }
 
@@ -526,7 +520,6 @@
                 hasLastAttackHoverCell = false;
                 targetingPhase = CardTargetingPhase.SelectAttackTarget;
                 RefreshAttackPreview(null);
-                Debug.Log($"[BattleUI] 유닛 선택 완료: unit={clickedUnit.name}, attackCells={selectableAttackCells.Count}");
                 return;
             }
 
@@ -741,15 +734,17 @@
                 return;
             }
 
-            if (!selectableAttackCells.Contains(clickedGrid))
+            bool isGroundTargetAttack = IsGroundTargetAttack(pendingBattleCard);
+            if (!IsValidAttackHover(clickedGrid, clickedUnit))
             {
-                Debug.Log("[BattleUI] 공격 가능한 범위 안의 타일/적을 선택하세요.");
+                Debug.Log(isGroundTargetAttack
+                    ? "[BattleUI] 공격 범위 안의 타일 또는 적 유닛을 선택하세요."
+                    : "[BattleUI] 공격할 적 유닛 위에 마우스를 올리고 선택하세요.");
                 return;
             }
 
             List<BattleUnit> previewTargets = ResolvePreviewAttackTargets(clickedGrid);
-            bool isAreaAttack = IsAreaAttack(pendingBattleCard);
-            if (!isAreaAttack)
+            if (!isGroundTargetAttack)
             {
                 if (previewTargets.Count == 0)
                 {
@@ -759,7 +754,7 @@
             }
 
             BattleUnit resolvedTarget = null;
-            if (!isAreaAttack)
+            if (!isGroundTargetAttack)
             {
                 if (clickedUnit != null && clickedUnit.Team == BattleTeam.Enemy && clickedUnit.IsAlive)
                 {
@@ -775,7 +770,7 @@
             {
                 PlayPendingCard(
                     clickedGrid,
-                    isAreaAttack ? null : resolvedTarget,
+                    isGroundTargetAttack ? null : resolvedTarget,
                     confirmedMovePath.Count > 0 ? confirmedMovePath : null);
                 return;
             }
@@ -787,7 +782,7 @@
             }
 
             confirmedAttackTargetGrid = clickedGrid;
-            confirmedAttackTargetUnit = isAreaAttack ? null : resolvedTarget;
+            confirmedAttackTargetUnit = isGroundTargetAttack ? null : resolvedTarget;
             hasConfirmedAttackTarget = true;
             drawnMovePath.Clear();
             confirmedMovePath.Clear();
@@ -834,11 +829,12 @@
                 handView?.RemoveCard(playedCardView.Card);
             }
 
-            if (EnableMoveDebug)
-            {
-                Debug.Log(
-                    $"[BattleMoveDebug] PlayPendingCard card={(cardToPlay != null ? cardToPlay.Title : "null")}, unit={(userUnit != null ? userUnit.name : "null")}, target={targetGrid}, pathCount={(plannedPathSnapshot != null ? plannedPathSnapshot.Count : 0)}, path={BuildPathDebugText(plannedPathSnapshot)}");
-            }
+            //if (EnableMoveDebug)
+            //{
+            //    Debug.Log(
+            //        $"[BattleMoveDebug] PlayPendingCard card={(cardToPlay != null ? cardToPlay.Title : "null")}," +
+            //        $" unit={(userUnit != null ? userUnit.name : "null")}, target={targetGrid}, pathCount={(plannedPathSnapshot != null ? plannedPathSnapshot.Count : 0)}, path={BuildPathDebugText(plannedPathSnapshot)}");
+            //}
 
             ClearTargetingState(false);
 
@@ -1099,8 +1095,11 @@
                     remainingBudget,
                     out List<Vector2Int> pathSegment))
             {
-                Debug.Log(
-                    $"[BattleUI] 드래그 경로 확장 실패: start={segmentStart}, hovered={hoveredGrid}, remainingBudget={remainingBudget}");
+                //if (EnableMoveDebug)
+                //{
+                //    Debug.Log(
+                //        $"[BattleUI] 드래그 경로 확장 실패: start={segmentStart}, hovered={hoveredGrid}, remainingBudget={remainingBudget}");
+                //}
                 return false;
             }
 
@@ -1174,13 +1173,14 @@
 
         private void HandleAttackTargetHover(Vector2 screenPosition)
         {
-            if (pendingBattleCard == null || pendingUserUnit == null)
+            if (pendingBattleCard == null || pendingUserUnit == null || BattleBoardSystem.Instance == null)
             {
                 return;
             }
 
             Vector2Int hoveredGrid = ResolveTargetGridPosition(screenPosition);
-            bool isValidHover = selectableAttackCells.Contains(hoveredGrid);
+            BattleUnit hoveredUnit = BattleBoardSystem.Instance.GetUnitAt(hoveredGrid);
+            bool isValidHover = IsValidAttackHover(hoveredGrid, hoveredUnit);
             if (hasLastAttackHoverCell
                 && hoveredGrid == lastHoveredAttackCell
                 && wasLastAttackHoverValid == isValidHover)
@@ -1203,10 +1203,11 @@
 
         private void RefreshAttackPreview(Vector2Int? hoveredGrid)
         {
+            bool isGroundTargetAttack = IsGroundTargetAttack(pendingBattleCard);
             gridPreviewSystem?.ShowMoveCells(null);
-            gridPreviewSystem?.ShowAttackCells(selectableAttackCells);
             gridPreviewSystem?.ShowUnitHighlights(new[] { pendingUserUnit });
             gridPreviewSystem?.ShowHoverCellBorder(null);
+            gridPreviewSystem?.ShowAttackCells(isGroundTargetAttack ? selectableAttackCells : null);
 
             if (confirmedMovePath.Count > 0)
             {
@@ -1217,15 +1218,66 @@
                 gridPreviewSystem?.ShowPathCells(null);
             }
 
-            if (hoveredGrid.HasValue && selectableAttackCells.Contains(hoveredGrid.Value))
+            if (hoveredGrid.HasValue)
             {
-                gridPreviewSystem?.ShowAttackImpactCells(ResolvePreviewAttackCells(hoveredGrid.Value));
-                gridPreviewSystem?.ShowImpactUnitBorders(ResolvePreviewAttackTargets(hoveredGrid.Value));
-                return;
+                BattleUnit hoveredUnit = BattleBoardSystem.Instance != null
+                    ? BattleBoardSystem.Instance.GetUnitAt(hoveredGrid.Value)
+                    : null;
+
+                if (IsValidAttackHover(hoveredGrid.Value, hoveredUnit))
+                {
+                    gridPreviewSystem?.ShowAttackImpactCells(ResolvePreviewAttackCells(hoveredGrid.Value));
+                    gridPreviewSystem?.ShowImpactUnitBorders(ResolvePreviewImpactTargets(hoveredGrid.Value));
+                    return;
+                }
+            }
+
+            if (!isGroundTargetAttack)
+            {
+                gridPreviewSystem?.ShowAttackCells(null);
             }
 
             gridPreviewSystem?.ShowAttackImpactCells(null);
             gridPreviewSystem?.ShowImpactUnitBorders(null);
+            gridPreviewSystem?.ShowHoverCellBorder(null);
+        }
+
+        private bool IsValidAttackHover(Vector2Int hoveredGrid, BattleUnit hoveredUnit)
+        {
+            if (!selectableAttackCells.Contains(hoveredGrid))
+            {
+                return false;
+            }
+
+            if (IsGroundTargetAttack(pendingBattleCard))
+            {
+                return true;
+            }
+
+            List<BattleUnit> previewTargets = ResolvePreviewAttackTargets(hoveredGrid);
+            if (previewTargets.Count == 0)
+            {
+                return false;
+            }
+
+            return hoveredUnit != null
+                && hoveredUnit.IsAlive
+                && hoveredUnit.Team == BattleTeam.Enemy
+                && previewTargets.Contains(hoveredUnit);
+        }
+
+        private static bool IsGroundTargetAttack(BattleCard battleCard)
+        {
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            if (attackEffect == null)
+            {
+                return false;
+            }
+
+            return attackEffect.CustomAttackPattern != null
+                || attackEffect.AttackPattern == BattleAttackPattern.Area
+                || attackEffect.AttackPattern == BattleAttackPattern.Line
+                || attackEffect.AttackPattern == BattleAttackPattern.Adjacent4;
         }
 
         private HashSet<Vector2Int> ResolvePreviewAttackCells(Vector2Int targetGrid)
@@ -1273,6 +1325,32 @@
                 default:
                     result.Add(targetGrid);
                     break;
+            }
+
+            return result;
+        }
+
+        private List<BattleUnit> ResolvePreviewImpactTargets(Vector2Int targetGrid)
+        {
+            List<BattleUnit> result = new();
+            if (BattleBoardSystem.Instance == null || pendingUserUnit == null)
+            {
+                return result;
+            }
+
+            HashSet<Vector2Int> impactCells = ResolvePreviewAttackCells(targetGrid);
+            foreach (Vector2Int cell in impactCells)
+            {
+                BattleUnit unit = BattleBoardSystem.Instance.GetUnitAt(cell);
+                if (unit == null
+                    || !unit.IsAlive
+                    || unit.Team == pendingUserUnit.Team
+                    || result.Contains(unit))
+                {
+                    continue;
+                }
+
+                result.Add(unit);
             }
 
             return result;
@@ -1330,6 +1408,11 @@
             }
 
             HashSet<Vector2Int> candidateCells = boardSystem.GetSelectableAttackCells(attacker, attackOrigin, battleCard);
+            if (IsGroundTargetAttack(battleCard))
+            {
+                return candidateCells;
+            }
+
             foreach (Vector2Int candidateCell in candidateCells)
             {
                 // 단순 사거리 셀이 아니라 "이 칸을 고르면 최소 한 명은 맞는가"를 기준으로
@@ -1425,8 +1508,11 @@
                 }
             }
 
-            Debug.Log(
-                $"[BattleUI] {caller}: card={(battleCard != null ? battleCard.Title : "null")}, selectableCount={(units != null ? units.Count : 0)}, units={builder}");
+            //if (EnableMoveDebug)
+            //{
+            //    Debug.Log(
+            //        $"[BattleUI] {caller}: card={(battleCard != null ? battleCard.Title : "null")}, selectableCount={(units != null ? units.Count : 0)}, units={builder}");
+            //}
         }
 
         private static void LogCells(string caller, BattleUnit unit, IEnumerable<Vector2Int> cells)
@@ -1448,8 +1534,11 @@
                 }
             }
 
-            Debug.Log(
-                $"[BattleUI] {caller}: unit={(unit != null ? unit.name : "null")}, grid={(unit != null ? unit.GridPosition.ToString() : "null")}, world={(unit != null ? unit.transform.position.ToString() : "null")}, cellCount={count}, cells=[{builder}]");
+            //if (EnableMoveDebug)
+            //{
+            //    Debug.Log(
+            //        $"[BattleUI] {caller}: unit={(unit != null ? unit.name : "null")}, grid={(unit != null ? unit.GridPosition.ToString() : "null")}, world={(unit != null ? unit.transform.position.ToString() : "null")}, cellCount={count}, cells=[{builder}]");
+            //}
         }
 
         private void LogPathState()
@@ -1465,8 +1554,11 @@
                 builder.Append(drawnMovePath[i]);
             }
 
-            Debug.Log(
-                $"[BattleUI] MovePath 상태: unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, currentBudget={currentMoveBudget}, currentCost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={builder}");
+            //if (EnableMoveDebug)
+            //{
+            //    Debug.Log(
+            //        $"[BattleUI] MovePath 상태: unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, currentBudget={currentMoveBudget}, currentCost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={builder}");
+            //}
         }
 
         private static string BuildPathDebugText(IReadOnlyList<Vector2Int> path)

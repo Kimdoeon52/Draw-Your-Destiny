@@ -1,4 +1,4 @@
-ï»¿namespace NYH.BattleCardSystem
+namespace NYH.BattleCardSystem
 {
     using System.Collections;
     using System.Collections.Generic;
@@ -7,7 +7,7 @@
 
     public class BattleTacticalPerformer
     {
-        private const bool EnableMoveDebug = true;
+        private const bool EnableMoveDebug = false;
 
         public bool CanHandle(GameAction action)
         {
@@ -31,21 +31,21 @@
         {
             if (moveGA.Unit == null)
             {
-                Debug.LogWarning("[BattleCardSystem] ì´ë™í•  ìœ ë‹›ì´ ì—†ìŠµë‹ˆë‹¤.");
+                Debug.LogWarning("[BattleCardSystem] ÀÌµ¿ÇÒ À¯´ÖÀÌ ¾ø½À´Ï´Ù.");
                 yield break;
             }
 
             if (BattleBoardSystem.Instance == null)
             {
-                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemì´ ì—†ì–´ ì´ë™ì„ ì²˜ë¦¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemÀÌ ¾ø¾î ÀÌµ¿À» Ã³¸®ÇÒ ¼ö ¾ø½À´Ï´Ù.");
                 yield break;
             }
 
-            if (EnableMoveDebug)
-            {
-                Debug.Log(
-                    $"[BattleMoveDebug] ResolveMove start unit={moveGA.Unit.name}, currentWorld={moveGA.Unit.transform.position}, currentGrid={moveGA.Unit.GridPosition}, target={moveGA.TargetPosition}, finalMove={moveGA.FinalMoveAmount}, pathCount={(moveGA.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}, path={BuildPathDebugText(moveGA.PlannedPath)}");
-            }
+            //if (EnableMoveDebug)
+            //{
+            //    Debug.Log(
+            //        $"[BattleMoveDebug] ResolveMove start unit={moveGA.Unit.name}, currentWorld={moveGA.Unit.transform.position}, currentGrid={moveGA.Unit.GridPosition}, target={moveGA.TargetPosition}, finalMove={moveGA.FinalMoveAmount}, pathCount={(moveGA.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}, path={BuildPathDebugText(moveGA.PlannedPath)}");
+            //}
 
             yield return AnimateMove(moveGA);
 
@@ -59,28 +59,28 @@
 
             if (!moved)
             {
-                // ì´ë™ì´ ë§‰í˜”ëŠ”ë° í›„ì† ê³µê²©ê¹Œì§€ ì‹¤í–‰ë˜ë©´
-                // í•˜ì´ë¸Œë¦¬ë“œ ì¹´ë“œê°€ ì˜ë„ì™€ ë‹¤ë¥´ê²Œ ë™ì‘í•˜ë¯€ë¡œ ì—°ì‡„ ë°˜ì‘ì„ ì •ë¦¬í•©ë‹ˆë‹¤.
+                // ÀÌµ¿ÀÌ ¸·Çû´Âµ¥ ÈÄ¼Ó °ø°İ±îÁö ½ÇÇàµÇ¸é
+                // ÇÏÀÌºê¸®µå Ä«µå°¡ ÀÇµµ¿Í ´Ù¸£°Ô µ¿ÀÛÇÏ¹Ç·Î ¿¬¼â ¹İÀÀÀ» Á¤¸®ÇÕ´Ï´Ù.
                 moveGA.PerformReactions.Clear();
                 moveGA.PostReactions.Clear();
             }
 
-            if (EnableMoveDebug)
-            {
-                Debug.Log(
-                    $"[BattleMoveDebug] ResolveMove end unit={moveGA.Unit.name}, moved={moved}, finalWorld={moveGA.Unit.transform.position}, finalGrid={moveGA.Unit.GridPosition}");
-            }
+            //if (EnableMoveDebug)
+            //{
+            //    Debug.Log(
+            //        $"[BattleMoveDebug] ResolveMove end unit={moveGA.Unit.name}, moved={moved}, finalWorld={moveGA.Unit.transform.position}, finalGrid={moveGA.Unit.GridPosition}");
+            //}
         }
 
         private static IEnumerator AnimateMove(BattleMoveGA moveGA)
         {
             if (moveGA?.Unit == null || moveGA.PlannedPath == null || moveGA.PlannedPath.Count == 0)
             {
-                if (EnableMoveDebug)
-                {
-                    Debug.LogWarning(
-                        $"[BattleMoveDebug] AnimateMove skipped unit={(moveGA?.Unit != null ? moveGA.Unit.name : "null")}, pathCount={(moveGA?.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}");
-                }
+                //if (EnableMoveDebug)
+                //{
+                //    Debug.LogWarning(
+                //        $"[BattleMoveDebug] AnimateMove skipped unit={(moveGA?.Unit != null ? moveGA.Unit.name : "null")}, pathCount={(moveGA?.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}");
+                //}
 
                 yield break;
             }
@@ -140,13 +140,13 @@
         {
             if (attackGA.Attacker == null)
             {
-                Debug.LogWarning("[BattleCardSystem] ê³µê²© ìœ ë‹›ì´ ì—†ìŠµë‹ˆë‹¤.");
+                Debug.LogWarning("[BattleCardSystem] °ø°İ À¯´ÖÀÌ ¾ø½À´Ï´Ù.");
                 return;
             }
 
             if (BattleBoardSystem.Instance == null)
             {
-                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemì´ ì—†ì–´ ê³µê²©ì„ ì²˜ë¦¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemÀÌ ¾ø¾î °ø°İÀ» Ã³¸®ÇÒ ¼ö ¾ø½À´Ï´Ù.");
                 return;
             }
 
@@ -156,13 +156,8 @@
                 attackGA);
             Dictionary<BattleUnit, int> targetHealthBeforeAttack = CaptureTargetHealth(targets);
 
-            Debug.Log(
-                $"[BattleAttackDebug] ê³µê²© ì‹œì‘: card={(attackGA.SourceCard != null ? attackGA.SourceCard.Title : "Unknown")}, attacker={attackGA.Attacker.name}, attackerGrid={attackGA.Attacker.GridPosition}, targetPos={attackGA.TargetPosition}, targetCount={targets.Count}, hitsAll={attackGA.HitsAllTargetsInRange}, pattern={attackGA.AttackPattern}");
-
             if (TryApplyBattleEffects(attackGA, targets))
             {
-                Debug.Log(
-                    $"[BattleCardSystem] ì´í™íŠ¸ ê³µê²© ì²˜ë¦¬: attacker={attackGA.Attacker.name}, targetCount={targets.Count}, pattern={attackGA.AttackPattern}");
                 LogAttackResults(attackGA, targets, targetHealthBeforeAttack, null, usedEffects: true);
                 return;
             }
@@ -173,9 +168,12 @@
                 target.TakeDamage(totalDamage);
             }
 
-            Debug.Log(
-                $"[BattleCardSystem] ê¸°ë³¸ ê³µê²© ì²˜ë¦¬: attacker={attackGA.Attacker.name}, targetCount={targets.Count}, damage={attackGA.Damage}, pattern={attackGA.AttackPattern}");
-            LogAttackResults(attackGA, targets, targetHealthBeforeAttack, Mathf.Max(0, attackGA.Damage + attackGA.Attacker.CurrentAttackPower), usedEffects: false);
+            LogAttackResults(
+                attackGA,
+                targets,
+                targetHealthBeforeAttack,
+                Mathf.Max(0, attackGA.Damage + attackGA.Attacker.CurrentAttackPower),
+                usedEffects: false);
         }
 
         private static Dictionary<BattleUnit, int> CaptureTargetHealth(IReadOnlyList<BattleUnit> targets)
@@ -207,7 +205,7 @@
             if (targets == null || targets.Count == 0)
             {
                 Debug.Log(
-                    $"[BattleAttackDebug] ê³µê²© ê²°ê³¼: card={(attackGA?.SourceCard != null ? attackGA.SourceCard.Title : "Unknown")}, attacker={(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")}, hitTargets=0");
+                    $"[BattleAttackDebug] {(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")}ÀÇ °ø°İÀÌ ºø³ª°¨");
                 return;
             }
 
@@ -226,12 +224,11 @@
 
                 int afterHealth = target.CurrentHealth;
                 int actualDamage = Mathf.Max(0, beforeHealth - afterHealth);
-                string damageText = usedEffects
-                    ? $"actualDamage={actualDamage}"
-                    : $"baseResolvedDamage={baseDamageApplied ?? 0}, actualDamage={actualDamage}";
+                string cardTitle = attackGA?.SourceCard != null ? attackGA.SourceCard.Title : "Unknown";
+                string effectLabel = usedEffects ? "È¿°ú" : "°ø°İ";
 
                 Debug.Log(
-                    $"[BattleAttackDebug] ê³µê²© ëŒ€ìƒ: attacker={(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")} -> target={target.name}, targetGrid={target.GridPosition}, beforeHp={beforeHealth}, afterHp={afterHealth}, {damageText}, alive={target.IsAlive}");
+                    $"[BattleAttackDebug] {effectLabel}: {(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")} -> {target.name}, damage={actualDamage}, hp={afterHealth}/{target.MaxHealth}, alive={target.IsAlive}, card={cardTitle}");
             }
         }
 
@@ -261,8 +258,8 @@
 
                 if (battleEffect is BattleMoveEffect or BattleAttackEffect)
                 {
-                    // ì´ë™/ê³µê²© ìì²´ëŠ” GA ì²´ì¸ì—ì„œ ì´ë¯¸ ì²˜ë¦¬ë˜ë¯€ë¡œ,
-                    // ì—¬ê¸°ì„œëŠ” í”¼í•´/ìƒíƒœ ê°™ì€ ë¶€ê°€ ì´í™íŠ¸ë§Œ ì ìš©í•©ë‹ˆë‹¤.
+                    // ÀÌµ¿/°ø°İ ÀÚÃ¼´Â GA Ã¼ÀÎ¿¡¼­ ÀÌ¹Ì Ã³¸®µÇ¹Ç·Î,
+                    // ¿©±â¼­´Â ÇÇÇØ/»óÅÂ °°Àº ºÎ°¡ ÀÌÆåÆ®¸¸ Àû¿ëÇÕ´Ï´Ù.
                     continue;
                 }
 
@@ -274,3 +271,4 @@
         }
     }
 }
+

@@ -70348,6 +70348,18 @@ MonoBehaviour:
       type: 3}
     gridPosition: {x: 1, y: 0}
     startHealth: 5
+  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
+      type: 3}
+    gridPosition: {x: 2, y: 3}
+    startHealth: 5
+  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
+      type: 3}
+    gridPosition: {x: 2, y: 4}
+    startHealth: 5
+  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
+      type: 3}
+    gridPosition: {x: 2, y: 5}
+    startHealth: 5
   enableKeyboardShortcut: 1
   enterBattleKey: 288
   exitBattleKey: 289
