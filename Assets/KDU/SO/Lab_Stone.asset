@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 
   buildingName: "\uC5F0\uAD6C\uC18C(\uC11D\uAE30)"
   buildingType: 4
-  sprite: {fileID: 0}
+  sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
   requiredEra: 0
   isAutoUpgrade: 1
   upgradesTo: {fileID: 11400000, guid: 9b0237c643950e1499347d36fbe1aa7b, type: 2}
@@ -24,7 +24,7 @@ MonoBehaviour:
   height: 1
   allowedTiles: 04000000
   maxPerTerritory: -1
-  isUniqueGlobal: 1
+  isUniqueGlobal: 0
   goldPerTurn: 0
   researchPerTurn: 0
   populationCapBonus: 0

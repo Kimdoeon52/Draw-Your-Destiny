@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Cysharp.Threading.Tasks;
@@ -262,7 +262,8 @@ public class PathDrawingManager : MonoBehaviour
 
             GameObject visual = Instantiate(blueTilePrefab, centerPos, Quaternion.identity);
 
-            // ★ SpriteRenderer sortingOrder를 코드에서도 강제 설정 (프리팹 설정과 무관하게 안정적으로 표시)
+            // ★ SpriteRenderer
+            // 를 코드에서도 강제 설정 (프리팹 설정과 무관하게 안정적으로 표시)
             SpriteRenderer sr = visual.GetComponent<SpriteRenderer>();
             if (sr != null)
             {

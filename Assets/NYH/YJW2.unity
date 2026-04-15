@@ -1159,6 +1159,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 203752346}
   m_CullTransparentMesh: 1
+--- !u!1 &212166248
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 212166250}
+  - component: {fileID: 212166249}
+  m_Layer: 0
+  m_Name: OngoingSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &212166249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212166248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bf459785ed069f489db9a2fb93d3780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &212166250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212166248}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1569.9448, y: 129.30821, z: -2.282169}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &218615929
 GameObject:
   m_ObjectHideFlags: 0
@@ -3500,6 +3544,7 @@ MonoBehaviour:
   useEdgeScroll: 1
   edgeSize: 20
   edgeScrollSpeed: 25
+  move: 0
 --- !u!1 &522887708
 GameObject:
   m_ObjectHideFlags: 0
@@ -229761,21 +229806,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myDeck:
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 7d6a326558b6d7745b8fc302ce0b354f, type: 2}
+  - {fileID: 11400000, guid: 7d6a326558b6d7745b8fc302ce0b354f, type: 2}
+  - {fileID: 11400000, guid: 7d6a326558b6d7745b8fc302ce0b354f, type: 2}
+  - {fileID: 11400000, guid: 7d6a326558b6d7745b8fc302ce0b354f, type: 2}
+  - {fileID: 11400000, guid: 7d6a326558b6d7745b8fc302ce0b354f, type: 2}
+  - {fileID: 11400000, guid: 7d6a326558b6d7745b8fc302ce0b354f, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1319902120
 MonoBehaviour:
@@ -229870,6 +229914,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cityTilemap: {fileID: 1854478604}
   farmlandTilemap: {fileID: 1775155957}
+  groundTilemap: {fileID: 0}
+  forestTilemap: {fileID: 0}
+  riverTilemap: {fileID: 0}
 --- !u!4 &1395773283
 Transform:
   m_ObjectHideFlags: 0
@@ -231890,7 +231937,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 643588872}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.99997777
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -372780,4 +372827,5 @@ SceneRoots:
   - {fileID: 1220515861}
   - {fileID: 1873514536}
   - {fileID: 879390607}
+  - {fileID: 212166250}
   - {fileID: 1647332590}
