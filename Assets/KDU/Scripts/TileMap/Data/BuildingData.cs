@@ -49,6 +49,7 @@ public class BuildingData : ScriptableObject
     [Header("생산 효과 (턴당)")]
     public int goldPerTurn;             // 매 턴 금 생산량
     public int researchPerTurn;         // 매 턴 연구 포인트 생산량 (연구소 전용)
+    public int foodPerTurn;             // 매 턴 식량 생산량 (농장 전용)
     public int populationCapBonus;      // 배치 즉시 인구 한도 증가 (민가 전용)
 
     [Header("프리팹 & 생산")]

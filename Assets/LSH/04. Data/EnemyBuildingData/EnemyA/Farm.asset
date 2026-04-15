@@ -13,21 +13,23 @@ MonoBehaviour:
   m_Name: Farm
   m_EditorClassIdentifier: 
   id: 
-  buildingName: 
-  buildingType: 0
-  sprite: {fileID: 0}
+  buildingName: "\uB18D\uC7A5"
+  buildingType: 5
+  sprite: {fileID: 729781615, guid: f10e149a0eaab004fa76b5ba153646be, type: 3}
   requiredEra: 0
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
   goldCost: 0
-  width: 1
-  height: 1
-  allowedTiles: 
-  maxPerTerritory: -1
+  width: 3
+  height: 3
+  allowedTiles: 02000000
+  maxPerTerritory: 2
   isUniqueGlobal: 0
   goldPerTurn: 0
   researchPerTurn: 0
+  foodPerTurn: 0
   populationCapBonus: 0
-  visualPrefab: {fileID: 0}
+  visualPrefab: {fileID: 4064430417028411154, guid: 8a986f966dddde34a92831b4054abd9d,
+    type: 3}
   productionInterval: 3
-  unitCapacity: 0
+  unitCapacity: 5

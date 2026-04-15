@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Shop
   m_EditorClassIdentifier: 
   id: 
-  buildingName: 
-  buildingType: 0
+  buildingName: "\uC0C1\uC810"
+  buildingType: 3
   sprite: {fileID: 0}
   requiredEra: 0
   isAutoUpgrade: 0
@@ -22,12 +22,14 @@ MonoBehaviour:
   goldCost: 0
   width: 1
   height: 1
-  allowedTiles: 
+  allowedTiles: 04000000
   maxPerTerritory: -1
   isUniqueGlobal: 0
   goldPerTurn: 0
   researchPerTurn: 0
+  foodPerTurn: 0
   populationCapBonus: 0
-  visualPrefab: {fileID: 0}
+  visualPrefab: {fileID: 1289288881846488162, guid: 654100f116b5d904893b55c61e6651b4,
+    type: 3}
   productionInterval: 3
-  unitCapacity: 0
+  unitCapacity: 5

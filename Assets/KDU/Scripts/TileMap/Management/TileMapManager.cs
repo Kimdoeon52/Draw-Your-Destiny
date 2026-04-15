@@ -186,33 +186,28 @@ public class TileMapManager : Singleton<TileMapManager>
     //       + maxPerTerritory 영지 내 제한 + isUniqueGlobal 게임 전체 제한
     public bool CanPlace(Vector3Int clickPos, BuildingData building)
     {
+        if (building == null) return false;
+
         // 영지 내 최대 설치 수 검사
         if (building.maxPerTerritory >= 0)
         {
-            Debug.LogError("2");
             int count = 0;
             foreach (BuildingInstance b in allBuildings)
             {
-                Debug.LogError("3");
                 if (b.data != null && b.data.buildingType == building.buildingType)
                     count++;
-                Debug.LogError("4");
             }
             if (count >= building.maxPerTerritory) return false;
-            Debug.LogError("5");
         }
 
         // 게임 전체 유일성 검사 (Lab 등)
         if (building.isUniqueGlobal && IsAlreadyBuiltGlobally(building))
             return false;
-        Debug.LogError("6");
 
         Vector3Int origin = GetOrigin(clickPos, building);
-        Debug.LogError("7");
 
         for (int x = 0; x < building.width; x++)
         {
-            Debug.LogError("8");
             for (int y = 0; y < building.height; y++)
             {
                 Vector3Int checkPos = origin + new Vector3Int(x, y, 0);
@@ -305,15 +300,16 @@ public class TileMapManager : Singleton<TileMapManager>
             gameManager.IncreasePopulationCap(building.populationCapBonus);
         }
     }
+    // 적 전용 건물 배치 — PlaceBuilding과 동일한 BuildingInstance 상태로 생성
+    // GameManager 자원 차감 없음 (적 자원은 EnemyBrainBase에서 별도 관리)
     public void EnemyPlaceBuilding(Vector3Int clickPos, BuildingData building, EnemyBrainBase brain, int civID)
     {
-        Debug.Log("0");
-        if(clickPos == null || building == null)
+        if (building == null) return;
         if (!CanPlace(clickPos, building)) return;
-        Debug.Log("1");
+
         Vector3Int origin = GetOrigin(clickPos, building);
         List<Vector3Int> footprint = new List<Vector3Int>();
-        Debug.Log("2");
+
         for (int x = 0; x < building.width; x++)
         {
             for (int y = 0; y < building.height; y++)
@@ -323,10 +319,9 @@ public class TileMapManager : Singleton<TileMapManager>
                 footprint.Add(pos);
             }
         }
-        Debug.Log("3");
+
         GameObject visual = CreateBuildingVisual(origin, building);
-        Debug.Log("건물 생성됨: " + visual.name);
-        Debug.Log("위치: " + visual.transform.position);
+
         BuildingInstance instance = new BuildingInstance
         {
             data = building,
@@ -336,33 +331,22 @@ public class TileMapManager : Singleton<TileMapManager>
             visual = visual
         };
 
-        // Behaviour 캐싱 & 초기화
+        // 플레이어와 동일한 Behaviour 초기화
         instance.behaviour = visual.GetComponent<BuildingBehaviour>();
         if (instance.behaviour != null)
         {
             instance.behaviour.instance = instance;
             instance.behaviour.OnPlaced();
-            Debug.Log("4");
         }
-        if (instance.behaviour == null)
-        {
-            Debug.LogWarning("건물 시각화에 BuildingBehaviour 컴포넌트가 없음: " + visual.name);
-        }
+
+        // 적 전용 인터페이스 초기화
         var enemyBuilding = visual.GetComponent<IEnemyBuilding>();
         if (enemyBuilding != null)
-        {
             enemyBuilding.Init(brain);
-        }
+
         allBuildings.Add(instance);
         foreach (Vector3Int pos in footprint)
             buildingInstanceMap[pos] = instance;
-        Debug.Log("5");
-        //BuildingRegistry.Instance?.Register(instance);
-
-        //// 농장이면 자신 + 인접 농장 스프라이트 갱신
-        //if (building.buildingType == BuildingType.Farm)
-        //    RefreshFarmAndNeighbors(origin);
-
     }
     // ── 건물 시각화 생성 ─────────────────────────────────────────
     // BuildingData.visualPrefab이 있으면 프리팹 인스턴스화, 없으면 빈 GO 방식 fallback
