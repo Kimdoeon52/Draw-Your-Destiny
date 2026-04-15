@@ -232,7 +232,7 @@ MonoBehaviour:
   fadePanel: {fileID: 1853207930}
   fadeDuration: 0.4
   claimCost: 30
-  debugFreeEntry: 0
+  debugFreeEntry: 1
   allNodes:
   - nodeID: 101
     adjacentNodeIDs: 6600000067000000
@@ -35662,6 +35662,7 @@ MonoBehaviour:
   enemyLevel: 0
   enemyID: 0
   countEnemyTurn: 0
+  currentNodeID: 0
 --- !u!1 &565785355
 GameObject:
   m_ObjectHideFlags: 0
@@ -35798,37 +35799,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 565785355}
   m_CullTransparentMesh: 1
---- !u!1 &567699498
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 567699499}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &567699499
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 567699498}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.83, y: 10.11, z: -9.340233}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &610256613
 GameObject:
   m_ObjectHideFlags: 0
@@ -127534,4 +127504,3 @@ SceneRoots:
   - {fileID: 1095900125}
   - {fileID: 164920599}
   - {fileID: 561679659}
-  - {fileID: 567699499}

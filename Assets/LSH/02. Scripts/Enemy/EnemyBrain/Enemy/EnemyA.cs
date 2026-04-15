@@ -7,6 +7,7 @@ public class EnemyA : EnemyBrainBase
     {
         base.OnEnable();
         enemyID = 1;
+        currentNodeID = 106;
     }
     //==============================================================================================
     protected override void GetGold() //골드와 식량을 얻는 행동 구현
@@ -17,5 +18,9 @@ public class EnemyA : EnemyBrainBase
     protected override void StartEnemyTurn()
     {
         base.StartEnemyTurn();
+    }
+    protected override Vector3Int FindRandomPlace(BuildingData data)
+    {
+        return base.FindRandomPlace(data);
     }
 }

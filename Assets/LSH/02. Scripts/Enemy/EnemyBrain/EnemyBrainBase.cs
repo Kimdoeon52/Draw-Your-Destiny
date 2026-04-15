@@ -1,6 +1,7 @@
 ﻿using EnemyAPool;
 using PoolBase;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum EnemyAction
@@ -52,7 +53,8 @@ public class EnemyBrainBase : MonoBehaviour
     [Header("턴 진행 여부")] //적 종류마다 다르게 설정할꺼임.
     [SerializeField] protected int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
 
-
+    [Header("지금 위치해있는 노드")] //현재 위치한 노드 Id 예를 들면 지금 노드 번호 101이런거임
+    [SerializeField] protected int currentNodeID; //현재 위치한 노드 Id 예를 들면 지금 노드 번호 101이런거임
     public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음. 
     protected virtual void OnEnable()
     {
@@ -221,43 +223,74 @@ public class EnemyBrainBase : MonoBehaviour
                 break;
         }
     }
-    protected virtual Vector3Int GetRandomCellPosition(BuildingData data) //설치 위치임.
+    
+
+    protected void SpawnBuilding(BuildingData data) //건물의 정보를 가지고 노드에 추가할 때 쓰는 거임.
     {
-        //적이 건물을 지을 위치를 랜덤으로 결정하는 함수
-        for (int i = 0; i < 20; i++) // 넉넉히 20번 시도
+        AddBuildingToNode(currentNodeID, data); //현재 노드에 건물 추가
+    }
+
+    protected virtual bool AddBuildingToNode(int nodeID, BuildingData buildingData) //건물을 노드에 추가하는 함수임
+    {
+        Debug.Log("건물 짓는중...");
+        if (buildingData == null) return false;
+
+        NodeData node = WorldMapManager.Instance.GetNode(nodeID); //노드 정보 가져오기
+        if (node == null) return false;
+
+        Vector3Int pos = FindRandomPlace(buildingData); //랜덤 위치에 생성
+        BuildingInstance instance = new BuildingInstance
+        {
+            data = buildingData, // 건물 데이터 할당
+            origin = Vector3Int.zero, // 건물의 위치는 나중에 타일맵에서 결정하므로 일단 (0,0,0)으로 초기화
+            footprint = new List<Vector3Int>(), 
+            ownerCivID = node.ownerCivID, // 건물의 소유자는 노드의 소유자와 동일하게 설정
+            visual = null // 시각적 표현은 나중에 타일맵에서 처리하므로 일단 null로 초기화
+        };
+
+        node.buildings.Add(instance); // 노드의 건물 리스트에 새 건물 인스턴스 추가
+
+        Debug.Log($"[AI] 노드 {nodeID}에 {buildingData.buildingName} 추가됨");
+        return true;
+    }
+
+    protected virtual Vector3Int FindRandomPlace(BuildingData data)
+    {
+        for(int i = 0; i <50; i++)
         {
             int x = Random.Range(0, 10);
             int y = Random.Range(0, 10);
-
             Vector3Int pos = new Vector3Int(x, y, 0);
-
-            if (TileMapManager.Instance.CanPlace(pos, data)) //놓을 수 있는 곳이라면?
-                return pos; //놓을 수 있는 위치 반환 
+            if (TileMapManager.Instance.CanPlace(pos, data))
+                return pos;
         }
-
-        Debug.LogWarning("설치 가능한 위치 못 찾음 염병");
-        return new Vector3Int(0, 0, 0); // fallback
+        return Vector3Int.zero;
     }
-
-    protected void SpawnBuilding(BuildingData data)
-    {
-        Vector3Int cellPos = GetRandomCellPosition(data);
-
-        TileMapManager.Instance.EnemyPlaceBuilding(cellPos, data, this, enemyID);
-    }
-    
-    //protected GameObject SpawnBuilding(GameObject prefab)
+    //protected void SpawnBuilding(BuildingData data)
     //{
-    //    GameObject building = Instantiate(prefab, GetRandomPosition(), Quaternion.identity);
+    //    Vector3Int cellPos = GetRandomCellPosition(data);
 
-    //    var enemyBuilding = building.GetComponent<IEnemyBuilding>();
-    //    if (enemyBuilding != null)
+    //    TileMapManager.Instance.EnemyPlaceBuilding(cellPos, data, this, enemyID);
+    //}
+
+    //protected virtual Vector3Int GetRandomCellPosition(BuildingData data) //설치 위치임.
+    //{
+    //    //적이 건물을 지을 위치를 랜덤으로 결정하는 함수
+    //    for (int i = 0; i < 20; i++) // 넉넉히 20번 시도
     //    {
-    //        enemyBuilding.Init(this);
+    //        int x = Random.Range(0, 10);
+    //        int y = Random.Range(0, 10);
+
+    //        Vector3Int pos = new Vector3Int(x, y, 0);
+
+    //        if (TileMapManager.Instance.CanPlace(pos, data)) //놓을 수 있는 곳이라면?
+    //            return pos; //놓을 수 있는 위치 반환 
     //    }
 
-    //    return building;
+    //    Debug.LogWarning("설치 가능한 위치 못 찾음 염병");
+    //    return new Vector3Int(0, 0, 0); // fallback
     //}
+
     //==============================골드 및 식량 얻기====================================
     protected virtual void GetGold()
     {
