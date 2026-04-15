@@ -40709,7 +40709,7 @@ Transform:
   m_GameObject: {fileID: 752894700}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1569.9448, y: 129.30821, z: -2.282169}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -55238,6 +55238,8 @@ MonoBehaviour:
   pathPreviewColor: {r: 0, g: 0.75, b: 1, a: 0.47058824}
   unitHighlightColor: {r: 0.15, g: 0.15, b: 0.15, a: 0.47058824}
   impactBorderColor: {r: 1, g: 0.35, b: 0.2, a: 0.47058824}
+  hoverCellBorderColor: {r: 1, g: 1, b: 1, a: 1}
+  attackImpactCellColor: {r: 1, g: 0.9, b: 0.35, a: 0.45}
   cellScale: {x: 1, y: 1, z: 1}
   sortingOrder: 2000
   pathSortingOrder: 2100
@@ -55687,10 +55689,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseBattleDeck:
-  - {fileID: 11400000, guid: 940eb43f66816844a8689165fb6f788a, type: 2}
-  - {fileID: 11400000, guid: c3db1ed9a61447c6a2b8d4b9f4f0a1d2, type: 2}
-  - {fileID: 11400000, guid: c3db1ed9a61447c6a2b8d4b9f4f0a1d2, type: 2}
-  - {fileID: 11400000, guid: c3db1ed9a61447c6a2b8d4b9f4f0a1d2, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: 2f22587a905266c468faba119bd9332c, type: 2}
   earnedBattleCards: []
 --- !u!4 &1008384001
 Transform:
@@ -64479,8 +64486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allBattleCards:
-  - {fileID: 11400000, guid: c3db1ed9a61447c6a2b8d4b9f4f0a1d2, type: 2}
-  - {fileID: 11400000, guid: 1bc551fb61d931b418d87544608e03f5, type: 2}
+  - {fileID: 11400000, guid: 1eaab5f353615934d9b6d1c37f1e7be3, type: 2}
   - {fileID: 11400000, guid: 1bc551fb61d931b418d87544608e03f5, type: 2}
   - {fileID: 11400000, guid: e869f286f0b234a48a424868b6b21c5a, type: 2}
 --- !u!4 &1089494668
@@ -70148,9 +70154,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allCards:
   - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
+  - {fileID: 11400000, guid: 6966c88d03d50044ea67c515263feff4, type: 2}
+  - {fileID: 11400000, guid: 5640e260ce6785e4d925fda4ea3be8fe, type: 2}
+  - {fileID: 11400000, guid: 56857f7a8093c4848805260dc977c1f3, type: 2}
+  - {fileID: 11400000, guid: 51a132cf19488d743bd98339c8906204, type: 2}
+  - {fileID: 11400000, guid: df8e7aa93a12ce142860db18ce51158f, type: 2}
+  - {fileID: 11400000, guid: 83a467a7bcda65841963a17ba00d9f00, type: 2}
   panel: {fileID: 1752389644}
   container: {fileID: 1589546537}
 --- !u!4 &1271427085
@@ -70330,6 +70339,14 @@ MonoBehaviour:
   - unitPrefab: {fileID: 692144614679788697, guid: e4f86634c15c26141be919d92e30375e,
       type: 3}
     gridPosition: {x: 1, y: 1}
+    startHealth: 5
+  - unitPrefab: {fileID: 692144614679788697, guid: e4f86634c15c26141be919d92e30375e,
+      type: 3}
+    gridPosition: {x: 0, y: 1}
+    startHealth: 5
+  - unitPrefab: {fileID: 692144614679788697, guid: e4f86634c15c26141be919d92e30375e,
+      type: 3}
+    gridPosition: {x: 1, y: 0}
     startHealth: 5
   enableKeyboardShortcut: 1
   enterBattleKey: 288
@@ -75572,7 +75589,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleManager: {fileID: 1599415093}
   battleCardSystem: {fileID: 1596670696}
-  gridPreviewSystem: {fileID: 0}
+  gridPreviewSystem: {fileID: 963536238}
   handView: {fileID: 426452551}
   cardViewCreator: {fileID: 1507954024}
   discardPilePoint: {fileID: 1846213441}
@@ -76336,15 +76353,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myDeck:
-  - {fileID: 11400000, guid: 56857f7a8093c4848805260dc977c1f3, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 834e97eba7a67fa42a6d377a1e64e532, type: 2}
-  - {fileID: 11400000, guid: 834e97eba7a67fa42a6d377a1e64e532, type: 2}
-  - {fileID: 11400000, guid: 834e97eba7a67fa42a6d377a1e64e532, type: 2}
+  - {fileID: 11400000, guid: 51a132cf19488d743bd98339c8906204, type: 2}
+  - {fileID: 11400000, guid: 51a132cf19488d743bd98339c8906204, type: 2}
+  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
+  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
+  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
+  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1507954024
 MonoBehaviour:
@@ -76589,7 +76603,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1532801342}
   m_Layer: 0
-  m_Name: =========TestSystem============ (1)
+  m_Name: ==========TestSystem=============
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76604,7 +76618,7 @@ Transform:
   m_GameObject: {fileID: 1532801341}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1569.9448, y: 129.30821, z: -2.282169}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -76670,7 +76684,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1540116871}
   m_Layer: 0
-  m_Name: =====CardBuutons======
+  m_Name: ===========CardButtons=============
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95744,7 +95758,7 @@ Transform:
   m_GameObject: {fileID: 1846687609}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1569.9448, y: 129.30821, z: -2.282169}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

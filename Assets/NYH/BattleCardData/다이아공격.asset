@@ -17,9 +17,9 @@ MonoBehaviour:
   <CardType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 584017139910605470, guid: 57153bc98c84b584394a27c7ed1998ae,
     type: 3}
-  <ActionPointCost>k__BackingField: 1
+  <ActionPointCost>k__BackingField: 2
   <IgnoresDeckLimit>k__BackingField: 0
-  <IsConsumable>k__BackingField: 1
+  <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 4
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
@@ -41,7 +41,7 @@ MonoBehaviour:
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 1
-        range: 5
+        range: 0
         targetCount: 1
         hitsAllTargetsInRange: 0
         attackPattern: 0

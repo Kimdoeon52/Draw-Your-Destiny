@@ -61,6 +61,8 @@
         private int currentMoveBudget;
         private bool hasLastDragCell;
         private Vector2Int lastDraggedMoveCell;
+        private bool hasLastMoveHoverCell;
+        private Vector2Int lastHoveredMoveCell;
         private bool hasLastAttackHoverCell;
         private bool wasLastAttackHoverValid;
         private Vector2Int lastHoveredAttackCell;
@@ -146,6 +148,11 @@
             {
                 ConfirmMovePath();
                 return;
+            }
+
+            if (targetingPhase == CardTargetingPhase.SelectMoveTarget)
+            {
+                HandleMoveTargetHover(Input.mousePosition);
             }
 
             if (targetingPhase == CardTargetingPhase.SelectMoveTarget && Input.GetMouseButton(0))
@@ -267,6 +274,12 @@
                 return;
             }
 
+            if (targetingPhase != CardTargetingPhase.None || CardView.AnyCardPickedUp)
+            {
+                Debug.Log("[BattleUI] 카드 사용/타게팅 중에는 턴을 종료할 수 없습니다.");
+                return;
+            }
+
             if (battleManager.CurrentPhase == BattlePhase.PlayerTurn)
             {
                 if (!isResolvingEndTurnDiscard)
@@ -308,6 +321,8 @@
             if (endTurnButton != null && battleManager != null)
             {
                 endTurnButton.interactable = !isResolvingEndTurnDiscard
+                    && targetingPhase == CardTargetingPhase.None
+                    && !CardView.AnyCardPickedUp
                     && !battleManager.IsBattleEnded
                     && (battleManager.CurrentPhase == BattlePhase.PlayerTurn || battleManager.CurrentPhase == BattlePhase.EnemyTurn);
             }
@@ -480,9 +495,12 @@
                 confirmedMovePath.Clear();
                 selectableAttackCells.Clear();
                 hasLastDragCell = false;
+                hasLastMoveHoverCell = false;
                 hasLastAttackHoverCell = false;
                 targetingPhase = CardTargetingPhase.SelectMoveTarget;
                 gridPreviewSystem?.ShowMoveCells(selectableMoveCells);
+                gridPreviewSystem?.ShowHoverCellBorder(null);
+                gridPreviewSystem?.ShowAttackImpactCells(null);
                 gridPreviewSystem?.ShowAttackCells(null);
                 gridPreviewSystem?.ShowImpactUnitBorders(null);
                 gridPreviewSystem?.ShowUnitHighlights(new[] { clickedUnit });
@@ -504,6 +522,7 @@
                 confirmedMovePath.Clear();
                 confirmedAttackTargetUnit = null;
                 hasConfirmedAttackTarget = false;
+                hasLastMoveHoverCell = false;
                 hasLastAttackHoverCell = false;
                 targetingPhase = CardTargetingPhase.SelectAttackTarget;
                 RefreshAttackPreview(null);
@@ -512,6 +531,31 @@
             }
 
             PlayPendingCard(clickedUnit.GridPosition, clickedUnit, null);
+        }
+
+        private void HandleMoveTargetHover(Vector2 screenPosition)
+        {
+            if (pendingBattleCard == null || pendingUserUnit == null || BattleBoardSystem.Instance == null)
+            {
+                return;
+            }
+
+            Vector2Int hoveredGrid = ResolveTargetGridPosition(screenPosition);
+            if (hasLastMoveHoverCell && hoveredGrid == lastHoveredMoveCell)
+            {
+                return;
+            }
+
+            hasLastMoveHoverCell = true;
+            lastHoveredMoveCell = hoveredGrid;
+
+            if (!selectableMoveCells.Contains(hoveredGrid))
+            {
+                gridPreviewSystem?.ShowHoverCellBorder(null);
+                return;
+            }
+
+            gridPreviewSystem?.ShowHoverCellBorder(hoveredGrid);
         }
 
         private void TrySelectMoveTargetByClick(Vector2Int clickedGrid)
@@ -841,6 +885,7 @@
             confirmedAttackTargetGrid = Vector2Int.zero;
             currentMoveBudget = 0;
             hasLastDragCell = false;
+            hasLastMoveHoverCell = false;
             hasLastAttackHoverCell = false;
             wasLastAttackHoverValid = false;
             gridPreviewSystem?.Clear();
@@ -1080,13 +1125,17 @@
 
         private void RefreshMovePreview()
         {
-            if (EnableMoveDebug)
-            {
-                Debug.Log(
-                    $"[BattleMoveDebug] RefreshMovePreview unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, budget={currentMoveBudget}, cost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={BuildPathDebugText(drawnMovePath)}, analysis={AnalyzePathDebug(drawnMovePath)}");
-            }
+            //if (EnableMoveDebug)
+            //{
+            //    Debug.Log(
+            //        $"[BattleMoveDebug] RefreshMovePreview unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, budget={currentMoveBudget}, cost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={BuildPathDebugText(drawnMovePath)}, analysis={AnalyzePathDebug(drawnMovePath)}");
+            //}
 
             gridPreviewSystem?.ShowMoveCells(selectableMoveCells);
+            gridPreviewSystem?.ShowHoverCellBorder(
+                hasLastMoveHoverCell && selectableMoveCells.Contains(lastHoveredMoveCell)
+                    ? lastHoveredMoveCell
+                    : (Vector2Int?)null);
             gridPreviewSystem?.ShowUnitHighlights(new[] { pendingUserUnit });
             gridPreviewSystem?.ShowImpactUnitBorders(null);
 
@@ -1115,9 +1164,11 @@
                     previewOrigin,
                     pendingBattleCard);
                 gridPreviewSystem?.ShowAttackCells(previewAttackCells);
+                gridPreviewSystem?.ShowAttackImpactCells(null);
                 return;
             }
 
+            gridPreviewSystem?.ShowAttackImpactCells(null);
             gridPreviewSystem?.ShowAttackCells(null);
         }
 
@@ -1155,6 +1206,7 @@
             gridPreviewSystem?.ShowMoveCells(null);
             gridPreviewSystem?.ShowAttackCells(selectableAttackCells);
             gridPreviewSystem?.ShowUnitHighlights(new[] { pendingUserUnit });
+            gridPreviewSystem?.ShowHoverCellBorder(null);
 
             if (confirmedMovePath.Count > 0)
             {
@@ -1167,11 +1219,102 @@
 
             if (hoveredGrid.HasValue && selectableAttackCells.Contains(hoveredGrid.Value))
             {
+                gridPreviewSystem?.ShowAttackImpactCells(ResolvePreviewAttackCells(hoveredGrid.Value));
                 gridPreviewSystem?.ShowImpactUnitBorders(ResolvePreviewAttackTargets(hoveredGrid.Value));
                 return;
             }
 
+            gridPreviewSystem?.ShowAttackImpactCells(null);
             gridPreviewSystem?.ShowImpactUnitBorders(null);
+        }
+
+        private HashSet<Vector2Int> ResolvePreviewAttackCells(Vector2Int targetGrid)
+        {
+            HashSet<Vector2Int> result = new();
+            if (BattleBoardSystem.Instance == null || pendingBattleCard == null || pendingUserUnit == null)
+            {
+                return result;
+            }
+
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(pendingBattleCard);
+            if (attackEffect == null)
+            {
+                result.Add(targetGrid);
+                return result;
+            }
+
+            Vector2Int attackOrigin = confirmedMovePath.Count > 0
+                ? confirmedMovePath[confirmedMovePath.Count - 1]
+                : pendingUserUnit.GridPosition;
+
+            if (attackEffect.CustomAttackPattern != null)
+            {
+                return BattleBoardSystem.Instance.ResolvePatternCells(
+                    attackOrigin,
+                    targetGrid,
+                    attackEffect.CustomAttackPattern);
+            }
+
+            switch (attackEffect.AttackPattern)
+            {
+                case BattleAttackPattern.Area:
+                    AddDiamondCells(targetGrid, attackEffect.Range, result);
+                    break;
+
+                case BattleAttackPattern.Line:
+                    AddLineCellsTowardsTarget(attackOrigin, targetGrid, attackEffect.Range, result);
+                    break;
+
+                case BattleAttackPattern.Adjacent4:
+                    AddDiamondCells(targetGrid, 1, result);
+                    break;
+
+                case BattleAttackPattern.None:
+                default:
+                    result.Add(targetGrid);
+                    break;
+            }
+
+            return result;
+        }
+
+        private static void AddDiamondCells(Vector2Int center, int range, HashSet<Vector2Int> destination)
+        {
+            for (int x = -range; x <= range; x++)
+            {
+                for (int y = -range; y <= range; y++)
+                {
+                    Vector2Int offset = new(x, y);
+                    if (Mathf.Abs(offset.x) + Mathf.Abs(offset.y) <= range)
+                    {
+                        destination.Add(center + offset);
+                    }
+                }
+            }
+        }
+
+        private static void AddLineCellsTowardsTarget(
+            Vector2Int origin,
+            Vector2Int target,
+            int range,
+            HashSet<Vector2Int> destination)
+        {
+            Vector2Int delta = target - origin;
+            Vector2Int direction;
+
+            if (Mathf.Abs(delta.x) >= Mathf.Abs(delta.y))
+            {
+                direction = delta.x >= 0 ? Vector2Int.right : Vector2Int.left;
+            }
+            else
+            {
+                direction = delta.y >= 0 ? Vector2Int.up : Vector2Int.down;
+            }
+
+            for (int i = 1; i <= Mathf.Max(1, range); i++)
+            {
+                destination.Add(origin + (direction * i));
+            }
         }
 
         private static HashSet<Vector2Int> ResolveAttackSelectionCells(

@@ -94,10 +94,10 @@
                 Vector2Int pathCell = moveGA.PlannedPath[i];
                 Vector3 targetWorld = new(pathCell.x, pathCell.y, unitTransform.position.z);
 
-                if (EnableMoveDebug)
-                {
-                    Debug.Log($"[BattleMoveDebug] AnimateMove waypoint index={i}, cell={pathCell}, targetWorld={targetWorld}");
-                }
+                //if (EnableMoveDebug)
+                //{
+                //    Debug.Log($"[BattleMoveDebug] AnimateMove waypoint index={i}, cell={pathCell}, targetWorld={targetWorld}");
+                //}
 
                 while (Vector3.Distance(currentPosition, targetWorld) > 0.01f)
                 {
@@ -154,11 +154,16 @@
                 attackGA.Attacker,
                 attackGA.TargetPosition,
                 attackGA);
+            Dictionary<BattleUnit, int> targetHealthBeforeAttack = CaptureTargetHealth(targets);
+
+            Debug.Log(
+                $"[BattleAttackDebug] 공격 시작: card={(attackGA.SourceCard != null ? attackGA.SourceCard.Title : "Unknown")}, attacker={attackGA.Attacker.name}, attackerGrid={attackGA.Attacker.GridPosition}, targetPos={attackGA.TargetPosition}, targetCount={targets.Count}, hitsAll={attackGA.HitsAllTargetsInRange}, pattern={attackGA.AttackPattern}");
 
             if (TryApplyBattleEffects(attackGA, targets))
             {
                 Debug.Log(
                     $"[BattleCardSystem] 이펙트 공격 처리: attacker={attackGA.Attacker.name}, targetCount={targets.Count}, pattern={attackGA.AttackPattern}");
+                LogAttackResults(attackGA, targets, targetHealthBeforeAttack, null, usedEffects: true);
                 return;
             }
 
@@ -170,6 +175,64 @@
 
             Debug.Log(
                 $"[BattleCardSystem] 기본 공격 처리: attacker={attackGA.Attacker.name}, targetCount={targets.Count}, damage={attackGA.Damage}, pattern={attackGA.AttackPattern}");
+            LogAttackResults(attackGA, targets, targetHealthBeforeAttack, Mathf.Max(0, attackGA.Damage + attackGA.Attacker.CurrentAttackPower), usedEffects: false);
+        }
+
+        private static Dictionary<BattleUnit, int> CaptureTargetHealth(IReadOnlyList<BattleUnit> targets)
+        {
+            Dictionary<BattleUnit, int> result = new();
+            if (targets == null)
+            {
+                return result;
+            }
+
+            foreach (BattleUnit target in targets)
+            {
+                if (target != null && !result.ContainsKey(target))
+                {
+                    result[target] = target.CurrentHealth;
+                }
+            }
+
+            return result;
+        }
+
+        private static void LogAttackResults(
+            BattleAttackGA attackGA,
+            IReadOnlyList<BattleUnit> targets,
+            IReadOnlyDictionary<BattleUnit, int> targetHealthBeforeAttack,
+            int? baseDamageApplied,
+            bool usedEffects)
+        {
+            if (targets == null || targets.Count == 0)
+            {
+                Debug.Log(
+                    $"[BattleAttackDebug] 공격 결과: card={(attackGA?.SourceCard != null ? attackGA.SourceCard.Title : "Unknown")}, attacker={(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")}, hitTargets=0");
+                return;
+            }
+
+            foreach (BattleUnit target in targets)
+            {
+                if (target == null)
+                {
+                    continue;
+                }
+
+                int beforeHealth = 0;
+                if (targetHealthBeforeAttack != null && targetHealthBeforeAttack.TryGetValue(target, out int capturedHealth))
+                {
+                    beforeHealth = capturedHealth;
+                }
+
+                int afterHealth = target.CurrentHealth;
+                int actualDamage = Mathf.Max(0, beforeHealth - afterHealth);
+                string damageText = usedEffects
+                    ? $"actualDamage={actualDamage}"
+                    : $"baseResolvedDamage={baseDamageApplied ?? 0}, actualDamage={actualDamage}";
+
+                Debug.Log(
+                    $"[BattleAttackDebug] 공격 대상: attacker={(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")} -> target={target.name}, targetGrid={target.GridPosition}, beforeHp={beforeHealth}, afterHp={afterHealth}, {damageText}, alive={target.IsAlive}");
+            }
         }
 
         private static bool TryApplyBattleEffects(BattleAttackGA attackGA, IReadOnlyList<BattleUnit> resolvedTargets)

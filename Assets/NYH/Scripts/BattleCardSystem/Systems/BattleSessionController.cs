@@ -1,7 +1,9 @@
 namespace NYH.BattleCardSystem
 {
     using NYH.CoreCardSystem;
+    using TMPro;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /*
      * BattleSessionController
@@ -29,6 +31,12 @@ namespace NYH.BattleCardSystem
         public bool IsBattleActive { get; private set; }
 
         private CardPileRuntimeState savedCivilizationState;
+        private GameObject deckButtonObject;
+        private GameObject discardButtonObject;
+        private Text deckButtonText;
+        private Text discardButtonText;
+        private TMP_Text deckButtonTmpText;
+        private TMP_Text discardButtonTmpText;
 
         private void Awake()
         {
@@ -47,6 +55,8 @@ namespace NYH.BattleCardSystem
                 sharedHandView = FindFirstObjectByType<HandView>(FindObjectsInactive.Include);
             }
 
+            CacheDeckViewButtons();
+            RefreshDeckViewButtonLabels();
             SetObjectsActive(battleModeObjects, false);
         }
 
@@ -103,6 +113,7 @@ namespace NYH.BattleCardSystem
             }
 
             IsBattleActive = true;
+            RefreshDeckViewButtonLabels();
 
             battleManager.StartBattle();
 
@@ -144,6 +155,7 @@ namespace NYH.BattleCardSystem
 
             savedCivilizationState = null;
             IsBattleActive = false;
+            RefreshDeckViewButtonLabels();
         }
 
         private void HandleBattleFinished(BattleResult _)
@@ -164,6 +176,55 @@ namespace NYH.BattleCardSystem
                 {
                     target.SetActive(active);
                 }
+            }
+        }
+
+        private void CacheDeckViewButtons()
+        {
+            deckButtonObject = GameObject.Find("DeckCardViewButton");
+            discardButtonObject = GameObject.Find("DisCardViewButton");
+
+            if (deckButtonObject != null)
+            {
+                deckButtonText = deckButtonObject.GetComponentInChildren<Text>(true);
+                deckButtonTmpText = deckButtonObject.GetComponentInChildren<TMP_Text>(true);
+            }
+
+            if (discardButtonObject != null)
+            {
+                discardButtonText = discardButtonObject.GetComponentInChildren<Text>(true);
+                discardButtonTmpText = discardButtonObject.GetComponentInChildren<TMP_Text>(true);
+            }
+        }
+
+        private void RefreshDeckViewButtonLabels()
+        {
+            if (deckButtonObject == null && discardButtonObject == null)
+            {
+                CacheDeckViewButtons();
+            }
+
+            string deckLabel = IsBattleActive ? "전투 덱" : "덱";
+            string discardLabel = IsBattleActive ? "전투 버림" : "버림";
+
+            if (deckButtonText != null)
+            {
+                deckButtonText.text = deckLabel;
+            }
+
+            if (deckButtonTmpText != null)
+            {
+                deckButtonTmpText.text = deckLabel;
+            }
+
+            if (discardButtonText != null)
+            {
+                discardButtonText.text = discardLabel;
+            }
+
+            if (discardButtonTmpText != null)
+            {
+                discardButtonTmpText.text = discardLabel;
             }
         }
 

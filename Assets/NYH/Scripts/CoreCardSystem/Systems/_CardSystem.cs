@@ -2,6 +2,7 @@
 {
     using System.Collections;
     using System.Collections.Generic;
+    using NYH.BattleCardSystem;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -164,6 +165,13 @@
         /// </summary>
         public void ShowDeck()
         {
+            BattleSessionController battleSession = FindFirstObjectByType<BattleSessionController>(FindObjectsInactive.Include);
+            if (battleSession != null && battleSession.IsBattleActive && BattleCardSystem.Instance != null)
+            {
+                BattleCardSystem.Instance.ShowDeck();
+                return;
+            }
+
             if (pileState.DrawPileCount == 0 || CardListUI.Instance == null)
             {
                 return;
@@ -178,6 +186,13 @@
         /// </summary>
         public void ShowGraveyard()
         {
+            BattleSessionController battleSession = FindFirstObjectByType<BattleSessionController>(FindObjectsInactive.Include);
+            if (battleSession != null && battleSession.IsBattleActive && BattleCardSystem.Instance != null)
+            {
+                BattleCardSystem.Instance.ShowDiscardPile();
+                return;
+            }
+
             if (pileState.DiscardPileCount == 0 || CardListUI.Instance == null)
             {
                 return;

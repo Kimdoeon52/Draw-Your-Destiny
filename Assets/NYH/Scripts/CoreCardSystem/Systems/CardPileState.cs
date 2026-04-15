@@ -8,6 +8,7 @@
     {
         public int CardId;
         public int CurrentCost;
+        public CardData SourceData;
     }
 
     [System.Serializable]
@@ -126,6 +127,7 @@
                 {
                     CardId = card.CardID,
                     CurrentCost = card.Cost,
+                    SourceData = card.data,
                 });
             }
 
@@ -149,7 +151,9 @@
                     continue;
                 }
 
-                CardData data = resolver(entry.CardId);
+                CardData data = entry.SourceData != null
+                    ? entry.SourceData
+                    : resolver(entry.CardId);
                 if (data == null)
                 {
                     continue;
