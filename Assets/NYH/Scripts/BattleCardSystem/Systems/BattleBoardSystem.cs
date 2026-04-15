@@ -324,7 +324,13 @@ namespace NYH.BattleCardSystem
             HashSet<Vector2Int> customPatternCells = null;
             if (attackGA.CustomAttackPattern != null)
             {
-                customPatternCells = ResolvePatternCells(attackerPosition, targetPosition, attackGA.CustomAttackPattern);
+                // 커스텀 피격 패턴은 공격자 위치가 아니라 클릭한 타일을 원점으로 펼칩니다.
+                customPatternCells = ResolvePatternCellsAtAnchor(
+                    targetPosition,
+                    attackerPosition,
+                    targetPosition,
+                    attackGA.CustomAttackPattern,
+                    includeAnchorCell: true);
             }
 
             foreach (var pair in unitMap)
@@ -412,17 +418,36 @@ namespace NYH.BattleCardSystem
             Vector2Int targetPosition,
             AttackPatternData patternData)
         {
+            return ResolvePatternCellsAtAnchor(
+                attackerPosition,
+                attackerPosition,
+                targetPosition,
+                patternData);
+        }
+
+        public HashSet<Vector2Int> ResolvePatternCellsAtAnchor(
+            Vector2Int anchorPosition,
+            Vector2Int facingSourcePosition,
+            Vector2Int facingTargetPosition,
+            AttackPatternData patternData,
+            bool includeAnchorCell = false)
+        {
             HashSet<Vector2Int> resolved = new();
             if (patternData == null || patternData.Cells == null)
             {
                 return resolved;
             }
 
-            FacingDirection facing = ResolveFacingDirection(attackerPosition, targetPosition);
+            if (includeAnchorCell)
+            {
+                resolved.Add(anchorPosition);
+            }
+
+            FacingDirection facing = ResolveFacingDirection(facingSourcePosition, facingTargetPosition);
             foreach (var cell in patternData.Cells)
             {
                 Vector2Int rotated = patternData.RotateToFacing ? RotateOffset(cell, facing) : cell;
-                resolved.Add(attackerPosition + rotated);
+                resolved.Add(anchorPosition + rotated);
             }
 
             return resolved;

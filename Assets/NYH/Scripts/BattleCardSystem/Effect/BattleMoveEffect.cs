@@ -1,4 +1,4 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
     using NYH.CoreCardSystem;
@@ -11,7 +11,7 @@ namespace NYH.BattleCardSystem
         [Tooltip("기본 이동 칸 수입니다.")]
         [SerializeField] private int amount = 1;
 
-        [Tooltip("체크하면 실제 이동량 = 기본 이동 칸 수 + 사용 유닛의 현재 속도 입니다.")]
+        [Tooltip("체크하면 실제 이동량 = 기본 이동 칸 수 + 카드 사용 유닛의 현재 속도 로 계산됩니다.")]
         [SerializeField] private bool includeSourceUnitSpeed = true;
 
         public int Amount => amount;

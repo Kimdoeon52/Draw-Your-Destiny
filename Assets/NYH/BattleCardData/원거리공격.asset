@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e65b348dc63c8834cb1116ccfffa0291, type: 3}
-  m_Name: "\uB9E4\uC758\uB208"
+  m_Name: "\uC6D0\uAC70\uB9AC\uACF5\uACA9"
   m_EditorClassIdentifier: 
   <CardID>k__BackingField: 10001
-  <CardName>k__BackingField: "\uB9E4\uC758 \uB208"
+  <CardName>k__BackingField: "\uC6D0\uAC70\uB9AC\uACF5\uACA9"
   <CardType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 584017139910605470, guid: 57153bc98c84b584394a27c7ed1998ae,
     type: 3}
@@ -44,11 +44,12 @@ MonoBehaviour:
         useSeparatePatterns: 1
         targetingRange: 1
         targetingPattern: 0
-        customTargetingPattern: {fileID: 11400000, guid: 56de3a36e8817574db7ab4745cd8d26f,
+        customTargetingPattern: {fileID: 11400000, guid: 05d2a90cc9f34554b8dbb0219c5692b5,
           type: 2}
         impactRange: 1
         impactPattern: 0
-        customImpactPattern: {fileID: 0}
+        customImpactPattern: {fileID: 11400000, guid: 338328ebe63553f41be5a6c8750f9118,
+          type: 2}
     - rid: 7216728472994972377
       type: {class: BattleDamageEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:

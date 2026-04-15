@@ -1253,10 +1253,12 @@
 
             if (attackEffect.CustomImpactPattern != null)
             {
-                return BattleBoardSystem.Instance.ResolvePatternCells(
+                return BattleBoardSystem.Instance.ResolvePatternCellsAtAnchor(
+                    targetGrid,
                     attackOrigin,
                     targetGrid,
-                    attackEffect.CustomImpactPattern);
+                    attackEffect.CustomImpactPattern,
+                    includeAnchorCell: true);
             }
 
             switch (attackEffect.ImpactPattern)
