@@ -165,18 +165,11 @@
                     return;
                 }
 
-                ActionSystem.Instance.AddReaction(
-                    new BattleAttackGA(
-                        playCardGA.Card,
-                        playCardGA.UserUnit,
-                        playCardGA.TargetUnit,
-                        playCardGA.TargetPosition,
-                        0,
-                        attackEffect.Range,
-                        attackEffect.TargetCount,
-                        attackEffect.HitsAllTargetsInRange,
-                        attackEffect.AttackPattern,
-                        attackEffect.CustomAttackPattern));
+                GameAction rootAttackAction = BuildAttackReactionChain(playCardGA, attackEffect);
+                if (rootAttackAction != null)
+                {
+                    ActionSystem.Instance.AddReaction(rootAttackAction);
+                }
                 return;
             }
 
@@ -232,19 +225,11 @@
                 return;
             }
 
-            // 공격은 이동이 끝난 뒤 현재 위치를 기준으로 다시 판정되도록 후속 반응으로 등록합니다.
-            moveGA.PerformReactions.Add(
-                new BattleAttackGA(
-                    playCardGA.Card,
-                    playCardGA.UserUnit,
-                    playCardGA.TargetUnit,
-                    playCardGA.TargetPosition,
-                    0,
-                    attackEffect.Range,
-                    attackEffect.TargetCount,
-                    attackEffect.HitsAllTargetsInRange,
-                    attackEffect.AttackPattern,
-                    attackEffect.CustomAttackPattern));
+            GameAction rootAttackAction = BuildAttackReactionChain(playCardGA, attackEffect);
+            if (rootAttackAction != null)
+            {
+                moveGA.PerformReactions.Add(rootAttackAction);
+            }
 
             ActionSystem.Instance.AddReaction(moveGA);
         }
@@ -266,22 +251,16 @@
                 return;
             }
 
-            BattleAttackGA attackGA = new(
-                playCardGA.Card,
-                playCardGA.UserUnit,
-                playCardGA.TargetUnit,
-                playCardGA.TargetPosition,
-                0,
-                attackEffect.Range,
-                attackEffect.TargetCount,
-                attackEffect.HitsAllTargetsInRange,
-                attackEffect.AttackPattern,
-                attackEffect.CustomAttackPattern);
+            GameAction rootAttackAction = BuildAttackReactionChain(playCardGA, attackEffect);
+            if (rootAttackAction == null)
+            {
+                return;
+            }
 
             if (playCardGA.SkipPostAttackMove || playCardGA.PlannedPath == null || playCardGA.PlannedPath.Count == 0)
             {
                 // 이동 경로를 고르지 않았거나 이동을 생략한 경우에는 공격만 처리합니다.
-                ActionSystem.Instance.AddReaction(attackGA);
+                ActionSystem.Instance.AddReaction(rootAttackAction);
                 return;
             }
 
@@ -293,8 +272,8 @@
                 moveEffect.Amount,
                 moveEffect.IncludeSourceUnitSpeed ? playCardGA.UserUnitSpeed : 0);
 
-            attackGA.PerformReactions.Add(moveGA);
-            ActionSystem.Instance.AddReaction(attackGA);
+            AttachReactionToChain(rootAttackAction, moveGA);
+            ActionSystem.Instance.AddReaction(rootAttackAction);
         }
 
         private static void ApplyDirectBattleEffects(BattlePlayCardGA playCardGA)
@@ -339,23 +318,21 @@
                 BattleBoardSystem boardSystem = BattleBoardSystem.Instance;
                 if (boardSystem != null && playCardGA.UserUnit != null)
                 {
-                    BattleAttackGA previewAttack = new(
-                        playCardGA.Card,
-                        playCardGA.UserUnit,
-                        playCardGA.TargetUnit,
-                        playCardGA.TargetPosition,
-                        0,
-                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.Range ?? 1,
-                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.TargetCount ?? 1,
-                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.HitsAllTargetsInRange ?? false,
-                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.AttackPattern ?? BattleAttackPattern.None,
-                        BattleEffectResolver.GetAttackEffect(playCardGA.Card)?.CustomAttackPattern);
-
-                    resolvedTargets.AddRange(
-                        boardSystem.GetUnitsInAttackArea(
+                    BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+                    foreach (Vector2Int targetPosition in EnumerateAttackTargetPositions(playCardGA))
+                    {
+                        BattleAttackGA previewAttack = CreateAttackGA(playCardGA, attackEffect, targetPosition);
+                        foreach (BattleUnit unit in boardSystem.GetUnitsInAttackArea(
                             playCardGA.UserUnit,
-                            playCardGA.TargetPosition,
-                            previewAttack));
+                            targetPosition,
+                            previewAttack))
+                        {
+                            if (unit != null && !resolvedTargets.Contains(unit))
+                            {
+                                resolvedTargets.Add(unit);
+                            }
+                        }
+                    }
                 }
 
                 return resolvedTargets;
@@ -415,6 +392,96 @@
         private static int ResolveLegacyMoveAmount(BattleCard card)
         {
             return BattleEffectResolver.GetMoveEffect(card)?.Amount ?? 0;
+        }
+
+        private static IEnumerable<Vector2Int> EnumerateAttackTargetPositions(BattlePlayCardGA playCardGA)
+        {
+            if (playCardGA?.AttackTargetPositions != null && playCardGA.AttackTargetPositions.Count > 0)
+            {
+                for (int i = 0; i < playCardGA.AttackTargetPositions.Count; i++)
+                {
+                    yield return playCardGA.AttackTargetPositions[i];
+                }
+
+                yield break;
+            }
+
+            if (playCardGA != null)
+            {
+                yield return playCardGA.TargetPosition;
+            }
+        }
+
+        private static BattleAttackGA CreateAttackGA(
+            BattlePlayCardGA playCardGA,
+            BattleAttackEffect attackEffect,
+            Vector2Int targetPosition)
+        {
+            BattleUnit resolvedTargetUnit = null;
+            if (BattleBoardSystem.Instance != null)
+            {
+                BattleUnit unitAtTarget = BattleBoardSystem.Instance.GetUnitAt(targetPosition);
+                if (unitAtTarget != null && playCardGA?.UserUnit != null && unitAtTarget.Team != playCardGA.UserUnit.Team)
+                {
+                    resolvedTargetUnit = unitAtTarget;
+                }
+            }
+
+            if (resolvedTargetUnit == null
+                && playCardGA?.TargetUnit != null
+                && playCardGA.TargetPosition == targetPosition)
+            {
+                resolvedTargetUnit = playCardGA.TargetUnit;
+            }
+
+            return new BattleAttackGA(
+                playCardGA.Card,
+                playCardGA.UserUnit,
+                resolvedTargetUnit,
+                targetPosition,
+                0,
+                attackEffect != null ? attackEffect.ImpactRange : 1,
+                attackEffect != null ? attackEffect.TargetCount : 1,
+                attackEffect != null && attackEffect.HitsAllTargetsInRange,
+                attackEffect != null ? attackEffect.ImpactPattern : BattleAttackPattern.None,
+                attackEffect != null ? attackEffect.CustomImpactPattern : null);
+        }
+
+        private static GameAction BuildAttackReactionChain(BattlePlayCardGA playCardGA, BattleAttackEffect attackEffect)
+        {
+            GameAction rootAction = null;
+            GameAction currentAction = null;
+            foreach (Vector2Int targetPosition in EnumerateAttackTargetPositions(playCardGA))
+            {
+                BattleAttackGA attackGA = CreateAttackGA(playCardGA, attackEffect, targetPosition);
+                if (rootAction == null)
+                {
+                    rootAction = attackGA;
+                    currentAction = attackGA;
+                    continue;
+                }
+
+                currentAction.PerformReactions.Add(attackGA);
+                currentAction = attackGA;
+            }
+
+            return rootAction;
+        }
+
+        private static void AttachReactionToChain(GameAction rootAction, GameAction tailReaction)
+        {
+            if (rootAction == null || tailReaction == null)
+            {
+                return;
+            }
+
+            GameAction current = rootAction;
+            while (current.PerformReactions.Count > 0)
+            {
+                current = current.PerformReactions[current.PerformReactions.Count - 1];
+            }
+
+            current.PerformReactions.Add(tailReaction);
         }
     }
 }

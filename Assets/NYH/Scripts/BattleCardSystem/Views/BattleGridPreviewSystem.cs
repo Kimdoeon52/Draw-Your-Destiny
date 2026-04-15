@@ -28,6 +28,7 @@ namespace NYH.BattleCardSystem
         private readonly List<GameObject> activeImpactUnitBorders = new();
         private readonly List<GameObject> activeHoverCellBorders = new();
         private readonly List<GameObject> activeAttackImpactPreviewCells = new();
+        private readonly List<GameObject> activeSelectionOrderMarkers = new();
         private readonly Dictionary<SpriteRenderer, Color> highlightedUnitColors = new();
         private static Sprite cachedPreviewSprite;
 
@@ -62,6 +63,7 @@ namespace NYH.BattleCardSystem
             ClearUnitBorders();
             ClearImpactUnitBorders();
             ClearHoverCellBorders();
+            ClearSelectionOrderMarkers();
             ClearUnitHighlights();
         }
 
@@ -129,6 +131,20 @@ namespace NYH.BattleCardSystem
                 pathSortingOrder + 1,
                 "impact",
                 false);
+        }
+
+        public void ShowAttackSelectionOrder(IReadOnlyList<Vector2Int> cells)
+        {
+            ClearSelectionOrderMarkers();
+            if (cells == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < cells.Count; i++)
+            {
+                CreateSelectionOrderMarker(cells[i], i + 1);
+            }
         }
 
         // Tint the currently controlled allied unit so it stands out.
@@ -277,6 +293,19 @@ namespace NYH.BattleCardSystem
             activeHoverCellBorders.Clear();
         }
 
+        private void ClearSelectionOrderMarkers()
+        {
+            for (int i = 0; i < activeSelectionOrderMarkers.Count; i++)
+            {
+                if (activeSelectionOrderMarkers[i] != null)
+                {
+                    Destroy(activeSelectionOrderMarkers[i]);
+                }
+            }
+
+            activeSelectionOrderMarkers.Clear();
+        }
+
         // Create the default unit-selection border.
         private void CreateBorder(Vector2Int centerCell, Color color)
         {
@@ -312,6 +341,31 @@ namespace NYH.BattleCardSystem
             spriteRenderer.sortingOrder = borderSortingOrder;
 
             targetList.Add(border);
+        }
+
+        private void CreateSelectionOrderMarker(Vector2Int centerCell, int order)
+        {
+            CreateBorder(centerCell, new Color(1f, 0.92f, 0.35f, 1f), activeSelectionOrderMarkers, pathSortingOrder + 4);
+
+            GameObject label = new($"BattleAttackOrder_{order}");
+            label.transform.SetParent(transform, false);
+            label.transform.position = new Vector3(centerCell.x, centerCell.y, previewZ - 0.01f);
+
+            TextMesh textMesh = label.AddComponent<TextMesh>();
+            textMesh.text = order.ToString();
+            textMesh.fontSize = 64;
+            textMesh.characterSize = 0.09f;
+            textMesh.alignment = TextAlignment.Center;
+            textMesh.anchor = TextAnchor.MiddleCenter;
+            textMesh.color = new Color(0.15f, 0.05f, 0.05f, 1f);
+
+            MeshRenderer renderer = label.GetComponent<MeshRenderer>();
+            if (renderer != null)
+            {
+                renderer.sortingOrder = pathSortingOrder + 5;
+            }
+
+            activeSelectionOrderMarkers.Add(label);
         }
 
         // Diagnostic log for broken or mis-sorted path previews.

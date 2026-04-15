@@ -15,17 +15,17 @@ namespace NYH.BattleCardSystem
     /*
      * BattleBoardSystem
      *
-     * 역할:
-     * - 전투 보드의 타일 타입과 전투 유닛 위치를 관리합니다.
-     * - 이동 가능 여부, 이동 비용, 공격 범위 내 대상 탐색을 처리합니다.
+     * ??븷:
+     * - ?꾪닾 蹂대뱶???????낃낵 ?꾪닾 ?좊떅 ?꾩튂瑜?愿由ы빀?덈떎.
+     * - ?대룞 媛???щ?, ?대룞 鍮꾩슜, 怨듦꺽 踰붿쐞 ??????먯깋??泥섎━?⑸땲??
      *
-     * 인스펙터에서 넣는 것:
-     * - 현재는 없음
+     * ?몄뒪?숉꽣?먯꽌 ?ｋ뒗 寃?
+     * - ?꾩옱???놁쓬
      *
-     * 사용하는 법:
-     * - 전투 씬에 1개만 둡니다.
-     * - BattleUnit이 OnEnable에서 자동 등록됩니다.
-     * - 필요 시 SetTile()로 평지/강/숲/바위 타일을 코드에서 설정합니다.
+     * ?ъ슜?섎뒗 踰?
+     * - ?꾪닾 ?ъ뿉 1媛쒕쭔 ?〓땲??
+     * - BattleUnit??OnEnable?먯꽌 ?먮룞 ?깅줉?⑸땲??
+     * - ?꾩슂 ??SetTile()濡??됱?/媛???諛붿쐞 ??쇱쓣 肄붾뱶?먯꽌 ?ㅼ젙?⑸땲??
      */
     public class BattleBoardSystem : Singleton<BattleBoardSystem>
     {
@@ -110,8 +110,8 @@ namespace NYH.BattleCardSystem
                 return false;
             }
 
-            // 드래그로 그린 실제 경로가 있으면 그 경로 비용으로 검증해야
-            // "목적지는 같지만 중간에 강/우회 때문에 비용이 더 드는" 경우를 막을 수 있습니다.
+            // ?쒕옒洹몃줈 洹몃┛ ?ㅼ젣 寃쎈줈媛 ?덉쑝硫?洹?寃쎈줈 鍮꾩슜?쇰줈 寃利앺빐??
+            // "紐⑹쟻吏??媛숈?留?以묎컙??媛??고쉶 ?뚮Ц??鍮꾩슜?????쒕뒗" 寃쎌슦瑜?留됱쓣 ???덉뒿?덈떎.
             int requiredCost = plannedPath != null && plannedPath.Count > 0
                 ? CalculatePathCost(startPosition, targetPosition, plannedPath)
                 : CalculateMoveCost(startPosition, targetPosition);
@@ -318,8 +318,8 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            // 이동 후 공격 미리보기에서는 "아직 보드에 적용되지 않은 가상 위치"에서
-            // 공격 범위를 계산해야 하므로 attackerPosition을 별도로 받습니다.
+            // ?대룞 ??怨듦꺽 誘몃━蹂닿린?먯꽌??"?꾩쭅 蹂대뱶???곸슜?섏? ?딆? 媛???꾩튂"?먯꽌
+            // 怨듦꺽 踰붿쐞瑜?怨꾩궛?댁빞 ?섎?濡?attackerPosition??蹂꾨룄濡?諛쏆뒿?덈떎.
             BattleTeam targetTeam = attacker.Team == BattleTeam.Player ? BattleTeam.Enemy : BattleTeam.Player;
             HashSet<Vector2Int> customPatternCells = null;
             if (attackGA.CustomAttackPattern != null)
@@ -383,25 +383,23 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            // 공격 가능 셀 후보만 계산하는 단계입니다.
-            // 실제로 적을 맞출 수 있는지 여부는 UI 쪽에서 한 번 더 필터링합니다.
-            if (attackEffect.CustomAttackPattern != null)
+            if (attackEffect.CustomTargetingPattern != null)
             {
-                AddCustomPatternCells(attackerPosition, attackEffect.CustomAttackPattern, result);
+                AddCustomPatternCells(attackerPosition, attackEffect.CustomTargetingPattern, result);
                 return result;
             }
 
-            switch (attackEffect.AttackPattern)
+            switch (attackEffect.TargetingPattern)
             {
                 case BattleAttackPattern.Line:
-                    AddLineCells(attackerPosition, attackEffect.Range, result);
+                    AddLineCells(attackerPosition, attackEffect.TargetingRange, result);
                     break;
 
                 case BattleAttackPattern.Area:
                 case BattleAttackPattern.Adjacent4:
                 case BattleAttackPattern.None:
                 default:
-                    AddDiamondCells(attackerPosition, attackEffect.Range, result);
+                    AddDiamondCells(attackerPosition, attackEffect.TargetingRange, result);
                     break;
             }
 

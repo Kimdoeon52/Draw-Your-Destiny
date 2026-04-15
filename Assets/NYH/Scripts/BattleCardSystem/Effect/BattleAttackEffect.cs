@@ -6,28 +6,39 @@ namespace NYH.BattleCardSystem
     [System.Serializable]
     public class BattleAttackEffect : BattleEffect
     {
-        [Header("공격 범위")]
-        [Tooltip("공격 가능한 타일 거리입니다. 라인/다이아/커스텀 패턴의 기준 거리가 됩니다.")]
+        [Header("공격사거리")]
         [SerializeField] private int range = 1;
 
-        [Tooltip("동시에 맞출 최대 적 수입니다. '범위 내 모두 공격'이 켜져 있으면 이 값은 무시됩니다.")]
         [SerializeField] private int targetCount = 1;
-
-        [Tooltip("체크하면 범위 안에 들어온 적을 수 제한 없이 모두 공격합니다.")]
+        [SerializeField] private int selectionCount = 1;
         [SerializeField] private bool hitsAllTargetsInRange;
 
-        [Header("공격 모양")]
-        [Tooltip("기본 공격 범위 모양입니다. 커스텀 패턴을 지정하지 않을 때 사용됩니다.")]
+        [Header("기존 피격 패턴")]
         [SerializeField] private BattleAttackPattern attackPattern = BattleAttackPattern.None;
-
-        [Tooltip("직접 만든 패턴 데이터입니다. 지정하면 기본 패턴 대신 이 패턴 셀을 사용합니다.")]
         [SerializeField] private AttackPatternData customAttackPattern;
+
+        [Header("조준 패턴 / 피격 패턴 분리")]
+        [SerializeField] private bool useSeparatePatterns;
+        [SerializeField] private int targetingRange = 1;
+        [SerializeField] private BattleAttackPattern targetingPattern = BattleAttackPattern.None;
+        [SerializeField] private AttackPatternData customTargetingPattern;
+        [SerializeField] private int impactRange = 1;
+        [SerializeField] private BattleAttackPattern impactPattern = BattleAttackPattern.None;
+        [SerializeField] private AttackPatternData customImpactPattern;
 
         public int Range => Mathf.Max(1, range);
         public int TargetCount => Mathf.Max(1, targetCount);
+        public int SelectionCount => Mathf.Max(1, selectionCount);
         public bool HitsAllTargetsInRange => hitsAllTargetsInRange;
         public BattleAttackPattern AttackPattern => attackPattern;
         public AttackPatternData CustomAttackPattern => customAttackPattern;
+        public bool UseSeparatePatterns => useSeparatePatterns;
+        public int TargetingRange => useSeparatePatterns ? Mathf.Max(1, targetingRange) : Range;
+        public BattleAttackPattern TargetingPattern => useSeparatePatterns ? targetingPattern : AttackPattern;
+        public AttackPatternData CustomTargetingPattern => useSeparatePatterns ? customTargetingPattern : CustomAttackPattern;
+        public int ImpactRange => useSeparatePatterns ? Mathf.Max(1, impactRange) : Range;
+        public BattleAttackPattern ImpactPattern => useSeparatePatterns ? impactPattern : AttackPattern;
+        public AttackPatternData CustomImpactPattern => useSeparatePatterns ? customImpactPattern : CustomAttackPattern;
 
         public override void Apply(BattleEffectContext context, IReadOnlyList<BattleUnit> resolvedTargets)
         {
