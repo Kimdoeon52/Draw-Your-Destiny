@@ -49,7 +49,7 @@ public class EnemyAIManager : MonoBehaviour
 
     [Header("씬 레퍼런스")]
     [Tooltip("씬의 Grid 컴포넌트 (Tilemap의 부모 오브젝트)")]
-    [SerializeField] private Grid grid;
+    public Grid grid;
 
     [Tooltip("경로 탐색 및 유효성 검사에 사용할 Tilemap")]
     [SerializeField] private Tilemap tilemap;
@@ -58,13 +58,16 @@ public class EnemyAIManager : MonoBehaviour
     [SerializeField] private Transform[] enemyUnits;
 
     [Tooltip("공격 대상인 플레이어 유닛의 Transform")]
-    [SerializeField] private Transform playerUnit;
+    public Transform playerUnit;
 
     #endregion
 
     #region ── Inspector: AI 설정 ──
 
     [Header("AI 설정")]
+    [Tooltip("이 유닛(들)이 사용할 AI 행동 전략 (ScriptableObject)")]
+    [SerializeField] private AIBehaviorStrategySO currentStrategy;
+
     [Tooltip("적 유닛의 턴당 최대 이동 칸 수")]
     [SerializeField] private int maxMovePerTurn = 3;
 
@@ -165,33 +168,15 @@ public class EnemyAIManager : MonoBehaviour
 
             Debug.Log($"[EnemyAIManager] 유닛 [{i}] 행동 시작: {unit.name}");
 
-            // ① 현재 유닛 위치를 Grid 셀로 변환
-            Vector3Int unitCell = grid.WorldToCell(unit.position);
-
-            // ② A* 경로 탐색: 플레이어를 향한 최단 경로 계산
-            List<Vector3Int> path = FindPathToPlayer(unitCell, grid.WorldToCell(playerUnit.position));
-
-            // ③ 경로가 존재하면 비동기 이동 실행
-            if (path != null && path.Count > 0)
+            // 전략 패턴 위임: SO에 정의된 행동(이동, 공격 등)을 실행
+            if (currentStrategy != null)
             {
-                await MoveUnitAlongPathAsync(unit, path);
-            }
-
-            // ④ 이동 완료 후 십자 범위 내 플레이어 공격 시도
-            Vector3Int currentCell = grid.WorldToCell(unit.position);
-            bool attacked = TryAttackNearbyPlayer(unit, currentCell);
-
-            if (attacked)
-            {
-                Debug.Log($"[EnemyAIManager] 유닛 [{i}] 공격 성공!");
+                await currentStrategy.ExecuteBehaviorAsync(this, unit);
             }
             else
             {
-                Debug.Log($"[EnemyAIManager] 유닛 [{i}] 공격 범위 내 플레이어 없음.");
+                Debug.LogWarning("[EnemyAIManager] 할당된 AI 전략(Strategy)이 없습니다.");
             }
-
-            // ⑤ 유닛 간 행동 사이 짧은 딜레이 (시각적 연출용)
-            await UniTask.Delay(200);
         }
 
         // ── 모든 유닛 행동 완료 → 턴 종료 ──
@@ -227,7 +212,7 @@ public class EnemyAIManager : MonoBehaviour
         public Node parent;
     }
 
-    private List<Vector3Int> FindPathToPlayer(Vector3Int startCell, Vector3Int targetCell)
+    public List<Vector3Int> FindPathToPlayer(Vector3Int startCell, Vector3Int targetCell)
     {
         List<Vector3Int> resultPath = new List<Vector3Int>();
 
@@ -354,7 +339,7 @@ public class EnemyAIManager : MonoBehaviour
     /// </summary>
     /// <param name="unit">이동시킬 적 유닛의 Transform.</param>
     /// <param name="path">이동할 Grid 셀 좌표 리스트 (순서대로 이동).</param>
-    private async UniTask MoveUnitAlongPathAsync(Transform unit, List<Vector3Int> path)
+    public async UniTask MoveUnitAlongPathAsync(Transform unit, List<Vector3Int> path)
     {
         Debug.Log($"[EnemyAIManager] ▶ 유닛 이동 시작 — 경로 {path.Count}칸");
 
@@ -406,7 +391,7 @@ public class EnemyAIManager : MonoBehaviour
     /// <param name="unit">공격을 시도하는 적 유닛의 Transform.</param>
     /// <param name="unitCell">적 유닛의 현재 Grid 셀 좌표.</param>
     /// <returns>공격에 성공하면 true, 범위 내에 플레이어가 없으면 false.</returns>
-    private bool TryAttackNearbyPlayer(Transform unit, Vector3Int unitCell)
+    public bool TryAttackNearbyPlayer(Transform unit, Vector3Int unitCell)
     {
         Vector3Int[] directions = { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right };
         Vector3Int playerCell = grid.WorldToCell(playerUnit.position);
