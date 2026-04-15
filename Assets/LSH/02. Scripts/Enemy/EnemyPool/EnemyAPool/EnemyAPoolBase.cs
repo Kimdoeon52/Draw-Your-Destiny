@@ -77,7 +77,7 @@ namespace EnemyAPool
             }
 
             GameObject enemy = pool.Dequeue(); //풀에서 꺼냄
-            enemy.SetActive(true); //킴
+            enemy.SetActive(true); 
             EnemyUnitBase enemyAUnit = enemy.GetComponent<EnemyUnitBase>();
             enemyAUnit.enemyUnitID = enemyCivID; //아이디 등록
             enemyAUnit.SetOwnerPool(this); //유닛이 어디서 왓는지 pool 등록(재자리로 돌아가기 위함)

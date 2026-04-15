@@ -36,6 +36,8 @@ public class EnemyBrainBase : MonoBehaviour
     [Header("상점 건물")]
     //[SerializeField] protected GameObject MarketPrefabs;
     [SerializeField] protected BuildingData marketData;
+    [Header("민가 건물")]
+    [SerializeField] protected BuildingData houseData;
     [Header("병영 건물")] //0번은 석기시대 병영 1번 2번은 청동기 3,4,5번은 철기
     //[SerializeField] protected List<GameObject> BarracksPrefabs = new List<GameObject>();
     [SerializeField] protected List<BuildingData> barracksData = new List<BuildingData>();
@@ -56,11 +58,24 @@ public class EnemyBrainBase : MonoBehaviour
     [Header("지금 위치해있는 노드")] //현재 위치한 노드 Id 예를 들면 지금 노드 번호 101이런거임
     [SerializeField] protected int currentNodeID; //현재 위치한 노드 Id 예를 들면 지금 노드 번호 101이런거임
     public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음. 
+
+    [Header("인구최대치")]
+    [SerializeField] protected int maxHuman; //민가설치에 따라서 달라짐.
+    [Header("병력 수")]
+    [SerializeField] protected int rockWarriorCount;
+    [SerializeField] protected int archerCount;
+    [SerializeField] protected int healerCount;
+    [SerializeField] protected int wizzardCount;
+    [SerializeField] protected int horseWarriorCount; 
+    [SerializeField] protected int superUnitCount;
+    [Header("농장 수")]
+    [SerializeField] protected int farmCount;
     protected virtual void OnEnable()
     {
         //적 행동 초기화
         InitializeActionCases();
         Debug.Log("{enemyID} 턴 시작");
+        Setting();
     }
     //=============================임시 턴 시작 함수==============================
     protected virtual void Update()
@@ -70,7 +85,17 @@ public class EnemyBrainBase : MonoBehaviour
             StartEnemyTurn();
         }
     }
-
+    //=============================초기화 함수====================================
+    protected virtual void Setting()
+    {
+        maxHuman = 10;
+        rockWarriorCount = 0;
+        archerCount = 0;
+        healerCount = 0;
+        wizzardCount = 0;
+        horseWarriorCount = 0;
+        superUnitCount = 0;
+    }
     //=============================적 행동 확률====================================
 
     protected void InitializeActionCases()
@@ -165,12 +190,17 @@ public class EnemyBrainBase : MonoBehaviour
     {
         //적의 석기 시대 건물 짓기 행동 구현
         int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
+        if(maxHuman <= 100)
+        {
+            buildingChoice = Random.Range(0, 4); //농장, 상점, 병영, 민가 중 하나 선택
+        }
         switch (buildingChoice)
         {
             case 0: //농장 건물
                 Debug.Log("<color=yellow>[농장 건물 짓자.]</color> ");
                 //SpawnBuilding(FarmPrefabs);
                 SpawnBuilding(farmData);
+                farmCount += 1;
                 break;
             case 1: //상점 건물
                 Debug.Log("<color=yellow>[상점 건물 짓자.]</color> ");
@@ -180,18 +210,29 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log("<color=yellow>[병영 짓자.]</color> ");
                 SpawnBuilding(barracksData[0]); //석기 시대 병영
+                rockWarriorCount += 5; //석기 시대 병영은 돌전사 5명 생산
+                break;
+            case 3:
+                Debug.Log("<color=yellow>[민가 짓자.]</color> ");
+                SpawnBuilding(houseData);
+                maxHuman += 10;
                 break;
         }
     }
     protected virtual void BuildLevelTwo()
     {
         //적의 청동기 시대 건물 짓기 행동 구현
-        int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
+        int buildingChoice = Random.Range(0, 5); //농장, 상점, 병영 중 하나 선택
+        if (maxHuman <= 100)
+        {
+            buildingChoice = Random.Range(0, 6); //농장, 상점, 병영, 민가 중 하나 선택
+        }
         switch (buildingChoice)
         {
             case 0: //농장 건물
                 //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
                 SpawnBuilding(farmData);
+                farmCount += 1;
                 break;
             case 1: //상점 건물
                 //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
@@ -199,28 +240,76 @@ public class EnemyBrainBase : MonoBehaviour
                 break;
             case 2: //병영 건물
                 //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
-                SpawnBuilding(barracksData[Random.Range(1, 3)]); //청동기 시대 병영
+                SpawnBuilding(barracksData[1]); //청동기 시대 병영
+                archerCount += 5;
+                break;
+            case 3: //병영 건물
+                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                SpawnBuilding(barracksData[2]); //청동기 시대 병영
+                healerCount += 5;
+                break;
+            case 4: //병영 건물
+                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                SpawnBuilding(barracksData[0]); //청동기 시대 병영
+                rockWarriorCount += 5;
+                break;
+            case 5:
+                SpawnBuilding(houseData);
+                maxHuman += 10;
                 break;
         }
     }
     protected virtual void BuildLevelThree()
     {
         //적의 철기 시대 건물 짓기 행동 구현
-        int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
+        int buildingChoice = Random.Range(0, 8); //농장, 상점, 병영 중 하나 선택
+        if (maxHuman <= 100)
+        {
+            buildingChoice = Random.Range(0, 9); //농장, 상점, 병영, 민가 중 하나 선택
+        }
         switch (buildingChoice)
         {
             case 0: //농장 건물
                 //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
                 SpawnBuilding(farmData);
+                farmCount += 1;
                 break;
             case 1: //상점 건물
                 //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
                 SpawnBuilding(marketData);
                 break;
             case 2: //병영 건물
-                //Instantiate(BarracksPrefabs[Random.Range(3, 6)], GetRandomPosition(), Quaternion.identity); //철기 시대 병영
-                SpawnBuilding(barracksData[Random.Range(3, 6)]); //철기 시대 병영
+                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                SpawnBuilding(barracksData[1]); //청동기 시대 병영
+                archerCount += 2;
                 break;
+            case 3: //병영 건물
+                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                SpawnBuilding(barracksData[2]); //청동기 시대 병영
+                healerCount += 5;
+                break;
+            case 4: //병영 건물
+                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                SpawnBuilding(barracksData[0]); //청동기 시대 병영
+                rockWarriorCount += 5;
+                break;
+            case 5:
+                SpawnBuilding(barracksData[3]); //철기 시대 병영
+                horseWarriorCount += 3;
+                break;
+            case 6:
+                SpawnBuilding(barracksData[4]); //철기 시대 병영
+                wizzardCount += 4;
+                break;
+            case 7:
+                SpawnBuilding(barracksData[5]);
+                superUnitCount += 1;
+                break;
+            case 8:
+                SpawnBuilding(houseData);
+                maxHuman += 10;
+                break;
+
         }
     }
     
@@ -354,4 +443,6 @@ public class EnemyBrainBase : MonoBehaviour
     //조건2: 인접한 노드가 플레이어의 영지인가. <- 플레이어의 영지라면 전투로 진입.
     //조건3: 인접한 노드가 본인의 영지인가. <- 본인의 영지라면 점령 시도 안함.
     //조건4: 인접한 노드가 다른적의 영지인가. <- 다른 적과 골드와 식량의 총량을 비교후 승리 판단여부.
+
+    
 }
