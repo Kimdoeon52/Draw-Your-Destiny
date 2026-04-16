@@ -9,6 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8839c9033510e7408faaf967104c16c, type: 3}
-  m_Name: TestStrategy
+  m_Script: {fileID: 11500000, guid: 74a2a8a6da4a6e24ab1c278d51426aa5, type: 3}
+  m_Name: CowardlyStrategy
   m_EditorClassIdentifier: 
+  fleeDistance: 5

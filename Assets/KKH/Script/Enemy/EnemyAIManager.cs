@@ -166,12 +166,25 @@ public class EnemyAIManager : MonoBehaviour
             if (unit == null || !unit.gameObject.activeInHierarchy)
                 continue;
 
-            Debug.Log($"[EnemyAIManager] 유닛 [{i}] 행동 시작: {unit.name}");
+            // ── 유닛별 전략 실행 ──
+            EnemyUnitPatton unitPatton = unit.GetComponent<EnemyUnitPatton>();
+            AIBehaviorStrategySO strategyToUse = currentStrategy;
 
-            // 전략 패턴 위임: SO에 정의된 행동(이동, 공격 등)을 실행
-            if (currentStrategy != null)
+            // 1. 유닛에 개별 전략이 있으면 그것을 우선 사용
+            if (unitPatton != null && unitPatton.myStrategy != null)
             {
-                await currentStrategy.ExecuteBehaviorAsync(this, unit);
+                strategyToUse = unitPatton.myStrategy;
+                Debug.Log($"[EnemyAIManager] 유닛 [{i}] ({unit.name}) → 개별 전략 사용: {strategyToUse.name}");
+            }
+            else
+            {
+                Debug.Log($"[EnemyAIManager] 유닛 [{i}] ({unit.name}) → 기본 전략 사용: {currentStrategy?.name ?? "없음"}");
+            }
+
+            // 2. 전략 실행
+            if (strategyToUse != null)
+            {
+                await strategyToUse.ExecuteBehaviorAsync(this, unit);
             }
             else
             {
@@ -503,7 +516,7 @@ public class EnemyAIManager : MonoBehaviour
     /// </summary>
     /// <param name="cell">확인할 Grid 셀 좌표.</param>
     /// <returns>통행 가능하면 true, 장애물이 있으면 false.</returns>
-    private bool IsCellWalkable(Vector3Int cell)
+    public bool IsCellWalkable(Vector3Int cell)
     {
         // ① 타일맵에 타일이 없으면 통행 불가
         if (!tilemap.HasTile(cell))
