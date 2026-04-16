@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using EnemyAPool;
+using Unity.VisualScripting;
 
 public class EnemyA : EnemyBrainBase
 {
@@ -8,12 +9,49 @@ public class EnemyA : EnemyBrainBase
         base.OnEnable();
         enemyID = 1;
         currentNodeID = 110;
+        enemyLevel = 1;
     }
     //==============================================================================================
     protected override void GetGold() //골드와 식량을 얻는 행동 구현
     {
-        gold += 100;
-        food += 50;
+        switch (enemyLevel)
+        {
+            case 1:
+                gold += 50;
+                science += 100;
+                break;
+            case 2:
+                gold += 75;
+                science += 300;
+                break;
+            case 3:
+                gold += 100;
+                break;
+            default:
+                gold += 100;
+                science += 50;
+                break;
+        }
+    }
+    protected override void CheckLevelUp()
+    {
+        switch (enemyLevel)
+        {
+            case 1:
+                if (science >= 1000)
+                {
+                    enemyLevel = 2;
+                    Debug.Log("EnemyA가 레벨업했습니다! 현재 레벨: " + enemyLevel);
+                }
+                break;
+            case 2:
+                if (science >= 5000)
+                {
+                    enemyLevel = 3;
+                    Debug.Log("EnemyA가 레벨업했습니다! 현재 레벨: " + enemyLevel);
+                }
+                break;
+        }
     }
     protected override void StartEnemyTurn()
     {
@@ -23,4 +61,6 @@ public class EnemyA : EnemyBrainBase
     {
         return base.FindRandomPlace(data);
     }
+    
+    
 }

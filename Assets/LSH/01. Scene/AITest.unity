@@ -35655,7 +35655,13 @@ MonoBehaviour:
   actionCases: []
   farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
   marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
+  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
   barracksData:
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
   - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
   gold: 0
   food: 0
@@ -35663,6 +35669,14 @@ MonoBehaviour:
   enemyID: 0
   countEnemyTurn: 0
   currentNodeID: 0
+  maxHuman: 0
+  rockWarriorCount: 0
+  archerCount: 0
+  healerCount: 0
+  wizzardCount: 0
+  horseWarriorCount: 0
+  superUnitCount: 0
+  farmCount: 0
 --- !u!1 &565785355
 GameObject:
   m_ObjectHideFlags: 0
@@ -75911,7 +75925,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 9
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -113956,7 +113970,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 0
-      m_TileSpriteIndex: 4
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -114166,11 +114180,11 @@ Tilemap:
   - m_RefCount: 17
     m_Data: {fileID: 2975530826323893400, guid: 49ebf7de40457d84495983a6734b2c68,
       type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: -322706168206865058, guid: 49ebf7de40457d84495983a6734b2c68,
       type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 16
     m_Data: {fileID: -3737707458618277094, guid: 49ebf7de40457d84495983a6734b2c68,
       type: 3}

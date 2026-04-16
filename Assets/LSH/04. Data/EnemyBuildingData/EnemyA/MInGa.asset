@@ -10,26 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
-  m_Name: RockWarriorBuild
+  m_Name: MInGa
   m_EditorClassIdentifier: 
   id: 
-  buildingName: "\uADFC\uC811 \uC720\uB2DB \uBCD1\uC601(\uC11D\uAE30)"
-  buildingType: 7
-  sprite: {fileID: 8284690431070618562, guid: 20d6cce5c7ac33b4e97f0f98a09aa347, type: 3}
+  buildingName: "\uBBFC\uAC00"
+  buildingType: 2
+  sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
   requiredEra: 0
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
   goldCost: 0
   width: 2
   height: 2
-  allowedTiles: 04000000
+  allowedTiles: 
   maxPerTerritory: -1
   isUniqueGlobal: 0
   goldPerTurn: 0
   researchPerTurn: 0
   foodPerTurn: 0
   populationCapBonus: 0
-  visualPrefab: {fileID: 375015307261114755, guid: 6587e723cf5c67341bf120cbd5d0985b,
-    type: 3}
+  visualPrefab: {fileID: 0}
   productionInterval: 3
-  unitCapacity: 5
+  unitCapacity: 0
