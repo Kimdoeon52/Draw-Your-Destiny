@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -124,7 +124,12 @@ public class NodeDataManager : Singleton<NodeDataManager>
         tilemap = src?.cityTilemap;
         return tilemap != null;
     }
-
+    public bool TryGetFarmlandTilemap(int nodeID, out Tilemap tilemap)
+    {
+        NodeTerrainSource src = FindTerrain(nodeID);
+        tilemap = src?.farmlandTilemap;
+        return tilemap != null;
+    }
     // ── 지형 소스 조회 ────────────────────────────────────────────
     private NodeTerrainSource FindTerrain(int nodeID)
     {

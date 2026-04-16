@@ -3,11 +3,13 @@ using PoolBase;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public enum EnemyAction
 {
     Building, //시대에 따른 건물 짓기를 다르게 할 것
     GetGold, //골드나 식량을 동시에 얻을꺼임.
+    TryOccupy //영지 점령 시도
 }
 
 public enum EnemyState
@@ -42,9 +44,9 @@ public class EnemyBrainBase : MonoBehaviour
     //[SerializeField] protected List<GameObject> BarracksPrefabs = new List<GameObject>();
     [SerializeField] protected List<BuildingData> barracksData = new List<BuildingData>();
 
-    [Header("골드 및 식량")]
+    [Header("골드 및 과학")]
     [SerializeField] protected int gold;
-    [SerializeField] protected int food;
+    [SerializeField] protected int science;
 
     [Header("시대 레벨")]
     [SerializeField] protected int enemyLevel; //적의 시대를 나타낼 레벨임
@@ -98,15 +100,32 @@ public class EnemyBrainBase : MonoBehaviour
     }
     //=============================적 행동 확률====================================
 
-    protected void InitializeActionCases()
+    protected virtual void InitializeActionCases()
     {
         actionCases.Clear();//일단 비워주고
         enemyLevel = 1;
         //적 행동 확률 초기화
         actionCases.Add(new ActionCases { action = EnemyAction.Building, state = EnemyState.Defend, weight = 50 });
-        actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 50 });
+        actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 40 });
+        actionCases.Add(new ActionCases { action = EnemyAction.TryOccupy, state = EnemyState.Attack, weight = 10 });
     }
 
+    protected virtual void UpdateActionCases() //적 행동 확률 업데이트하는 함수임. 예를 들어 레벨업하면 건물 짓는 행동 확률이 올라가는 식으로.
+    {
+        //적 행동 확률 업데이트 구현
+        if (enemyLevel == 2)
+        {
+            actionCases[0].weight = 50; //건물 짓기 확률 40%
+            actionCases[1].weight = 30; //골드 얻기 확률 40%
+            actionCases[2].weight = 20; //영지 점령 시도 확률 20%
+        }
+        else if (enemyLevel == 3) //공격적으로 변함.
+        {
+            actionCases[0].weight = 60; //건물 짓기 확률 60%
+            actionCases[1].weight = 0; //건물 위주로 하기 위해 골드 얻기 x
+            actionCases[2].weight = 40; //영지 점령 시도 확률 40%
+        }
+    }
     protected virtual EnemyAction GetWeightedRandomAction()
     {
         int totalWeight = 0; //전체적인 가중치 계산용도
@@ -133,6 +152,8 @@ public class EnemyBrainBase : MonoBehaviour
     //==============================적 행동 실행====================================
     protected virtual void StartEnemyTurn()
     {
+        CheckLevelUp();
+        UpdateActionCases();
         EnemyAction action = GetWeightedRandomAction(); //적 행동 확률에 따른 행동 선택
         bool actionCheck = CheckAction(action); //돈없으면 건물 못짓게 하기
         if (!actionCheck)
@@ -140,7 +161,7 @@ public class EnemyBrainBase : MonoBehaviour
             Debug.Log("<color=yellow>[돈이 없어서 강제로 골드]</color> ");
             action = EnemyAction.GetGold; //조건이 안맞으면 골드 얻는 행동으로 강제 변경
         }
-        switch (action) //일단 50대 50임
+        switch (action) 
         {
            case EnemyAction.Building: //건물 짓기
                 Debug.Log("<color=red>[건물 짓기 시도]</color> ");
@@ -149,6 +170,10 @@ public class EnemyBrainBase : MonoBehaviour
            case EnemyAction.GetGold: //금과 식량 얻기
                 Debug.Log("<color=red>[돈이 없어서...]</color> ");
                 GetGold();
+                break;
+            case EnemyAction.TryOccupy: //영지 점령 시도
+                Debug.Log("<color=red>[영지 점령 시도]</color> ");
+                TryToOccupyAdjacentNode();
                 break;
         }
         countEnemyTurn++;
@@ -166,12 +191,15 @@ public class EnemyBrainBase : MonoBehaviour
                 return gold >= 300;//골드가 없으면 건물 못 지음
             case EnemyAction.GetGold:
                 return true;
+            case EnemyAction.TryOccupy:
+                return gold >= 1000; //영지 점령은 1000골드 이상으로 자주 못하게 설정.
         }
         return false;
     }
     //==============================건물 짓기====================================
     protected virtual void CheckWhichBuilding()
     {
+        gold -= 300;
         switch(enemyLevel) //적의 시대에 따른 건물 짓기
         {
             case 1: //석기 시대
@@ -198,22 +226,28 @@ public class EnemyBrainBase : MonoBehaviour
         {
             case 0: //농장 건물
                 Debug.Log("<color=yellow>[농장 건물 짓자.]</color> ");
+                if(farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
+                {
+                    Debug.Log("<color=yellow>[농장 3개 이상이라 농장 안짓자.]</color> ");
+                    CheckWhichBuilding(); //다시 건물 선택
+                    return;
+                }
                 //SpawnBuilding(FarmPrefabs);
                 SpawnBuilding(farmData);
                 farmCount += 1;
                 break;
             case 1: //상점 건물
-                Debug.Log("<color=yellow>[상점 건물 짓자.]</color> ");
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 건물 짓자.]</color> ");
                 //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
                 SpawnBuilding(marketData);
                 break;
             case 2: //병영 건물
-                Debug.Log("<color=yellow>[병영 짓자.]</color> ");
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [병영 짓자.]</color> ");
                 SpawnBuilding(barracksData[0]); //석기 시대 병영
                 rockWarriorCount += 5; //석기 시대 병영은 돌전사 5명 생산
                 break;
             case 3:
-                Debug.Log("<color=yellow>[민가 짓자.]</color> ");
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
                 SpawnBuilding(houseData);
                 maxHuman += 10;
                 break;
@@ -231,29 +265,40 @@ public class EnemyBrainBase : MonoBehaviour
         {
             case 0: //농장 건물
                 //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                if (farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
+                {
+                    Debug.Log("<color=yellow>[농장 3개 이상이라 농장 안짓자.]</color> ");
+                    CheckWhichBuilding(); //다시 건물 선택
+                    return;
+                }
                 SpawnBuilding(farmData);
                 farmCount += 1;
                 break;
             case 1: //상점 건물
-                //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                    //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 건물 짓자.]</color> ");
                 SpawnBuilding(marketData);
                 break;
             case 2: //병영 건물
                 //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
                 SpawnBuilding(barracksData[1]); //청동기 시대 병영
                 archerCount += 5;
                 break;
             case 3: //병영 건물
                 //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
                 SpawnBuilding(barracksData[2]); //청동기 시대 병영
                 healerCount += 5;
                 break;
             case 4: //병영 건물
                 //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
                 SpawnBuilding(barracksData[0]); //청동기 시대 병영
                 rockWarriorCount += 5;
                 break;
             case 5:
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
                 SpawnBuilding(houseData);
                 maxHuman += 10;
                 break;
@@ -271,41 +316,55 @@ public class EnemyBrainBase : MonoBehaviour
         {
             case 0: //농장 건물
                 //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
+                if (farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
+                {
+                    Debug.Log("<color=yellow>[농장 3개 이상이라 농장 안짓자.]</color> ");
+                    CheckWhichBuilding(); //다시 건물 선택
+                    return;
+                }
                 SpawnBuilding(farmData);
                 farmCount += 1;
                 break;
             case 1: //상점 건물
                 //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 짓자.]</color> ");
                 SpawnBuilding(marketData);
                 break;
             case 2: //병영 건물
                 //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
                 SpawnBuilding(barracksData[1]); //청동기 시대 병영
                 archerCount += 2;
                 break;
             case 3: //병영 건물
                 //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
                 SpawnBuilding(barracksData[2]); //청동기 시대 병영
                 healerCount += 5;
                 break;
             case 4: //병영 건물
                 //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
                 SpawnBuilding(barracksData[0]); //청동기 시대 병영
                 rockWarriorCount += 5;
                 break;
             case 5:
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [기마병 짓자.]</color> ");
                 SpawnBuilding(barracksData[3]); //철기 시대 병영
                 horseWarriorCount += 3;
                 break;
             case 6:
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [마법사 짓자.]</color> ");
                 SpawnBuilding(barracksData[4]); //철기 시대 병영
                 wizzardCount += 4;
                 break;
             case 7:
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [슈퍼유닛 짓자.]</color> ");
                 SpawnBuilding(barracksData[5]);
                 superUnitCount += 1;
                 break;
             case 8:
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
                 SpawnBuilding(houseData);
                 maxHuman += 10;
                 break;
@@ -345,10 +404,18 @@ public class EnemyBrainBase : MonoBehaviour
 
     protected virtual Vector3Int FindRandomPlace(BuildingData data)
     {
+        Tilemap cityTilemap = null;
         // 적 자기 노드의 city 타일맵을 소스에서 가져옴
-        if (!NodeDataManager.Instance.TryGetCityTilemap(currentNodeID, out var cityTilemap))
-            return Vector3Int.zero;
-
+        if (data.buildingType == BuildingType.Farm)
+        {
+            if(!NodeDataManager.Instance.TryGetFarmlandTilemap(currentNodeID, out cityTilemap))
+                return Vector3Int.zero;
+        }
+        else
+        {
+            if (!NodeDataManager.Instance.TryGetCityTilemap(currentNodeID, out cityTilemap))
+                return Vector3Int.zero;
+        }
         cityTilemap.CompressBounds(); // 타일맵의 실제 타일이 있는 영역으로 Bounds를 압축
         BoundsInt bounds = cityTilemap.cellBounds; // 타일맵의 셀 범위를 나타내는 BoundsInt 가져오기
 
@@ -379,22 +446,22 @@ public class EnemyBrainBase : MonoBehaviour
         return Vector3Int.zero;
     }
 
-    private bool OverlapsExisting(NodeData node, Vector3Int origin, BuildingData data)
+    private bool OverlapsExisting(NodeData node, Vector3Int origin, BuildingData data) //건물의 footprint가 노드에 이미 있는 다른 건물과 겹치는지 확인
     {
-        foreach (var b in node.buildings)
+        foreach (var b in node.buildings) //노드에 있는 건물
         {
-            if (b?.data == null) continue;
-            for (int x = 0; x < data.width; x++)
-                for (int y = 0; y < data.height; y++)
+            if (b?.data == null) continue; //데이터가 없으면 패스
+            for (int x = 0; x < data.width; x++) //새로 지으려는 건물의 폭과 높이만큼 반복
+                for (int y = 0; y < data.height; y++) //새로 지으려는 건물의 폭과 높이만큼 반복
                 {
-                    Vector3Int p = origin + new Vector3Int(x, y, 0);
-                    for (int bx = 0; bx < b.data.width; bx++)
-                        for (int by = 0; by < b.data.height; by++)
-                            if (p == b.origin + new Vector3Int(bx, by, 0))
-                                return true;
+                    Vector3Int p = origin + new Vector3Int(x, y, 0); 
+                    for (int bx = 0; bx < b.data.width; bx++) //노드에 이미 있는 건물의 폭과 높이만큼 반복
+                        for (int by = 0; by < b.data.height; by++) //노드에 이미 있는 건물의 폭과 높이만큼 반복
+                            if (p == b.origin + new Vector3Int(bx, by, 0)) //새로 지으려는 건물의 각 타일이 노드에 이미 있는 건물의 각 타일과 겹치는지 검사
+                                return true;//겹치는 타일이 하나라도 있으면 true 반환
                 }
         }
-        return false;
+        return false; //겹치는 타일이 하나도 없으면 false 반환
     }
 
     //protected void SpawnBuilding(BuildingData data)
@@ -427,14 +494,25 @@ public class EnemyBrainBase : MonoBehaviour
     {
         //여기는 각각 Enemy마다 override하는걸로
     }
+    //==============================레벨업 조건==========================================
+    protected virtual void CheckLevelUp()
+    {
+        //적의 레벨업 조건 구현
+        if (science >= 1000)
+        {
+            enemyLevel++;
+            science = 0; //레벨업 후 과학 초기화
+            Debug.Log("<color=green>[레벨업!]</color> ");
+        }
+    }
     //==============================점령 시도===========================================
     //적이 영지 점령 시도하는 행동 구현
     protected virtual bool TryToOccupy()
     {
         //적이 영지 점령 시도하는 행동 구현
-        if (food > 200)
+        if (gold > 500)
         {
-            return true; //식량이 충분하면 점령 시도
+            return true; //골드가 충분하면 점령 시도
         }
         return false;
     }
@@ -443,6 +521,38 @@ public class EnemyBrainBase : MonoBehaviour
     //조건2: 인접한 노드가 플레이어의 영지인가. <- 플레이어의 영지라면 전투로 진입.
     //조건3: 인접한 노드가 본인의 영지인가. <- 본인의 영지라면 점령 시도 안함.
     //조건4: 인접한 노드가 다른적의 영지인가. <- 다른 적과 골드와 식량의 총량을 비교후 승리 판단여부.
+    //============================================점령 조건==============================================
+    protected virtual void TryToOccupyAdjacentNode()
+    {
+        //인접한 노드 탐색
+        List<NodeData> adjacentNodes = WorldMapManager.Instance.GetAdjacentNodes(currentNodeID); //현재 노드의 인접한 노드 리스트 가져오기
+        foreach (NodeData adjacentNode in adjacentNodes) //각 인접한 노드에 대해서
+        {
+            if (adjacentNode.ownerCivID == -1) //조건1: 인접한 노드가 누구의 것도 아니라면
+            {
+                Debug.Log($"<color=green>[노드 {adjacentNode} 점령 시도]</color> ");
+                adjacentNode.ownerCivID = enemyID; //해당 노드를 본인의 영지로 설정
+                return;
+            }
+            else if (adjacentNode.ownerCivID == 0) //조건2: 인접한 노드가 플레이어의 영지인가
+            {
+                Debug.Log($"<color=red>[노드 {adjacentNode} 공격 시도]</color> ");
+                //전투로 진입하는 행동 구현
+                return;
+            }
+            else if (adjacentNode.ownerCivID == enemyID) //조건3: 인접한 노드가 본인의 영지인가
+            {
+                Debug.Log($"<color=yellow>[노드 {adjacentNode}는 이미 내 영지]</color> ");
+                continue; //점령 시도 안함
+            }
+            else //조건4: 인접한 노드가 다른적의 영지인가
+            {
+                Debug.Log($"<color=red>[노드 {adjacentNode} 다른 적과 전투 시도]</color> ");
+                //다른 적과 골드와 식량의 총량을 비교후 승리 판단여부 행동 구현
+                return;
+            }
+        }
+    }
 
-    
+
 }

@@ -201,7 +201,7 @@ public class EnemyUnitBase : MonoBehaviour
         catch (System.OperationCanceledException)
         {
             //이동 루프가 취소되었을 때 예외 처리
-            Debug.Log("루프 취소.");
+            //Debug.Log("루프 취소.");
         }
     }
     protected virtual void TryRandomStepMove() //랜덤 이동 시도

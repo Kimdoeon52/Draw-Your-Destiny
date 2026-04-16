@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -385,4 +385,19 @@ public class WorldMapManager : Singleton<WorldMapManager>
     // ── 현재 진입 중인 노드 ───────────────────────────────────────
     public int CurrentNodeID => currentNodeID;
     public bool IsInTerritoryView => currentNodeID != -1;
+
+    //============================Ai전용 탐색 함수 건들지마셈^^=====================================
+    public List<NodeData> GetAdjacentNodes(int nodeID)
+    {
+        NodeData node = GetNode(nodeID); //받아온 id조회 해서 node에 저장
+        if (node == null) return new List<NodeData>(); //노드가 없으면 빈 리스트 반환
+        List<NodeData> adjacentNodes = new List<NodeData>();// adjacentNodes 라는 새로운 노드 저장 공간 생성
+        foreach (int adjID in node.adjacentNodeIDs) //인접 노드 id마다 반복
+        {
+            NodeData adjNode = GetNode(adjID); //인접 노드 id로 노드 조회
+            if (adjNode != null) //있으면
+                adjacentNodes.Add(adjNode); //추가
+        }
+        return adjacentNodes; //인접 노드 리스트 반환
+    }
 }
