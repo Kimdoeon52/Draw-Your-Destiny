@@ -35658,13 +35658,13 @@ MonoBehaviour:
   houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
   barracksData:
   - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
+  - {fileID: 11400000, guid: 1682bb96636c2ff4c94285dde1b56447, type: 2}
+  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
+  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
+  - {fileID: 11400000, guid: 0c7c8e0fe9a6ca94ca97b3a3a24cc9a7, type: 2}
   gold: 0
-  food: 0
+  science: 0
   enemyLevel: 0
   enemyID: 0
   countEnemyTurn: 0

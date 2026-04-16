@@ -199,7 +199,6 @@ public class EnemyBrainBase : MonoBehaviour
     //==============================건물 짓기====================================
     protected virtual void CheckWhichBuilding()
     {
-        gold -= 300;
         switch(enemyLevel) //적의 시대에 따른 건물 짓기
         {
             case 1: //석기 시대
@@ -213,6 +212,7 @@ public class EnemyBrainBase : MonoBehaviour
                 BuildLevelThree();
                 break;
         }
+        gold -= 300;
     }
     protected virtual void BuildLevelOne()
     {
@@ -233,8 +233,8 @@ public class EnemyBrainBase : MonoBehaviour
                     return;
                 }
                 //SpawnBuilding(FarmPrefabs);
-                SpawnBuilding(farmData);
                 farmCount += 1;
+                SpawnBuilding(farmData);
                 break;
             case 1: //상점 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 건물 짓자.]</color> ");
@@ -271,8 +271,8 @@ public class EnemyBrainBase : MonoBehaviour
                     CheckWhichBuilding(); //다시 건물 선택
                     return;
                 }
-                SpawnBuilding(farmData);
                 farmCount += 1;
+                SpawnBuilding(farmData);
                 break;
             case 1: //상점 건물
                     //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
@@ -322,8 +322,8 @@ public class EnemyBrainBase : MonoBehaviour
                     CheckWhichBuilding(); //다시 건물 선택
                     return;
                 }
-                SpawnBuilding(farmData);
                 farmCount += 1;
+                SpawnBuilding(farmData);
                 break;
             case 1: //상점 건물
                 //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
