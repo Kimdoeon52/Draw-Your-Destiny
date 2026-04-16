@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74a2a8a6da4a6e24ab1c278d51426aa5, type: 3}
   m_Name: CowardlyStrategy
   m_EditorClassIdentifier: 
-  fleeDistance: 5
+  idealDistance: 5
+  moveStep: 3
