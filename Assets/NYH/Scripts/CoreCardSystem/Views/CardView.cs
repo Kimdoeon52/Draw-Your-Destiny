@@ -31,6 +31,7 @@
         public static bool AnyCardPickedUp = false;
         public bool IsHoverPreview { get; set; } = false;
         public bool UseBuiltInInteractions { get; set; } = true;
+        public bool AllowHoverPreview { get; set; } = true;
 
         private Vector3 currentVelocity;
         private bool isDragging;
@@ -96,6 +97,11 @@
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (!AllowHoverPreview)
+            {
+                return;
+            }
+
             if (isPickedUp || isDragging || AnyCardPickedUp)
             {
                 return;
@@ -111,6 +117,11 @@
 
         public void OnPointerExit(PointerEventData eventData)
         {
+            if (!AllowHoverPreview)
+            {
+                return;
+            }
+
             if (this == null)
             {
                 return;
