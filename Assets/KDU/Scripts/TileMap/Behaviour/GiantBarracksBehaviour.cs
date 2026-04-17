@@ -6,7 +6,14 @@ using UnityEngine;
 // 연구 포인트가 200에 도달하기 전까지는 유닛을 생산하지 않는다.
 public class GiantBarracksBehaviour : UnitProducerBehaviour
 {
+    WizzardPool wizardPool;
+
     private const int RequiredResearch = 200;
+
+    private void Awake()
+    {
+        wizardPool = GetComponent<WizzardPool>();
+    }
 
     public override void OnTurnEnd()
     {
@@ -23,7 +30,7 @@ public class GiantBarracksBehaviour : UnitProducerBehaviour
     protected override void SpawnUnit()
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Giant, instance); 로 교체
-        WizzardPool.Instance.GetHuman(0);
+        wizardPool.GetHuman(0);
         Debug.Log($"[GiantBarracks] 자이언트 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
     }
 }

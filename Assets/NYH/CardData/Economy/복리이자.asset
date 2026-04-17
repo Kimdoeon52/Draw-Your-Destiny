@@ -12,14 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
   m_Name: "\uBCF5\uB9AC\uC774\uC790"
   m_EditorClassIdentifier: 
-  <cardID>k__BackingField: 0
-  cardName: 
-  <cardType>k__BackingField: 0
-  <cardUseType>k__BackingField: 
+  <cardID>k__BackingField: 3404
+  cardName: "\uBCF5\uB9AC\uC774\uC790"
+  <cardType>k__BackingField: 2
+  <cardUseType>k__BackingField: 04000000
   <Image>k__BackingField: {fileID: 0}
-  <Cost>k__BackingField: 0
-  description: 
-  <Effects>k__BackingField: []
+  <Cost>k__BackingField: 1
+  description: "\uC774\uBC88\uD134\uC5D0 30\uACE8\uB4DC\uB97C \uC18C\uBAA8\uD558\uC9C0\uB9CC
+    3\uD134 \uD6C4 50\uACE8\uB4DC\uB97C \uD68D\uB4DD\uD569\uB2C8\uB2E4."
+  <Effects>k__BackingField:
+  - rid: 3255626818864021592
+  - rid: 3255626818864021593
+  - rid: -2
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3255626818864021592
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
+    - rid: 3255626818864021593
+      type: {class: GoldCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        costAmount: -30

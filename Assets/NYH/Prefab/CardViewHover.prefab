@@ -276,6 +276,7 @@ MonoBehaviour:
   cardUseTypeText: {fileID: 0}
   moveRangeText: {fileID: 0}
   cardArtImage: {fileID: 5952169617159122133}
+  gridImage: {fileID: 0}
   cardBackgroundImage: {fileID: 4324358947979887678}
   dropLayer:
     serializedVersion: 2

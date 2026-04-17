@@ -5,11 +5,20 @@
 // 같은 Behaviour 인스턴스가 업그레이드 후에도 유지됨. instance.data만 교체됨.
 public class ArcherBarracksBehaviour : UnitProducerBehaviour
 {
+    ArcherPool archerPool;
+    HealerPool healerPool;
+
+    private void Awake()
+    {
+        archerPool = GetComponent<ArcherPool>();
+        healerPool = GetComponent<HealerPool>();
+    }
+
     protected override void SpawnUnit()
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Archer, instance); 로 교체
-        ArcherPool.Instance.GetHuman(0);
-        HealerPool.Instance.GetHuman(0);
+        archerPool.GetHuman(0);
+        healerPool.GetHuman(0);
         Debug.Log($"[ArcherBarracks] 궁수 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
     }
 }

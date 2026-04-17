@@ -5,10 +5,17 @@
 // 세 건물 모두 이 Behaviour를 사용. 업그레이드 시 instance.data만 교체되므로 tick/activeCount 유지됨.
 public class BarracksBehaviour : UnitProducerBehaviour
 {
+    RockWarriorPool rockWarriorPool;
+
+    private void Awake()
+    {
+        rockWarriorPool = GetComponent<RockWarriorPool>();
+    }
+
     protected override void SpawnUnit()
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Soldier, instance); 로 교체
-        RockWarriorPool.Instance.GetHuman(0);
+        rockWarriorPool.GetHuman(0);
         Debug.Log($"[Barracks] 병사 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
     }
 }
