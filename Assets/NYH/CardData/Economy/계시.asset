@@ -12,14 +12,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
   m_Name: "\uACC4\uC2DC"
   m_EditorClassIdentifier: 
-  <cardID>k__BackingField: 0
-  cardName: 
-  <cardType>k__BackingField: 0
-  <cardUseType>k__BackingField: 
+  <cardID>k__BackingField: 3551
+  cardName: "\uACC4\uC2DC"
+  <cardType>k__BackingField: 2
+  <cardUseType>k__BackingField: 04000000
   <Image>k__BackingField: {fileID: 0}
-  <Cost>k__BackingField: 0
-  description: 
-  <Effects>k__BackingField: []
+  <Cost>k__BackingField: 2
+  description: "\uC5F0\uAD6C \uD3EC\uC778\uD2B8\uB97C 50\uB9CC\uD07C \uC18C\uBAA8\uD574
+    \uB371\uC5D0\uC11C \uCE74\uB4DC\uB97C 3\uC7A5 \uB4DC\uB85C\uC6B0\uD569\uB2C8\uB2E4.
+    \uC774\uBC88 \uD134\uC5D0\uB294 \uB354\uC774\uC0C1 \uCE74\uB4DC\uB97C \uB4DC\uB85C\uC6B0\uD560
+    \uC218 \uC5C6\uC9C0\uB9CC, \uD604\uC7AC \uC190\uD328\uC758 \uBAA8\uB4E0 \uCE74\uB4DC
+    \uCF54\uC2A4\uD2B8\uAC00 \uC774\uBC88 \uD134 0\uC774 \uB429\uB2C8\uB2E4."
+  <Effects>k__BackingField:
+  - rid: 3255626818864021583
+  - rid: 3255626818864021584
+  - rid: 3255626818864021585
+  - rid: 3255626818864021586
+  - rid: 3255626818864021587
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3255626818864021583
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
+    - rid: 3255626818864021584
+      type: {class: ResearchpointsEffect, ns: , asm: Assembly-CSharp}
+      data:
+        resarchPointAmount: -50
+    - rid: 3255626818864021585
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        drawAmount: 3
+    - rid: 3255626818864021586
+      type: {class: ZeroCostHandEffect, ns: , asm: Assembly-CSharp}
+      data:
+        handCostAmount: 0
+        handCardAmount: 10
+    - rid: 3255626818864021587
+      type: {class: LockDrawEffect, ns: , asm: Assembly-CSharp}
+      data: 

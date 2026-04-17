@@ -173,7 +173,11 @@ public class GameManager : PersistentSingleton<GameManager>
         return true;
     }
 
-    public void AddResearch(int amount) => ResourceManager.Instance.AddResearch(amount);
+    public void AddResearch(int amount)
+    {
+        ResourceManager.Instance.AddResearch(amount);
+        Debug.LogError($"증가 연구:{amount} / 현재 연구:{ResourceManager.Instance.Research}");
+    }
     // 식량 획득 (CardSystem에서 호출)
     public void AddFood(int amount) => ResourceManager.Instance.AddFood(amount);
 
