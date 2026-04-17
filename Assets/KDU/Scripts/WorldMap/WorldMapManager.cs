@@ -400,4 +400,12 @@ public class WorldMapManager : Singleton<WorldMapManager>
         }
         return adjacentNodes; //인접 노드 리스트 반환
     }
+
+    public List<NodeData> GetNodesByCivID(int civID)
+    {
+        List<NodeData> result = new List<NodeData>();
+        foreach (NodeData node in allNodes)
+            if (node.ownerCivID == civID) result.Add(node);
+        return result;
+    }
 }

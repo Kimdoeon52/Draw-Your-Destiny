@@ -37,4 +37,8 @@ public class NodeData
     // 영지 이탈 시 TileMapManager의 allBuildings가 여기에 저장됨
     // visual 필드는 이탈 시 null로 클리어됨 (재진입 시 재생성)
     public List<BuildingInstance> buildings = new List<BuildingInstance>();
+
+    // AI 영지 상태 (영지 단위로 누적되는 수치)
+    public int farmCount = 0;
+    public int maxHuman = 10;
 }

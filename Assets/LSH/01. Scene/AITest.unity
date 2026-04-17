@@ -242,6 +242,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 102
     adjacentNodeIDs: 6500000068000000
     ownerCivID: -1
@@ -250,6 +252,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 103
     adjacentNodeIDs: 6500000069000000
     ownerCivID: -1
@@ -258,6 +262,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 104
     adjacentNodeIDs: 660000006a000000
     ownerCivID: -1
@@ -266,6 +272,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 105
     adjacentNodeIDs: 670000006b000000
     ownerCivID: -1
@@ -274,6 +282,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 106
     adjacentNodeIDs: 680000006c000000
     ownerCivID: -1
@@ -282,6 +292,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 107
     adjacentNodeIDs: 690000006d000000
     ownerCivID: -1
@@ -290,6 +302,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 108
     adjacentNodeIDs: 6a0000006e000000
     ownerCivID: -1
@@ -298,6 +312,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 109
     adjacentNodeIDs: 6b0000006e000000
     ownerCivID: -1
@@ -306,6 +322,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
   - nodeID: 110
     adjacentNodeIDs: 6c0000006d000000
     ownerCivID: 1
@@ -314,6 +332,8 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    farmCount: 0
+    maxHuman: 10
 --- !u!4 &6487096
 Transform:
   m_ObjectHideFlags: 0
@@ -9084,6 +9104,50 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &98369790
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 98369792}
+  - component: {fileID: 98369791}
+  m_Layer: 0
+  m_Name: EnemyBrainManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &98369791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98369790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd184d7f52296f64eb7f63e0cacb1605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &98369792
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98369790}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.2768037, y: 1.4731325, z: -0.024618205}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &151873635
 GameObject:
   m_ObjectHideFlags: 0
@@ -35668,15 +35732,12 @@ MonoBehaviour:
   enemyLevel: 0
   enemyID: 0
   countEnemyTurn: 0
-  currentNodeID: 0
-  maxHuman: 0
   rockWarriorCount: 0
   archerCount: 0
   healerCount: 0
   wizzardCount: 0
   horseWarriorCount: 0
   superUnitCount: 0
-  farmCount: 0
 --- !u!1 &565785355
 GameObject:
   m_ObjectHideFlags: 0
@@ -75925,7 +75986,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 9
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -127345,3 +127406,4 @@ SceneRoots:
   - {fileID: 1095900125}
   - {fileID: 164920599}
   - {fileID: 561679659}
+  - {fileID: 98369792}

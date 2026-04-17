@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+using UnityEngine;
 using EnemyAPool;
 using Unity.VisualScripting;
 
 public class EnemyA : EnemyBrainBase
 {
+    protected override void Awake()
+    {
+        enemyID = 1;
+        enemyLevel = 1;
+        base.Awake();
+    }
+
     protected override void OnEnable()
     {
         base.OnEnable();
-        enemyID = 1;
-        currentNodeID = 110;
-        enemyLevel = 1;
     }
     //==============================================================================================
     protected override void GetGold() //골드와 식량을 얻는 행동 구현
@@ -57,10 +61,8 @@ public class EnemyA : EnemyBrainBase
     {
         base.StartEnemyTurn();
     }
-    protected override Vector3Int FindRandomPlace(BuildingData data)
+    protected override Vector3Int FindRandomPlace(int nodeID, BuildingData data)
     {
-        return base.FindRandomPlace(data);
+        return base.FindRandomPlace(nodeID, data);
     }
-    
-    
 }

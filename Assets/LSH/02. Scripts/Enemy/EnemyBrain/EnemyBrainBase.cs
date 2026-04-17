@@ -1,4 +1,4 @@
-﻿using EnemyAPool;
+using EnemyAPool;
 using PoolBase;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -33,15 +33,12 @@ public class EnemyBrainBase : MonoBehaviour
     [SerializeField] protected List<ActionCases> actionCases = new List<ActionCases>();
 
     [Header("농장 건물")]
-    //[SerializeField] protected GameObject FarmPrefabs;
     [SerializeField] protected BuildingData farmData;
     [Header("상점 건물")]
-    //[SerializeField] protected GameObject MarketPrefabs;
     [SerializeField] protected BuildingData marketData;
     [Header("민가 건물")]
     [SerializeField] protected BuildingData houseData;
     [Header("병영 건물")] //0번은 석기시대 병영 1번 2번은 청동기 3,4,5번은 철기
-    //[SerializeField] protected List<GameObject> BarracksPrefabs = new List<GameObject>();
     [SerializeField] protected List<BuildingData> barracksData = new List<BuildingData>();
 
     [Header("골드 및 과학")]
@@ -57,21 +54,21 @@ public class EnemyBrainBase : MonoBehaviour
     [Header("턴 진행 여부")] //적 종류마다 다르게 설정할꺼임.
     [SerializeField] protected int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
 
-    [Header("지금 위치해있는 노드")] //현재 위치한 노드 Id 예를 들면 지금 노드 번호 101이런거임
-    [SerializeField] protected int currentNodeID; //현재 위치한 노드 Id 예를 들면 지금 노드 번호 101이런거임
-    public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음. 
+    public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음.
 
-    [Header("인구최대치")]
-    [SerializeField] protected int maxHuman; //민가설치에 따라서 달라짐.
     [Header("병력 수")]
     [SerializeField] protected int rockWarriorCount;
     [SerializeField] protected int archerCount;
     [SerializeField] protected int healerCount;
     [SerializeField] protected int wizzardCount;
-    [SerializeField] protected int horseWarriorCount; 
+    [SerializeField] protected int horseWarriorCount;
     [SerializeField] protected int superUnitCount;
-    [Header("농장 수")]
-    [SerializeField] protected int farmCount;
+
+    protected virtual void Awake()
+    {
+        EnemyBrainManager.Instance.Register(enemyID, this);
+    }
+
     protected virtual void OnEnable()
     {
         //적 행동 초기화
@@ -79,6 +76,7 @@ public class EnemyBrainBase : MonoBehaviour
         Debug.Log("{enemyID} 턴 시작");
         Setting();
     }
+
     //=============================임시 턴 시작 함수==============================
     protected virtual void Update()
     {
@@ -90,7 +88,6 @@ public class EnemyBrainBase : MonoBehaviour
     //=============================초기화 함수====================================
     protected virtual void Setting()
     {
-        maxHuman = 10;
         rockWarriorCount = 0;
         archerCount = 0;
         healerCount = 0;
@@ -147,40 +144,54 @@ public class EnemyBrainBase : MonoBehaviour
 
         return EnemyAction.GetGold;
     }
-    
-    
+
+
     //==============================적 행동 실행====================================
     protected virtual void StartEnemyTurn()
     {
         CheckLevelUp();
         UpdateActionCases();
-        EnemyAction action = GetWeightedRandomAction(); //적 행동 확률에 따른 행동 선택
-        bool actionCheck = CheckAction(action); //돈없으면 건물 못짓게 하기
-        if (!actionCheck)
+
+        List<NodeData> owned = WorldMapManager.Instance.GetNodesByCivID(enemyID);
+        if (owned.Count == 0)
         {
-            Debug.Log("<color=yellow>[돈이 없어서 강제로 골드]</color> ");
-            action = EnemyAction.GetGold; //조건이 안맞으면 골드 얻는 행동으로 강제 변경
+            Debug.Log($"<color=gray>[{enemyID}] 소유 노드 없음 — 턴 패스</color>");
+            return;
         }
-        switch (action) 
+
+        for (int i = 0; i < 5; i++) //한 턴에 5번 행동
         {
-           case EnemyAction.Building: //건물 짓기
-                Debug.Log("<color=red>[건물 짓기 시도]</color> ");
-                CheckWhichBuilding(); //어떤 건물을 지을껀지 판단
-                break;
-           case EnemyAction.GetGold: //금과 식량 얻기
-                Debug.Log("<color=red>[돈이 없어서...]</color> ");
-                GetGold();
-                break;
-            case EnemyAction.TryOccupy: //영지 점령 시도
-                Debug.Log("<color=red>[영지 점령 시도]</color> ");
-                TryToOccupyAdjacentNode();
-                break;
+            NodeData target = owned[Random.Range(0, owned.Count)]; //소유 노드 중 랜덤 1개
+            int nodeID = target.nodeID;
+
+            EnemyAction action = GetWeightedRandomAction(); //적 행동 확률에 따른 행동 선택
+            bool actionCheck = CheckAction(action); //돈없으면 건물 못짓게 하기
+            if (!actionCheck)
+            {
+                Debug.Log("<color=yellow>[돈이 없어서 강제로 골드]</color> ");
+                action = EnemyAction.GetGold; //조건이 안맞으면 골드 얻는 행동으로 강제 변경
+            }
+            switch (action)
+            {
+               case EnemyAction.Building: //건물 짓기
+                    Debug.Log($"<color=red>[행동 {i+1}] 노드 {nodeID} 건물 짓기 시도</color> ");
+                    CheckWhichBuilding(nodeID); //어떤 건물을 지을껀지 판단
+                    break;
+               case EnemyAction.GetGold: //금과 식량 얻기
+                    Debug.Log($"<color=red>[행동 {i+1}] 노드 {nodeID} 골드 얻기</color> ");
+                    GetGold();
+                    break;
+                case EnemyAction.TryOccupy: //영지 점령 시도
+                    Debug.Log($"<color=pink>[행동 {i+1}] 노드 {nodeID} 점령 시도</color> ");
+                    TryToOccupyAdjacentNode(nodeID);
+                    break;
+            }
         }
         countEnemyTurn++;
         Debug.Log("<color=cyan>[턴 이벤트 발생]</color>");
         OnTurnPassed?.Invoke();
     }
-    
+
     protected virtual bool CheckAction(EnemyAction action) //행동 조건 검사
     {
         Debug.Log("<color=red>[행동 체크 들어감...]</color> ");
@@ -197,28 +208,29 @@ public class EnemyBrainBase : MonoBehaviour
         return false;
     }
     //==============================건물 짓기====================================
-    protected virtual void CheckWhichBuilding()
+    protected virtual void CheckWhichBuilding(int nodeID)
     {
         switch(enemyLevel) //적의 시대에 따른 건물 짓기
         {
             case 1: //석기 시대
                 Debug.Log("<color=yellow>[건물 짓자.]</color> ");
-                BuildLevelOne();
+                BuildLevelOne(nodeID);
                 break;
             case 2: //청동기 시대
-                BuildLevelTwo();
+                BuildLevelTwo(nodeID);
                 break;
             case 3: //철기 시대
-                BuildLevelThree();
+                BuildLevelThree(nodeID);
                 break;
         }
         gold -= 300;
     }
-    protected virtual void BuildLevelOne()
+    protected virtual void BuildLevelOne(int nodeID)
     {
+        NodeData node = WorldMapManager.Instance.GetNode(nodeID);
         //적의 석기 시대 건물 짓기 행동 구현
         int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
-        if(maxHuman <= 100)
+        if(node.maxHuman <= 100)
         {
             buildingChoice = Random.Range(0, 4); //농장, 상점, 병영, 민가 중 하나 선택
         }
@@ -226,156 +238,145 @@ public class EnemyBrainBase : MonoBehaviour
         {
             case 0: //농장 건물
                 Debug.Log("<color=yellow>[농장 건물 짓자.]</color> ");
-                if(farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
+                if(node.farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
                 {
                     Debug.Log("<color=yellow>[농장 3개 이상이라 농장 안짓자.]</color> ");
-                    CheckWhichBuilding(); //다시 건물 선택
+                    CheckWhichBuilding(nodeID); //다시 건물 선택
                     return;
                 }
-                //SpawnBuilding(FarmPrefabs);
-                farmCount += 1;
-                SpawnBuilding(farmData);
+                node.farmCount += 1;
+                SpawnBuilding(nodeID, farmData);
                 break;
             case 1: //상점 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 건물 짓자.]</color> ");
-                //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
-                SpawnBuilding(marketData);
+                SpawnBuilding(nodeID, marketData);
                 break;
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [병영 짓자.]</color> ");
-                SpawnBuilding(barracksData[0]); //석기 시대 병영
+                SpawnBuilding(nodeID, barracksData[0]); //석기 시대 병영
                 rockWarriorCount += 5; //석기 시대 병영은 돌전사 5명 생산
                 break;
             case 3:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
-                SpawnBuilding(houseData);
-                maxHuman += 10;
+                SpawnBuilding(nodeID, houseData);
+                node.maxHuman += 10;
                 break;
         }
     }
-    protected virtual void BuildLevelTwo()
+    protected virtual void BuildLevelTwo(int nodeID)
     {
+        NodeData node = WorldMapManager.Instance.GetNode(nodeID);
         //적의 청동기 시대 건물 짓기 행동 구현
         int buildingChoice = Random.Range(0, 5); //농장, 상점, 병영 중 하나 선택
-        if (maxHuman <= 100)
+        if (node.maxHuman <= 100)
         {
             buildingChoice = Random.Range(0, 6); //농장, 상점, 병영, 민가 중 하나 선택
         }
         switch (buildingChoice)
         {
             case 0: //농장 건물
-                //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
-                if (farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
+                if (node.farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
                 {
                     Debug.Log("<color=yellow>[농장 3개 이상이라 농장 안짓자.]</color> ");
-                    CheckWhichBuilding(); //다시 건물 선택
+                    CheckWhichBuilding(nodeID); //다시 건물 선택
                     return;
                 }
-                farmCount += 1;
-                SpawnBuilding(farmData);
+                node.farmCount += 1;
+                SpawnBuilding(nodeID, farmData);
                 break;
             case 1: //상점 건물
-                    //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 건물 짓자.]</color> ");
-                SpawnBuilding(marketData);
+                SpawnBuilding(nodeID, marketData);
                 break;
             case 2: //병영 건물
-                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
-                SpawnBuilding(barracksData[1]); //청동기 시대 병영
+                SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
                 archerCount += 5;
                 break;
             case 3: //병영 건물
-                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
-                SpawnBuilding(barracksData[2]); //청동기 시대 병영
+                SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
                 healerCount += 5;
                 break;
             case 4: //병영 건물
-                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
-                SpawnBuilding(barracksData[0]); //청동기 시대 병영
+                SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
                 rockWarriorCount += 5;
                 break;
             case 5:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
-                SpawnBuilding(houseData);
-                maxHuman += 10;
+                SpawnBuilding(nodeID, houseData);
+                node.maxHuman += 10;
                 break;
         }
     }
-    protected virtual void BuildLevelThree()
+    protected virtual void BuildLevelThree(int nodeID)
     {
+        NodeData node = WorldMapManager.Instance.GetNode(nodeID);
         //적의 철기 시대 건물 짓기 행동 구현
         int buildingChoice = Random.Range(0, 8); //농장, 상점, 병영 중 하나 선택
-        if (maxHuman <= 100)
+        if (node.maxHuman <= 100)
         {
             buildingChoice = Random.Range(0, 9); //농장, 상점, 병영, 민가 중 하나 선택
         }
         switch (buildingChoice)
         {
             case 0: //농장 건물
-                //Instantiate(FarmPrefabs, GetRandomPosition(), Quaternion.identity);
-                if (farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
+                if (node.farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
                 {
                     Debug.Log("<color=yellow>[농장 3개 이상이라 농장 안짓자.]</color> ");
-                    CheckWhichBuilding(); //다시 건물 선택
+                    CheckWhichBuilding(nodeID); //다시 건물 선택
                     return;
                 }
-                farmCount += 1;
-                SpawnBuilding(farmData);
+                node.farmCount += 1;
+                SpawnBuilding(nodeID, farmData);
                 break;
             case 1: //상점 건물
-                //Instantiate(MarketPrefabs, GetRandomPosition(), Quaternion.identity);
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 짓자.]</color> ");
-                SpawnBuilding(marketData);
+                SpawnBuilding(nodeID, marketData);
                 break;
             case 2: //병영 건물
-                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
-                SpawnBuilding(barracksData[1]); //청동기 시대 병영
+                SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
                 archerCount += 2;
                 break;
             case 3: //병영 건물
-                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
-                SpawnBuilding(barracksData[2]); //청동기 시대 병영
+                SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
                 healerCount += 5;
                 break;
             case 4: //병영 건물
-                //Instantiate(BarracksPrefabs[Random.Range(1, 3)], GetRandomPosition(), Quaternion.identity); //청동기 시대 병영
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
-                SpawnBuilding(barracksData[0]); //청동기 시대 병영
+                SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
                 rockWarriorCount += 5;
                 break;
             case 5:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [기마병 짓자.]</color> ");
-                SpawnBuilding(barracksData[3]); //철기 시대 병영
+                SpawnBuilding(nodeID, barracksData[3]); //철기 시대 병영
                 horseWarriorCount += 3;
                 break;
             case 6:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [마법사 짓자.]</color> ");
-                SpawnBuilding(barracksData[4]); //철기 시대 병영
+                SpawnBuilding(nodeID, barracksData[4]); //철기 시대 병영
                 wizzardCount += 4;
                 break;
             case 7:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [슈퍼유닛 짓자.]</color> ");
-                SpawnBuilding(barracksData[5]);
+                SpawnBuilding(nodeID, barracksData[5]);
                 superUnitCount += 1;
                 break;
             case 8:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
-                SpawnBuilding(houseData);
-                maxHuman += 10;
+                SpawnBuilding(nodeID, houseData);
+                node.maxHuman += 10;
                 break;
-
         }
     }
-    
 
-    protected void SpawnBuilding(BuildingData data) //건물의 정보를 가지고 노드에 추가할 때 쓰는 거임.
+
+    protected void SpawnBuilding(int nodeID, BuildingData data) //건물의 정보를 가지고 노드에 추가할 때 쓰는 거임.
     {
-        AddBuildingToNode(currentNodeID, data); //현재 노드에 건물 추가
+        AddBuildingToNode(nodeID, data);
     }
 
     protected virtual bool AddBuildingToNode(int nodeID, BuildingData buildingData) //건물을 노드에 추가하는 함수임
@@ -386,40 +387,45 @@ public class EnemyBrainBase : MonoBehaviour
         NodeData node = WorldMapManager.Instance.GetNode(nodeID); //노드 정보 가져오기
         if (node == null) return false;
 
-        Vector3Int pos = FindRandomPlace(buildingData); //랜덤 위치에 생성
+        Vector3Int pos = FindRandomPlace(nodeID, buildingData); //랜덤 위치에 생성
+        if (pos == Vector3Int.zero) //유효한 자리 못 찾으면 배치 취소 (맵 원점 배치 방지)
+        {
+            Debug.Log($"<color=orange>[AI] 노드 {nodeID}에 {buildingData.buildingName} 배치 실패 — 유효 위치 없음</color>");
+            return false;
+        }
         BuildingInstance instance = new BuildingInstance
         {
-            data = buildingData, // 건물 데이터 할당
-            origin = pos, // 건물의 위치는 나중에 타일맵에서 결정하므로 일단 (0,0,0)으로 초기화
-            footprint = new List<Vector3Int>(), 
-            ownerCivID = node.ownerCivID, // 건물의 소유자는 노드의 소유자와 동일하게 설정
-            visual = null // 시각적 표현은 나중에 타일맵에서 처리하므로 일단 null로 초기화
+            data = buildingData,
+            origin = pos,
+            footprint = new List<Vector3Int>(),
+            ownerCivID = node.ownerCivID,
+            visual = null
         };
 
         node.buildings.Add(instance); // 노드의 건물 리스트에 새 건물 인스턴스 추가
 
-        Debug.Log($"[AI] 노드 {nodeID}에 {buildingData.buildingName} 추가됨");
+        Debug.Log($"[AI] 노드 {nodeID}에 {buildingData.buildingName} 추가됨 (cell {pos.x},{pos.y})");
         return true;
     }
 
-    protected virtual Vector3Int FindRandomPlace(BuildingData data)
+    protected virtual Vector3Int FindRandomPlace(int nodeID, BuildingData data)
     {
         Tilemap cityTilemap = null;
         // 적 자기 노드의 city 타일맵을 소스에서 가져옴
         if (data.buildingType == BuildingType.Farm)
         {
-            if(!NodeDataManager.Instance.TryGetFarmlandTilemap(currentNodeID, out cityTilemap))
+            if(!NodeDataManager.Instance.TryGetFarmlandTilemap(nodeID, out cityTilemap))
                 return Vector3Int.zero;
         }
         else
         {
-            if (!NodeDataManager.Instance.TryGetCityTilemap(currentNodeID, out cityTilemap))
+            if (!NodeDataManager.Instance.TryGetCityTilemap(nodeID, out cityTilemap))
                 return Vector3Int.zero;
         }
         cityTilemap.CompressBounds(); // 타일맵의 실제 타일이 있는 영역으로 Bounds를 압축
         BoundsInt bounds = cityTilemap.cellBounds; // 타일맵의 셀 범위를 나타내는 BoundsInt 가져오기
 
-        NodeData node = WorldMapManager.Instance.GetNode(currentNodeID);
+        NodeData node = WorldMapManager.Instance.GetNode(nodeID);
 
         for (int i = 0; i < 50; i++)
         {
@@ -454,7 +460,7 @@ public class EnemyBrainBase : MonoBehaviour
             for (int x = 0; x < data.width; x++) //새로 지으려는 건물의 폭과 높이만큼 반복
                 for (int y = 0; y < data.height; y++) //새로 지으려는 건물의 폭과 높이만큼 반복
                 {
-                    Vector3Int p = origin + new Vector3Int(x, y, 0); 
+                    Vector3Int p = origin + new Vector3Int(x, y, 0);
                     for (int bx = 0; bx < b.data.width; bx++) //노드에 이미 있는 건물의 폭과 높이만큼 반복
                         for (int by = 0; by < b.data.height; by++) //노드에 이미 있는 건물의 폭과 높이만큼 반복
                             if (p == b.origin + new Vector3Int(bx, by, 0)) //새로 지으려는 건물의 각 타일이 노드에 이미 있는 건물의 각 타일과 겹치는지 검사
@@ -463,31 +469,6 @@ public class EnemyBrainBase : MonoBehaviour
         }
         return false; //겹치는 타일이 하나도 없으면 false 반환
     }
-
-    //protected void SpawnBuilding(BuildingData data)
-    //{
-    //    Vector3Int cellPos = GetRandomCellPosition(data);
-
-    //    TileMapManager.Instance.EnemyPlaceBuilding(cellPos, data, this, enemyID);
-    //}
-
-    //protected virtual Vector3Int GetRandomCellPosition(BuildingData data) //설치 위치임.
-    //{
-    //    //적이 건물을 지을 위치를 랜덤으로 결정하는 함수
-    //    for (int i = 0; i < 20; i++) // 넉넉히 20번 시도
-    //    {
-    //        int x = Random.Range(0, 10);
-    //        int y = Random.Range(0, 10);
-
-    //        Vector3Int pos = new Vector3Int(x, y, 0);
-
-    //        if (TileMapManager.Instance.CanPlace(pos, data)) //놓을 수 있는 곳이라면?
-    //            return pos; //놓을 수 있는 위치 반환 
-    //    }
-
-    //    Debug.LogWarning("설치 가능한 위치 못 찾음 염병");
-    //    return new Vector3Int(0, 0, 0); // fallback
-    //}
 
     //==============================골드 및 식량 얻기====================================
     protected virtual void GetGold()
@@ -522,10 +503,10 @@ public class EnemyBrainBase : MonoBehaviour
     //조건3: 인접한 노드가 본인의 영지인가. <- 본인의 영지라면 점령 시도 안함.
     //조건4: 인접한 노드가 다른적의 영지인가. <- 다른 적과 골드와 식량의 총량을 비교후 승리 판단여부.
     //============================================점령 조건==============================================
-    protected virtual void TryToOccupyAdjacentNode()
+    protected virtual void TryToOccupyAdjacentNode(int nodeID)
     {
         //인접한 노드 탐색
-        List<NodeData> adjacentNodes = WorldMapManager.Instance.GetAdjacentNodes(currentNodeID); //현재 노드의 인접한 노드 리스트 가져오기
+        List<NodeData> adjacentNodes = WorldMapManager.Instance.GetAdjacentNodes(nodeID); //현재 노드의 인접한 노드 리스트 가져오기
         foreach (NodeData adjacentNode in adjacentNodes) //각 인접한 노드에 대해서
         {
             if (adjacentNode.ownerCivID == -1) //조건1: 인접한 노드가 누구의 것도 아니라면
@@ -553,6 +534,4 @@ public class EnemyBrainBase : MonoBehaviour
             }
         }
     }
-
-
 }
