@@ -2,6 +2,16 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
+/// <summary>
+
+/// </summary>
+
+/// <remarks>
+/// ──────────────────────────────────────────────────────────────
+/// ■ 씬 배치 가이드
+/// ──────────────────────────────────────────────────────────────
+///  
+/// </remarks>
 [CreateAssetMenu(fileName = "CowardlyStrategy", menuName = "AI/Strategy/Cowardly Strategy")]
 public class CowardlyStrategySO : AIBehaviorStrategySO
 {

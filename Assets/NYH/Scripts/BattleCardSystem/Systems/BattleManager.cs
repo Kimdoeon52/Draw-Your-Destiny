@@ -2,7 +2,7 @@ namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;
-
+    using Cysharp.Threading.Tasks;
     public enum BattlePhase
     {
         None,
@@ -44,6 +44,7 @@ namespace NYH.BattleCardSystem
     {
         [Header("Battle References")]
         [SerializeField] private BattleCardSystem battleCardSystem;
+        [SerializeField] private EnemyAIManager enemyAIManager;
 
         [Header("Battle Setup")]
         [SerializeField] private BattleStartContext defaultStartContext = new();
@@ -99,6 +100,10 @@ namespace NYH.BattleCardSystem
             if (autoStartOnSceneLoad && CurrentPhase == BattlePhase.None && !IsBattleEnded)
             {
                 StartBattle();
+            }
+            if (enemyAIManager != null)
+            {
+                enemyAIManager.OnAITurnFinished += EndEnemyTurn;
             }
         }
 
@@ -268,7 +273,15 @@ namespace NYH.BattleCardSystem
             {
                 return;
             }
-
+             if (enemyAIManager != null)
+    {
+        // 적 AI 턴 비동기 실행
+        enemyAIManager.ExecuteAITurnAsync().Forget();
+    }
+    else
+    {
+        Debug.LogWarning("EnemyAIManager가 할당되지 않았습니다.");
+    }
             CurrentTurnTeam = BattleTeam.Enemy;
             SetPhase(BattlePhase.EnemyTurn);
             OnTurnStarted?.Invoke(BattleTurn, CurrentTurnTeam);

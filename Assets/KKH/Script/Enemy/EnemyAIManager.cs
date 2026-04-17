@@ -48,6 +48,7 @@ public class EnemyAIManager : MonoBehaviour
     #region ── Inspector: 씬 레퍼런스 ──
 
     [Header("씬 레퍼런스")]
+    
     [Tooltip("씬의 Grid 컴포넌트 (Tilemap의 부모 오브젝트)")]
     public Grid grid;
 
@@ -67,6 +68,7 @@ public class EnemyAIManager : MonoBehaviour
     [Header("AI 설정")]
     [Tooltip("이 유닛(들)이 사용할 AI 행동 전략 (ScriptableObject)")]
     [SerializeField] private AIBehaviorStrategySO currentStrategy;
+
 
     [Tooltip("적 유닛의 턴당 최대 이동 칸 수")]
     [SerializeField] private int maxMovePerTurn = 3;
@@ -124,16 +126,39 @@ public class EnemyAIManager : MonoBehaviour
     /// 턴 시스템이 완성되면 이 메서드를 제거하고
     /// 턴 매니저에서 ExecuteAITurnAsync()를 직접 호출한다.
     /// </summary>
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.V) && !isExecutingTurn)
-        {
-            Debug.Log("[EnemyAIManager] V키 입력 — 적 AI 턴 수동 실행");
-            ExecuteAITurnAsync().Forget();
-        }
-    }
+    // private void Update()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.V) && !isExecutingTurn)
+    //     {
+    //         Debug.Log("[EnemyAIManager] V키 입력 — 적 AI 턴 수동 실행");
+    //         ExecuteAITurnAsync().Forget();
+    //     }
+    // }
 
     #endregion
+    // EnemyAIManager.cs 클래스 내부의 적절한 빈 공간에 아래 함수를 추가합니다.
+
+    public void UpdateEnemyDamageText(Transform enemyTransform, int damageAmount)
+    {
+        // 1. 해당 적 오브젝트에서 EnemyUnitPatton 컴포넌트를 가져옵니다.
+        EnemyUnitPatton unitPatton = enemyTransform.GetComponent<EnemyUnitPatton>();
+
+        // 2. 컴포넌트가 있고, damageText가 정상적으로 연결되어 있는지 확인합니다.
+        if (unitPatton != null && unitPatton.damageText != null)
+        {
+            // 3. 텍스트를 업데이트합니다. (예: "-10")
+            unitPatton.damageText.text = $"-{damageAmount}";
+
+            // 데미지를 입은 순간 Text를 활성화 로직을 여기에 추가
+            unitPatton.damageText.gameObject.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning($"[{enemyTransform.name}] 에 EnemyUnitPatton 이 없거나 TextMeshPro가 할당되지 않았습니다.");
+        }
+        // enemyAIManager.UpdateEnemyDamageText(맞은_적_Transform, 받은_데미지) <- 이렇게 호출하면 됨
+    }
+
 
     // =====================================================================
     #region ── 1. 턴 관리 및 AI 실행 시작 (Turn Check) ──
