@@ -25,7 +25,7 @@ MonoBehaviour:
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 7216728476613083244
-  description: "{Amount}\uB9CC\uD07C \uC774\uB3D9"
+  description: "{moveAmount}\uB9CC\uD07C \uC774\uB3D9"
   references:
     version: 2
     RefIds:

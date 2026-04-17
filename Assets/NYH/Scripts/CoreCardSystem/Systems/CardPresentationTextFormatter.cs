@@ -13,6 +13,7 @@ namespace NYH.CoreCardSystem
                 CardTypeText = FormatCardType(cardData != null ? cardData.cardType : CardType.None),
                 CardUseTypeText = FormatCardUseTypes(cardData != null ? cardData.cardUseType : null),
                 MoveRangeText = "-",
+                GridImage = null,
             };
         }
 
@@ -24,6 +25,7 @@ namespace NYH.CoreCardSystem
                 CardTypeText = "-",
                 CardUseTypeText = "-",
                 MoveRangeText = FormatMoveRange(battleCardData != null ? battleCardData.DisplayMoveRange : 0),
+                GridImage = battleCardData != null ? battleCardData.GridImage : null,
             };
         }
 

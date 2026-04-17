@@ -70,6 +70,7 @@
         [field: SerializeField] public string CardName { get; private set; }
         [field: SerializeField] public BattleCardType CardType { get; private set; }
         [field: SerializeField] public Sprite Image { get; private set; }
+        [field: SerializeField] public Sprite GridImage { get; private set; }
 
         [Header("전투 코스트 / 덱 규칙")]
         [field: FormerlySerializedAs("<FoodCost>k__BackingField")]

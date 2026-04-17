@@ -23,6 +23,7 @@
 
         [Header("UI Image Objects")]
         [SerializeField] private Image cardArtImage;
+        [SerializeField] private Image gridImage;
         [SerializeField] private Image cardBackgroundImage;
 
         [Header("Settings")]
@@ -527,6 +528,7 @@
             SetOptionalText(cardTypeText, resolvedData.CardTypeText, !isBattleCard);
             SetOptionalText(cardUseTypeText, resolvedData.CardUseTypeText, !isBattleCard);
             SetOptionalText(moveRangeText, resolvedData.MoveRangeText, isBattleCard);
+            SetOptionalImage(gridImage, resolvedData.GridImage, isBattleCard);
         }
 
         private static void SetOptionalText(TMP_Text target, string value, bool shouldShow)
@@ -538,6 +540,17 @@
 
             target.text = string.IsNullOrWhiteSpace(value) ? "-" : value;
             target.gameObject.SetActive(shouldShow);
+        }
+
+        private static void SetOptionalImage(Image target, Sprite sprite, bool shouldShow)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            target.sprite = sprite;
+            target.gameObject.SetActive(shouldShow && sprite != null);
         }
     }
 }

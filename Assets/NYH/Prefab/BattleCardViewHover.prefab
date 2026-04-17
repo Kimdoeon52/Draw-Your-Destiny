@@ -351,6 +351,7 @@ MonoBehaviour:
   cardUseTypeText: {fileID: 0}
   moveRangeText: {fileID: 7029051128907451580}
   cardArtImage: {fileID: 3246585151806540444}
+  gridImage: {fileID: 1859361430468334769}
   cardBackgroundImage: {fileID: 7895969746519464849}
   dropLayer:
     serializedVersion: 2
@@ -390,7 +391,7 @@ GameObject:
   - component: {fileID: 2882931286850392520}
   - component: {fileID: 1859361430468334769}
   m_Layer: 5
-  m_Name: CarGreedImage
+  m_Name: CardGreedImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -412,7 +413,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 51.754, y: -47.8022}
+  m_AnchoredPosition: {x: 51.754, y: -52.203}
   m_SizeDelta: {x: -143.08, y: -280.6343}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2882931286850392520

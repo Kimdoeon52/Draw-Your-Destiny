@@ -17,6 +17,8 @@ MonoBehaviour:
   <CardType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 584017139910605470, guid: 57153bc98c84b584394a27c7ed1998ae,
     type: 3}
+  <GridImage>k__BackingField: {fileID: -1289238142504573597, guid: 2216ff6d1a1f88648b253ed2d8f985e2,
+    type: 3}
   <ActionPointCost>k__BackingField: 2
   <DisplayMoveRange>k__BackingField: 5
   <IgnoresDeckLimit>k__BackingField: 0

@@ -1,5 +1,7 @@
 namespace NYH.CoreCardSystem
 {
+    using UnityEngine;
+
     public enum CardVisualKind
     {
         Civilization,
@@ -12,5 +14,6 @@ namespace NYH.CoreCardSystem
         public string CardTypeText { get; set; } = "-";
         public string CardUseTypeText { get; set; } = "-";
         public string MoveRangeText { get; set; } = "-";
+        public Sprite GridImage { get; set; }
     }
 }
