@@ -1,17 +1,18 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using NYH.BattleCardSystem;
 
 /// <summary>
-/// ì  AIì˜ í–‰ë™ ë¡œì§(ì´ë™, ê³µê²© ë“±)ì„ ì •ì˜í•˜ëŠ” ê¸°ë°˜ ì „ëµ ìŠ¤í¬ë¦½í„°ë¸” ì˜¤ë¸Œì íŠ¸.
-/// ì „ëµ íŒ¨í„´(Strategy Pattern)ì„ í™œìš©í•˜ì—¬ êµ¬ì²´ì ì¸ í–‰ë™ì€ í•˜ìœ„ í´ë˜ìŠ¤ì—ì„œ êµ¬í˜„í•œë‹¤.
+/// KKH Àû AI Àü·«ÀÇ °øÅë ±â¹İ Å¬·¡½ºÀÔ´Ï´Ù.
+/// ±âÁ¸ EnemyAIManager ±â¹İ ½ÇÇàÀº À¯ÁöÇÏ°í,
+/// NYH ÀüÅõ ½Ã½ºÅÛ°ú ÅëÇÕÇÏ±â À§ÇÑ Battle AI ÄÁÅØ½ºÆ® ½ÇÇà °æ·Î¸¦ Ãß°¡ÇÕ´Ï´Ù.
 /// </summary>
 public abstract class AIBehaviorStrategySO : ScriptableObject
 {
-    /// <summary>
-    /// AI ë§¤ë‹ˆì € ì»¨í…ìŠ¤íŠ¸ì™€ íƒ€ê²Ÿ ìœ ë‹›ì„ ì „ë‹¬ë°›ì•„ ë¹„ë™ê¸° í–‰ë™ì„ ì‹¤í–‰í•œë‹¤.
-    /// </summary>
-    /// <param name="context">í˜„ì¬ ì  AIë¥¼ ê´€ë¦¬í•˜ëŠ” ë§¤ë‹ˆì € ì¸ìŠ¤í„´ìŠ¤.</param>
-    /// <param name="unit">í–‰ë™ì„ ìˆ˜í–‰í•  ì  ìœ ë‹›ì˜ Transform.</param>
-    /// <returns>ë¹„ë™ê¸° í–‰ë™ ì²˜ë¦¬ë¥¼ ìœ„í•œ UniTask.</returns>
     public abstract UniTask ExecuteBehaviorAsync(EnemyAIManager context, Transform unit);
+
+    public virtual UniTask ExecuteBehaviorAsync(IBattleAIContext context, BattleUnit unit)
+    {
+        return UniTask.CompletedTask;
+    }
 }

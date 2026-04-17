@@ -1,8 +1,9 @@
 namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
-    using UnityEngine;
     using Cysharp.Threading.Tasks;
+    using UnityEngine;
+
     public enum BattlePhase
     {
         None,
@@ -30,21 +31,11 @@ namespace NYH.BattleCardSystem
         public int SurvivingEnemyUnits;
     }
 
-    /*
-     * BattleManager
-     *
-     * Coordinates the battle flow for the scene.
-     * Handles setup, mulligan, turn changes, and battle results.
-     *
-     * Current scope:
-     * - Board state and turn sequencing
-     * - Enemy AI and richer UI hooks can be layered on later
-     */
     public class BattleManager : MonoBehaviour
     {
         [Header("Battle References")]
         [SerializeField] private BattleCardSystem battleCardSystem;
-        [SerializeField] private EnemyAIManager enemyAIManager;
+        [SerializeField] private BattleEnemyAIController enemyAIController;
 
         [Header("Battle Setup")]
         [SerializeField] private BattleStartContext defaultStartContext = new();
@@ -66,23 +57,6 @@ namespace NYH.BattleCardSystem
         private readonly List<BattleUnit> enemyUnits = new();
         private bool hasOpeningHandPrepared;
 
-        private bool EnsureBattleCardSystem(string caller)
-        {
-            if (battleCardSystem == null)
-            {
-                battleCardSystem = BattleCardSystem.Instance;
-                Debug.Log($"[BattleManager] BattleCardSystem ????? caller={caller}, success={(battleCardSystem != null)}");
-            }
-
-            if (battleCardSystem == null)
-            {
-                Debug.LogWarning($"[BattleManager] BattleCardSystem??Á≠å‚â™Îºö? Á≠åÎ•ÅÍ∂¢Ôßë??—âÎπç?? caller={caller}");
-                return false;
-            }
-
-            return true;
-        }
-
         private void Awake()
         {
             if (battleCardSystem == null)
@@ -90,21 +64,51 @@ namespace NYH.BattleCardSystem
                 battleCardSystem = BattleCardSystem.Instance;
             }
 
-            Debug.Log($"[BattleManager] Awake ?Ë¢Å‚ë•‚î∑: scene={gameObject.scene.name}, hasBattleCardSystem={(battleCardSystem != null)}");
+            if (enemyAIController == null)
+            {
+                enemyAIController = FindFirstObjectByType<BattleEnemyAIController>(FindObjectsInactive.Include);
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (enemyAIController != null)
+            {
+                enemyAIController.OnAITurnFinished += EndEnemyTurn;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (enemyAIController != null)
+            {
+                enemyAIController.OnAITurnFinished -= EndEnemyTurn;
+            }
         }
 
         private void Start()
         {
             EnsureBattleCardSystem("Start");
-            Debug.Log($"[BattleManager] Start: autoStartOnSceneLoad={autoStartOnSceneLoad}, currentPhase={CurrentPhase}, isBattleEnded={IsBattleEnded}");
             if (autoStartOnSceneLoad && CurrentPhase == BattlePhase.None && !IsBattleEnded)
             {
                 StartBattle();
             }
-            if (enemyAIManager != null)
+        }
+
+        private bool EnsureBattleCardSystem(string caller)
+        {
+            if (battleCardSystem == null)
             {
-                enemyAIManager.OnAITurnFinished += EndEnemyTurn;
+                battleCardSystem = BattleCardSystem.Instance;
             }
+
+            if (battleCardSystem == null)
+            {
+                Debug.LogWarning($"[BattleManager] BattleCardSystem¿Ã æ¯æÓ ¡¯«‡«“ ºˆ æ¯Ω¿¥œ¥Ÿ. caller={caller}");
+                return false;
+            }
+
+            return true;
         }
 
         public void SetupBattle(BattleStartContext context = null)
@@ -115,22 +119,12 @@ namespace NYH.BattleCardSystem
             }
 
             BattleStartContext resolvedContext = context ?? defaultStartContext ?? new BattleStartContext();
-            Debug.Log($"[BattleManager] SetupBattle ??ÎΩ∞ÏÇÇ: startWithMulligan={resolvedContext.StartWithMulligan}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
-            if (BattleDeckCollection.Instance != null)
-            {
-                Debug.Log($"[BattleManager] ÁçÑÏèÑÌÄ¨? ???ÊÄ®Î∞¥Î¨∂: baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
-            }
-
             ResetBattleState();
             RebuildUnitLists();
-
             SetPhase(BattlePhase.Setup);
 
-            if (battleCardSystem != null)
-            {
-                battleCardSystem.SetupFromInspector();
-                battleCardSystem.SetupActionPoints(0);
-            }
+            battleCardSystem.SetupFromInspector();
+            battleCardSystem.SetupActionPoints(0);
 
             if (resolvedContext.StartWithMulligan)
             {
@@ -171,7 +165,6 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            Debug.Log("[BattleManager] Á≠åÎ†∫¬Ä?Í∑êÎçáÌÉ∑ ??ÎΩ∞ÏÇÇ");
             IsMulliganPhase = true;
             SetPhase(BattlePhase.Mulligan);
             DrawOpeningHand();
@@ -190,29 +183,20 @@ namespace NYH.BattleCardSystem
 
         public void StartPlayerTurnAfterMulligan()
         {
-            if (IsBattleEnded)
+            if (!IsBattleEnded)
             {
-                return;
+                StartPlayerTurn();
             }
-
-            StartPlayerTurn();
         }
 
         public void StartPlayerTurn()
         {
-            if (!EnsureBattleCardSystem("StartPlayerTurn"))
-            {
-                return;
-            }
-
-            if (IsBattleEnded)
+            if (!EnsureBattleCardSystem("StartPlayerTurn") || IsBattleEnded)
             {
                 return;
             }
 
             RebuildUnitLists();
-            Debug.Log($"[BattleManager] StartPlayerTurn Á≠åÏöäÎÇØ???ÈÜ´ÎîÖÎª∫ ?ÊÄ®Î∞¥Î¨∂: " +
-                $"alivePlayerUnitTypes={GetAlivePlayerUnitTypeCount()}, playerUnits={playerUnits.Count}, enemyUnits={enemyUnits.Count}");
             if (CheckBattleEnd())
             {
                 return;
@@ -221,10 +205,7 @@ namespace NYH.BattleCardSystem
             BattleTurn++;
             CurrentTurnTeam = BattleTeam.Player;
             SetPhase(BattlePhase.PlayerTurn);
-
-            battleCardSystem?.GainTurnActionPoints(BattleTurn);
-            Debug.Log($"[BattleManager] ???Ïüø??Í≥∑ÏÑ† ????ÎΩ∞ÏÇÇ: turn={BattleTurn}," +
-                $" actionPoints={battleCardSystem?.CurrentActionPoints ?? 0}, hasOpeningHandPrepared={hasOpeningHandPrepared}");
+            battleCardSystem.GainTurnActionPoints(BattleTurn);
 
             if (hasOpeningHandPrepared)
             {
@@ -250,7 +231,7 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            battleCardSystem?.EndTurnDiscardHand();
+            battleCardSystem.EndTurnDiscardHand();
             NotifyHandStateChanged();
 
             if (CheckBattleEnd())
@@ -273,20 +254,20 @@ namespace NYH.BattleCardSystem
             {
                 return;
             }
-             if (enemyAIManager != null)
-    {
-        // Ï†Å AI ÌÑ¥ ÎπÑÎèôÍ∏∞ Ïã§Ìñâ
-        enemyAIManager.ExecuteAITurnAsync().Forget();
-    }
-    else
-    {
-        Debug.LogWarning("EnemyAIManagerÍ∞Ä Ìï†ÎãπÎêòÏßÄ ÏïäÏïòÏäµÎãàÎã§.");
-    }
+
             CurrentTurnTeam = BattleTeam.Enemy;
             SetPhase(BattlePhase.EnemyTurn);
             OnTurnStarted?.Invoke(BattleTurn, CurrentTurnTeam);
 
-            // Enemy AI is not implemented yet, so control returns externally.
+            if (enemyAIController != null)
+            {
+                enemyAIController.ExecuteTurnAsync().Forget();
+            }
+            else
+            {
+                Debug.LogWarning("[BattleManager] BattleEnemyAIController∞° æ¯æÓ ¿˚ ≈œ¿ª ¡ÔΩ√ ¡æ∑·«’¥œ¥Ÿ.");
+                EndEnemyTurn();
+            }
         }
 
         public void EndEnemyTurn()
@@ -312,8 +293,7 @@ namespace NYH.BattleCardSystem
             }
 
             int drawCount = GetAlivePlayerUnitTypeCount();
-            var drawnCards = battleCardSystem.DrawOpeningHand(drawCount);
-            Debug.Log($"[BattleManager] ??ÏéàÎäÑ???ÔßèÍªäÍµ° ??Î∫§Ï®Æ?? unitTypes={drawCount}, drawn={drawnCards.Count}, hand={battleCardSystem.PileState.HandCount}, drawPile={battleCardSystem.PileState.DrawPileCount}");
+            battleCardSystem.DrawOpeningHand(drawCount);
             hasOpeningHandPrepared = true;
             NotifyHandStateChanged();
         }
@@ -326,8 +306,7 @@ namespace NYH.BattleCardSystem
             }
 
             int drawCount = GetAlivePlayerUnitTypeCount();
-            var drawnCards = battleCardSystem.DrawTurnCards(drawCount);
-            Debug.Log($"[BattleManager] ????Î∫§Ï®Æ?? unitTypes={drawCount}, drawn={drawnCards.Count}, hand={battleCardSystem.PileState.HandCount}, drawPile={battleCardSystem.PileState.DrawPileCount}");
+            battleCardSystem.DrawTurnCards(drawCount);
             NotifyHandStateChanged();
         }
 
@@ -336,7 +315,7 @@ namespace NYH.BattleCardSystem
             RebuildUnitLists();
 
             HashSet<string> aliveUnitTypes = new();
-            foreach (var unit in playerUnits)
+            foreach (BattleUnit unit in playerUnits)
             {
                 if (unit == null || !unit.IsAlive)
                 {
@@ -409,7 +388,6 @@ namespace NYH.BattleCardSystem
         private BattleResult BuildResult(bool isVictory)
         {
             RebuildUnitLists();
-
             return new BattleResult
             {
                 IsVictory = isVictory,
@@ -425,7 +403,7 @@ namespace NYH.BattleCardSystem
             enemyUnits.Clear();
 
             BattleUnit[] allUnits = FindObjectsByType<BattleUnit>(FindObjectsSortMode.None);
-            foreach (var unit in allUnits)
+            foreach (BattleUnit unit in allUnits)
             {
                 if (unit == null)
                 {
@@ -442,6 +420,7 @@ namespace NYH.BattleCardSystem
                 }
             }
         }
+
         private void SetPhase(BattlePhase phase)
         {
             CurrentPhase = phase;
@@ -450,7 +429,7 @@ namespace NYH.BattleCardSystem
 
         private static bool HasAliveUnits(List<BattleUnit> units)
         {
-            foreach (var unit in units)
+            foreach (BattleUnit unit in units)
             {
                 if (unit != null && unit.IsAlive)
                 {
@@ -464,7 +443,7 @@ namespace NYH.BattleCardSystem
         private static int CountAliveUnits(List<BattleUnit> units)
         {
             int count = 0;
-            foreach (var unit in units)
+            foreach (BattleUnit unit in units)
             {
                 if (unit != null && unit.IsAlive)
                 {
