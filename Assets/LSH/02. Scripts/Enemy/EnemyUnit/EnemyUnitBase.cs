@@ -83,7 +83,6 @@ public class EnemyUnitBase : MonoBehaviour
     protected virtual void OnEnable()//초기화
     {
         UnitAppear();
-
     }
     protected virtual void OnDisable() //유닛이 비활성화 될 때 이동 루프 정지
     {

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: ab08666331cd0e14fb116a98e967f73c
+guid: e38095cf06ddde341953b6564fe88ebc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1392832154238072635
-    second: RockWarriorBuilding_0
+      213: 351547490480164333
+    second: PekaBuilding_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,12 +100,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RockWarriorBuilding_0
+      name: PekaBuilding_0
       rect:
         serializedVersion: 2
         x: 9
         y: 14
-        width: 62
+        width: 67
         height: 57
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5c8c5e6098aabace0800000000000000
-      internalID: -1392832154238072635
+      spriteID: ded00cb7492f0e400800000000000000
+      internalID: 351547490480164333
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      RockWarriorBuilding_0: -1392832154238072635
+      PekaBuilding_0: 351547490480164333
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

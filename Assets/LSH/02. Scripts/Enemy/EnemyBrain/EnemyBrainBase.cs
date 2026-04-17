@@ -18,6 +18,16 @@ public enum EnemyState
     Defend //방어 <- 일반적인 문명 행동 타입
 }
 
+public enum EnemyUnitType
+{
+    RockWarrior,
+    Archer,
+    Healer,
+    HorseWarrior,
+    Wizard,
+    SuperUnit
+}
+
 [System.Serializable]
 public class ActionCases
 {
@@ -40,6 +50,8 @@ public class EnemyBrainBase : MonoBehaviour
     [SerializeField] protected BuildingData houseData;
     [Header("병영 건물")] //0번은 석기시대 병영 1번 2번은 청동기 3,4,5번은 철기
     [SerializeField] protected List<BuildingData> barracksData = new List<BuildingData>();
+    [Header("병영별 풀 (barracksData와 인덱스 일치)")]
+    [SerializeField] protected List<EnemyAPool.EnemyAPoolBase> barracksPools = new List<EnemyAPool.EnemyAPoolBase>();
 
     [Header("골드 및 과학")]
     [SerializeField] protected int gold;
@@ -64,6 +76,33 @@ public class EnemyBrainBase : MonoBehaviour
     [SerializeField] protected int horseWarriorCount;
     [SerializeField] protected int superUnitCount;
 
+    //==============================병력 수 증감====================================
+    public virtual void OnUnitSpawned(EnemyUnitType type)
+    {
+        switch (type) // 소환되면 카운트 증가용
+        {
+            case EnemyUnitType.RockWarrior: rockWarriorCount++; break;
+            case EnemyUnitType.Archer: archerCount++; break;
+            case EnemyUnitType.Healer: healerCount++; break;
+            case EnemyUnitType.HorseWarrior: horseWarriorCount++; break;
+            case EnemyUnitType.Wizard: wizzardCount++; break;
+            case EnemyUnitType.SuperUnit: superUnitCount++; break;
+        }
+    }
+
+    public virtual void OnUnitReturned(EnemyUnitType type) 
+    {
+        switch (type) //죽거나 뭐 암튼 카운트 감소용
+        {
+            case EnemyUnitType.RockWarrior: rockWarriorCount--; break;
+            case EnemyUnitType.Archer: archerCount--; break;
+            case EnemyUnitType.Healer: healerCount--; break;
+            case EnemyUnitType.HorseWarrior: horseWarriorCount--; break;
+            case EnemyUnitType.Wizard: wizzardCount--; break;
+            case EnemyUnitType.SuperUnit: superUnitCount--; break;
+        }
+    }
+    //====================================================================================
     protected virtual void Awake()
     {
         EnemyBrainManager.Instance.Register(enemyID, this);
@@ -254,7 +293,7 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [병영 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[0]); //석기 시대 병영
-                rockWarriorCount += 5; //석기 시대 병영은 돌전사 5명 생산
+                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this);
                 break;
             case 3:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
@@ -291,17 +330,17 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
-                archerCount += 5;
+                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this);
                 break;
             case 3: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
-                healerCount += 5;
+                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this);
                 break;
             case 4: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
-                rockWarriorCount += 5;
+                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this);
                 break;
             case 5:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
@@ -338,32 +377,32 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
-                archerCount += 2;
+                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this);
                 break;
             case 3: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
-                healerCount += 5;
+                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this);
                 break;
             case 4: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
-                rockWarriorCount += 5;
+                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this);
                 break;
             case 5:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [기마병 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[3]); //철기 시대 병영
-                horseWarriorCount += 3;
+                if (barracksPools.Count > 3 && barracksPools[3] != null) barracksPools[3].Init(this);
                 break;
             case 6:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [마법사 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[4]); //철기 시대 병영
-                wizzardCount += 4;
+                if (barracksPools.Count > 4 && barracksPools[4] != null) barracksPools[4].Init(this);
                 break;
             case 7:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [슈퍼유닛 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[5]);
-                superUnitCount += 1;
+                if (barracksPools.Count > 5 && barracksPools[5] != null) barracksPools[5].Init(this);
                 break;
             case 8:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
