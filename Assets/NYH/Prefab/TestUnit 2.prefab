@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 917912984240324974}
-  - component: {fileID: 1543106477483942830}
   - component: {fileID: 393521349579519524}
   - component: {fileID: 6426497919324265686}
   - component: {fileID: 692144614679788697}
@@ -35,29 +34,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1543106477483942830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8918202813680818297}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dec0d7630539457438867dd41a88f505, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 3
-  attackPower: 0
-  age: 0
-  enemyAgeGroup: 0
-  naturalDeathChance: 0
-  enemyCanMoveJobBase: 0
-  enemyLevelBase: 0
-  enemyUnitID: 0
-  enemyUnitTypeBase: 0
-  maxHealth: 0
-  currentHealth: 0
 --- !u!212 &393521349579519524
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -53,10 +53,15 @@ namespace NYH.BattleCardSystem
         private int speedModifier;
         private bool isStunned;
         private bool isDisarmed;
+        private bool isDying;
+        private BattleUnitAIProfile aiProfile;
+        private BattleUnitHitFlash hitFlash;
 
         private void Awake()
         {
             CurrentHealth = maxHealth;
+            aiProfile = GetComponent<BattleUnitAIProfile>();
+            hitFlash = GetComponent<BattleUnitHitFlash>();
         }
 
         private void OnEnable()
@@ -113,17 +118,39 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            int previousHealth = CurrentHealth;
             CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
+            aiProfile?.ShowDamage(amount);
+            hitFlash?.Play();
+
+            if (CurrentHealth == 0)
+            {
+                HandleDeath();
+            }
 
             //if (EnableDamageDebug)
             //{
-            //    if (previousHealth > 0 && CurrentHealth == 0)
+            //    if (CurrentHealth == 0)
             //    {
             //        Debug.Log(
             //            $"[BattleUnitDebug] ??彛? unit={name}, team={team}, grid={gridPosition}");
             //    }
             //}
+        }
+
+        private void HandleDeath()
+        {
+            if (isDying)
+            {
+                return;
+            }
+
+            isDying = true;
+            if (BattleBoardSystem.Instance != null)
+            {
+                BattleBoardSystem.Instance.UnregisterUnit(this);
+            }
+
+            Destroy(gameObject);
         }
 
         public void TakePercentDamage(float ratio)
