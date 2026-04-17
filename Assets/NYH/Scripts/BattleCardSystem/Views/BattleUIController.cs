@@ -1,19 +1,21 @@
-﻿namespace NYH.BattleCardSystem
+namespace NYH.BattleCardSystem
 {
     using System.Collections;
     using System.Collections.Generic;
+    using DG.Tweening;
     using NYH.CoreCardSystem;
     using TMPro;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
     /*
      * BattleUIController
      *
-     * ??釉?
-     * - BattleManager/BattleCardSystem???怨밴묶???⑤벊??燁삳?諭?UI???怨뚭퍙??몃빍??
-     * - ??뺤쨮?怨뺣쭆 ?袁る떮 燁삳?諭띄몴?疫꿸퀣??CardView ?袁ⓥ봺?諭?앮에???밴쉐??HandView??獄쏄퀣???몃빍??
-     * - ????곕짗??HUD??揶쏄퉮???랁? 燁삳?諭???뺚댘 ????쇱젫 ?袁る떮 燁삳?諭????쒏틦?? ?怨뚭퍙??몃빍??
+     * ??�?
+     * - BattleManager/BattleCardSystem???곹깭???�듭??移�?�?UI???곌껐??�땲??
+     * - ??�줈?곕맂 ?꾪닾 移�?뱶瑜?湲곗??CardView ?꾨━?뱀?�濡???�꽦??HandView??諛곗???�땲??
+     * - ????�룞??HUD??媛깆???��? 移�?�???�∼ ????�젣 ?꾪닾 移�?�????�源?? ?곌껐??�땲??
      */
     public class BattleUIController : MonoBehaviour
     {
@@ -41,10 +43,13 @@
         [SerializeField] private TMP_Text actionPointsText;
         [SerializeField] private Button endTurnButton;
         [SerializeField] private Button mulliganConfirmButton;
+        [SerializeField] private float mulliganCenterY = 220f;
 
         private const bool EnableMoveDebug = false;
 
         private bool isResolvingEndTurnDiscard;
+        private bool isResolvingMulliganAnimation;
+        private bool suppressNextHandRefresh;
         private CardTargetingPhase targetingPhase = CardTargetingPhase.None;
         private BattleCard pendingBattleCard;
         private BattleCardTargetingMode pendingTargetingMode = BattleCardTargetingMode.Auto;
@@ -67,6 +72,8 @@
         private bool hasLastAttackHoverCell;
         private bool wasLastAttackHoverValid;
         private Vector2Int lastHoveredAttackCell;
+        private readonly HashSet<BattleCard> selectedMulliganCards = new();
+        private readonly Dictionary<BattleCard, CardView> mulliganCardViews = new();
 
         private void Awake()
         {
@@ -111,6 +118,11 @@
             {
                 mulliganConfirmButton.onClick.RemoveAllListeners();
                 mulliganConfirmButton.onClick.AddListener(HandleConfirmMulliganClicked);
+                TMP_Text buttonLabel = mulliganConfirmButton.GetComponentInChildren<TMP_Text>();
+                if (buttonLabel != null)
+                {
+                    buttonLabel.text = "�ֱ�";
+                }
             }
         }
 
@@ -239,7 +251,7 @@
 
             if (battleManager.CurrentPhase != BattlePhase.PlayerTurn || battleManager.IsBattleEnded)
             {
-                Debug.LogWarning($"[BattleUI] 燁삳?諭띄몴??????????용뮉 ?怨밴묶??낅빍?? phase={battleManager.CurrentPhase}, ended={battleManager.IsBattleEnded}");
+                Debug.LogWarning($"[BattleUI] 移�?뱶瑜??????????�뒗 ?곹깭??�땲?? phase={battleManager.CurrentPhase}, ended={battleManager.IsBattleEnded}");
                 return false;
             }
 
@@ -278,7 +290,7 @@
             ClearTargetingState(false);
             CardViewHoverSystem.Instance?.Hide();
             RefreshHud();
-            Debug.Log($"[BattleUI] ?袁る떮 ?ル굝利? victory={result.IsVictory}, turn={result.TurnCount}");
+            Debug.Log($"[BattleUI] ?꾪닾 ?�낅�? victory={result.IsVictory}, turn={result.TurnCount}");
         }
 
         private void HandleEndTurnClicked()
@@ -290,7 +302,7 @@
 
             if (targetingPhase != CardTargetingPhase.None || CardView.AnyCardPickedUp)
             {
-                Debug.Log("[BattleUI] 燁삳?諭???????野껊슦??餓λ쵐肉????곸뱽 ?ル굝利??????곷뮸??덈뼄.");
+                Debug.Log("[BattleUI] 移�?�???????寃뚰??以묒�????�쓣 ?�낅�??????�뒿??�떎.");
                 return;
             }
 
@@ -309,7 +321,15 @@
 
         private void HandleConfirmMulliganClicked()
         {
-            battleManager?.ConfirmMulligan(false);
+            if (battleManager == null
+                || !battleManager.IsMulliganPhase
+                || selectedMulliganCards.Count == 0
+                || isResolvingMulliganAnimation)
+            {
+                return;
+            }
+
+            StartCoroutine(ResolveMulliganRoutine());
         }
 
         private void RefreshHud()
@@ -335,6 +355,7 @@
             if (endTurnButton != null && battleManager != null)
             {
                 endTurnButton.interactable = !isResolvingEndTurnDiscard
+                    && !isResolvingMulliganAnimation
                     && targetingPhase == CardTargetingPhase.None
                     && !CardView.AnyCardPickedUp
                     && !battleManager.IsBattleEnded
@@ -344,17 +365,25 @@
             if (mulliganConfirmButton != null && battleManager != null)
             {
                 mulliganConfirmButton.gameObject.SetActive(battleManager.IsMulliganPhase);
+                mulliganConfirmButton.interactable = !isResolvingMulliganAnimation && selectedMulliganCards.Count > 0;
             }
         }
 
         private void RefreshHandView()
         {
+            if (suppressNextHandRefresh)
+            {
+                suppressNextHandRefresh = false;
+                RefreshHud();
+                return;
+            }
+
             ClearTargetingState(false);
             CardViewHoverSystem.Instance?.Hide();
 
             if (handView == null || cardViewCreator == null || battleCardSystem == null)
             {
-                Debug.LogWarning($"[BattleUI] RefreshHandView 餓λ쵎?? handView={(handView != null)}, cardViewCreator={(cardViewCreator != null)}, battleCardSystem={(battleCardSystem != null)}");
+                Debug.LogWarning($"[BattleUI] RefreshHandView 以묐?? handView={(handView != null)}, cardViewCreator={(cardViewCreator != null)}, battleCardSystem={(battleCardSystem != null)}");
                 return;
             }
 
@@ -365,8 +394,9 @@
         private IEnumerator RebuildHandRoutine()
         {
             handView.ClearAllCardsImmediate();
+            mulliganCardViews.Clear();
+            selectedMulliganCards.Clear();
 
-            int createdCount = 0;
             foreach (var battleCard in battleCardSystem.PileState.Hand)
             {
                 if (battleCard == null)
@@ -386,17 +416,216 @@
                     continue;
                 }
 
-                BattleCardPlayHandler playHandler = cardView.GetComponent<BattleCardPlayHandler>();
-                if (playHandler == null)
+                if (battleManager != null && battleManager.IsMulliganPhase)
                 {
-                    playHandler = cardView.gameObject.AddComponent<BattleCardPlayHandler>();
+                    ConfigureCardViewForMulligan(battleCard, cardView);
+                    yield return handView.AddCard(cardView);
                 }
-
-                playHandler.Bind(battleCard, this);
-                yield return handView.AddCard(cardView);
-                createdCount++;
+                else
+                {
+                    ConfigureCardViewForBattlePlay(battleCard, cardView);
+                    yield return handView.AddCard(cardView);
+                }
             }
 
+            RefreshHud();
+        }
+
+        private void ConfigureCardViewForBattlePlay(BattleCard battleCard, CardView cardView)
+        {
+            if (battleCard == null || cardView == null)
+            {
+                return;
+            }
+
+            BattleMulliganCardHandler mulliganHandler = cardView.GetComponent<BattleMulliganCardHandler>();
+            if (mulliganHandler != null)
+            {
+                Destroy(mulliganHandler);
+            }
+
+            cardView.UseBuiltInInteractions = true;
+            cardView.AllowHoverPreview = true;
+            cardView.SetMulliganMarked(false);
+
+            BattleCardPlayHandler playHandler = cardView.GetComponent<BattleCardPlayHandler>();
+            if (playHandler == null)
+            {
+                playHandler = cardView.gameObject.AddComponent<BattleCardPlayHandler>();
+            }
+
+            playHandler.Bind(battleCard, this);
+            cardView.RefreshPlayHandlerBinding();
+        }
+
+        private void ConfigureCardViewForMulligan(BattleCard battleCard, CardView cardView)
+        {
+            if (battleCard == null || cardView == null)
+            {
+                return;
+            }
+
+            BattleCardPlayHandler playHandler = cardView.GetComponent<BattleCardPlayHandler>();
+            if (playHandler != null)
+            {
+                Destroy(playHandler);
+            }
+
+            cardView.ClearPlayHandlerBinding();
+
+            cardView.UseBuiltInInteractions = false;
+            cardView.AllowHoverPreview = true;
+            cardView.SetMulliganMarked(false);
+
+            BattleMulliganCardHandler handler = cardView.GetComponent<BattleMulliganCardHandler>();
+            if (handler == null)
+            {
+                handler = cardView.gameObject.AddComponent<BattleMulliganCardHandler>();
+            }
+
+            handler.Bind(this, battleCard);
+            cardView.RefreshPlayHandlerBinding();
+            mulliganCardViews[battleCard] = cardView;
+        }
+
+        private void ToggleMulliganCardSelection(BattleCard battleCard)
+        {
+            if (battleCard == null || battleManager == null || !battleManager.IsMulliganPhase || isResolvingMulliganAnimation)
+            {
+                return;
+            }
+
+            if (selectedMulliganCards.Contains(battleCard))
+            {
+                selectedMulliganCards.Remove(battleCard);
+            }
+            else
+            {
+                selectedMulliganCards.Add(battleCard);
+            }
+
+            if (mulliganCardViews.TryGetValue(battleCard, out CardView cardView) && cardView != null)
+            {
+                cardView.SetMulliganMarked(selectedMulliganCards.Contains(battleCard));
+            }
+
+            RefreshHud();
+        }
+
+        private IEnumerator ResolveMulliganRoutine()
+        {
+            if (battleManager == null || battleCardSystem == null || handView == null)
+            {
+                yield break;
+            }
+
+            isResolvingMulliganAnimation = true;
+            RefreshHud();
+
+            List<BattleCard> selectedCards = new(selectedMulliganCards);
+            BattleMulliganResult mulliganResult = battleManager.ConfirmMulligan(selectedCards);
+            if (mulliganResult == null)
+            {
+                isResolvingMulliganAnimation = false;
+                RefreshHud();
+                yield break;
+            }
+
+            List<CardView> returningViews = new();
+            foreach (BattleCard card in mulliganResult.ReturnedCards)
+            {
+                if (card != null && mulliganCardViews.TryGetValue(card, out CardView view) && view != null)
+                {
+                    returningViews.Add(view);
+                }
+            }
+
+            foreach (CardView returningView in returningViews)
+            {
+                handView.RemoveCard(returningView.Card);
+                returningView.SetMulliganMarked(false);
+                returningView.AllowHoverPreview = false;
+                returningView.transform.DOKill();
+                returningView.transform.DOLocalMove(returningView.transform.localPosition + new Vector3(0f, 140f, 0f), 0.2f).SetEase(Ease.InBack);
+                returningView.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack);
+            }
+
+            if (returningViews.Count > 0)
+            {
+                yield return new WaitForSeconds(0.22f);
+            }
+
+            foreach (CardView returningView in returningViews)
+            {
+                if (returningView != null)
+                {
+                    Destroy(returningView.gameObject);
+                }
+            }
+
+            foreach (BattleCard card in selectedCards)
+            {
+                mulliganCardViews.Remove(card);
+            }
+
+            foreach (BattleCard redrawnCard in mulliganResult.RedrawnCards)
+            {
+                if (redrawnCard == null)
+                {
+                    continue;
+                }
+
+                Card previewCard = BattleCardViewAdapter.CreatePreviewCard(redrawnCard);
+                if (previewCard == null)
+                {
+                    continue;
+                }
+
+                CardView cardView = cardViewCreator.CreateCardView(previewCard, Vector3.zero, Quaternion.identity);
+                if (cardView == null)
+                {
+                    continue;
+                }
+
+                cardView.UseBuiltInInteractions = false;
+                cardView.AllowHoverPreview = false;
+                cardView.SetMulliganMarked(false);
+                handView.AddCardImmediate(cardView);
+            }
+
+            yield return handView.LayoutCardsInCenter(0.15f, mulliganCenterY);
+
+            foreach (BattleCard keptCard in mulliganResult.KeptCards)
+            {
+                if (keptCard != null && mulliganCardViews.TryGetValue(keptCard, out CardView keptView) && keptView != null)
+                {
+                    ConfigureCardViewForBattlePlay(keptCard, keptView);
+                }
+            }
+
+            for (int i = 0; i < mulliganResult.RedrawnCards.Count && i < handView.Cards.Count; i++)
+            {
+                BattleCard redrawnCard = mulliganResult.RedrawnCards[i];
+                if (redrawnCard == null)
+                {
+                    continue;
+                }
+
+                CardView cardView = handView.Cards[handView.Cards.Count - mulliganResult.RedrawnCards.Count + i];
+                if (cardView != null)
+                {
+                    ConfigureCardViewForBattlePlay(redrawnCard, cardView);
+                }
+            }
+
+            yield return new WaitForSeconds(0.1f);
+            yield return handView.UpdateCardPositions(0.25f);
+
+            suppressNextHandRefresh = true;
+            selectedMulliganCards.Clear();
+            mulliganCardViews.Clear();
+            isResolvingMulliganAnimation = false;
+            battleManager.StartPlayerTurnAfterMulligan();
             RefreshHud();
         }
 
@@ -480,13 +709,13 @@
         {
             if (clickedUnit == null || clickedUnit.Team != BattleTeam.Player || !clickedUnit.IsAlive)
             {
-                Debug.Log("[BattleUI] 燁삳?諭띄몴???????袁㏓럵 ?醫딅뻺???????뤾쉭??");
+                Debug.Log("[BattleUI] 移�?뱶瑜???????꾧뎔 ?좊떅????�???�꽭??");
                 return;
             }
 
             if (selectableUnits.Count > 0 && !selectableUnits.Contains(clickedUnit))
             {
-                Debug.Log("[BattleUI] ?袁⑹삺 燁삳?諭뜻에??????????덈뮉 ?袁㏓럵 ?醫딅뻺???醫뤾문??뤾쉭??");
+                Debug.Log("[BattleUI] ?꾩옱 移�?뱶濡??????????�뒗 ?꾧뎔 ?좊떅???좏깮??�꽭??");
                 return;
             }
 
@@ -608,7 +837,7 @@
 
             if (!selectableMoveCells.Contains(clickedGrid))
             {
-                Debug.Log("[BattleUI] ??猷?揶쎛?館釉?燁삳챷???????뤾쉭??");
+                Debug.Log("[BattleUI] ??��?媛?ν�?移몄????�???�꽭??");
                 return;
             }
 
@@ -625,7 +854,7 @@
                 return;
             }
 
-            Debug.Log("[BattleUI] ????燁삳㈇?댐쭪???野껋럥以덄몴?筌띾슢諭?????곷뮸??덈뼄.");
+            Debug.Log("[BattleUI] ??�??移멸?�吏???寃쎈줈瑜?留뚮�?????�뒿??�떎.");
         }
 
         private void HandleMovePathDrag(Vector2 screenPosition)
@@ -688,19 +917,19 @@
                     finalCell,
                     pendingBattleCard);
 
-                // SRPG筌ｌ꼶??"??猷????멸땋 ??쇱벉 域??袁⑺뒄?癒?퐣 ??쇱젫嚥????뵭 ????덈뮉筌왖"???믪눘? ?類ㅼ뵥??랁?
-                // 揶쎛?館釉????춸 ?⑤벀爰??醫뤾문 ??ｍ롦에???랁돥??덈뼄.
+                // SRPG泥섎??"??��????�궦 ??�쓬 �??꾩튂?�?�� ??�젣�????�� ????�뒗吏"???�쇱? ?뺤씤??��?
+                // 媛?ν�????�� ?�듦�??좏깮 ??�퀎濡???�퉩??�떎.
                 if (attackCells.Count == 0)
                 {
                     if (drawnMovePath.Count > 0)
                     {
-                        // ??猷????⑤벀爰?燁삳?諭??곕즲 ???숁쾮??퓠 ?怨몄뵠 ??곸몵筌?
-                        // ?⑤벀爰???ｍ롧몴???몄셽??랁???猷욑쭕???묐뻬??????뉗쓺 ??볥빍??
+                        // ??��????�듦�?移�?�??�룄 ???�沅??�� ?곸씠 ??�쑝�?
+                        // ?�듦�???�퀎瑜???�왂??��???�룞留???�뻾??????�쾶 ??�땲??
                         PlayPendingCard(finalCell, null, null, drawnMovePath, skipFollowUpAttack: true);
                         return;
                     }
 
-                    Debug.Log("[BattleUI] ?袁⑹삺 ?袁⑺뒄?癒?퐣???⑤벀爰?揶쎛?館釉??怨몄뵠 ??곷뮸??덈뼄. ??猷?野껋럥以덄몴?域밸챶?곩쳞怨뺢돌 ??삘뀲 ?醫딅뻺???醫뤾문??뤾쉭??");
+                    Debug.Log("[BattleUI] ?꾩옱 ?꾩튂?�?��???�듦�?媛?ν�??곸씠 ??�뒿??�떎. ??��?寃쎈줈瑜?洹몃?�嫄곕굹 ??�Ⅸ ?좊떅???좏깮??�꽭??");
                     RefreshMovePreview();
                     return;
                 }
@@ -722,7 +951,7 @@
             {
                 if (!hasConfirmedAttackTarget)
                 {
-                    Debug.Log("[BattleUI] ?믪눘? ?⑤벀爰????怨몄뱽 ?醫뤾문??뤾쉭??");
+                    Debug.Log("[BattleUI] ?�쇱? ?�듦�????곸쓣 ?좏깮??�꽭??");
                     return;
                 }
 
@@ -737,7 +966,7 @@
 
             if (drawnMovePath.Count == 0)
             {
-                Debug.Log("[BattleUI] ?믪눘? ??猷?野껋럥以덄몴?域밸챶??틠?깃쉭??");
+                Debug.Log("[BattleUI] ?�쇱? ??��?寃쎈줈瑜?洹몃??��?�꽭??");
                 return;
             }
 
@@ -986,8 +1215,8 @@
             if (!IsValidAttackHover(clickedGrid, clickedUnit))
             {
                 Debug.Log(isGroundTargetAttack
-                    ? "[BattleUI] 공격 가능한 칸을 선택해야 합니다."
-                    : "[BattleUI] 공격 가능한 적이 있는 칸을 선택해야 합니다.");
+                    ? "[BattleUI] ���� ������ ĭ�� �����ؾ� �մϴ�."
+                    : "[BattleUI] ���� ������ ���� �ִ� ĭ�� �����ؾ� �մϴ�.");
                 return;
             }
 
@@ -1494,7 +1723,7 @@
             //if (EnableMoveDebug)
             //{
             //    Debug.Log(
-            //        $"[BattleUI] MovePath ?怨밴묶: unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, currentBudget={currentMoveBudget}, currentCost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={builder}");
+            //        $"[BattleUI] MovePath ?곹깭: unit={(pendingUserUnit != null ? pendingUserUnit.name : "null")}, currentBudget={currentMoveBudget}, currentCost={CalculateDrawnPathCost()}, pathCount={drawnMovePath.Count}, path={builder}");
             //}
         }
 
@@ -1592,7 +1821,37 @@
             isResolvingEndTurnDiscard = false;
             RefreshHud();
         }
+
+        private sealed class BattleMulliganCardHandler : MonoBehaviour, IPointerClickHandler
+        {
+            private BattleUIController owner;
+            private BattleCard battleCard;
+
+            public void Bind(BattleUIController owner, BattleCard battleCard)
+            {
+                this.owner = owner;
+                this.battleCard = battleCard;
+            }
+
+            public void OnPointerClick(PointerEventData eventData)
+            {
+                if (eventData.button != PointerEventData.InputButton.Left || owner == null || battleCard == null)
+                {
+                    return;
+                }
+
+                owner.ToggleMulliganCardSelection(battleCard);
+            }
+        }
     }
 }
+
+
+
+
+
+
+
+
 
 

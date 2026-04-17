@@ -26,6 +26,16 @@
             yield return UpdateCardPositions(0.15f);
         }
 
+        public void AddCardImmediate(CardView cardView)
+        {
+            cardView.transform.SetParent(this.transform, false);
+
+            if (!cards.Contains(cardView))
+            {
+                cards.Add(cardView);
+            }
+        }
+
         public IEnumerator InsertCard(CardView cardView, int index)
         {
             cardView.transform.SetParent(this.transform, false);
@@ -141,6 +151,29 @@
             }
 
             Debug.LogWarning("[HandView] splineContainer가 비어 있거나 Knot가 없어 직선 배치 대체를 사용합니다.");
+            yield return new WaitForSeconds(duration);
+        }
+
+        public IEnumerator LayoutCardsInCenter(float duration, float centerY = 220f, float spacing = 190f)
+        {
+            cards.RemoveAll(cv => cv == null);
+            if (cards.Count == 0)
+            {
+                yield break;
+            }
+
+            float startX = -((cards.Count - 1) * spacing) * 0.5f;
+            for (int i = 0; i < cards.Count; i++)
+            {
+                Vector3 targetPosition = new(startX + (i * spacing), centerY, 0f);
+
+                cards[i].transform.DOKill();
+                cards[i].transform.SetSiblingIndex(i);
+                cards[i].transform.DOLocalMove(targetPosition, duration);
+                cards[i].transform.DORotate(Vector3.zero, duration);
+                cards[i].transform.DOScale(Vector3.one, duration);
+            }
+
             yield return new WaitForSeconds(duration);
         }
 

@@ -48,6 +48,7 @@
         private Camera mainCamera;
         private HandView cachedHandView;
         private ICardViewPlayHandler customPlayHandler;
+        private TMP_Text mulliganMarkText;
 
         private void Awake()
         {
@@ -93,6 +94,25 @@
             if (descriptionText != null) descriptionText.text = card.Description;
             if (costText != null) costText.text = card.Cost.ToString();
             if (cardArtImage != null && card.Image != null) cardArtImage.sprite = card.Image;
+        }
+
+        public void SetMulliganMarked(bool isMarked)
+        {
+            TMP_Text mark = EnsureMulliganMark();
+            if (mark != null)
+            {
+                mark.gameObject.SetActive(isMarked);
+            }
+        }
+
+        public void RefreshPlayHandlerBinding()
+        {
+            customPlayHandler = GetComponents<MonoBehaviour>().OfType<ICardViewPlayHandler>().FirstOrDefault();
+        }
+
+        public void ClearPlayHandlerBinding()
+        {
+            customPlayHandler = null;
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -460,6 +480,39 @@
             }
 
             return FindFirstObjectByType<HandView>();
+        }
+
+        private TMP_Text EnsureMulliganMark()
+        {
+            if (mulliganMarkText != null)
+            {
+                return mulliganMarkText;
+            }
+
+            Transform existing = transform.Find("MulliganMark");
+            if (existing != null)
+            {
+                mulliganMarkText = existing.GetComponent<TMP_Text>();
+                return mulliganMarkText;
+            }
+
+            GameObject markObject = new("MulliganMark", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+            markObject.transform.SetParent(transform, false);
+
+            RectTransform rectTransform = markObject.GetComponent<RectTransform>();
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+
+            mulliganMarkText = markObject.GetComponent<TextMeshProUGUI>();
+            mulliganMarkText.text = "X";
+            mulliganMarkText.alignment = TextAlignmentOptions.Center;
+            mulliganMarkText.fontSize = 180f;
+            mulliganMarkText.color = new Color(0.88f, 0.12f, 0.12f, 0.85f);
+            mulliganMarkText.raycastTarget = false;
+            mulliganMarkText.gameObject.SetActive(false);
+            return mulliganMarkText;
         }
     }
 }

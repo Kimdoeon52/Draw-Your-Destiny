@@ -1,6 +1,7 @@
 ﻿namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
+    using System.Linq;
     using NYH.CoreCardSystem;
     using UnityEngine;
 
@@ -118,6 +119,50 @@
             drawPile.AddRange(hand);
             hand.Clear();
             drawPile.Shuffle();
+        }
+
+        public BattleMulliganResult MulliganSelectedCards(IReadOnlyList<BattleCard> selectedCards)
+        {
+            BattleMulliganResult result = new();
+            if (selectedCards == null || selectedCards.Count == 0)
+            {
+                result.KeptCards.AddRange(hand);
+                return result;
+            }
+
+            HashSet<BattleCard> selectedSet = new(selectedCards.Where(card => card != null));
+            if (selectedSet.Count == 0)
+            {
+                result.KeptCards.AddRange(hand);
+                return result;
+            }
+
+            for (int i = hand.Count - 1; i >= 0; i--)
+            {
+                BattleCard card = hand[i];
+                if (card == null)
+                {
+                    continue;
+                }
+
+                if (selectedSet.Contains(card))
+                {
+                    hand.RemoveAt(i);
+                    result.ReturnedCards.Insert(0, card);
+                }
+            }
+
+            result.KeptCards.AddRange(hand);
+
+            if (result.ReturnedCards.Count == 0)
+            {
+                return result;
+            }
+
+            drawPile.AddRange(result.ReturnedCards);
+            drawPile.Shuffle();
+            result.RedrawnCards.AddRange(DrawCards(result.ReturnedCards.Count));
+            return result;
         }
 
         public bool ContainsInHand(BattleCard card)

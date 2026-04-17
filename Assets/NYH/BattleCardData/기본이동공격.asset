@@ -42,9 +42,19 @@ MonoBehaviour:
         targetType: 1
         range: 1
         targetCount: 1
+        selectionCount: 1
         hitsAllTargetsInRange: 0
         attackPattern: 2
         customAttackPattern: {fileID: 0}
+        useSeparatePatterns: 1
+        targetingRange: 1
+        targetingPattern: 0
+        customTargetingPattern: {fileID: 11400000, guid: 936df70eff912154fa876eb036218aab,
+          type: 2}
+        impactRange: 1
+        impactPattern: 0
+        customImpactPattern: {fileID: 11400000, guid: c0aaaca4b7582e544a53956026be0c24,
+          type: 2}
     - rid: 7216728476613083247
       type: {class: BattleDamageEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:

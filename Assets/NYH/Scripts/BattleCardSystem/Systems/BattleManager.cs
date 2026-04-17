@@ -172,20 +172,24 @@ namespace NYH.BattleCardSystem
             DrawOpeningHand();
         }
 
-        public void ConfirmMulligan(bool redraw = false)
+        public BattleMulliganResult ConfirmMulligan(IReadOnlyList<BattleCard> selectedCards = null)
         {
-            if (!IsMulliganPhase || IsBattleEnded)
+            if (!IsMulliganPhase || IsBattleEnded || battleCardSystem == null)
+            {
+                return null;
+            }
+
+            IsMulliganPhase = false;
+            return battleCardSystem.MulliganSelectedCards(selectedCards);
+        }
+
+        public void StartPlayerTurnAfterMulligan()
+        {
+            if (IsBattleEnded)
             {
                 return;
             }
 
-            if (redraw && battleCardSystem != null)
-            {
-                battleCardSystem.MulliganOpeningHand(GetAlivePlayerUnitTypeCount());
-                NotifyHandStateChanged();
-            }
-
-            IsMulliganPhase = false;
             StartPlayerTurn();
         }
 

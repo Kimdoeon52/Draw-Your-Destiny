@@ -70405,6 +70405,10 @@ MonoBehaviour:
       type: 3}
     gridPosition: {x: 2, y: 5}
     startHealth: 5
+  - unitPrefab: {fileID: 692144614679788697, guid: 9597d30b961ca9341abae066d624753b,
+      type: 3}
+    gridPosition: {x: 2, y: 6}
+    startHealth: 5
   enableKeyboardShortcut: 1
   enterBattleKey: 288
   exitBattleKey: 289
