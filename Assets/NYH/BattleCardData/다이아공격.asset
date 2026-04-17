@@ -18,6 +18,7 @@ MonoBehaviour:
   <Image>k__BackingField: {fileID: 584017139910605470, guid: 57153bc98c84b584394a27c7ed1998ae,
     type: 3}
   <ActionPointCost>k__BackingField: 2
+  <DisplayMoveRange>k__BackingField: 5
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 4

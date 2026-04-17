@@ -74,6 +74,7 @@
         [Header("전투 코스트 / 덱 규칙")]
         [field: FormerlySerializedAs("<FoodCost>k__BackingField")]
         [field: SerializeField] public int ActionPointCost { get; private set; }
+        [field: SerializeField] public int DisplayMoveRange { get; private set; }
         [field: SerializeField] public bool IgnoresDeckLimit { get; private set; }
         [Header("사용 시 소멸 여부")]
         [field: SerializeField] public bool IsConsumable { get; private set; } = false;

@@ -33,7 +33,8 @@ namespace NYH.BattleCardSystem
                 battleCardData.Image,
                 battleCardData.ActionPointCost,
                 battleCardData.Description,
-                battleCardData.Effects);
+                battleCardData.Effects,
+                CardPresentationTextFormatter.CreateForBattle(battleCardData));
         }
 
         public static Card CreatePreviewCard(BattleCard battleCard)
@@ -50,7 +51,8 @@ namespace NYH.BattleCardSystem
                 battleCard.Image,
                 battleCard.CurrentCost,
                 battleCard.Data != null ? battleCard.Data.Description : string.Empty,
-                battleCard.Data != null ? battleCard.Data.Effects : null);
+                battleCard.Data != null ? battleCard.Data.Effects : null,
+                CardPresentationTextFormatter.CreateForBattle(battleCard.Data));
         }
 
         private static Card CreatePreviewCardInternal(
@@ -60,7 +62,8 @@ namespace NYH.BattleCardSystem
             Sprite image,
             int cost,
             string description,
-            System.Collections.Generic.List<Effect> effects)
+            System.Collections.Generic.List<Effect> effects,
+            CardPresentationData presentationData)
         {
             CardData previewData = ScriptableObject.CreateInstance<CardData>();
             previewData.hideFlags = HideFlags.HideAndDontSave;
@@ -73,10 +76,14 @@ namespace NYH.BattleCardSystem
             SetField(previewData, "description", description);
             SetField(previewData, "<Effects>k__BackingField", effects ?? new System.Collections.Generic.List<Effect>());
 
-            return new Card(previewData)
+            Card previewCard = new Card(previewData)
             {
                 Cost = cost,
             };
+
+            previewCard.PresentationData = presentationData ?? new CardPresentationData { VisualKind = CardVisualKind.Battle };
+
+            return previewCard;
         }
 
         private static CardType ResolvePreviewCardType(BattleCardType battleCardType)

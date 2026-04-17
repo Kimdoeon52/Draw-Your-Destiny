@@ -18,6 +18,7 @@ MonoBehaviour:
   <Image>k__BackingField: {fileID: 584017139910605470, guid: 57153bc98c84b584394a27c7ed1998ae,
     type: 3}
   <ActionPointCost>k__BackingField: 4
+  <DisplayMoveRange>k__BackingField: 3
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 4
@@ -46,10 +47,18 @@ MonoBehaviour:
         targetType: 2
         range: 8
         targetCount: 99
+        selectionCount: 1
         hitsAllTargetsInRange: 1
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: 338328ebe63553f41be5a6c8750f9118,
           type: 2}
+        useSeparatePatterns: 0
+        targetingRange: 1
+        targetingPattern: 0
+        customTargetingPattern: {fileID: 0}
+        impactRange: 1
+        impactPattern: 0
+        customImpactPattern: {fileID: 0}
     - rid: 3212137787988901986
       type: {class: BattleDamageEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:

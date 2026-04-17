@@ -7,36 +7,44 @@ using UnityEngine;
 public class CardViewHoverSystem : Singleton<CardViewHoverSystem>
 {
     [Header("Preview UI")]
+    [SerializeField] private CardView civilizationCardViewHover;
+    [SerializeField] private CardView battleCardViewHover;
     [SerializeField] private CardView cardViewHover;
 
     protected override void Awake()
     {
         base.Awake();
-        if (cardViewHover != null)
+        PrepareHoverView(civilizationCardViewHover);
+        PrepareHoverView(battleCardViewHover);
+        if (cardViewHover != null
+            && cardViewHover != civilizationCardViewHover
+            && cardViewHover != battleCardViewHover)
         {
-            cardViewHover.IsHoverPreview = true;
-            cardViewHover.gameObject.SetActive(false);
+            PrepareHoverView(cardViewHover);
         }
     }
 
     public void Show(Card card, Vector3 position)
     {
-        if (cardViewHover == null)
+        CardView activeHoverView = ResolveHoverView(card);
+        if (activeHoverView == null)
         {
             return;
         }
 
-        cardViewHover.gameObject.SetActive(true);
-        cardViewHover.Setup(card);
-        cardViewHover.transform.SetAsLastSibling();
+        HideInactiveHoverViews(activeHoverView);
 
-        var graphics = cardViewHover.GetComponentsInChildren<UnityEngine.UI.Graphic>();
+        activeHoverView.gameObject.SetActive(true);
+        activeHoverView.Setup(card);
+        activeHoverView.transform.SetAsLastSibling();
+
+        var graphics = activeHoverView.GetComponentsInChildren<UnityEngine.UI.Graphic>();
         foreach (var graphic in graphics)
         {
             graphic.raycastTarget = false;
         }
 
-        RectTransform rect = cardViewHover.GetComponent<RectTransform>();
+        RectTransform rect = activeHoverView.GetComponent<RectTransform>();
         float halfWidth = (rect.rect.width * rect.lossyScale.x) / 2f;
         float halfHeight = (rect.rect.height * rect.lossyScale.y) / 2f;
 
@@ -49,14 +57,63 @@ public class CardViewHoverSystem : Singleton<CardViewHoverSystem>
         targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
         targetPos.y = Mathf.Clamp(targetPos.y, minY, maxY);
 
-        cardViewHover.transform.position = targetPos;
+        activeHoverView.transform.position = targetPos;
     }
 
     public void Hide()
     {
-        if (cardViewHover != null)
+        HideHoverView(civilizationCardViewHover);
+        HideHoverView(battleCardViewHover);
+        HideHoverView(cardViewHover);
+    }
+
+    private CardView ResolveHoverView(Card card)
+    {
+        CardVisualKind visualKind = card?.PresentationData != null
+            ? card.PresentationData.VisualKind
+            : CardVisualKind.Civilization;
+
+        return visualKind switch
+        {
+            CardVisualKind.Battle => battleCardViewHover != null ? battleCardViewHover : cardViewHover,
+            _ => civilizationCardViewHover != null ? civilizationCardViewHover : cardViewHover,
+        };
+    }
+
+    private void HideInactiveHoverViews(CardView activeHoverView)
+    {
+        if (civilizationCardViewHover != null && civilizationCardViewHover != activeHoverView)
+        {
+            civilizationCardViewHover.gameObject.SetActive(false);
+        }
+
+        if (battleCardViewHover != null && battleCardViewHover != activeHoverView)
+        {
+            battleCardViewHover.gameObject.SetActive(false);
+        }
+
+        if (cardViewHover != null && cardViewHover != activeHoverView)
         {
             cardViewHover.gameObject.SetActive(false);
+        }
+    }
+
+    private static void PrepareHoverView(CardView hoverView)
+    {
+        if (hoverView == null)
+        {
+            return;
+        }
+
+        hoverView.IsHoverPreview = true;
+        hoverView.gameObject.SetActive(false);
+    }
+
+    private static void HideHoverView(CardView hoverView)
+    {
+        if (hoverView != null)
+        {
+            hoverView.gameObject.SetActive(false);
         }
     }
 }

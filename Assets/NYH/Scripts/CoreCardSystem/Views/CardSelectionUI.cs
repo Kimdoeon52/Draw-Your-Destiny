@@ -232,6 +232,15 @@ namespace NYH.CoreCardSystem
             }
 
             CardView cardView = CardViewCreator.Instance.CreateCardView(previewCard, parent.position, Quaternion.identity);
+            if (cardView == null)
+            {
+                string visualKind = previewCard.PresentationData != null
+                    ? previewCard.PresentationData.VisualKind.ToString()
+                    : "Unknown";
+                Debug.LogWarning($"[CardSelectionUI] 보상 카드 뷰 생성 실패: title={previewCard.Title}, visualKind={visualKind}");
+                return null;
+            }
+
             cardView.transform.SetParent(parent, false);
             cardView.IsHoverPreview = true;
             cardView.UseBuiltInInteractions = false;
@@ -423,4 +432,5 @@ namespace NYH.CoreCardSystem
         }
     }
 }
+
 

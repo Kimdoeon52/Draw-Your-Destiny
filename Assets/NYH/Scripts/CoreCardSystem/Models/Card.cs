@@ -31,6 +31,7 @@
         public int CardID => data.cardID;
         public CardType _CardType => data.cardType;
         public CardUseType[] _CardUseType => data.cardUseType;
+        public CardPresentationData PresentationData { get; set; }
 
         public int Cost { get; set; }
         public CardData data { get; private set; }
@@ -46,6 +47,7 @@
         {
             data = cardData;
             Cost = cardData.Cost;
+            PresentationData = CardPresentationTextFormatter.CreateForCivilization(cardData);
         }
 
         private string BuildDescription()

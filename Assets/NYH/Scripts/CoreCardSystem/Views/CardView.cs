@@ -17,6 +17,9 @@
         [SerializeField] private TMP_Text titleText;
         [SerializeField] private TMP_Text descriptionText;
         [SerializeField] private TMP_Text costText;
+        [SerializeField] private TMP_Text cardTypeText;
+        [SerializeField] private TMP_Text cardUseTypeText;
+        [SerializeField] private TMP_Text moveRangeText;
 
         [Header("UI Image Objects")]
         [SerializeField] private Image cardArtImage;
@@ -94,6 +97,7 @@
             if (descriptionText != null) descriptionText.text = card.Description;
             if (costText != null) costText.text = card.Cost.ToString();
             if (cardArtImage != null && card.Image != null) cardArtImage.sprite = card.Image;
+            ApplyPresentationData(card.PresentationData);
         }
 
         public void SetMulliganMarked(bool isMarked)
@@ -513,6 +517,27 @@
             mulliganMarkText.raycastTarget = false;
             mulliganMarkText.gameObject.SetActive(false);
             return mulliganMarkText;
+        }
+
+        private void ApplyPresentationData(CardPresentationData presentationData)
+        {
+            CardPresentationData resolvedData = presentationData ?? new CardPresentationData();
+            bool isBattleCard = resolvedData.VisualKind == CardVisualKind.Battle;
+
+            SetOptionalText(cardTypeText, resolvedData.CardTypeText, !isBattleCard);
+            SetOptionalText(cardUseTypeText, resolvedData.CardUseTypeText, !isBattleCard);
+            SetOptionalText(moveRangeText, resolvedData.MoveRangeText, isBattleCard);
+        }
+
+        private static void SetOptionalText(TMP_Text target, string value, bool shouldShow)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            target.text = string.IsNullOrWhiteSpace(value) ? "-" : value;
+            target.gameObject.SetActive(shouldShow);
         }
     }
 }
