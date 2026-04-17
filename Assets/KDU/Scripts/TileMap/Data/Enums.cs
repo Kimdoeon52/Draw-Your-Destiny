@@ -62,6 +62,28 @@ public enum Era
     Iron        // 철기시대  — 연구 포인트 200 달성 시 전환
 }
 
+// ── 유닛 타입 ─────────────────────────────────────────────
+// 전투 유닛 종류. 건물 생산 → NodeUnit → 전투 시스템에서 사용.
+// LSH의 UnitTypeBase와 동일 목록 — 프로젝트 전역 enum으로 통합.
+public enum UnitType
+{
+    // 경제 유닛
+    Farmer,         // 농부
+    Shoper,         // 상인
+
+    // 석기
+    RockWarrior,    // 돌도끼병 — Barracks_SoldierStone/Bronze/Iron 생산
+
+    // 청동기
+    Healer,         // 의무병   — Barracks_Medic/MedicElite 생산
+    Archer,         // 궁수     — Barracks_ArcheryRange/Elite 생산
+
+    // 철기
+    HorseWarrior,   // 기마병   — Barracks_Stable 생산
+    Knight,         // 기사     — Barracks_Knight 생산
+    Giant           // 자이언트 — Barracks_Giant 생산
+}
+
 // ── 시민 역할 ─────────────────────────────────────────────
 // 인구 개별 관리 방식에서 시민 한 명의 현재 역할을 나타냄 (미구현)
 public enum UnitRole

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 // 병영 — 근접 유닛(돌도끼병) 생산
 // 자동 업그레이드 체인: TribePracticeGround(석기) → TrainingCamp(청동기) → Barracks(철기)

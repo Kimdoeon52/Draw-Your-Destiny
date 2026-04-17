@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 // ============================================================
 // NodeData — 월드맵 노드 1개의 런타임 상태
@@ -32,6 +32,8 @@ public class NodeData
     public int gold = 0;
     public int food = 0;
     public int research = 0;
+
+    public List<NodeUnit> units = new List<NodeUnit>();
 
     // 현재 이 노드에 배치된 건물 목록
     // 영지 이탈 시 TileMapManager의 allBuildings가 여기에 저장됨
