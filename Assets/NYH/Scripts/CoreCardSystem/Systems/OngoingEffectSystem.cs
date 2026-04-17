@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OngoingEffectSystem : Singleton<OngoingEffectSystem>
 {
-    private readonly List<OngoingEffectEntry> entries = new();
+    [SerializeField] private List<OngoingEffectEntry> entries = new();
 
     private abstract class OngoingEffectEntry
     {

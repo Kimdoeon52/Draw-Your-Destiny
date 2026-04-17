@@ -22,16 +22,16 @@ MonoBehaviour:
   description: "\uCD5C\uB300 \uC778\uAD6C \uC218\uB97C {increasePopulationAmount}\uBA85
     \uB298\uB824\uC8FC\uB294 \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4."
   <Effects>k__BackingField:
-  - rid: 7216728271782674510
-  - rid: 7216728271782674511
+  - rid: 5005894311149568082
+  - rid: 5005894311149568083
   references:
     version: 2
     RefIds:
-    - rid: 7216728271782674510
-      type: {class: IncreasePopulationffect, ns: , asm: Assembly-CSharp}
+    - rid: 5005894311149568082
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
       data:
-        increasePopulationAmount: 10
-    - rid: 7216728271782674511
+        playCardCost: 0
+    - rid: 5005894311149568083
       type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
       data:
-        buildingData: {fileID: 11400000, guid: 5d99c4a3e2e5b5849b5cad5988e0d8eb, type: 2}
+        buildingData: {fileID: 11400000, guid: b1eeb0dba970e9d4495e5d6a8fe5b5b9, type: 2}

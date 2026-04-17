@@ -22,8 +22,7 @@ MonoBehaviour:
     \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4."
   <Effects>k__BackingField:
   - rid: 3255626751485935705
-  - rid: 3255626751485935726
-  - rid: 3255626751485935727
+  - rid: 5005894311149568080
   references:
     version: 2
     RefIds:
@@ -31,11 +30,7 @@ MonoBehaviour:
       type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
       data:
         buildingData: {fileID: 11400000, guid: b1eeb0dba970e9d4495e5d6a8fe5b5b9, type: 2}
-    - rid: 3255626751485935726
-      type: {class: ContinueBehaviourByBuildingEffect, ns: , asm: Assembly-CSharp}
+    - rid: 5005894311149568080
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
       data:
-        buildingType: 4
-    - rid: 3255626751485935727
-      type: {class: ResearchpointsEffect, ns: , asm: Assembly-CSharp}
-      data:
-        resarchPointAmount: 30
+        playCardCost: 0

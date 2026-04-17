@@ -27,7 +27,8 @@ MonoBehaviour:
   isUniqueGlobal: 0
   goldPerTurn: 0
   researchPerTurn: 0
+  foodPerTurn: 0
   populationCapBonus: 5
   visualPrefab: {fileID: 0}
   productionInterval: 3
-  unitCapacity: 0
+  unitCapacity: 5

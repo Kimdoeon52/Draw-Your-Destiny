@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 
   buildingName: "\uC5F0\uAD6C\uC18C(\uCCA0\uAE30)"
   buildingType: 4
-  sprite: {fileID: 0}
+  sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
   requiredEra: 2
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
@@ -26,9 +26,10 @@ MonoBehaviour:
   maxPerTerritory: -1
   isUniqueGlobal: 1
   goldPerTurn: 0
-  researchPerTurn: 0
+  researchPerTurn: 30
+  foodPerTurn: 0
   populationCapBonus: 0
   visualPrefab: {fileID: 4399998726786722177, guid: eb0734c56dcce5a4c8084d8146d1cf46,
     type: 3}
   productionInterval: 3
-  unitCapacity: 0
+  unitCapacity: 5

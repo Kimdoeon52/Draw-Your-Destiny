@@ -1,3 +1,4 @@
+﻿using Unity.VisualScripting;
 using UnityEngine;
 
 // 자이언트 막사 — 자이언트 유닛 생산
@@ -22,6 +23,7 @@ public class GiantBarracksBehaviour : UnitProducerBehaviour
     protected override void SpawnUnit()
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Giant, instance); 로 교체
+        WizzardPool.Instance.GetHuman(0);
         Debug.Log($"[GiantBarracks] 자이언트 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
     }
 }

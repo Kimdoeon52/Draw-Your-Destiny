@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5629777119184502322}
   - component: {fileID: 2443250353518876897}
   - component: {fileID: 2584391640073456742}
+  - component: {fileID: 2268499198127661465}
   m_Layer: 0
   m_Name: Barracks_Stable_Prefab
   m_TagString: Untagged
@@ -100,3 +101,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2268499198127661465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5771082822402620383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49150e40210c33b4083f77df47ffe369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 5877644716001515087, guid: c1f4a682d592ec649a8221c9c4d70a86,
+    type: 3}
+  poolSize: 20
+  poolParent: {fileID: 0}

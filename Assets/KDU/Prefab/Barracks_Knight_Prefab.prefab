@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 768301559893764200}
   - component: {fileID: 8213901593372542143}
   - component: {fileID: 2477716522916248000}
+  - component: {fileID: 260929706276857457}
   m_Layer: 0
   m_Name: Barracks_Knight_Prefab
   m_TagString: Untagged
@@ -100,3 +101,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &260929706276857457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9099334847938970887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0363ac684a425b94d8230f2328a56e52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 5877644716001515087, guid: f0494652108c6964599af2d7cfd66365,
+    type: 3}
+  poolSize: 20
+  poolParent: {fileID: 0}

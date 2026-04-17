@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7437339795126904688}
   - component: {fileID: 7610585579029952890}
   - component: {fileID: 2361889127866543914}
+  - component: {fileID: 5661746291516616894}
   m_Layer: 0
   m_Name: Barracks_Soilder_Prefab
   m_TagString: Untagged
@@ -100,3 +101,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5661746291516616894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5658404864989583499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f25c4ad02248c8448be435d703747550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 5877644716001515087, guid: d785018811b6aae49a0f00d14ee68c27,
+    type: 3}
+  poolSize: 20
+  poolParent: {fileID: 0}
+  stonePrefab: {fileID: 5877644716001515087, guid: d785018811b6aae49a0f00d14ee68c27,
+    type: 3}
+  bronzePrefab: {fileID: 5877644716001515087, guid: d785018811b6aae49a0f00d14ee68c27,
+    type: 3}
+  ironPrefab: {fileID: 5877644716001515087, guid: d785018811b6aae49a0f00d14ee68c27,
+    type: 3}

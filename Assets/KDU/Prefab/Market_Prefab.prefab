@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8534157802503537494}
   - component: {fileID: 128092469623598634}
   - component: {fileID: 3164065389852942893}
+  - component: {fileID: 2804077446465932629}
   m_Layer: 0
   m_Name: Market_Prefab
   m_TagString: Untagged
@@ -100,3 +101,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2804077446465932629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289288881846488162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d8b0bff3e650ae49adf85e0081c33a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 225240363082403023, guid: c4a5227071144d247a09d231a5fd8151,
+    type: 3}
+  poolSize: 20
+  poolParent: {fileID: 0}

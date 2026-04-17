@@ -8,6 +8,7 @@ public class BarracksBehaviour : UnitProducerBehaviour
     protected override void SpawnUnit()
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Soldier, instance); 로 교체
+        RockWarriorPool.Instance.GetHuman(0);
         Debug.Log($"[Barracks] 병사 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
     }
 }

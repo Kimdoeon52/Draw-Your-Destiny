@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1604410780115204385}
   - component: {fileID: 277767607481753105}
   - component: {fileID: 6982210107316071893}
+  - component: {fileID: 2926016467771232494}
   m_Layer: 0
   m_Name: Barracks_Giant_Prefab
   m_TagString: Untagged
@@ -100,3 +101,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e979b67a2cfdd87498aab2d3f03c1798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2926016467771232494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9082770004853054154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f0c9fc848d4a5c4d800452f3d6ed912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 5877644716001515087, guid: 42e888ae2dd50be41ae2020313c46794,
+    type: 3}
+  poolSize: 20
+  poolParent: {fileID: 0}

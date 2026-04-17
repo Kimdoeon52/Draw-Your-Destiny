@@ -4,16 +4,20 @@ using Base;
 
 namespace PoolBase
 {
-    public class HumanPool : MonoBehaviour, IHumanPool
+    public class HumanPool : Singleton<HumanPool>, IHumanPool
     {
         [Header("유닛")]
-        public GameObject humanPrefab;
+        [SerializeField] private GameObject humanPrefab;
         [Header("최대 생성")]
-        public int poolSize = 20;
-        public Transform poolParent;
-        private Queue<GameObject> pool = new Queue<GameObject>();
+        [SerializeField] protected int poolSize = 20;
+        [SerializeField] protected Transform poolParent;
+        protected Queue<GameObject> pool = new Queue<GameObject>();
 
-        void Start()
+        private void Awake()
+        {
+            poolParent = transform;
+        }
+        protected virtual void Start()
         {
             for (int i = 0; i < poolSize; i++)
             {
@@ -31,7 +35,7 @@ namespace PoolBase
             }
         }
         //====================================================================
-        public GameObject GetHuman(int ownerCivID) //이거 쓰셈 소환할때.(카드 만드는 사람은 이걸 읽도록)
+        public virtual GameObject GetHuman(int ownerCivID)
         {
             if (pool.Count == 0)
             {
@@ -41,9 +45,11 @@ namespace PoolBase
 
             GameObject human = pool.Dequeue();
             human.SetActive(true);
+
             HumanBase humanUnit = human.GetComponent<HumanBase>();
             humanUnit.ownerCivID = ownerCivID;
             humanUnit.SetOwnerPool(this);
+
             return human;
         }
 

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6721149ab5281e49ad6efb81178335b, type: 3}
+  m_Name: "\uD310\uB9E4 \uD560 \uC2DC\uAC04"
+  m_EditorClassIdentifier: 
+  <cardID>k__BackingField: 1406
+  cardName: "\uD310\uB9E4 \uD560 \uC2DC\uAC04"
+  <cardType>k__BackingField: 3
+  <cardUseType>k__BackingField: 00000000
+  <Image>k__BackingField: {fileID: 0}
+  <Cost>k__BackingField: 1
+  description: "5\uBA85\uC774 \uC77C\uD560 \uC218 \uC788\uB294 \uC0C1\uC810\uC744
+    \uC124\uCE58\uD569\uB2C8\uB2E4. \uC0C1\uC810\uC5D0\uC11C\uB294 3\uD134\uB9C8\uB2E4
+    \uC0C1\uC778\uC774 \uD55C \uBA85\uC529 \uB098\uC635\uB2C8\uB2E4."
+  <Effects>k__BackingField:
+  - rid: 5005894311149568088
+  - rid: 5005894311149568089
+  references:
+    version: 2
+    RefIds:
+    - rid: 5005894311149568088
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
+    - rid: 5005894311149568089
+      type: {class: InstallBuildingEffect, ns: NYH.CoreCardSystem, asm: Assembly-CSharp}
+      data:
+        buildingData: {fileID: 11400000, guid: c314029f52d948a48acb1675ff7d5b96, type: 2}

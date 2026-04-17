@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2925427764429685818}
   - component: {fileID: 6632489682838523733}
   - component: {fileID: 241223251712966465}
+  - component: {fileID: -6085592796097281100}
   m_Layer: 0
   m_Name: Farm_Prefab
   m_TagString: Untagged
@@ -100,3 +101,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-6085592796097281100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4064430417028411154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62f7915e2bc22744984fd5a6605829ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 225240363082403023, guid: ccf6a24e60ce9e54b834b549ba52155c,
+    type: 3}
+  poolSize: 20
+  poolParent: {fileID: 0}

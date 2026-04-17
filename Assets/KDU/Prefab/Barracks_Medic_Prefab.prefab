@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4664998385799334279}
   - component: {fileID: 7903499208675159098}
   - component: {fileID: 8360254827139801934}
+  - component: {fileID: -8980033139048478363}
   m_Layer: 0
   m_Name: Barracks_Medic_Prefab
   m_TagString: Untagged
@@ -100,3 +101,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8052b7bda0297e48a290565d75018fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-8980033139048478363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2968273887262972578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f60f09f244cc5540baa1d7681259f4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 5877644716001515087, guid: 5ecefad98da83f8459a9064336923400,
+    type: 3}
+  poolSize: 20
+  poolParent: {fileID: 0}
+  bronzePrefab: {fileID: 5877644716001515087, guid: 5ecefad98da83f8459a9064336923400,
+    type: 3}
+  ironPrefab: {fileID: 5877644716001515087, guid: 5ecefad98da83f8459a9064336923400,
+    type: 3}
