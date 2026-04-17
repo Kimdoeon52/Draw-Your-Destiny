@@ -2,7 +2,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "CowardlyStrategy", menuName = "AI/Strategy/Cowardly_Advanced")]
+[CreateAssetMenu(fileName = "CowardlyStrategy", menuName = "AI/Strategy/Cowardly Strategy")]
 public class CowardlyStrategySO : AIBehaviorStrategySO
 {
     [Header("거리 설정")]
