@@ -18,8 +18,25 @@ public abstract class UnitProducerBehaviour : BuildingBehaviour
     public int WaitingCount => waiting;
     public int Capacity     => instance?.data != null ? instance.data.unitCapacity : 0;
 
+    private bool initialSpawnDone = false;
+
     public override void OnTurnEnd()
     {
+        if (!initialSpawnDone)
+        {
+            initialSpawnDone = true;
+
+            int spawnCount = Mathf.Min(5, Capacity);
+
+            for (int i = 0; i < spawnCount; i++)
+            {
+                SpawnUnit();
+                activeCount++;
+            }
+
+            return; 
+        }
+
         tick++;
         int interval = instance.data.productionInterval;
         if (interval <= 0) interval = 3;

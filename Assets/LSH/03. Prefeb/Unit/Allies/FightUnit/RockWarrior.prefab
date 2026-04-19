@@ -99,7 +99,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 110
   m_Sprite: {fileID: 4611015411362049425, guid: 3f36ff1864498174aad3095fd86b5ac2,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -126,9 +126,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   age: 0
-  health: 0
-  attackPower: 0
   ageGroup: 0
   naturalDeathChance: 0
   canMoveJobBase: 0
   levelBase: 0
+  ownerCivID: 0
+  unitTypeBase: 0
+  maxHealth: 0
+  currentHealth: 0
+  attackPower: 0

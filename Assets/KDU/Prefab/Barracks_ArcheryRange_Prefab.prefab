@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3727559853496262310}
   - component: {fileID: 7770592630981330151}
   - component: {fileID: -6198166550679252366}
+  - component: {fileID: 5731845484935946982}
   m_Layer: 0
   m_Name: Barracks_ArcheryRange_Prefab
   m_TagString: Untagged
@@ -121,3 +122,20 @@ MonoBehaviour:
     type: 3}
   ironPrefab: {fileID: 5877644716001515087, guid: f5286bca1552de64d93e1949ca6013d2,
     type: 3}
+--- !u!114 &5731845484935946982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4618862662295205576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f60f09f244cc5540baa1d7681259f4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPrefab: {fileID: 0}
+  poolSize: 20
+  poolParent: {fileID: 0}
+  bronzePrefab: {fileID: 0}
+  ironPrefab: {fileID: 0}
