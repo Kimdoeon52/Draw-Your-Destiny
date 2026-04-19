@@ -155,6 +155,10 @@ public class GameManager : PersistentSingleton<GameManager>
         // 비활성 노드의 건물 오프스크린 tick 처리
         if (WorldMapManager.Instance != null)
             WorldMapManager.Instance.TickOffscreenBuildings();
+
+        // 턴 종료 자동 저장
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.OnClickSave();
     }
 
     // ── 재화 관리 ─────────────────────────────────────────────

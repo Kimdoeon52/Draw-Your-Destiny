@@ -112,6 +112,17 @@ public class ResourceManager : MonoBehaviour
         NotifyUI();
     }
 
+    /// <summary>로드 시 모든 재화를 한 번에 설정한다.</summary>
+    public void SetAll(int gold, int research, int food, int population, int maxPopulation)
+    {
+        this.gold          = gold;
+        this.research      = research;
+        this.food          = food;
+        this.population    = population;
+        this.maxPopulation = maxPopulation;
+        NotifyUI();
+    }
+
     #endregion
 
     // =====================================================================

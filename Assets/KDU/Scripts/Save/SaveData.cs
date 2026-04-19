@@ -29,4 +29,7 @@ public class SaveData
     // ── 카드 ──────────────────────────────────────────────
     public SaveCardState civilizationCards = new SaveCardState();
     public SaveCardState battleCards = new SaveCardState();
+
+    // ── 유닛 보정치 ──────────────────────────────────────
+    public List<SaveUnitModifierEntry> unitModifiers = new List<SaveUnitModifierEntry>();
 }

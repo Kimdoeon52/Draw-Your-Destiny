@@ -386,6 +386,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
     public int CurrentNodeID => currentNodeID;
     public bool IsInTerritoryView => currentNodeID != -1;
 
+    // SaveManager에서 노드 전체 순회용 (읽기 전용)
+    public IReadOnlyList<NodeData> AllNodes => allNodes;
+
     //============================Ai전용 탐색 함수 건들지마셈^^=====================================
     public List<NodeData> GetAdjacentNodes(int nodeID)
     {

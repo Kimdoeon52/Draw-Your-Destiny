@@ -107,6 +107,50 @@ public class UnitDatabase : Singleton<UnitDatabase>
             modifiers[civID].Clear();
     }
 
+    // ── 보정 전체 Export (SaveManager용) ──────────────────
+    public List<SaveUnitModifierEntry> ExportAllModifiers()
+    {
+        List<SaveUnitModifierEntry> result = new List<SaveUnitModifierEntry>();
+        foreach (var civPair in modifiers)
+        {
+            int civID = civPair.Key;
+            foreach (var typePair in civPair.Value)
+            {
+                UnitType unitType = typePair.Key;
+                foreach (UnitModifier mod in typePair.Value)
+                {
+                    result.Add(new SaveUnitModifierEntry
+                    {
+                        civID        = civID,
+                        unitType     = unitType,
+                        bonusAttack  = mod.bonusAttack,
+                        bonusDefense = mod.bonusDefense,
+                        bonusHP      = mod.bonusHP,
+                        source       = mod.source
+                    });
+                }
+            }
+        }
+        return result;
+    }
+
+    // ── 보정 전체 Import (SaveManager용) ──────────────────
+    public void ImportAllModifiers(List<SaveUnitModifierEntry> entries)
+    {
+        modifiers.Clear();
+        if (entries == null) return;
+        foreach (SaveUnitModifierEntry e in entries)
+        {
+            AddModifier(e.civID, e.unitType, new UnitModifier
+            {
+                bonusAttack  = e.bonusAttack,
+                bonusDefense = e.bonusDefense,
+                bonusHP      = e.bonusHP,
+                source       = e.source
+            });
+        }
+    }
+
     // ── 내부: 보정 리스트 조회 ──────────────────────────────
     private List<UnitModifier> GetModifiers(int civID, UnitType type)
     {

@@ -30,6 +30,9 @@ namespace NYH.BattleCardSystem
 
         public bool IsBattleActive { get; private set; }
 
+        // SaveManager에서 전투 중 저장 시 전투 진입 전 카드 상태를 가져올 때 사용
+        public CardPileRuntimeState GetSavedCivilizationState() => savedCivilizationState;
+
         private CardPileRuntimeState savedCivilizationState;
         private GameObject deckButtonObject;
         private GameObject discardButtonObject;

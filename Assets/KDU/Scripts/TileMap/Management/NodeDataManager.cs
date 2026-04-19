@@ -117,6 +117,26 @@ public class NodeDataManager : Singleton<NodeDataManager>
         tileMapManager.ClearAllTerrainTiles();
     }
 
+    // ── 건물 데이터만 동기화 (뷰 전환 없이) ─────────────────────────
+    // SaveManager에서 영지 뷰 진입 중 저장 시 호출.
+    // ExitNode의 건물 저장 로직만 추출 — 실제 뷰 전환은 하지 않음.
+    public void SyncBuildingsToNodeData(NodeData nodeData)
+    {
+        if (nodeData == null || tileMapManager == null) return;
+
+        List<BuildingInstance> current = tileMapManager.GetAllBuildings();
+        nodeData.buildings.Clear();
+
+        foreach (BuildingInstance instance in current)
+        {
+            if (instance == null) continue;
+            if (instance.behaviour != null)
+                instance.savedState = instance.behaviour.SaveState();
+            instance.visual = null;
+            nodeData.buildings.Add(instance);
+        }
+    }
+
     // 특정 노드의 cityTilemap 반환 (CitySpawnManager에서 bounds 계산용)
     public bool TryGetCityTilemap(int nodeID, out Tilemap tilemap)
     {
