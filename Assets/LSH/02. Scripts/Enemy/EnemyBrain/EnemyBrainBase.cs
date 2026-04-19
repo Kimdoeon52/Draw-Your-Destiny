@@ -64,7 +64,7 @@ public class EnemyBrainBase : MonoBehaviour
     [SerializeField] public int enemyID; //적의 번호를 나타낼 변수임
 
     [Header("턴 진행 여부")] //적 종류마다 다르게 설정할꺼임.
-    [SerializeField] protected int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
+    [SerializeField] public int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
 
     public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음.
 
@@ -79,6 +79,7 @@ public class EnemyBrainBase : MonoBehaviour
     //==============================병력 수 증감====================================
     public virtual void OnUnitSpawned(EnemyUnitType type)
     {
+        Debug.Log("<color=cyan>[유닛 카운트 증가!!]</color>");
         switch (type) // 소환되면 카운트 증가용
         {
             case EnemyUnitType.RockWarrior: rockWarriorCount++; break;
@@ -112,7 +113,7 @@ public class EnemyBrainBase : MonoBehaviour
     {
         //적 행동 초기화
         InitializeActionCases();
-        Debug.Log("{enemyID} 턴 시작");
+        //Debug.Log("{enemyID} 턴 시작");
         Setting();
     }
 
@@ -194,7 +195,7 @@ public class EnemyBrainBase : MonoBehaviour
         List<NodeData> owned = WorldMapManager.Instance.GetNodesByCivID(enemyID);
         if (owned.Count == 0)
         {
-            Debug.Log($"<color=gray>[{enemyID}] 소유 노드 없음 — 턴 패스</color>");
+            //Debug.Log($"<color=gray>[{enemyID}] 소유 노드 없음 — 턴 패스</color>");
             return;
         }
 
@@ -207,7 +208,7 @@ public class EnemyBrainBase : MonoBehaviour
             bool actionCheck = CheckAction(action); //돈없으면 건물 못짓게 하기
             if (!actionCheck)
             {
-                Debug.Log("<color=yellow>[돈이 없어서 강제로 골드]</color> ");
+                //Debug.Log("<color=yellow>[돈이 없어서 강제로 골드]</color> ");
                 action = EnemyAction.GetGold; //조건이 안맞으면 골드 얻는 행동으로 강제 변경
             }
             switch (action)
@@ -227,17 +228,23 @@ public class EnemyBrainBase : MonoBehaviour
             }
         }
         countEnemyTurn++;
-        Debug.Log("<color=cyan>[턴 이벤트 발생]</color>");
-        OnTurnPassed?.Invoke();
+        //Debug.Log("<color=cyan>[턴 이벤트 발생]</color>");
+        if (OnTurnPassed != null)
+        {
+            OnTurnPassed.Invoke();
+        }
+        else
+        {
+            // 구독자가 아무도 없으면 이게 찍힙니다.
+            Debug.LogWarning("<color=red>[턴 이벤트] 구독 중인 Pool이 없습니다! Init이 되었는지 확인하세요.</color>");
+        }
     }
 
     protected virtual bool CheckAction(EnemyAction action) //행동 조건 검사
     {
-        Debug.Log("<color=red>[행동 체크 들어감...]</color> ");
         switch (action)
         {
             case EnemyAction.Building:
-                Debug.Log("<color=red>[돈이 있어]</color> ");
                 return gold >= 300;//골드가 없으면 건물 못 지음
             case EnemyAction.GetGold:
                 return true;
@@ -440,7 +447,16 @@ public class EnemyBrainBase : MonoBehaviour
             ownerCivID = node.ownerCivID,
             visual = null
         };
+        GameObject build = Instantiate(buildingData.visualPrefab, Vector3.zero, Quaternion.identity);
+        // (위치는 pos를 월드 좌표로 변환해서 세팅해야 함)
+        instance.visual = build;
 
+        var poolBase = build.GetComponent<EnemyAPool.EnemyAPoolBase>();
+        if (poolBase != null)
+        {
+            poolBase.Init(this); // 여기서 구독이 일어나야 함
+            Debug.Log($"<color=cyan>[신규 병영] {buildingData.buildingName} 구독 완료</color>");
+        }
         node.buildings.Add(instance); // 노드의 건물 리스트에 새 건물 인스턴스 추가
 
         Debug.Log($"[AI] 노드 {nodeID}에 {buildingData.buildingName} 추가됨 (cell {pos.x},{pos.y})");
@@ -522,7 +538,6 @@ public class EnemyBrainBase : MonoBehaviour
         {
             enemyLevel++;
             science = 0; //레벨업 후 과학 초기화
-            Debug.Log("<color=green>[레벨업!]</color> ");
         }
     }
     //==============================점령 시도===========================================
@@ -550,24 +565,20 @@ public class EnemyBrainBase : MonoBehaviour
         {
             if (adjacentNode.ownerCivID == -1) //조건1: 인접한 노드가 누구의 것도 아니라면
             {
-                Debug.Log($"<color=green>[노드 {adjacentNode} 점령 시도]</color> ");
                 adjacentNode.ownerCivID = enemyID; //해당 노드를 본인의 영지로 설정
                 return;
             }
             else if (adjacentNode.ownerCivID == 0) //조건2: 인접한 노드가 플레이어의 영지인가
             {
-                Debug.Log($"<color=red>[노드 {adjacentNode} 공격 시도]</color> ");
                 //전투로 진입하는 행동 구현
                 return;
             }
             else if (adjacentNode.ownerCivID == enemyID) //조건3: 인접한 노드가 본인의 영지인가
             {
-                Debug.Log($"<color=yellow>[노드 {adjacentNode}는 이미 내 영지]</color> ");
                 continue; //점령 시도 안함
             }
             else //조건4: 인접한 노드가 다른적의 영지인가
             {
-                Debug.Log($"<color=red>[노드 {adjacentNode} 다른 적과 전투 시도]</color> ");
                 //다른 적과 골드와 식량의 총량을 비교후 승리 판단여부 행동 구현
                 return;
             }

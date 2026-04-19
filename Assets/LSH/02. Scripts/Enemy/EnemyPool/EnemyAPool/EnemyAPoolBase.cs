@@ -26,18 +26,29 @@ namespace EnemyAPool
         //건물 하나 지을때마다 호출 — 각 호출마다 독립된 localTurn을 가진 핸들러를 OnTurnPassed에 구독
         public void Init(EnemyBrainBase brainRef)
         {
+            if (brainRef == null)
+            {
+                Debug.LogError("EnemyAPoolBase: 전달된 brainRef가 null입니다!");
+                return;
+            }
+
             brain = brainRef;
-            int localTurn = 0;
+            Debug.Log($"<color=orange>[Pool Init] {gameObject.name}이 {brain.name}에 등록됨</color>");
+
             System.Action handler = null;
             handler = () =>
             {
-                localTurn++;
-                if (localTurn % SpawnTurn == 0)
+                // 이 로그가 안 찍히면 OnTurnPassed.Invoke()가 안 된 것임
+                Debug.Log($"<color=purple>[Pool] {gameObject.name} 턴 이벤트 수신 완료!</color>");
+
+                // 턴 계산 로직 (0턴에 바로 생성되는 것을 방지하려면 > 0 조건 추가)
+                if (brain.countEnemyTurn > 0 && brain.countEnemyTurn % SpawnTurn == 0)
                 {
-                    Debug.Log("<color=green>[Pool에서 유닛 생산]</color>");
+                    Debug.Log("<color=green>[Pool] 유닛 생산 조건 충족! GetEnemy 호출</color>");
                     GetEnemy(enemyID);
                 }
             };
+
             brain.OnTurnPassed += handler;
             producerHandlers.Add(handler);
         }
@@ -89,7 +100,14 @@ namespace EnemyAPool
             EnemyUnitBase enemyAUnit = enemy.GetComponent<EnemyUnitBase>();
             enemyAUnit.enemyUnitID = enemyCivID; //아이디 등록
             enemyAUnit.SetOwnerPool(this); //유닛이 어디서 왓는지 pool 등록(재자리로 돌아가기 위함)
-            if (brain != null) brain.OnUnitSpawned(unitType); //brain에 소환 알림
+            if (brain != null)
+            {
+                brain.OnUnitSpawned(unitType); //brain에 소환 알림
+                Debug.LogWarning("<color=blue>EnemyAPoolBase: 유닛 소환됨. Brain에 알림 보냄.</color>");
+            }
+            
+            if(brain == null)
+                Debug.LogWarning("EnemyAPoolBase: Brain reference is null. Make sure to call Init() with a valid EnemyBrainBase reference.");
             return enemy;
         }
 
