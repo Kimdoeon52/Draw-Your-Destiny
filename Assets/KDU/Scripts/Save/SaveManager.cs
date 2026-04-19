@@ -187,7 +187,7 @@ public class SaveManager : Singleton<SaveManager>
             WorldMapManager.Instance.OnNodeClicked(save.currentNodeID);
     }
 
-    // ── 변환 헬퍼: NodeData → SaveNodeData ────────────────────────
+    // ── 데이터 변환: NodeData → SaveNodeData ────────────────────────
 
     private SaveNodeData ConvertToSaveNode(NodeData node)
     {
@@ -209,7 +209,7 @@ public class SaveManager : Singleton<SaveManager>
         return save;
     }
 
-    // ── 변환 헬퍼: BuildingInstance → SaveBuildingData ────────────
+    // ── 데이터 변환: BuildingInstance → SaveBuildingData ────────────
 
     private SaveBuildingData ConvertToSaveBuilding(BuildingInstance b)
     {
@@ -229,7 +229,7 @@ public class SaveManager : Singleton<SaveManager>
         return save;
     }
 
-    // ── 변환 헬퍼: CardPileRuntimeState → SaveCardState ──────────
+    // ── 데이터 변환: CardPileRuntimeState → SaveCardState ──────────
 
     private SaveCardState ConvertToSaveCardState(CardPileRuntimeState state)
     {
@@ -254,7 +254,7 @@ public class SaveManager : Singleton<SaveManager>
         return result;
     }
 
-    // ── 복원 헬퍼: SaveNodeData → NodeData ────────────────────────
+    // ── 데이터 복원: SaveNodeData → NodeData ────────────────────────
 
     private void RestoreNodeData(NodeData target, SaveNodeData save)
     {
@@ -272,7 +272,7 @@ public class SaveManager : Singleton<SaveManager>
             target.buildings.Add(RestoreBuildingInstance(sb));
     }
 
-    // ── 복원 헬퍼: SaveBuildingData → BuildingInstance ────────────
+    // ── 데이터 복원: SaveBuildingData → BuildingInstance ────────────
 
     private BuildingInstance RestoreBuildingInstance(SaveBuildingData save)
     {
@@ -309,7 +309,7 @@ public class SaveManager : Singleton<SaveManager>
         return footprint;
     }
 
-    // ── 복원 헬퍼: SaveCardState → CardPileRuntimeState ──────────
+    // ── 데이터 복원: SaveCardState → CardPileRuntimeState ──────────
 
     private CardPileRuntimeState RestoreCardPileState(SaveCardState save)
     {
