@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -30,7 +30,6 @@ public class NodeButton : MonoBehaviour
     {
         GetComponent<Button>().onClick.AddListener(OnClick);
 
-        // backgroundImage 자동 할당 (직접 연결 안 했을 때)
         if (backgroundImage == null)
             backgroundImage = GetComponent<Image>();
     }

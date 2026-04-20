@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
-  m_Name: Barracks_ArcheryRangeElite
+  m_Name: Barracks_ArcheryRange_Medic
   m_EditorClassIdentifier: 
   id: 
-  buildingName: "\uACE0\uAE09\uAD81\uC218\uBCD1\uC601"
+  buildingName: "\uC911\uAE09 \uBCD1\uC601(\uCCAD\uB3D9\uAE30)"
   buildingType: 10
   sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
-  requiredEra: 2
-  isAutoUpgrade: 0
-  upgradesTo: {fileID: 0}
+  requiredEra: 1
+  isAutoUpgrade: 1
+  upgradesTo: {fileID: 11400000, guid: f1cc8f9114c49e84abd3ee78bbe95303, type: 2}
   goldCost: 0
   width: 1
   height: 1

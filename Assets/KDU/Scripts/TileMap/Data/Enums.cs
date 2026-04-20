@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // Enums.cs — 프로젝트 전역 열거형 모음
 // 새 값을 추가할 때 이 파일 하나만 수정하면 된다.
 // ============================================================
@@ -31,22 +31,17 @@ public enum BuildingType
     Bank,       // 은행  — 인접 자기 노드로 자원 운송 (턴당 1회)
 
     // 군사 건물 — 근접 체인 (석기→청동기→철기 자동 업그레이드)
-    Barracks_SoldierStone,    // 부족 훈련지 (석기)   isAutoUpgrade=true, upgradesTo=Barracks_SoldierBronze
-    Barracks_SoldierBronze,           // 훈련소     (청동기)  isAutoUpgrade=true, upgradesTo=Barracks_SoldierIron
-    Barracks_SoldierIron,               // 병영       (철기)   최종 단계
+    Barracks_SoldierStone,    // 하급 병영 (석기)   isAutoUpgrade=true, upgradesTo=Barracks_SoldierBronze
+    Barracks_SoldierBronze,   // 하급 병영     (청동기)  isAutoUpgrade=true, upgradesTo=Barracks_SoldierIron
+    Barracks_SoldierIron,     // 하급 병영       (철기)   최종 단계
 
     // 군사 건물 — 궁수 체인 (청동기→철기 자동 업그레이드)
-    Barracks_ArcheryRange,           // 사격장         (청동기) isAutoUpgrade=true, upgradesTo=ArcheryRangeElite
-    Barracks_ArcheryRangeElite,      // 정예 사격장     (철기)  최종 단계
-
-    // 군사 건물 — 힐러 체인 (청동기→철기 자동 업그레이드)
-    Barracks_Medic,          // 의무병 막사     (청동기) isAutoUpgrade=true, upgradesTo=Barracks_MedicElite
-    Barracks_MedicElite,     // 정예 의무병 막사 (철기)  최종 단계
+    Barracks_ArcheryRange_Medic,           // 중급 병영 (청동기) isAutoUpgrade=true, upgradesTo=Barracks_ArcheryRange_Medic_Elite
+    Barracks_ArcheryRange_Medic_Elite,      // 중급 병영 (철기)  최종 단계
 
     // 군사 건물 — 단일 (철기부터)
-    Barracks_Stable,         // 기마병 막사   (철기)
-    Barracks_Knight,         // 기사단 막사   (철기) — 풀플레이트 아머 기사
-    Barracks_Giant,          // 자이언트 막사 (철기, 연구포인트 200 도달 시부터 유닛 생산 시작)
+    Barracks_Stable_Knight,  // 상급 병영  (철기)
+    Barracks_Wizard,          // 최상급 병영 (철기, 연구포인트 200 도달 시부터 유닛 생산 시작)
 
     // 지원 건물
     PotionBuilding,         // 포션 가게  (청동기~) — 매 턴 덱에 랜덤 포션 카드 추가
@@ -75,13 +70,13 @@ public enum UnitType
     RockWarrior,    // 돌도끼병 — Barracks_SoldierStone/Bronze/Iron 생산
 
     // 청동기
-    Healer,         // 의무병   — Barracks_Medic/MedicElite 생산
-    Archer,         // 궁수     — Barracks_ArcheryRange/Elite 생산
+    Healer,         // 의무병   — Barracks_ArcheryRange_Medic/Elite 생산
+    Archer,         // 궁수     — Barracks_ArcheryRange_Medic/Elite 생산
 
     // 철기
-    HorseWarrior,   // 기마병   — Barracks_Stable 생산
-    Knight,         // 기사     — Barracks_Knight 생산
-    Giant           // 자이언트 — Barracks_Giant 생산
+    HorseWarrior,   // 기마병   — Barracks_Stable_Knight 생산
+    Knight,         // 기사     — Barracks_Stable_Knight 생산
+    Wizard            // 마법사 — Barracks_Wizard 생산
 }
 
 // ── 시민 역할 ─────────────────────────────────────────────
