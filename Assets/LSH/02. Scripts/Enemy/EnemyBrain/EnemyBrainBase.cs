@@ -18,16 +18,6 @@ public enum EnemyState
     Defend //방어 <- 일반적인 문명 행동 타입
 }
 
-public enum EnemyUnitType
-{
-    RockWarrior,
-    Archer,
-    Healer,
-    HorseWarrior,
-    Wizard,
-    SuperUnit
-}
-
 [System.Serializable]
 public class ActionCases
 {
@@ -68,40 +58,26 @@ public class EnemyBrainBase : MonoBehaviour
 
     public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음.
 
-    [Header("병력 수")]
-    [SerializeField] protected int rockWarriorCount;
-    [SerializeField] protected int archerCount;
-    [SerializeField] protected int healerCount;
-    [SerializeField] protected int wizzardCount;
-    [SerializeField] protected int horseWarriorCount;
-    [SerializeField] protected int superUnitCount;
-
-    //==============================병력 수 증감====================================
-    public virtual void OnUnitSpawned(EnemyUnitType type)
+    //==============================병력 수 증감 (NodeData.units에 노드별로 기록)====================================
+    public virtual void OnUnitSpawned(UnitType type, int nodeID) //유닛 등록하는 용도 카운트 증가
     {
         Debug.Log("<color=cyan>[유닛 카운트 증가!!]</color>");
-        switch (type) // 소환되면 카운트 증가용
-        {
-            case EnemyUnitType.RockWarrior: rockWarriorCount++; break;
-            case EnemyUnitType.Archer: archerCount++; break;
-            case EnemyUnitType.Healer: healerCount++; break;
-            case EnemyUnitType.HorseWarrior: horseWarriorCount++; break;
-            case EnemyUnitType.Wizard: wizzardCount++; break;
-            case EnemyUnitType.SuperUnit: superUnitCount++; break;
-        }
+        NodeData node = WorldMapManager.Instance.GetNode(nodeID); //노드 ID에 있는 노드
+        if (node == null) return;
+        NodeUnit existing = node.units.Find(u => u.unitType == type);
+        if (existing != null)
+            existing.count++; //안에 유닛 타입맞는거 증가.
+        else
+            node.units.Add(new NodeUnit { unitType = type, count = 1 }); 
     }
 
-    public virtual void OnUnitReturned(EnemyUnitType type) 
+    public virtual void OnUnitReturned(UnitType type, int nodeID) //유닛 죽었을때
     {
-        switch (type) //죽거나 뭐 암튼 카운트 감소용
-        {
-            case EnemyUnitType.RockWarrior: rockWarriorCount--; break;
-            case EnemyUnitType.Archer: archerCount--; break;
-            case EnemyUnitType.Healer: healerCount--; break;
-            case EnemyUnitType.HorseWarrior: horseWarriorCount--; break;
-            case EnemyUnitType.Wizard: wizzardCount--; break;
-            case EnemyUnitType.SuperUnit: superUnitCount--; break;
-        }
+        NodeData node = WorldMapManager.Instance.GetNode(nodeID);
+        if (node == null) return;
+        NodeUnit existing = node.units.Find(u => u.unitType == type);
+        if (existing != null && existing.count > 0)
+            existing.count--;
     }
     //====================================================================================
     protected virtual void Awake()
@@ -128,12 +104,6 @@ public class EnemyBrainBase : MonoBehaviour
     //=============================초기화 함수====================================
     protected virtual void Setting()
     {
-        rockWarriorCount = 0;
-        archerCount = 0;
-        healerCount = 0;
-        wizzardCount = 0;
-        horseWarriorCount = 0;
-        superUnitCount = 0;
     }
     //=============================적 행동 확률====================================
 
@@ -300,7 +270,7 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [병영 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[0]); //석기 시대 병영
-                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this);
+                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this, nodeID);
                 break;
             case 3:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
@@ -337,17 +307,17 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
-                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this);
+                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this, nodeID);
                 break;
             case 3: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
-                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this);
+                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this, nodeID);
                 break;
             case 4: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
-                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this);
+                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this, nodeID);
                 break;
             case 5:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
@@ -384,32 +354,32 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
-                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this);
+                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this, nodeID);
                 break;
             case 3: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
-                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this);
+                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this, nodeID);
                 break;
             case 4: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
-                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this);
+                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this, nodeID);
                 break;
             case 5:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [기마병 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[3]); //철기 시대 병영
-                if (barracksPools.Count > 3 && barracksPools[3] != null) barracksPools[3].Init(this);
+                if (barracksPools.Count > 3 && barracksPools[3] != null) barracksPools[3].Init(this, nodeID);
                 break;
             case 6:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [마법사 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[4]); //철기 시대 병영
-                if (barracksPools.Count > 4 && barracksPools[4] != null) barracksPools[4].Init(this);
+                if (barracksPools.Count > 4 && barracksPools[4] != null) barracksPools[4].Init(this, nodeID);
                 break;
             case 7:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [슈퍼유닛 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[5]);
-                if (barracksPools.Count > 5 && barracksPools[5] != null) barracksPools[5].Init(this);
+                if (barracksPools.Count > 5 && barracksPools[5] != null) barracksPools[5].Init(this, nodeID);
                 break;
             case 8:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
@@ -447,6 +417,12 @@ public class EnemyBrainBase : MonoBehaviour
             ownerCivID = node.ownerCivID,
             visual = null
         };
+        if (buildingData.visualPrefab == null)
+        {
+            Debug.LogWarning($"<color=orange>[AI] {buildingData.buildingName}의 visualPrefab이 null — 인스턴스화 스킵</color>");
+            node.buildings.Add(instance);
+            return true;
+        }
         GameObject build = Instantiate(buildingData.visualPrefab, Vector3.zero, Quaternion.identity);
         // (위치는 pos를 월드 좌표로 변환해서 세팅해야 함)
         instance.visual = build;
@@ -454,7 +430,7 @@ public class EnemyBrainBase : MonoBehaviour
         var poolBase = build.GetComponent<EnemyAPool.EnemyAPoolBase>();
         if (poolBase != null)
         {
-            poolBase.Init(this); // 여기서 구독이 일어나야 함
+            poolBase.Init(this, nodeID);
             Debug.Log($"<color=cyan>[신규 병영] {buildingData.buildingName} 구독 완료</color>");
         }
         node.buildings.Add(instance); // 노드의 건물 리스트에 새 건물 인스턴스 추가

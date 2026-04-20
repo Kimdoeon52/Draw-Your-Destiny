@@ -49,9 +49,9 @@ MonoBehaviour:
     type: 3}
   poolSize: 20
   poolParent: {fileID: 6580313206947237835}
-  currentTurn: 0
   SpawnTurn: 5
   enemyID: 1
+  unitType: 7
 --- !u!212 &-999256628362815438
 SpriteRenderer:
   m_ObjectHideFlags: 0

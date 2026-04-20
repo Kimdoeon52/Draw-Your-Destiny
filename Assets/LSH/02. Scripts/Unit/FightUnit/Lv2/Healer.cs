@@ -7,13 +7,13 @@ public class Healer : HumanBase ,IFightable
     [SerializeField] private int maxHealth;
     [Header("현재체력")]
     [SerializeField] int currentHealth;
-    [Header("공격력")]
-    [SerializeField] int attackPower;
+    //[Header("공격력")]
+    //[SerializeField] int attackPower;
     protected override void OnEnable()
     {//힐러특 체력과 공격력이 약함. 하지만 힐링함.
         base.OnEnable();
         maxHealth = 100;
-        attackPower = 10;
+        //attackPower = 10;
         SetupHealth();
         unitTypeBase = UnitTypeBase.Healer;
     }

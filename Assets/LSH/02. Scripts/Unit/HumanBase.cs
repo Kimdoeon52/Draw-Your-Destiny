@@ -203,7 +203,7 @@ namespace Base
         }
         protected virtual void TryRandomStepMove() //랜덤 이동 시도
         {
-            Vector3Int currentCell = TileMapManager.Instance.groundTilemap.WorldToCell(transform.position);
+            Vector3Int currentCell = TileMapManager.Instance.cityTilemap.WorldToCell(transform.position);
 
             Vector3Int[] directions =
             {

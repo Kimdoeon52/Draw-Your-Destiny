@@ -6,13 +6,13 @@ public class HorseWarrior : HumanBase, IFightable
     [SerializeField] private int maxHealth;
     [Header("현재체력")]
     [SerializeField] int currentHealth;
-    [Header("공격력")]
-    [SerializeField] int attackPower;
+    //[Header("공격력")]
+    //[SerializeField] int attackPower;
     protected override void OnEnable()
     {//체력과 공격력이 높고 이동속도도 빠름.
         base.OnEnable();
         maxHealth = 250;
-        attackPower = 40;
+        //attackPower = 40;
         moveSpeed = 5f;
         SetupHealth();
         unitTypeBase = UnitTypeBase.HorseWarrior;
