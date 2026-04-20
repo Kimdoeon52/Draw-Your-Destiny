@@ -6,13 +6,13 @@ public class Archer : HumanBase, IFightable
     [SerializeField] private int maxHealth;
     [Header("현재체력")]
     [SerializeField] int currentHealth;
-    [Header("공격력")]
-    [SerializeField] int attackPower;
+    //[Header("공격력")]
+    //[SerializeField] int attackPower;
     protected override void OnEnable()
     {
         base.OnEnable();
         maxHealth = 200;
-        attackPower = 30;
+        //attackPower = 30;
         SetupHealth();
         unitTypeBase = UnitTypeBase.Archer;
     }

@@ -134,8 +134,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f60f09f244cc5540baa1d7681259f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  humanPrefab: {fileID: 0}
+  humanPrefab: {fileID: 5877644716001515087, guid: 5ecefad98da83f8459a9064336923400,
+    type: 3}
   poolSize: 20
   poolParent: {fileID: 0}
-  bronzePrefab: {fileID: 0}
-  ironPrefab: {fileID: 0}
+  bronzePrefab: {fileID: 5877644716001515087, guid: 5ecefad98da83f8459a9064336923400,
+    type: 3}
+  ironPrefab: {fileID: 5877644716001515087, guid: 5ecefad98da83f8459a9064336923400,
+    type: 3}

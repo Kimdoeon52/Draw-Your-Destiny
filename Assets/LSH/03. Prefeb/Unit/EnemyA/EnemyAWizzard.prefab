@@ -48,14 +48,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   attackPower: 0
-  health: 0
   age: 0
   enemyAgeGroup: 0
   naturalDeathChance: 0
   enemyCanMoveJobBase: 0
   enemyLevelBase: 0
   enemyUnitID: 0
-  enemyUnitTypeBase: 0
+  homeNodeID: 0
+  enemyUnitTypeBase: 5
   maxHealth: 0
   currentHealth: 0
 --- !u!95 &-82288404870728716

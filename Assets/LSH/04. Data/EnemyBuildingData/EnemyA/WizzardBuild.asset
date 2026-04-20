@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 
   buildingName: "\uB9C8\uBC95\uC0AC\uBE4C\uB529"
   buildingType: 14
-  sprite: {fileID: -8955812619259062215, guid: dc747d0a3cdf6594f9f275fdd2a48b4b, type: 3}
+  sprite: {fileID: -699540174318440874, guid: a69b930029ccb7245a82f6510a029649, type: 3}
   requiredEra: 2
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}

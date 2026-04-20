@@ -6,14 +6,14 @@ public class RockWarrior : HumanBase, IFightable
     [SerializeField] private int maxHealth;
     [Header("현재체력")]
     [SerializeField] int currentHealth;
-    [Header("공격력")]
-    [SerializeField] int attackPower;
+    //[Header("공격력")]
+    //[SerializeField] int attackPower;
 
     protected override void OnEnable()
     {//무난한 일반 병사
         base.OnEnable();
         maxHealth = 150;
-        attackPower = 20;
+        //attackPower = 20;
         moveSpeed = 3f;
         SetupHealth();
         unitTypeBase = UnitTypeBase.RockWarrior;

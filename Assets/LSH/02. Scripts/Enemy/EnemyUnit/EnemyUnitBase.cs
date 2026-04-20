@@ -59,6 +59,9 @@ public class EnemyUnitBase : MonoBehaviour
     [Header("소속 문명 ID")]
     public int enemyUnitID;
 
+    [Header("소속 노드 ID")]
+    public int homeNodeID;
+
     [Header("유닛 직업")]
     [SerializeField] protected EnemyUnitTypeBase enemyUnitTypeBase;
     protected Animator anime;

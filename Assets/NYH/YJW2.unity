@@ -229012,7 +229012,7 @@ MonoBehaviour:
   currentTurn: 0
   endTurn: 0
   startTurn: 0
-  playerEra: 0
+  playerEra: 1
   lordCastleSize: 4
   playerLordCastle: {fileID: 528053378}
 --- !u!4 &1169971045

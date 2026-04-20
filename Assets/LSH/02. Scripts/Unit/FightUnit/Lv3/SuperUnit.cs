@@ -6,13 +6,13 @@ public class SuperUnit : HumanBase, IFightable
     [SerializeField] private int maxHealth;
     [Header("현재체력")]
     [SerializeField] int currentHealth;
-    [Header("공격력")]
-    [SerializeField] int attackPower;
+    //[Header("공격력")]
+    //[SerializeField] int attackPower;
     protected override void OnEnable()
     {//그저 미친체력깡패 대신 이동속도가 매우 느리다
         base.OnEnable();
         maxHealth = 500;
-        attackPower = 50;
+        //attackPower = 50;
         moveSpeed = 1f;
         SetupHealth();
         unitTypeBase = UnitTypeBase.SuperUnit;

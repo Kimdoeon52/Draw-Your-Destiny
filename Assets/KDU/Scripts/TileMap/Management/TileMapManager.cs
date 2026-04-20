@@ -302,7 +302,7 @@ public class TileMapManager : Singleton<TileMapManager>
     }
     // 적 전용 건물 배치 — PlaceBuilding과 동일한 BuildingInstance 상태로 생성
     // GameManager 자원 차감 없음 (적 자원은 EnemyBrainBase에서 별도 관리)
-    public void EnemyPlaceBuilding(Vector3Int clickPos, BuildingData building, EnemyBrainBase brain, int civID)
+    public void EnemyPlaceBuilding(Vector3Int clickPos, BuildingData building, EnemyBrainBase brain, int civID, int nodeID)
     {
         if (building == null) return;
         if (!CanPlace(clickPos, building)) return;
@@ -342,7 +342,7 @@ public class TileMapManager : Singleton<TileMapManager>
         // 적 전용 인터페이스 초기화
         var enemyBuilding = visual.GetComponent<IEnemyBuilding>();
         if (enemyBuilding != null)
-            enemyBuilding.Init(brain);
+            enemyBuilding.Init(brain, nodeID);
 
         allBuildings.Add(instance);
         foreach (Vector3Int pos in footprint)

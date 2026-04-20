@@ -8,13 +8,13 @@ public class Wizzard : HumanBase, IFightable
     [SerializeField] private int maxHealth;
     [Header("현재체력")]
     [SerializeField] int currentHealth;
-    [Header("공격력")]
-    [SerializeField] int attackPower;
+    //[Header("공격력")]
+    //[SerializeField] int attackPower;
     protected override void OnEnable()
     {//마법사 특 몸이 뒤지게 약함. 하지만 공격력은 매우 강함.
         base.OnEnable();
         maxHealth = 50;
-        attackPower = 200;
+        //attackPower = 200;
         SetupHealth();
         unitTypeBase = UnitTypeBase.Wizzard;
     }
