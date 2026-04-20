@@ -98,6 +98,7 @@ namespace Base
             levelBase = LevelBase.Level1; //시대도 구석기부터 시작
             ownerCivID = 0; //소속 문명은 0번.
             anime = GetComponent<Animator>();
+            anime.SetInteger("age", age);
             switch (canMoveJobBase)
             {
                 case CanMoveJobBase.CanMoveJob:

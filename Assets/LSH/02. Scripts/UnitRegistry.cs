@@ -25,7 +25,15 @@ public class UnitRegistry : Singleton<UnitRegistry>
 
     public void Register(Base.HumanBase unit)
     {
-        if (unit != null && !units.Contains(unit)) units.Add(unit);
+        if (unit != null && !units.Contains(unit))
+        {
+            unit.transform.SetParent(UnitsRoot);
+            unit.transform.localScale = Vector3.one;
+            units.Add(unit);
+        }
+        else
+            return;
+            
     }
 
     public void Unregister(Base.HumanBase unit)
