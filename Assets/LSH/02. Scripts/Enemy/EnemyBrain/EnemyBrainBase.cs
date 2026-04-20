@@ -425,6 +425,9 @@ public class EnemyBrainBase : MonoBehaviour
         }
         GameObject build = Instantiate(buildingData.visualPrefab, Vector3.zero, Quaternion.identity);
         // (위치는 pos를 월드 좌표로 변환해서 세팅해야 함)
+        // 화면에만 안 보이게 렌더러만 비활성 (Init/OnTurnPassed 경로는 유지 → Count 증가)
+        foreach (var sr in build.GetComponentsInChildren<SpriteRenderer>(true)) sr.enabled = false;
+        foreach (var r in build.GetComponentsInChildren<Renderer>(true)) r.enabled = false;
         instance.visual = build;
 
         var poolBase = build.GetComponent<EnemyAPool.EnemyAPoolBase>();
