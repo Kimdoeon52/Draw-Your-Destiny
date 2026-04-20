@@ -133,9 +133,11 @@ namespace NYH.BattleCardSystem
             for (int i = 0; i < path.Count; i++)
             {
                 Vector2Int nextCell = path[i];
-                Vector3 startPosition = unit.transform.position;
-                Vector3 endPosition = new(nextCell.x, nextCell.y, unit.transform.position.z);
+                Vector3 startPosition = BattleUnit.GetWorldPositionForGrid(unit.GridPosition, unit.transform.position.z);
+                Vector3 endPosition = BattleUnit.GetWorldPositionForGrid(nextCell, unit.transform.position.z);
                 int stepCost = board.GetStepCost(nextCell);
+
+                unit.transform.position = startPosition;
 
                 if (!board.TryMoveUnit(unit, nextCell, stepCost, syncTransform: false))
                 {
@@ -153,6 +155,7 @@ namespace NYH.BattleCardSystem
                 }
 
                 unit.transform.position = endPosition;
+                unit.SnapToGridCenter();
             }
         }
 
@@ -285,3 +288,4 @@ namespace NYH.BattleCardSystem
         }
     }
 }
+

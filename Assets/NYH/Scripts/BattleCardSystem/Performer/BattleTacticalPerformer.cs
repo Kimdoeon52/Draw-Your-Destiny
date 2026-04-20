@@ -85,14 +85,16 @@ namespace NYH.BattleCardSystem
                 yield break;
             }
 
-            Transform unitTransform = moveGA.Unit.transform;
+            BattleUnit unit = moveGA.Unit;
+            Transform unitTransform = unit.transform;
             float moveSpeed = 3.75f;
-            Vector3 currentPosition = unitTransform.position;
+            Vector3 currentPosition = BattleUnit.GetWorldPositionForGrid(unit.GridPosition, unitTransform.position.z);
+            unitTransform.position = currentPosition;
 
             for (int i = 0; i < moveGA.PlannedPath.Count; i++)
             {
                 Vector2Int pathCell = moveGA.PlannedPath[i];
-                Vector3 targetWorld = new(pathCell.x, pathCell.y, unitTransform.position.z);
+                Vector3 targetWorld = BattleUnit.GetWorldPositionForGrid(pathCell, unitTransform.position.z);
 
                 //if (EnableMoveDebug)
                 //{
@@ -111,8 +113,12 @@ namespace NYH.BattleCardSystem
 
                 currentPosition = targetWorld;
                 unitTransform.position = currentPosition;
+                unit.SetGridPosition(pathCell);
                 yield return null;
             }
+
+            unit.SetGridPosition(moveGA.TargetPosition);
+            unit.SnapToGridCenter();
         }
 
         private static string BuildPathDebugText(IReadOnlyList<Vector2Int> path)

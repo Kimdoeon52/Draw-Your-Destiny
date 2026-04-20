@@ -26,10 +26,11 @@ namespace NYH.BattleCardSystem
                 return null;
             }
 
-            Vector3 spawnPosition = new(gridPosition.x, gridPosition.y, unitPrefab.transform.position.z);
+            Vector3 spawnPosition = BattleUnit.GetWorldPositionForGrid(gridPosition, unitPrefab.transform.position.z);
             BattleUnit spawnedUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
             int resolvedHealth = startHealth >= 0 ? Mathf.Clamp(startHealth, 0, spawnedUnit.MaxHealth) : spawnedUnit.MaxHealth;
             spawnedUnit.Initialize(gridPosition, resolvedHealth);
+            spawnedUnit.SnapToGridCenter();
 
             if (!battleBoardSystem.RegisterUnit(spawnedUnit, gridPosition))
             {
@@ -37,6 +38,7 @@ namespace NYH.BattleCardSystem
                 return null;
             }
 
+            spawnedUnit.LogGridAlignment("BattleUnitSpawnService.SpawnUnit");
             return spawnedUnit;
         }
     }

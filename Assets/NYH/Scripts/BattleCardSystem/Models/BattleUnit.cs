@@ -35,6 +35,8 @@
         [SerializeField] private int attackPower = 1;
         [SerializeField] private int speed = 1;
         [SerializeField] private Vector2Int gridPosition;
+        [SerializeField] private Transform visualRoot;
+        [SerializeField] private bool enableGridAlignmentDebug;
 
         public string UnitId => unitId;
         public BattleTeam Team => team;
@@ -66,6 +68,7 @@
 
         private void OnEnable()
         {
+            ApplyGridWorldPosition();
             if (BattleBoardSystem.Instance != null)
             {
                 BattleBoardSystem.Instance.RegisterUnit(this, gridPosition);
@@ -84,11 +87,49 @@
         {
             gridPosition = startPosition;
             CurrentHealth = Mathf.Clamp(health, 0, maxHealth);
+            ApplyGridWorldPosition();
         }
 
         public void SetGridPosition(Vector2Int newPosition)
         {
             gridPosition = newPosition;
+        }
+
+        public void ApplyGridWorldPosition()
+        {
+            transform.position = GetWorldPositionForGrid(gridPosition, transform.position.z);
+
+            if (enableGridAlignmentDebug)
+            {
+                LogGridAlignment("ApplyGridWorldPosition");
+            }
+        }
+
+        public void SnapToGridCenter()
+        {
+            ApplyGridWorldPosition();
+        }
+
+        public Vector3 GetGridWorldPosition()
+        {
+            return GetWorldPositionForGrid(gridPosition, transform.position.z);
+        }
+
+        public static Vector3 GetWorldPositionForGrid(Vector2Int position, float z)
+        {
+            return new Vector3(position.x, position.y, z);
+        }
+
+        public void LogGridAlignment(string caller = "BattleUnit")
+        {
+            Vector3 rootPosition = transform.position;
+            Vector3 expectedPosition = GetGridWorldPosition();
+            Vector3 visualLocalPosition = visualRoot != null ? visualRoot.localPosition : Vector3.zero;
+
+            Debug.Log(
+                $"[BattleUnitGrid] caller={caller}, unit={name}, team={team}, grid={gridPosition}, " +
+                $"rootWorld={rootPosition}, expectedWorld={expectedPosition}, " +
+                $"visualLocal={visualLocalPosition}, hasVisualRoot={(visualRoot != null)}");
         }
 
         public void ModifyAttackPower(int amount)

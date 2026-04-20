@@ -15,13 +15,13 @@ MonoBehaviour:
   id: 
   buildingName: "\uBD80\uC871 \uD6C8\uB828\uC9C0"
   buildingType: 7
-  sprite: {fileID: -7411974349392773033, guid: cecda04d459b7484a82ecc7cb39d2480, type: 3}
+  sprite: {fileID: -1392832154238072635, guid: ab08666331cd0e14fb116a98e967f73c, type: 3}
   requiredEra: 0
   isAutoUpgrade: 1
   upgradesTo: {fileID: 11400000, guid: e110e8fa3f8664f4abddf8e2e231a3c4, type: 2}
   goldCost: 0
-  width: 1
-  height: 1
+  width: 3
+  height: 3
   allowedTiles: 04000000
   maxPerTerritory: -1
   isUniqueGlobal: 0

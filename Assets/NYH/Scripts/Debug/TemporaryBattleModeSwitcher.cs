@@ -1,9 +1,9 @@
 using NYH.BattleCardSystem;
 using UnityEngine;
 
-// 임시 테스트용 전투 모드 전환 스크립트.
-// 버튼 OnClick에서 EnterBattleMode / ExitBattleMode를 연결하거나,
-// enableKeyboardShortcut을 켜서 키 입력으로도 빠르게 테스트할 수 있습니다.
+// ?�시 ?�스?�용 ?�투 모드 ?�환 ?�크립트.
+// 버튼 OnClick?�서 EnterBattleMode / ExitBattleMode�??�결?�거??
+// enableKeyboardShortcut??켜서 ???�력?�로??빠르�??�스?�할 ???�습?�다.
 public class TemporaryBattleModeSwitcher : MonoBehaviour
 {
     [System.Serializable]
@@ -62,11 +62,11 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     {
         if (!TryResolveController())
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController가 없어 전투 모드로 전환할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController가 ?�어 ?�투 모드�??�환?????�습?�다.");
             return;
         }
 
-        Debug.Log("[TemporaryBattleModeSwitcher] 전투 모드 진입 요청");
+        Debug.Log("[TemporaryBattleModeSwitcher] ?�투 모드 진입 ?�청");
         battleSessionController.EnterBattle();
     }
 
@@ -74,11 +74,11 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     {
         if (!TryResolveController())
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController가 없어 문명 모드로 복귀할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController가 ?�어 문명 모드�?복�??????�습?�다.");
             return;
         }
 
-        Debug.Log("[TemporaryBattleModeSwitcher] 문명 모드 복귀 요청");
+        Debug.Log("[TemporaryBattleModeSwitcher] 문명 모드 복�? ?�청");
         battleSessionController.ExitBattle();
     }
 
@@ -86,7 +86,7 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     {
         if (unitsToSpawn == null || unitsToSpawn.Length == 0)
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] 배치할 유닛 설정이 비어 있습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] 배치???�닛 ?�정??비어 ?�습?�다.");
             return;
         }
 
@@ -104,7 +104,7 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
             }
         }
 
-        Debug.Log($"[TemporaryBattleModeSwitcher] 설정된 유닛 배치 완료: spawned={spawnedCount}");
+        Debug.Log($"[TemporaryBattleModeSwitcher] ?�정???�닛 배치 ?�료: spawned={spawnedCount}");
     }
 
     public BattleUnit SpawnPlayerUnit(BattleUnit unitPrefab, Vector2Int gridPosition, int startHealth = 10)
@@ -121,35 +121,37 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     {
         if (unitPrefab == null)
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] 유닛 프리팹이 없어 배치할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] ?�닛 ?�리?�이 ?�어 배치?????�습?�다.");
             return null;
         }
 
         if (!TryResolveBoard())
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleBoardSystem이 없어 유닛을 배치할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleBoardSystem???�어 ?�닛??배치?????�습?�다.");
             return null;
         }
 
         if (battleBoardSystem.GetUnitAt(gridPosition) != null)
         {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] {gridPosition} 위치에는 이미 유닛이 있습니다.");
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] {gridPosition} ?�치?�는 ?��? ?�닛???�습?�다.");
             return null;
         }
 
-        Vector3 spawnPosition = new(gridPosition.x, gridPosition.y, unitPrefab.transform.position.z);
+        Vector3 spawnPosition = BattleUnit.GetWorldPositionForGrid(gridPosition, unitPrefab.transform.position.z);
         BattleUnit spawnedUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
         int resolvedHealth = Mathf.Clamp(startHealth, 0, spawnedUnit.MaxHealth);
         spawnedUnit.Initialize(gridPosition, resolvedHealth);
+        spawnedUnit.SnapToGridCenter();
 
         if (!battleBoardSystem.RegisterUnit(spawnedUnit, gridPosition))
         {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] {gridPosition} 위치에 유닛 등록에 실패했습니다.");
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] {gridPosition} ?�치???�닛 ?�록???�패?�습?�다.");
             Destroy(spawnedUnit.gameObject);
             return null;
         }
 
-        Debug.Log($"[TemporaryBattleModeSwitcher] 유닛 배치 완료: name={spawnedUnit.name}, team={spawnedUnit.Team}, pos={gridPosition}, health={resolvedHealth}");
+        Debug.Log($"[TemporaryBattleModeSwitcher] ?�닛 배치 ?�료: name={spawnedUnit.name}, team={spawnedUnit.Team}, pos={gridPosition}, health={resolvedHealth}");
+        spawnedUnit.LogGridAlignment("TemporaryBattleModeSwitcher.SpawnUnit");
         return spawnedUnit;
     }
 
