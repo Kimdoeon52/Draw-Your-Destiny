@@ -35,18 +35,36 @@ namespace NYH.BattleCardSystem
 
         public void SetTile(Vector2Int position, BattleTileType tileType)
         {
+            if (!EnsureCombatTilesLoaded() || !BattleGridCoordinateService.Instance.IsCombatCell(position))
+            {
+                return;
+            }
+
             tileMap[position] = tileType;
         }
 
         public BattleTileType GetTile(Vector2Int position)
         {
-            return tileMap.TryGetValue(position, out var tileType) ? tileType : BattleTileType.Plain;
+            EnsureCombatTilesLoaded();
+            return tileMap.TryGetValue(position, out var tileType) ? tileType : BattleTileType.Rock;
         }
 
         public bool RegisterUnit(BattleUnit unit, Vector2Int position)
         {
             if (unit == null)
             {
+                return false;
+            }
+
+            if (!EnsureCombatTilesLoaded())
+            {
+                Debug.LogWarning($"[BattleBoardSystem] 전투 타일 정보가 없어 유닛을 등록할 수 없습니다. unit={unit.name}, pos={position}");
+                return false;
+            }
+
+            if (!BattleGridCoordinateService.Instance.IsCombatCell(position))
+            {
+                Debug.LogWarning($"[BattleBoardSystem] 전투 셀이 아닌 위치에는 유닛을 등록할 수 없습니다. unit={unit.name}, pos={position}");
                 return false;
             }
 
@@ -95,6 +113,11 @@ namespace NYH.BattleCardSystem
                 return false;
             }
 
+            if (!EnsureCombatTilesLoaded())
+            {
+                return false;
+            }
+
             if (!reverseUnitMap.TryGetValue(unit, out var startPosition))
             {
                 startPosition = unit.GridPosition;
@@ -127,7 +150,7 @@ namespace NYH.BattleCardSystem
 
             if (syncTransform)
             {
-                unit.transform.position = new Vector3(targetPosition.x, targetPosition.y, unit.transform.position.z);
+                unit.transform.position = BattleUnit.GetWorldPositionForGrid(targetPosition, unit.transform.position.z);
             }
 
             return true;
@@ -136,6 +159,11 @@ namespace NYH.BattleCardSystem
         public bool CanStepTo(BattleUnit unit, Vector2Int fromPosition, Vector2Int targetPosition)
         {
             if (unit == null || !unit.IsAlive)
+            {
+                return false;
+            }
+
+            if (!EnsureCombatTilesLoaded())
             {
                 return false;
             }
@@ -159,6 +187,22 @@ namespace NYH.BattleCardSystem
             return targetTile == BattleTileType.River ? 2 : 1;
         }
 
+        public bool ReloadCombatTilesFromCoordinateService()
+        {
+            tileMap.Clear();
+            if (!BattleGridCoordinateService.Instance.RefreshFromTilemaps())
+            {
+                return false;
+            }
+
+            foreach (Vector2Int cell in BattleGridCoordinateService.Instance.GetAllCombatCells())
+            {
+                tileMap[cell] = BattleGridCoordinateService.Instance.GetBattleTileType(cell);
+            }
+
+            return tileMap.Count > 0;
+        }
+
         public bool TryBuildMovePath(
             BattleUnit unit,
             Vector2Int startPosition,
@@ -180,6 +224,9 @@ namespace NYH.BattleCardSystem
             Queue<Vector2Int> frontier = new();
             Dictionary<Vector2Int, Vector2Int> cameFrom = new();
             Dictionary<Vector2Int, int> costSoFar = new();
+
+            Debug.Log(
+                $"[BattleBoardSystem] 이동 가능 칸 계산 시작 unit={unit.name}, start={startPosition}, target={targetPosition}, moveBudget={moveBudget}, tileCount={tileMap.Count}");
 
             frontier.Enqueue(startPosition);
             costSoFar[startPosition] = 0;
@@ -251,9 +298,16 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
+            if (!EnsureCombatTilesLoaded())
+            {
+                return result;
+            }
+
             Vector2Int startPosition = reverseUnitMap.TryGetValue(unit, out var registeredPosition)
                 ? registeredPosition
                 : unit.GridPosition;
+
+            LogMoveSelectionDiagnostics(unit, startPosition, moveBudget);
 
             Queue<Vector2Int> frontier = new();
             Dictionary<Vector2Int, int> costSoFar = new();
@@ -515,6 +569,11 @@ namespace NYH.BattleCardSystem
 
         private bool CanEnter(Vector2Int position)
         {
+            if (!tileMap.ContainsKey(position))
+            {
+                return false;
+            }
+
             if (unitMap.ContainsKey(position))
             {
                 return false;
@@ -629,6 +688,42 @@ namespace NYH.BattleCardSystem
         private static int ManhattanDistance(Vector2Int a, Vector2Int b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+        }
+
+        private bool EnsureCombatTilesLoaded()
+        {
+            return tileMap.Count > 0 || ReloadCombatTilesFromCoordinateService();
+        }
+
+        private void LogMoveSelectionDiagnostics(BattleUnit unit, Vector2Int startPosition, int moveBudget)
+        {
+            Vector2Int[] directions =
+            {
+                Vector2Int.up,
+                Vector2Int.right,
+                Vector2Int.down,
+                Vector2Int.left,
+            };
+
+            System.Text.StringBuilder builder = new();
+            for (int i = 0; i < directions.Length; i++)
+            {
+                Vector2Int cell = startPosition + directions[i];
+                BattleTileType tileType = GetTile(cell);
+                bool isCombatCell = tileMap.ContainsKey(cell);
+                bool hasUnit = unitMap.ContainsKey(cell);
+                bool canEnter = CanEnter(cell);
+
+                if (builder.Length > 0)
+                {
+                    builder.Append(" | ");
+                }
+
+                builder.Append($"{cell}:combat={isCombatCell},tile={tileType},hasUnit={hasUnit},canEnter={canEnter}");
+            }
+
+            Debug.Log(
+                $"[BattleBoardSystem] 이동 가능 칸 진단 unit={unit.name}, start={startPosition}, moveBudget={moveBudget}, tileCount={tileMap.Count}, neighbors=[{builder}]");
         }
 
         private static bool IsBetween(int start, int end, int value)

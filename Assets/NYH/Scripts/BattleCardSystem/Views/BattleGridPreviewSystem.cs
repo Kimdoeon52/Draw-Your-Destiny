@@ -223,9 +223,14 @@ namespace NYH.BattleCardSystem
             List<Vector2Int> createdCells = new();
             foreach (Vector2Int cell in cells)
             {
+                if (!BattleGridCoordinateService.Instance.TryGetWorldCenter(cell, out Vector3 previewWorld))
+                {
+                    continue;
+                }
+
                 GameObject previewCell = new($"BattlePreview_{debugLabel}_{cell.x}_{cell.y}");
                 previewCell.transform.SetParent(transform, false);
-                previewCell.transform.position = new Vector3(cell.x, cell.y, previewZ);
+                previewCell.transform.position = new Vector3(previewWorld.x, previewWorld.y, previewZ);
                 previewCell.transform.localScale = cellScale;
 
                 SpriteRenderer spriteRenderer = previewCell.AddComponent<SpriteRenderer>();
@@ -360,7 +365,13 @@ namespace NYH.BattleCardSystem
         {
             GameObject border = new("BattleUnitBorder");
             border.transform.SetParent(transform, false);
-            border.transform.position = new Vector3(centerCell.x, centerCell.y, 0f) + localOffset;
+            if (!BattleGridCoordinateService.Instance.TryGetWorldCenter(centerCell, out Vector3 borderWorld))
+            {
+                Destroy(border);
+                return;
+            }
+
+            border.transform.position = new Vector3(borderWorld.x, borderWorld.y, 0f) + localOffset;
             border.transform.localScale = scale;
 
             SpriteRenderer spriteRenderer = border.AddComponent<SpriteRenderer>();
@@ -377,7 +388,13 @@ namespace NYH.BattleCardSystem
 
             GameObject label = new($"BattleAttackOrder_{order}");
             label.transform.SetParent(transform, false);
-            label.transform.position = new Vector3(centerCell.x, centerCell.y, previewZ - 0.01f);
+            if (!BattleGridCoordinateService.Instance.TryGetWorldCenter(centerCell, out Vector3 labelWorld))
+            {
+                Destroy(label);
+                return;
+            }
+
+            label.transform.position = new Vector3(labelWorld.x, labelWorld.y, previewZ - 0.01f);
 
             TextMesh textMesh = label.AddComponent<TextMesh>();
             textMesh.text = order.ToString();

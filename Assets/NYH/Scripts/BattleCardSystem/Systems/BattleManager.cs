@@ -118,6 +118,9 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
+            BattleGridCoordinateService.Instance.RefreshFromTilemaps();
+            BattleBoardSystem.Instance?.ReloadCombatTilesFromCoordinateService();
+
             BattleStartContext resolvedContext = context ?? defaultStartContext ?? new BattleStartContext();
             ResetBattleState();
             RebuildUnitLists();
@@ -460,4 +463,3 @@ namespace NYH.BattleCardSystem
         }
     }
 }
-

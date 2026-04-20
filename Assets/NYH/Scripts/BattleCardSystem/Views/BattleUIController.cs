@@ -711,7 +711,12 @@ namespace NYH.BattleCardSystem
         {
             if (clickedUnit == null || clickedUnit.Team != BattleTeam.Player || !clickedUnit.IsAlive)
             {
-                Debug.Log("[BattleUI] ÁßªÎ?Î±∂Áëú???????ÍæßÎéî ?Ï¢äÎñÖ????Ä???èÍΩ≠??");
+                string reason = clickedUnit == null
+                    ? "≈¨∏Ø«— ºøø°º≠ ¿Ø¥÷¿ª √£¡ˆ ∏¯«‘"
+                    : clickedUnit.Team != BattleTeam.Player
+                        ? $"«√∑π¿ÃæÓ ¿Ø¥÷¿Ã æ∆¥‘ team={clickedUnit.Team}"
+                        : $"¿Ø¥÷¿Ã ªÏæ∆¿÷¡ˆ æ ¿Ω isAlive={clickedUnit.IsAlive}";
+                Debug.Log($"[BattleUI] ¿Ø¿˙ ¿Ø¥÷ º±≈√ Ω«∆–: {reason}");
                 return;
             }
 
@@ -736,6 +741,7 @@ namespace NYH.BattleCardSystem
                 selectableMoveCells = BattleBoardSystem.Instance.GetSelectableMoveCells(clickedUnit, currentMoveBudget);
                 drawnMovePath.Clear();
                 confirmedMovePath.Clear();
+                Debug.Log($"[BattleUI] ¿Ø¥÷ º±≈√ »ƒ ¿Ãµø ∞°¥… ƒ≠ ∞ËªÍ: unit={clickedUnit.name}, grid={clickedUnit.GridPosition}, moveBudget={currentMoveBudget}, selectableCount={selectableMoveCells.Count}");
                 selectableAttackCells.Clear();
                 hasLastDragCell = false;
                 hasLastMoveHoverCell = false;
@@ -839,7 +845,7 @@ namespace NYH.BattleCardSystem
 
             if (!selectableMoveCells.Contains(clickedGrid))
             {
-                Debug.Log("[BattleUI] ??ÄÎ£?Â™õ¬Ä?ŒΩÎ∏?ÁßªÎ™Ñ????Ä???èÍΩ≠??");
+                Debug.Log($"[BattleUI] ¿Ãµø ¥ÎªÛ ƒ≠ º±≈√ Ω«∆–: clickedGrid={clickedGrid}, selectableCount={selectableMoveCells.Count}, contains={selectableMoveCells.Contains(clickedGrid)}, unitGrid={(pendingUserUnit != null ? pendingUserUnit.GridPosition.ToString() : "null")}");
                 return;
             }
 
@@ -1062,13 +1068,11 @@ namespace NYH.BattleCardSystem
             Camera camera = Camera.main;
             if (camera == null)
             {
-                return Vector2Int.zero;
+                return new Vector2Int(int.MinValue, int.MinValue);
             }
 
             Vector3 worldPosition = camera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, -camera.transform.position.z));
-            return new Vector2Int(
-                Mathf.RoundToInt(worldPosition.x),
-                Mathf.RoundToInt(worldPosition.y));
+            return BattleUnit.GetGridPositionForWorld(worldPosition);
         }
 
         private int CalculateDrawnPathCost()
@@ -1849,6 +1853,8 @@ namespace NYH.BattleCardSystem
         }
     }
 }
+
+
 
 
 

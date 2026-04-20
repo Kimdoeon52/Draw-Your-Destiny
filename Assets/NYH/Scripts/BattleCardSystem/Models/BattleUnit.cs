@@ -1,4 +1,4 @@
-﻿namespace NYH.BattleCardSystem
+namespace NYH.BattleCardSystem
 {
     using UnityEngine;
 
@@ -115,8 +115,29 @@
             return GetWorldPositionForGrid(gridPosition, transform.position.z);
         }
 
+        public static Vector2Int GetGridPositionForWorld(Vector3 worldPosition)
+        {
+            if (BattleGridCoordinateService.Instance.TryGetCell(worldPosition, out Vector2Int cell))
+            {
+                return cell;
+            }
+
+            return new Vector2Int(int.MinValue, int.MinValue);
+        }
+
+        public static Vector2Int NormalizeGridPosition(Vector2Int gridPosition)
+        {
+            return gridPosition;
+        }
+
         public static Vector3 GetWorldPositionForGrid(Vector2Int position, float z)
         {
+            if (BattleGridCoordinateService.Instance.TryGetWorldCenter(position, out Vector3 world))
+            {
+                world.z = z;
+                return world;
+            }
+
             return new Vector3(position.x, position.y, z);
         }
 
@@ -156,15 +177,10 @@
         {
             if (amount <= 0 || !IsAlive)
             {
-                /*Debug.Log($"[BattleUnit] 데미지 처리 건너뜀 unit={name}, amount={amount}, isAlive={IsAlive}");*/
                 return;
             }
 
-            int beforeHealth = CurrentHealth;
             CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
-            /*Debug.Log($"[BattleUnit] 데미지 처리 unit={name}, amount={amount}," +
-                $" hp={beforeHealth}->{CurrentHealth}, hasAIProfile={(aiProfile != null)}," +
-                $" hasHitFlash={(hitFlash != null)}");*/
             aiProfile?.ShowDamage(amount);
             hitFlash?.Play();
 
@@ -172,15 +188,6 @@
             {
                 HandleDeath();
             }
-
-            //if (EnableDamageDebug)
-            //{
-            //    if (CurrentHealth == 0)
-            //    {
-            //        Debug.Log(
-            //            $"[BattleUnitDebug] ??壤? unit={name}, team={team}, grid={gridPosition}");
-            //    }
-            //}
         }
 
         private void HandleDeath()
@@ -211,4 +218,3 @@
         }
     }
 }
-

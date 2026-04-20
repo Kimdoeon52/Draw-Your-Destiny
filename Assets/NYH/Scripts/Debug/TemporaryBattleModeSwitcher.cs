@@ -131,6 +131,19 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
             return null;
         }
 
+        BattleGridCoordinateService coordinateService = BattleGridCoordinateService.Instance;
+        if (!coordinateService.RefreshFromTilemaps() && !coordinateService.IsCombatCell(gridPosition))
+        {
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 전투 좌표 서비스를 초기화할 수 없습니다. pos={gridPosition}");
+            return null;
+        }
+
+        if (!coordinateService.IsCombatCell(gridPosition))
+        {
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 전투 셀이 아닌 위치에는 유닛을 배치할 수 없습니다. pos={gridPosition}");
+            return null;
+        }
+
         if (battleBoardSystem.GetUnitAt(gridPosition) != null)
         {
             Debug.LogWarning($"[TemporaryBattleModeSwitcher] {gridPosition} ?꾩튂?먮뒗 ?대? ?좊떅???덉뒿?덈떎.");
@@ -177,3 +190,4 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
         return battleBoardSystem != null;
     }
 }
+
