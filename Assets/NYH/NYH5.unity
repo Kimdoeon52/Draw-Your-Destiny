@@ -54997,6 +54997,37 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &928906026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 928906027}
+  m_Layer: 0
+  m_Name: ==========EnemySystem=============
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &928906027
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 928906026}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &935261745
 GameObject:
   m_ObjectHideFlags: 0
@@ -55145,12 +55176,6 @@ MonoBehaviour:
   enemyLevel: 0
   enemyID: 0
   countEnemyTurn: 0
-  rockWarriorCount: 0
-  archerCount: 0
-  healerCount: 0
-  wizzardCount: 0
-  horseWarriorCount: 0
-  superUnitCount: 0
 --- !u!4 &938640873
 Transform:
   m_ObjectHideFlags: 0
@@ -64793,6 +64818,50 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!1 &1122682162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1122682164}
+  - component: {fileID: 1122682163}
+  m_Layer: 0
+  m_Name: EnemyBrainMana
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1122682163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122682162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd184d7f52296f64eb7f63e0cacb1605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1122682164
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122682162}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.487008, y: 3.885913, z: -0.00024368608}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1123479300
 GameObject:
   m_ObjectHideFlags: 0
@@ -111784,6 +111853,8 @@ SceneRoots:
   - {fileID: 1433284922}
   - {fileID: 297895152}
   - {fileID: 963536237}
+  - {fileID: 928906027}
+  - {fileID: 603273959}
+  - {fileID: 1122682164}
   - {fileID: 1532801342}
   - {fileID: 1294300764}
-  - {fileID: 603273959}
