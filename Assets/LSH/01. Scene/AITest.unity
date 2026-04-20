@@ -242,6 +242,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 102
@@ -252,6 +253,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 103
@@ -262,6 +264,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 104
@@ -272,6 +275,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 105
@@ -282,6 +286,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 106
@@ -292,6 +297,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 107
@@ -302,6 +308,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 108
@@ -312,6 +319,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 109
@@ -322,6 +330,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
   - nodeID: 110
@@ -332,6 +341,7 @@ MonoBehaviour:
     gold: 0
     food: 0
     research: 0
+    units: []
     farmCount: 0
     maxHuman: 10
 --- !u!4 &6487096
@@ -8827,7 +8837,6 @@ MonoBehaviour:
   baseBattleDeck: []
   earnedBattleCards: []
   maxActionPoints: 15
-  healthPenaltyPerCostStep: 0.1
 --- !u!4 &30567326
 Transform:
   m_ObjectHideFlags: 0
@@ -35683,7 +35692,7 @@ GameObject:
   - component: {fileID: 561679659}
   - component: {fileID: 561679660}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: EnemyA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35727,6 +35736,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
   - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
   - {fileID: 11400000, guid: 0c7c8e0fe9a6ca94ca97b3a3a24cc9a7, type: 2}
+  barracksPools: []
   gold: 0
   science: 0
   enemyLevel: 0
@@ -46398,6 +46408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863d6c6c8112b0a499dfd84f4169f45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyA: {fileID: 0}
   currentTurn: 0
   endTurn: 0
   startTurn: 0

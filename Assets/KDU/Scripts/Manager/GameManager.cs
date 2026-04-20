@@ -24,7 +24,7 @@ public class GameManager : PersistentSingleton<GameManager>
     [Header("Managers")]
     private TileMapManager tileMapManager;
     private BuildingPlacementService placementService;
-
+    [SerializeField]private EnemyA enemyA;
     [Header("Game State")]
     public int currentTurn = 0;
 
@@ -141,7 +141,7 @@ public class GameManager : PersistentSingleton<GameManager>
         CardSystem.Instance?.RefreshVisibleCardViews();
         checkResearch();
         OngoingEffectSystem.Instance.OnTurnStartOrEnd();
-
+        enemyA.StartEnemyTurn();
         // 현재 진입 중인 노드의 건물 턴 처리 (Behaviour.OnTurnEnd)
         if (tileMapManager != null)
         {

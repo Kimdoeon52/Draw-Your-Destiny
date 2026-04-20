@@ -19,8 +19,8 @@ MonoBehaviour:
   <Image>k__BackingField: {fileID: -786496590527711328, guid: d6389842957d2e940bf202be868b445e,
     type: 3}
   <Cost>k__BackingField: 3
-  description: "\uCD5C\uB300 \uC778\uAD6C \uC218\uB97C {increasePopulationAmount}\uBA85
-    \uB298\uB824\uC8FC\uB294 \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4."
+  description: "\uCD5C\uB300 \uC778\uAD6C \uC218\uB97C 5\uBA85 \uB298\uB824\uC8FC\uB294
+    \uAC74\uBB3C\uC744 \uAC74\uC124\uD569\uB2C8\uB2E4."
   <Effects>k__BackingField:
   - rid: 5005894311149568082
   - rid: 5005894311149568083

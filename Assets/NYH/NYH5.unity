@@ -31117,6 +31117,50 @@ Transform:
   - {fileID: 315805390}
   m_Father: {fileID: 1166881269}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &603273957
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 603273959}
+  - component: {fileID: 603273958}
+  m_Layer: 0
+  m_Name: EnemyBrain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &603273958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603273957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd184d7f52296f64eb7f63e0cacb1605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &603273959
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603273957}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.487008, y: 3.885913, z: -0.00024368608}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &615904741
 GameObject:
   m_ObjectHideFlags: 0
@@ -55055,6 +55099,73 @@ BoxCollider2D:
   m_AutoTiling: 1
   m_Size: {x: 19.912155, y: 13.677029}
   m_EdgeRadius: 0
+--- !u!1 &938640871
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 938640873}
+  - component: {fileID: 938640872}
+  m_Layer: 0
+  m_Name: EnemyA
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &938640872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938640871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6045b0c12c08af54685c3bac677f8a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionCases: []
+  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
+  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
+  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
+  barracksData:
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
+  - {fileID: 11400000, guid: 1682bb96636c2ff4c94285dde1b56447, type: 2}
+  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
+  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
+  - {fileID: 11400000, guid: 0c7c8e0fe9a6ca94ca97b3a3a24cc9a7, type: 2}
+  barracksPools: []
+  gold: 0
+  science: 0
+  enemyLevel: 0
+  enemyID: 0
+  countEnemyTurn: 0
+  rockWarriorCount: 0
+  archerCount: 0
+  healerCount: 0
+  wizzardCount: 0
+  horseWarriorCount: 0
+  superUnitCount: 0
+--- !u!4 &938640873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938640871}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &954301136
 GameObject:
   m_ObjectHideFlags: 0
@@ -65473,6 +65584,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863d6c6c8112b0a499dfd84f4169f45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyA: {fileID: 938640872}
   currentTurn: 0
   endTurn: 0
   startTurn: 0
@@ -70241,13 +70353,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allCards:
-  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
-  - {fileID: 11400000, guid: 6966c88d03d50044ea67c515263feff4, type: 2}
+  - {fileID: 11400000, guid: e514c291345e22b4d9592f497394a2b3, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: 9f5c4921da35cff4880845eab5d630f7, type: 2}
   - {fileID: 11400000, guid: 5640e260ce6785e4d925fda4ea3be8fe, type: 2}
-  - {fileID: 11400000, guid: 56857f7a8093c4848805260dc977c1f3, type: 2}
-  - {fileID: 11400000, guid: 51a132cf19488d743bd98339c8906204, type: 2}
+  - {fileID: 11400000, guid: 7d6a326558b6d7745b8fc302ce0b354f, type: 2}
   - {fileID: 11400000, guid: df8e7aa93a12ce142860db18ce51158f, type: 2}
+  - {fileID: 11400000, guid: 834e97eba7a67fa42a6d377a1e64e532, type: 2}
+  - {fileID: 11400000, guid: e3233c95d2c1ab444a5c43a47cdb618e, type: 2}
+  - {fileID: 11400000, guid: 84433fb2a1657af49a3285b77412bdb6, type: 2}
+  - {fileID: 11400000, guid: a9135e09e449bbd41be9eb701e1a4ad5, type: 2}
+  - {fileID: 11400000, guid: 37e241aa85a0f9b4e92acf1a98fd9f04, type: 2}
   - {fileID: 11400000, guid: 83a467a7bcda65841963a17ba00d9f00, type: 2}
+  - {fileID: 11400000, guid: 36a0fb77346f0b84fb2aa2ae4a39b034, type: 2}
+  - {fileID: 11400000, guid: 7120835988b67264798b1ea582a3c1fd, type: 2}
+  - {fileID: 11400000, guid: d740c106f7ba9f74083db5bf51c1777e, type: 2}
+  - {fileID: 11400000, guid: 6966c88d03d50044ea67c515263feff4, type: 2}
+  - {fileID: 11400000, guid: b16555a920dfd4a419611787925afb38, type: 2}
   panel: {fileID: 1752389644}
   container: {fileID: 1589546537}
 --- !u!4 &1271427085
@@ -70448,7 +70570,7 @@ MonoBehaviour:
       type: 3}
     gridPosition: {x: 3, y: 4}
     startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: 96c4ff8ee848755419296c8a7909ccdc,
+  - unitPrefab: {fileID: 692144614679788697, guid: b85b429c8987ff44abbdfdeed2ccfd8d,
       type: 3}
     gridPosition: {x: 3, y: 3}
     startHealth: 5
@@ -76454,12 +76576,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myDeck:
-  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
-  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
-  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
-  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
-  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
-  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
+  - {fileID: 11400000, guid: 20ac80187d1e4f946a336d1100b8ef0b, type: 2}
+  - {fileID: 11400000, guid: b16555a920dfd4a419611787925afb38, type: 2}
+  - {fileID: 11400000, guid: 6966c88d03d50044ea67c515263feff4, type: 2}
+  - {fileID: 11400000, guid: e514c291345e22b4d9592f497394a2b3, type: 2}
+  - {fileID: 11400000, guid: a9135e09e449bbd41be9eb701e1a4ad5, type: 2}
+  - {fileID: 11400000, guid: e514c291345e22b4d9592f497394a2b3, type: 2}
+  - {fileID: 11400000, guid: 84433fb2a1657af49a3285b77412bdb6, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1507954024
 MonoBehaviour:
@@ -111632,6 +111755,7 @@ SceneRoots:
   - {fileID: 1169971045}
   - {fileID: 319991851}
   - {fileID: 1425922014}
+  - {fileID: 938640873}
   - {fileID: 1395773283}
   - {fileID: 522887710}
   - {fileID: 1098538681}
@@ -111662,3 +111786,4 @@ SceneRoots:
   - {fileID: 963536237}
   - {fileID: 1532801342}
   - {fileID: 1294300764}
+  - {fileID: 603273959}

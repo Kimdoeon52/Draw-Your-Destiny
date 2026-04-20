@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using EnemyAPool;
 using Unity.VisualScripting;
 
@@ -57,7 +57,7 @@ public class EnemyA : EnemyBrainBase
                 break;
         }
     }
-    protected override void StartEnemyTurn()
+    public override void StartEnemyTurn()
     {
         base.StartEnemyTurn();
     }

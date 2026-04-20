@@ -1,4 +1,4 @@
-using EnemyAPool;
+﻿using EnemyAPool;
 using PoolBase;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -157,7 +157,7 @@ public class EnemyBrainBase : MonoBehaviour
 
 
     //==============================적 행동 실행====================================
-    protected virtual void StartEnemyTurn()
+    public virtual void StartEnemyTurn()
     {
         CheckLevelUp();
         UpdateActionCases();
