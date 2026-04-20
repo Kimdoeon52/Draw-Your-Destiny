@@ -49,13 +49,29 @@ namespace PoolBase
             //유효한 city 타일 중 랜덤 1곳에 배치 (타일맵 밖에 있으면 이동 루프가 갈 곳을 못찾음)
             PlaceOnRandomCityTile(human);
 
+            ActivateHuman(human, ownerCivID);
+
+            return human;
+        }
+
+        // 서브클래스 공용: UnitsRoot로 parent 이동 → 활성화 → homeNodeID 기록 → UnitRegistry 등록.
+        // 건물 Destroy와 독립적으로 유닛이 살아남고, 노드별로 토글 가능해진다.
+        protected void ActivateHuman(GameObject human, int ownerCivID)
+        {
+            UnitRegistry registry = UnitRegistry.Instance;
+            if (registry != null)
+                human.transform.SetParent(registry.UnitsRoot, true);
+
             human.SetActive(true);
 
             HumanBase humanUnit = human.GetComponent<HumanBase>();
             humanUnit.ownerCivID = ownerCivID;
             humanUnit.SetOwnerPool(this);
 
-            return human;
+            int nodeID = WorldMapManager.Instance != null ? WorldMapManager.Instance.CurrentNodeID : -1;
+            humanUnit.homeNodeID = nodeID;
+
+            if (registry != null) registry.Register(humanUnit);
         }
 
         private void PlaceOnRandomCityTile(GameObject human)
@@ -89,6 +105,12 @@ namespace PoolBase
 
         public void ReturnHuman(GameObject human)
         {
+            HumanBase humanUnit = human.GetComponent<HumanBase>();
+            if (humanUnit != null)
+            {
+                UnitRegistry.Instance?.Unregister(humanUnit);
+                humanUnit.homeNodeID = -1;
+            }
             human.SetActive(false);
             pool.Enqueue(human);
         }

@@ -57,6 +57,9 @@ namespace Base
         [Header("소속 문명 ID")]
         public int ownerCivID;
 
+        [Header("소속 노드 ID (-1 = 미소속)")]
+        public int homeNodeID = -1;
+
         [Header("유닛 직업")]
         [SerializeField] protected UnitTypeBase unitTypeBase;
         protected Animator anime;
@@ -164,6 +167,7 @@ namespace Base
         protected virtual void Dead() //사망 처리
         {
             StopMoveLoop();
+            UnitRegistry.Instance?.Unregister(this);
             if(ownerPool == null)
             {
                 Debug.LogError("풀 참조가 없습니다. 사망한 유닛이 풀로 반환되지 않습니다.");

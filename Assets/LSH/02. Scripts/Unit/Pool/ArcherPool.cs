@@ -37,10 +37,7 @@ public class ArcherPool : HumanPool
                         return null;
                     }
                     GameObject human = bronzepool.Dequeue();
-                    human.SetActive(true);
-                    HumanBase humanUnit = human.GetComponent<HumanBase>();
-                    humanUnit.ownerCivID = ownerCivID;
-                    humanUnit.SetOwnerPool(this);
+                    ActivateHuman(human, ownerCivID);
                     return human;
                 }
             case Era.Iron:
@@ -51,10 +48,7 @@ public class ArcherPool : HumanPool
                         return null;
                     }
                     GameObject human = ironpool.Dequeue();
-                    human.SetActive(true);
-                    HumanBase humanUnit = human.GetComponent<HumanBase>();
-                    humanUnit.ownerCivID = ownerCivID;
-                    humanUnit.SetOwnerPool(this);
+                    ActivateHuman(human, ownerCivID);
                     return human;
                 }
         }

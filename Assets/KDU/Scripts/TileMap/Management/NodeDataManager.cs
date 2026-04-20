@@ -91,6 +91,9 @@ public class NodeDataManager : Singleton<NodeDataManager>
             if (instance?.data != null)
                 tileMapManager.RestoreBuildingInstance(instance);
         }
+
+        // 이 노드 소속 유닛만 표시 (다른 노드 유닛은 비활성 유지)
+        UnitRegistry.Instance?.ShowUnitsForNode(nodeData.nodeID);
     }
 
     // ── 영지 이탈 ─────────────────────────────────────────────────
@@ -115,6 +118,9 @@ public class NodeDataManager : Singleton<NodeDataManager>
 
         tileMapManager.ClearAllBuildings();
         tileMapManager.ClearAllTerrainTiles();
+
+        // 모든 유닛 숨김 (GO는 UnitsRoot에서 생존, 다음 진입 시 복원)
+        UnitRegistry.Instance?.HideAllUnits();
     }
 
     // ── 건물 데이터만 동기화 (뷰 전환 없이) ─────────────────────────
