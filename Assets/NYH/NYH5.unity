@@ -16450,7 +16450,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -764, y: 291}
+  m_AnchoredPosition: {x: -869, y: -200}
   m_SizeDelta: {x: 373.891, y: 132.203}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &378246757
@@ -16539,7 +16539,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 117.54761, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -26118,10 +26118,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 834ecaff6ca3ad44caa3ef33f5f96415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapMinX: -142
-  mapMaxX: 20
-  mapMinY: -12
-  mapMaxY: 140
+  mapMinX: -20
+  mapMaxX: 35
+  mapMinY: -15
+  mapMaxY: 15
   minZoom: 3.6
   maxZoom: 43.31
   zoomSpeed: 5
@@ -26141,7 +26141,7 @@ MonoBehaviour:
   useEdgeScroll: 1
   edgeSize: 20
   edgeScrollSpeed: 25
-  move: 0
+  move: 1
 --- !u!1 &522887708
 GameObject:
   m_ObjectHideFlags: 0
@@ -64573,7 +64573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allBattleCards:
-  - {fileID: 11400000, guid: 1eaab5f353615934d9b6d1c37f1e7be3, type: 2}
+  - {fileID: 11400000, guid: 2be77819884ccaa4b97321cecaccbf8d, type: 2}
   - {fileID: 11400000, guid: 1bc551fb61d931b418d87544608e03f5, type: 2}
   - {fileID: 11400000, guid: e869f286f0b234a48a424868b6b21c5a, type: 2}
   - {fileID: 11400000, guid: 354ffbcfb90c12c47be4b5c2c65e00e3, type: 2}
@@ -70424,33 +70424,33 @@ MonoBehaviour:
       type: 3}
     gridPosition: {x: 0, y: 0}
     startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: e4f86634c15c26141be919d92e30375e,
-      type: 3}
-    gridPosition: {x: 1, y: 1}
-    startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: e4f86634c15c26141be919d92e30375e,
+  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
       type: 3}
     gridPosition: {x: 0, y: 1}
     startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: e4f86634c15c26141be919d92e30375e,
+  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
+      type: 3}
+    gridPosition: {x: 1, y: 1}
+    startHealth: 5
+  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
       type: 3}
     gridPosition: {x: 1, y: 0}
     startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
+  - unitPrefab: {fileID: 692144614679788697, guid: 96c4ff8ee848755419296c8a7909ccdc,
       type: 3}
-    gridPosition: {x: 2, y: 3}
+    gridPosition: {x: 4, y: 3}
     startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
+  - unitPrefab: {fileID: 692144614679788697, guid: 96c4ff8ee848755419296c8a7909ccdc,
       type: 3}
-    gridPosition: {x: 2, y: 4}
+    gridPosition: {x: 4, y: 4}
     startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: 57007b62967d6f44698e7ce2599f4d6c,
+  - unitPrefab: {fileID: 692144614679788697, guid: 96c4ff8ee848755419296c8a7909ccdc,
       type: 3}
-    gridPosition: {x: 2, y: 5}
+    gridPosition: {x: 3, y: 4}
     startHealth: 5
-  - unitPrefab: {fileID: 692144614679788697, guid: 9597d30b961ca9341abae066d624753b,
+  - unitPrefab: {fileID: 692144614679788697, guid: 96c4ff8ee848755419296c8a7909ccdc,
       type: 3}
-    gridPosition: {x: 2, y: 6}
+    gridPosition: {x: 3, y: 3}
     startHealth: 5
   enableKeyboardShortcut: 1
   enterBattleKey: 288
@@ -75242,7 +75242,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -45.78073, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -75272,7 +75272,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -722, y: -22}
+  m_AnchoredPosition: {x: -755, y: -400}
   m_SizeDelta: {x: 373.891, y: 132.203}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1395773281
@@ -76454,12 +76454,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myDeck:
-  - {fileID: 11400000, guid: 51a132cf19488d743bd98339c8906204, type: 2}
-  - {fileID: 11400000, guid: 51a132cf19488d743bd98339c8906204, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
-  - {fileID: 11400000, guid: 9ce0a00e07d09694e9953f7b5f6fa44b, type: 2}
+  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
+  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
+  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
+  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
+  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
+  - {fileID: 11400000, guid: ad1ba95dbb6a0e84f9e2cae4a398a2ac, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1507954024
 MonoBehaviour:
@@ -81457,7 +81457,6 @@ MonoBehaviour:
   baseBattleDeck: []
   earnedBattleCards: []
   maxActionPoints: 15
-  healthPenaltyPerCostStep: 0.1
 --- !u!4 &1596670697
 Transform:
   m_ObjectHideFlags: 0
@@ -90881,7 +90880,7 @@ MonoBehaviour:
   fadePanel: {fileID: 584070444}
   fadeDuration: 0.4
   claimCost: 30
-  debugFreeEntry: 0
+  debugFreeEntry: 1
   allNodes:
   - nodeID: 101
     adjacentNodeIDs: 6600000067000000
@@ -101273,7 +101272,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -713, y: 139}
+  m_AnchoredPosition: {x: -826, y: -287}
   m_SizeDelta: {x: 373.891, y: 132.203}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1942909458

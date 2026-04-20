@@ -1,4 +1,4 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using Cysharp.Threading.Tasks;
     using TMPro;
@@ -29,6 +29,7 @@ namespace NYH.BattleCardSystem
 
         public void ShowDamage(int damageAmount)
         {
+            Debug.Log($"[BattleUnitAIProfile] 데미지 텍스트 요청 unit={name}, amount={damageAmount}, hasDamageText={(damageText != null)}");
             if (damageText == null || damageAmount <= 0)
             {
                 return;

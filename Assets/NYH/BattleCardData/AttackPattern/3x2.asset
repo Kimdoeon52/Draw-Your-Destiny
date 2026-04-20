@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80a2c4a2899c2504b8ba19c9a34e7b20, type: 3}
   m_Name: 3x2
   m_EditorClassIdentifier: 
-  patternName: 3x2
-  editorGridSize: {x: 5, y: 6}
+  patternName: 3x3
+  editorGridSize: {x: 5, y: 8}
   rotateToFacing: 1
   cells:
   - {x: 0, y: 1}
   - {x: -1, y: 1}
+  - {x: 1, y: 0}
   - {x: 1, y: 1}
   - {x: -1, y: 0}
-  - {x: 1, y: 0}

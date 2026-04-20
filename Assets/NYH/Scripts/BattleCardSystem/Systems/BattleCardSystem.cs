@@ -8,34 +8,33 @@ namespace NYH.BattleCardSystem
     /*
      * BattleCardSystem
      *
-     * ÀüÅõ ¾À¿¡¼­ »ç¿ëÇÏ´Â Ä«µå ½Ã½ºÅÛ º»Ã¼ÀÔ´Ï´Ù.
+     * ì „íˆ¬ ì”¬ì—ì„œ ì‚¬ìš©í•˜ëŠ” ì¹´ë“œ ì‹œìŠ¤í…œ ë³¸ì²´ì…ë‹ˆë‹¤.
      *
-     * ´ã´ç ¿ªÇÒ:
-     * - ÀüÅõ µ¦ / ¼ÕÆĞ / ¹ö¸²´õ¹Ì °°Àº ·±Å¸ÀÓ Ä«µå »óÅÂ °ü¸®
-     * - ½ÃÀÛ ¼ÕÆĞ µå·Î¿ì, ÅÏ µå·Î¿ì, ¸Ö¸®°Ç Ã³¸®
-     * - ÀüÅõ Ä«µå ÇÃ·¹ÀÌ ½Ã ActionSystemÀ¸·Î ¾×¼Ç À§ÀÓ
-     * - Çàµ¿·Â(AP) ±â¹İ Ä«µå ÄÚ½ºÆ® °è»ê
+     * ë‹´ë‹¹ ì—­í• :
+     * - ì „íˆ¬ ë± / ì†íŒ¨ / ë²„ë¦¼ë”ë¯¸ ê°™ì€ ëŸ°íƒ€ì„ ì¹´ë“œ ìƒíƒœ ê´€ë¦¬
+     * - ì‹œì‘ ì†íŒ¨ ë“œë¡œìš°, í„´ ë“œë¡œìš°, ë©€ë¦¬ê±´ ì²˜ë¦¬
+     * - ì „íˆ¬ ì¹´ë“œ í”Œë ˆì´ ì‹œ ActionSystemìœ¼ë¡œ ì•¡ì…˜ ìœ„ì„
+     * - í–‰ë™ë ¥(AP) ê¸°ë°˜ ì¹´ë“œ ì½”ìŠ¤íŠ¸ ê³„ì‚°
      *
-     * »ç¿ë Èå¸§:
-     * - ÀüÅõ ½ÃÀÛ Àü¿¡ SetupFromInspector() ¶Ç´Â SetupBattleDeck()À¸·Î µ¦ ÁØºñ
-     * - BattleManager°¡ DrawOpeningHand(), DrawTurnCards() È£Ãâ
-     * - Ä«µå »ç¿ë ½Ã PlayCard() È£Ãâ
+     * ì‚¬ìš© íë¦„:
+     * - ì „íˆ¬ ì‹œì‘ ì „ì— SetupFromInspector() ë˜ëŠ” SetupBattleDeck()ìœ¼ë¡œ ë± ì¤€ë¹„
+     * - BattleManagerê°€ DrawOpeningHand(), DrawTurnCards() í˜¸ì¶œ
+     * - ì¹´ë“œ ì‚¬ìš© ì‹œ PlayCard() í˜¸ì¶œ
      */
     public class BattleCardSystem : Singleton<BattleCardSystem>
     {
         [Header("Fallback Battle Deck Sources")]
-        // BattleDeckCollectionÀÌ ¾ø´Â °æ¿ì¿¡¸¸ »ç¿ëÇÏ´Â ±âº» ÀüÅõ µ¦/º¸»ó µ¦ÀÔ´Ï´Ù.
+        // BattleDeckCollectionì´ ì—†ëŠ” ê²½ìš°ì—ë§Œ ì‚¬ìš©í•˜ëŠ” ê¸°ë³¸ ì „íˆ¬ ë±/ë³´ìƒ ë±ì…ë‹ˆë‹¤.
         [SerializeField] private List<BattleCardData> baseBattleDeck = new();
         [SerializeField] private List<BattleCardData> earnedBattleCards = new();
 
         [Header("Battle Cost Rules")]
-        // Ä«µå »ç¿ë ½Ã Àû¿ëµÇ´Â AP ÃÖ´ëÄ¡¿Í AP ºÎÁ· ½Ã Ã¼·Â Æä³ÎÆ¼ ºñÀ²ÀÔ´Ï´Ù.
+        // ì¹´ë“œ ì‚¬ìš© ì‹œ ì ìš©ë˜ëŠ” AP ìµœëŒ€ì¹˜ì…ë‹ˆë‹¤.
         [SerializeField] private int maxActionPoints = 15;
-        [SerializeField, Range(0f, 1f)] private float healthPenaltyPerCostStep = 0.1f;
 
-        // ½ÇÁ¦ ÀüÅõ Áß »ç¿ëÇÏ´Â ·±Å¸ÀÓ ´õ¹Ì/¼ÕÆĞ »óÅÂÀÔ´Ï´Ù.
+        // ì‹¤ì œ ì „íˆ¬ ì¤‘ ì‚¬ìš©í•˜ëŠ” ëŸ°íƒ€ì„ ë”ë¯¸/ì†íŒ¨ ìƒíƒœì…ë‹ˆë‹¤.
         private BattleCardPileState pileState;
-        // ÀüÅõ Ä«µå »ç¿ë°ú Àü¼ú ¾×¼ÇÀ» Ã³¸®ÇÏ´Â performerÀÔ´Ï´Ù.
+        // ì „íˆ¬ ì¹´ë“œ ì‚¬ìš©ê³¼ ì „ìˆ  ì•¡ì…˜ì„ ì²˜ë¦¬í•˜ëŠ” performerì…ë‹ˆë‹¤.
         private BattlePlayPerformer playPerformer;
         private BattleTacticalPerformer tacticalPerformer;
 
@@ -46,21 +45,21 @@ namespace NYH.BattleCardSystem
         {
             base.Awake();
 
-            // ÀüÅõ ¾À ÁøÀÔ ½Ã ÇÊ¿äÇÑ ·±Å¸ÀÓ »óÅÂ °´Ã¼¿Í ¾×¼Ç Ã³¸®±â¸¦ ÁØºñÇÕ´Ï´Ù.
+            // ì „íˆ¬ ì”¬ ì§„ì… ì‹œ í•„ìš”í•œ ëŸ°íƒ€ì„ ìƒíƒœ ê°ì²´ì™€ ì•¡ì…˜ ì²˜ë¦¬ê¸°ë¥¼ ì¤€ë¹„í•©ë‹ˆë‹¤.
             pileState = new BattleCardPileState();
-            playPerformer = new BattlePlayPerformer(pileState, ResolveCardCost);
+            playPerformer = new BattlePlayPerformer(pileState, CanAffordCardCost, ResolveCardCost);
             tacticalPerformer = new BattleTacticalPerformer();
 
-            Debug.Log($"[BattleCardSystem] Awake ¿Ï·á: scene={gameObject.scene.name}, fallbackBaseDeck={baseBattleDeck.Count}, fallbackEarned={earnedBattleCards.Count}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
+            Debug.Log($"[BattleCardSystem] Awake ì™„ë£Œ: scene={gameObject.scene.name}, fallbackBaseDeck={baseBattleDeck.Count}, fallbackEarned={earnedBattleCards.Count}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
 
-            // ActionSystem¿¡¼­ ÀüÅõ Ä«µå °ü·Ã ¾×¼ÇÀÌ µé¾î¿À¸é ÀÌ ½Ã½ºÅÛÀ¸·Î ¶ó¿ìÆÃÇÕ´Ï´Ù.
+            // ActionSystemì—ì„œ ì „íˆ¬ ì¹´ë“œ ê´€ë ¨ ì•¡ì…˜ì´ ë“¤ì–´ì˜¤ë©´ ì´ ì‹œìŠ¤í…œìœ¼ë¡œ ë¼ìš°íŒ…í•©ë‹ˆë‹¤.
             ActionSystem.AttachPerformer<BattlePlayCardGA>(action => Perform(action));
             ActionSystem.AttachPerformer<BattleAttackGA>(action => Perform(action));
             ActionSystem.AttachPerformer<BattleMoveGA>(action => Perform(action));
         }
 
         /// <summary>
-        /// ±âº» ÀüÅõ µ¦°ú º¸»óÀ¸·Î ¾òÀº ÀüÅõ Ä«µå¸¦ ÇÕÃÄ ÇöÀç ÀüÅõ¿ë draw pileÀ» ±¸¼ºÇÕ´Ï´Ù.
+        /// ê¸°ë³¸ ì „íˆ¬ ë±ê³¼ ë³´ìƒìœ¼ë¡œ ì–»ì€ ì „íˆ¬ ì¹´ë“œë¥¼ í•©ì³ í˜„ì¬ ì „íˆ¬ìš© draw pileì„ êµ¬ì„±í•©ë‹ˆë‹¤.
         /// </summary>
         public void SetupBattleDeck(IEnumerable<BattleCardData> baseDeck, IEnumerable<BattleCardData> earnedCards)
         {
@@ -76,22 +75,22 @@ namespace NYH.BattleCardSystem
             }
 
             pileState.Setup(mergedDeck);
-            Debug.Log($"[BattleCardSystem] SetupBattleDeck ¿Ï·á: mergedDeck={mergedDeck.Count}, drawPile={pileState.DrawPileCount}, hand={pileState.HandCount}, discard={pileState.DiscardPileCount}");
+            Debug.Log($"[BattleCardSystem] SetupBattleDeck ì™„ë£Œ: mergedDeck={mergedDeck.Count}, drawPile={pileState.DrawPileCount}, hand={pileState.HandCount}, discard={pileState.DiscardPileCount}");
         }
 
         /// <summary>
-        /// °¡´ÉÇÏ¸é BattleDeckCollection¿¡¼­ ÀüÅõ µ¦À» ÀĞ¾î¿À°í,
-        /// ÄÃ·º¼ÇÀÌ ¾øÀ¸¸é ÀÎ½ºÆåÅÍ¿¡ ³Ö¾îµĞ fallback µ¦À¸·Î ¼¼ÆÃÇÕ´Ï´Ù.
-        /// ÀüÅõ ½ÃÀÛ ½Ã APµµ 0À¸·Î ÃÊ±âÈ­ÇÕ´Ï´Ù.
+        /// ê°€ëŠ¥í•˜ë©´ BattleDeckCollectionì—ì„œ ì „íˆ¬ ë±ì„ ì½ì–´ì˜¤ê³ ,
+        /// ì»¬ë ‰ì…˜ì´ ì—†ìœ¼ë©´ ì¸ìŠ¤í™í„°ì— ë„£ì–´ë‘” fallback ë±ìœ¼ë¡œ ì„¸íŒ…í•©ë‹ˆë‹¤.
+        /// ì „íˆ¬ ì‹œì‘ ì‹œ APë„ 0ìœ¼ë¡œ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.
         /// </summary>
         public void SetupFromInspector()
         {
             if (BattleDeckCollection.Instance != null)
             {
-                Debug.Log($"[BattleCardSystem] SetupFromInspector: BattleDeckCollection »ç¿ë, baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
+                Debug.Log($"[BattleCardSystem] SetupFromInspector: BattleDeckCollection ì‚¬ìš©, baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
                 if (BattleDeckCollection.Instance.BaseBattleDeck.Count == 0 && baseBattleDeck.Count > 0)
                 {
-                    Debug.LogWarning($"[BattleCardSystem] BattleDeckCollectionÀÇ ±âº» µ¦ÀÌ ºñ¾î ÀÖ¾î fallback ±âº» µ¦ {baseBattleDeck.Count}ÀåÀ» º¹»çÇÕ´Ï´Ù.");
+                    Debug.LogWarning($"[BattleCardSystem] BattleDeckCollectionì˜ ê¸°ë³¸ ë±ì´ ë¹„ì–´ ìˆì–´ fallback ê¸°ë³¸ ë± {baseBattleDeck.Count}ì¥ì„ ë³µì‚¬í•©ë‹ˆë‹¤.");
                     BattleDeckCollection.Instance.ConfigureBaseDeck(baseBattleDeck);
                 }
 
@@ -101,16 +100,16 @@ namespace NYH.BattleCardSystem
             }
             else
             {
-                Debug.LogWarning($"[BattleCardSystem] SetupFromInspector: BattleDeckCollectionÀÌ ¾ø¾î fallback µ¦À» »ç¿ëÇÕ´Ï´Ù. baseDeck={baseBattleDeck.Count}, earned={earnedBattleCards.Count}");
+                Debug.LogWarning($"[BattleCardSystem] SetupFromInspector: BattleDeckCollectionì´ ì—†ì–´ fallback ë±ì„ ì‚¬ìš©í•©ë‹ˆë‹¤. baseDeck={baseBattleDeck.Count}, earned={earnedBattleCards.Count}");
                 SetupBattleDeck(baseBattleDeck, earnedBattleCards);
             }
 
             SetupActionPoints(0);
-            Debug.Log($"[BattleCardSystem] ÀüÅõ Ä«µå ½Ã½ºÅÛ ÃÊ±âÈ­ ¿Ï·á: currentActionPoints={CurrentActionPoints}");
+            Debug.Log($"[BattleCardSystem] ì „íˆ¬ ì¹´ë“œ ì‹œìŠ¤í…œ ì´ˆê¸°í™” ì™„ë£Œ: currentActionPoints={CurrentActionPoints}");
         }
 
         /// <summary>
-        /// ÇöÀç AP¸¦ ÃÖ´ëÄ¡ ¹üÀ§ ¾È¿¡¼­ °­Á¦·Î ¼³Á¤ÇÕ´Ï´Ù.
+        /// í˜„ì¬ APë¥¼ ìµœëŒ€ì¹˜ ë²”ìœ„ ì•ˆì—ì„œ ê°•ì œë¡œ ì„¤ì •í•©ë‹ˆë‹¤.
         /// </summary>
         public void SetupActionPoints(int actionPoints)
         {
@@ -118,7 +117,7 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// AP¸¦ Áõ°¨½ÃÅ°µÇ 0°ú ÃÖ´ëÄ¡ »çÀÌ·Î º¸Á¤ÇÕ´Ï´Ù.
+        /// APë¥¼ ì¦ê°ì‹œí‚¤ë˜ 0ê³¼ ìµœëŒ€ì¹˜ ì‚¬ì´ë¡œ ë³´ì •í•©ë‹ˆë‹¤.
         /// </summary>
         public void AddActionPoints(int amount)
         {
@@ -126,21 +125,21 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ÇÃ·¹ÀÌ¾î ÅÏ ½ÃÀÛ ½Ã ÅÏ ¼ö¸¸Å­ AP¸¦ ¾ò½À´Ï´Ù.
-        /// ¿¹: 3ÅÏ ½ÃÀÛÀÌ¸é AP 3 Áõ°¡
+        /// í”Œë ˆì´ì–´ í„´ ì‹œì‘ ì‹œ í„´ ìˆ˜ë§Œí¼ APë¥¼ ì–»ìŠµë‹ˆë‹¤.
+        /// ì˜ˆ: 3í„´ ì‹œì‘ì´ë©´ AP 3 ì¦ê°€
         /// </summary>
         public int GainTurnActionPoints(int turnNumber)
         {
-            int gainAmount = Mathf.Max(0, turnNumber);
+            int gainAmount = Mathf.Max(0, /*turnNumber*/ 10); // ì‹œì—° ë•ŒëŠ” í„´ ìˆ˜ ìƒê´€ì—†ì´ 10 AP ê³ ì •ìœ¼ë¡œ ì¦ê°€
             int before = CurrentActionPoints;
             AddActionPoints(gainAmount);
             return CurrentActionPoints - before;
         }
 
         /// <summary>
-        /// ÀüÅõ º¸»ó Ä«µå¸¦ ÀüÅõ µ¦¿¡ Ãß°¡ÇÕ´Ï´Ù.
-        /// BattleDeckCollectionÀÌ ÀÖÀ¸¸é ¿µ¼Ó ÄÃ·º¼Ç¿¡ ¹İ¿µÇÏ°í,
-        /// ¾øÀ¸¸é ÇöÀç ·±Å¸ÀÓ pileState¿¡ Á÷Á¢ ¹İ¿µÇÕ´Ï´Ù.
+        /// ì „íˆ¬ ë³´ìƒ ì¹´ë“œë¥¼ ì „íˆ¬ ë±ì— ì¶”ê°€í•©ë‹ˆë‹¤.
+        /// BattleDeckCollectionì´ ìˆìœ¼ë©´ ì˜ì† ì»¬ë ‰ì…˜ì— ë°˜ì˜í•˜ê³ ,
+        /// ì—†ìœ¼ë©´ í˜„ì¬ ëŸ°íƒ€ì„ pileStateì— ì§ì ‘ ë°˜ì˜í•©ë‹ˆë‹¤.
         /// </summary>
         public BattleDeckAddResult AddEarnedBattleCard(BattleCardData data, BattleCard replaceTarget = null)
         {
@@ -160,7 +159,7 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// Æ÷¼Ç Ä«µå´Â ÀÏ¹İ Á¦ÇÑ Ä«µå¿Í ´Ù¸£°Ô ¹Ù·Î ÀüÅõ µ¦¿¡ Ãß°¡ÇÕ´Ï´Ù.
+        /// í¬ì…˜ ì¹´ë“œëŠ” ì¼ë°˜ ì œí•œ ì¹´ë“œì™€ ë‹¤ë¥´ê²Œ ë°”ë¡œ ì „íˆ¬ ë±ì— ì¶”ê°€í•©ë‹ˆë‹¤.
         /// </summary>
         public void AddPotionCard(BattleCardData potionData)
         {
@@ -174,8 +173,8 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ÀüÅõ ½ÃÀÛ ¼ÕÆĞ¸¦ »Ì½À´Ï´Ù.
-        /// ÇöÀç ±ÔÄ¢Àº "»ì¾Æ ÀÖ´Â ÇÃ·¹ÀÌ¾î À¯´Ö Á¾·ù ¼ö + 1Àå"ÀÌ¸ç ÃÖ¼Ò 1ÀåÀÔ´Ï´Ù.
+        /// ì „íˆ¬ ì‹œì‘ ì†íŒ¨ë¥¼ ë½‘ìŠµë‹ˆë‹¤.
+        /// í˜„ì¬ ê·œì¹™ì€ "ì‚´ì•„ ìˆëŠ” í”Œë ˆì´ì–´ ìœ ë‹› ì¢…ë¥˜ ìˆ˜ + 1ì¥"ì´ë©° ìµœì†Œ 1ì¥ì…ë‹ˆë‹¤.
         /// </summary>
         public List<BattleCard> DrawOpeningHand(int unitTypeCount)
         {
@@ -184,8 +183,8 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ¸Ö¸®°Ç ½Ã ¼ÕÆĞ¸¦ µ¦À¸·Î µÇµ¹¸®°í ¼¯Àº µÚ,
-        /// ½ÃÀÛ ¼ÕÆĞ ±ÔÄ¢À¸·Î ´Ù½Ã Ä«µå¸¦ »Ì½À´Ï´Ù.
+        /// ë©€ë¦¬ê±´ ì‹œ ì†íŒ¨ë¥¼ ë±ìœ¼ë¡œ ë˜ëŒë¦¬ê³  ì„ì€ ë’¤,
+        /// ì‹œì‘ ì†íŒ¨ ê·œì¹™ìœ¼ë¡œ ë‹¤ì‹œ ì¹´ë“œë¥¼ ë½‘ìŠµë‹ˆë‹¤.
         /// </summary>
         public List<BattleCard> MulliganOpeningHand(int unitTypeCount)
         {
@@ -194,8 +193,8 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ½ÃÀÛ ¸Ö¸®°Ç¿¡¼­ ¼±ÅÃÇÑ Ä«µå¸¸ µ¦À¸·Î µÇµ¹¸®°í ´Ù½Ã »Ì½À´Ï´Ù.
-        /// ¼±ÅÃÇÏÁö ¾ÊÀº Ä«µå´Â ¼ÕÆĞ¿¡ ±×´ë·Î À¯ÁöµË´Ï´Ù.
+        /// ì‹œì‘ ë©€ë¦¬ê±´ì—ì„œ ì„ íƒí•œ ì¹´ë“œë§Œ ë±ìœ¼ë¡œ ë˜ëŒë¦¬ê³  ë‹¤ì‹œ ë½‘ìŠµë‹ˆë‹¤.
+        /// ì„ íƒí•˜ì§€ ì•Šì€ ì¹´ë“œëŠ” ì†íŒ¨ì— ê·¸ëŒ€ë¡œ ìœ ì§€ë©ë‹ˆë‹¤.
         /// </summary>
         public BattleMulliganResult MulliganSelectedCards(IReadOnlyList<BattleCard> selectedCards)
         {
@@ -203,8 +202,8 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ÇÃ·¹ÀÌ¾î ÅÏ ½ÃÀÛ ½Ã µå·Î¿ìÇÕ´Ï´Ù.
-        /// ÇöÀç ±ÔÄ¢Àº ½ÃÀÛ ¼ÕÆĞ¿Í µ¿ÀÏÇÏ°Ô "»ì¾Æ ÀÖ´Â À¯´Ö Á¾·ù ¼ö + 1Àå"ÀÔ´Ï´Ù.
+        /// í”Œë ˆì´ì–´ í„´ ì‹œì‘ ì‹œ ë“œë¡œìš°í•©ë‹ˆë‹¤.
+        /// í˜„ì¬ ê·œì¹™ì€ ì‹œì‘ ì†íŒ¨ì™€ ë™ì¼í•˜ê²Œ "ì‚´ì•„ ìˆëŠ” ìœ ë‹› ì¢…ë¥˜ ìˆ˜ + 1ì¥"ì…ë‹ˆë‹¤.
         /// </summary>
         public List<BattleCard> DrawTurnCards(int aliveUnitTypeCount)
         {
@@ -213,7 +212,7 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ÅÏ Á¾·á ½Ã ¼ÕÆĞ¸¦ ÀüºÎ ¹ö¸³´Ï´Ù.
+        /// í„´ ì¢…ë£Œ ì‹œ ì†íŒ¨ë¥¼ ì „ë¶€ ë²„ë¦½ë‹ˆë‹¤.
         /// </summary>
         public void EndTurnDiscardHand()
         {
@@ -221,7 +220,7 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ÇöÀç draw pileÀ» ÀÏ¹İ Ä«µå ¹Ì¸®º¸±â UI·Î º¯È¯ÇØ º¸¿©Áİ´Ï´Ù.
+        /// í˜„ì¬ draw pileì„ ì¼ë°˜ ì¹´ë“œ ë¯¸ë¦¬ë³´ê¸° UIë¡œ ë³€í™˜í•´ ë³´ì—¬ì¤ë‹ˆë‹¤.
         /// </summary>
         public void ShowDeck()
         {
@@ -232,11 +231,11 @@ namespace NYH.BattleCardSystem
 
             CardListUI.Instance.Show(
                 ConvertToPreviewCards(pileState.GetShuffledDrawPileCopy()),
-                "ÀüÅõ µ¦ È®ÀÎ");
+                "ì „íˆ¬ ë± í™•ì¸");
         }
 
         /// <summary>
-        /// ÇöÀç discard pileÀ» ÀÏ¹İ Ä«µå ¹Ì¸®º¸±â UI·Î º¯È¯ÇØ º¸¿©Áİ´Ï´Ù.
+        /// í˜„ì¬ discard pileì„ ì¼ë°˜ ì¹´ë“œ ë¯¸ë¦¬ë³´ê¸° UIë¡œ ë³€í™˜í•´ ë³´ì—¬ì¤ë‹ˆë‹¤.
         /// </summary>
         public void ShowDiscardPile()
         {
@@ -247,12 +246,12 @@ namespace NYH.BattleCardSystem
 
             CardListUI.Instance.Show(
                 ConvertToPreviewCards(pileState.GetShuffledDiscardPileCopy()),
-                "ÀüÅõ ¹ö¸²´õ¹Ì È®ÀÎ");
+                "ì „íˆ¬ ë²„ë¦¼ë”ë¯¸ í™•ì¸");
         }
 
         /// <summary>
-        /// ÀüÅõ Ä«µå ÇÃ·¹ÀÌ¸¦ ActionSystem¿¡ À§ÀÓÇÕ´Ï´Ù.
-        /// ½ÇÁ¦ Ã³¸® ÀÚÃ¼´Â BattlePlayPerformer / BattleTacticalPerformer ÂÊ¿¡¼­ ¼öÇàµË´Ï´Ù.
+        /// ì „íˆ¬ ì¹´ë“œ í”Œë ˆì´ë¥¼ ActionSystemì— ìœ„ì„í•©ë‹ˆë‹¤.
+        /// ì‹¤ì œ ì²˜ë¦¬ ìì²´ëŠ” BattlePlayPerformer / BattleTacticalPerformer ìª½ì—ì„œ ìˆ˜í–‰ë©ë‹ˆë‹¤.
         /// </summary>
         public void PlayCard(
             BattleCard card,
@@ -273,7 +272,7 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// ActionSystem¿¡¼­ Àü´Ş¹ŞÀº ÀüÅõ °ü·Ã ¾×¼ÇÀ» ÀûÀıÇÑ performer·Î ¶ó¿ìÆÃÇÕ´Ï´Ù.
+        /// ActionSystemì—ì„œ ì „ë‹¬ë°›ì€ ì „íˆ¬ ê´€ë ¨ ì•¡ì…˜ì„ ì ì ˆí•œ performerë¡œ ë¼ìš°íŒ…í•©ë‹ˆë‹¤.
         /// </summary>
         public IEnumerator Perform(GameAction action)
         {
@@ -290,8 +289,20 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// Ä«µå ÄÚ½ºÆ®¸¦ AP·Î ÁöºÒÇÒ ¼ö ÀÖÀ¸¸é AP¸¦ Â÷°¨ÇÏ°í,
-        /// ºÎÁ·ÇÏ¸é ³²Àº AP¸¦ ¸ğµÎ ¼Ò¸ğÇÑ µÚ Ã¼·Â Æä³ÎÆ¼¸¦ °è»êÇÕ´Ï´Ù.
+        /// ì¹´ë“œ ì½”ìŠ¤íŠ¸ë¥¼ í˜„ì¬ APë¡œ ì§€ë¶ˆí•  ìˆ˜ ìˆëŠ”ì§€ í™•ì¸í•©ë‹ˆë‹¤.
+        /// </summary>
+        private bool CanAffordCardCost(BattleCard card)
+        {
+            if (card == null)
+            {
+                return false;
+            }
+
+            return CurrentActionPoints >= Mathf.Max(0, card.CurrentCost);
+        }
+
+        /// <summary>
+        /// ì¹´ë“œ ì½”ìŠ¤íŠ¸ë¥¼ APë¡œ ì§€ë¶ˆí•˜ê³ , ë¶€ì¡±í•˜ë©´ ì‹¤íŒ¨í•©ë‹ˆë‹¤.
         /// </summary>
         private (bool paidByActionPoints, int actionPointsSpent, int healthPenalty) ResolveCardCost(BattleCard card, int userCurrentHealth)
         {
@@ -301,28 +312,18 @@ namespace NYH.BattleCardSystem
             }
 
             int cost = Mathf.Max(0, card.CurrentCost);
-            if (CurrentActionPoints >= cost)
+            if (CurrentActionPoints < cost)
             {
-                CurrentActionPoints -= cost;
-                return (true, cost, 0);
+                return (false, 0, 0);
             }
 
-            int remainingActionPoints = CurrentActionPoints;
-            CurrentActionPoints = 0;
-
-            if (userCurrentHealth <= 0 || cost <= 0)
-            {
-                return (false, remainingActionPoints, 0);
-            }
-
-            float penaltyRatio = Mathf.Clamp01(cost * healthPenaltyPerCostStep);
-            int healthPenalty = Mathf.Max(1, Mathf.FloorToInt(userCurrentHealth * penaltyRatio));
-            return (false, remainingActionPoints, healthPenalty);
+            CurrentActionPoints -= cost;
+            return (true, cost, 0);
         }
 
         /// <summary>
-        /// ÀüÅõ Ä«µå ¸ñ·ÏÀ» CoreCardSystem¿ë ¹Ì¸®º¸±â Card ¸ñ·ÏÀ¸·Î º¯È¯ÇÕ´Ï´Ù.
-        /// µ¦/¹ö¸²´õ¹Ì UI¿¡¼­ Àç»ç¿ëÇÏ±â À§ÇÑ ¾î´ğÅÍ ¿ªÇÒÀÔ´Ï´Ù.
+        /// ì „íˆ¬ ì¹´ë“œ ëª©ë¡ì„ CoreCardSystemìš© ë¯¸ë¦¬ë³´ê¸° Card ëª©ë¡ìœ¼ë¡œ ë³€í™˜í•©ë‹ˆë‹¤.
+        /// ë±/ë²„ë¦¼ë”ë¯¸ UIì—ì„œ ì¬ì‚¬ìš©í•˜ê¸° ìœ„í•œ ì–´ëŒ‘í„° ì—­í• ì…ë‹ˆë‹¤.
         /// </summary>
         private static List<Card> ConvertToPreviewCards(IEnumerable<BattleCard> battleCards)
         {
@@ -345,4 +346,3 @@ namespace NYH.BattleCardSystem
         }
     }
 }
-

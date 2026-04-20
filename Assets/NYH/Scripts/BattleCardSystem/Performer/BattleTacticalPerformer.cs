@@ -154,6 +154,8 @@ namespace NYH.BattleCardSystem
                 attackGA.Attacker,
                 attackGA.TargetPosition,
                 attackGA);
+            Debug.Log(
+                $"[BattleTacticalPerformer] 공격 판정 시작 attacker={(attackGA.Attacker != null ? attackGA.Attacker.name : "null")}, attackerGrid={(attackGA.Attacker != null ? attackGA.Attacker.GridPosition.ToString() : "null")}, targetGrid={attackGA.TargetPosition}, targetCount={(targets != null ? targets.Count : 0)}, card={(attackGA.SourceCard != null ? attackGA.SourceCard.Title : "null")}");
             Dictionary<BattleUnit, int> targetHealthBeforeAttack = CaptureTargetHealth(targets);
 
             if (TryApplyBattleEffects(attackGA, targets))
@@ -165,6 +167,8 @@ namespace NYH.BattleCardSystem
             foreach (var target in targets)
             {
                 int totalDamage = Mathf.Max(0, attackGA.Damage + attackGA.Attacker.CurrentAttackPower);
+                Debug.Log(
+                    $"[BattleTacticalPerformer] 데미지 적용 target={target.name}, targetGrid={target.GridPosition}, damage={totalDamage}, beforeHp={target.CurrentHealth}/{target.MaxHealth}");
                 target.TakeDamage(totalDamage);
             }
 

@@ -104,7 +104,7 @@ namespace NYH.BattleCardSystem
 
             if (battleCardSystem == null)
             {
-                Debug.LogWarning($"[BattleManager] BattleCardSystemÀÌ ¾ø¾î ÁøÇàÇÒ ¼ö ¾ø½À´Ï´Ù. caller={caller}");
+                Debug.LogWarning($"[BattleManager] BattleCardSystemï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. caller={caller}");
                 return false;
             }
 
@@ -265,7 +265,7 @@ namespace NYH.BattleCardSystem
             }
             else
             {
-                Debug.LogWarning("[BattleManager] BattleEnemyAIController°¡ ¾ø¾î Àû ÅÏÀ» Áï½Ã Á¾·áÇÕ´Ï´Ù.");
+                Debug.LogWarning("[BattleManager] BattleEnemyAIControllerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.");
                 EndEnemyTurn();
             }
         }
@@ -293,7 +293,7 @@ namespace NYH.BattleCardSystem
             }
 
             int drawCount = GetAlivePlayerUnitTypeCount();
-            battleCardSystem.DrawOpeningHand(drawCount);
+            battleCardSystem.DrawOpeningHand(drawCount + 4); // ì‹œì—°ë•Œë§Œ +4ìž¥ ë“œë¡œìš°
             hasOpeningHandPrepared = true;
             NotifyHandStateChanged();
         }

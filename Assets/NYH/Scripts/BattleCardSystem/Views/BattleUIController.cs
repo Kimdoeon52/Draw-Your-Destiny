@@ -288,6 +288,7 @@ namespace NYH.BattleCardSystem
         private void HandleBattleFinished(BattleResult result)
         {
             ClearTargetingState(false);
+            gridPreviewSystem?.ResetAllUnitColorsImmediate();
             CardViewHoverSystem.Instance?.Hide();
             RefreshHud();
             Debug.Log($"[BattleUI] ?ê¾ªë‹¾ ?«ë‚…ì¦? victory={result.IsVictory}, turn={result.TurnCount}");
@@ -668,6 +669,7 @@ namespace NYH.BattleCardSystem
             currentMoveBudget = 0;
             targetingPhase = CardTargetingPhase.SelectUnit;
             gridPreviewSystem?.Clear();
+            gridPreviewSystem?.ResetAllUnitColorsImmediate();
             gridPreviewSystem?.ShowUnitBorders(selectableUnits);
 
             CardViewHoverSystem.Instance?.Hide();
@@ -1364,6 +1366,7 @@ namespace NYH.BattleCardSystem
             hasLastAttackHoverCell = false;
             wasLastAttackHoverValid = false;
             gridPreviewSystem?.Clear();
+            gridPreviewSystem?.ResetAllUnitColorsImmediate();
         }
 
         private IEnumerator HandlePlayedCardResolved(CardView playedCardView)
@@ -1383,6 +1386,7 @@ namespace NYH.BattleCardSystem
             }
 
             battleManager.CheckBattleEnd();
+            gridPreviewSystem?.ResetAllUnitColorsImmediate();
             RefreshHandView();
             RefreshHud();
         }

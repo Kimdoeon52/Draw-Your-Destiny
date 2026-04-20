@@ -67,6 +67,34 @@ namespace NYH.BattleCardSystem
             ClearUnitHighlights();
         }
 
+        // Safety reset for cases where highlight / hit-flash color states get out of sync.
+        public void ResetAllUnitColorsImmediate()
+        {
+            ClearUnitHighlights();
+
+            BattleUnit[] allUnits = FindObjectsByType<BattleUnit>(FindObjectsSortMode.None);
+            for (int i = 0; i < allUnits.Length; i++)
+            {
+                BattleUnit unit = allUnits[i];
+                if (unit == null)
+                {
+                    continue;
+                }
+
+                SpriteRenderer[] renderers = unit.GetComponentsInChildren<SpriteRenderer>(true);
+                for (int j = 0; j < renderers.Length; j++)
+                {
+                    SpriteRenderer renderer = renderers[j];
+                    if (renderer == null)
+                    {
+                        continue;
+                    }
+
+                    renderer.color = Color.white;
+                }
+            }
+        }
+
         // Outline selectable unit candidates.
         public void ShowUnitBorders(IEnumerable<BattleUnit> units)
         {

@@ -1,4 +1,4 @@
-﻿namespace NYH.BattleCardSystem
+namespace NYH.BattleCardSystem
 {
     using System.Collections;
     using System.Collections.Generic;
@@ -8,13 +8,16 @@
     public class BattlePlayPerformer
     {
         private readonly BattleCardPileState pileState;
+        private readonly System.Func<BattleCard, bool> canAffordCost;
         private readonly System.Func<BattleCard, int, (bool paidByActionPoints, int actionPointsSpent, int healthPenalty)> resolveCost;
 
         public BattlePlayPerformer(
             BattleCardPileState pileState,
+            System.Func<BattleCard, bool> canAffordCost,
             System.Func<BattleCard, int, (bool paidByActionPoints, int actionPointsSpent, int healthPenalty)> resolveCost)
         {
             this.pileState = pileState;
+            this.canAffordCost = canAffordCost;
             this.resolveCost = resolveCost;
         }
 
@@ -44,6 +47,12 @@
 
             if (!CanPlayCard(playCardGA))
             {
+                yield break;
+            }
+
+            if (canAffordCost != null && !canAffordCost(playCardGA.Card))
+            {
+                Debug.LogWarning($"[BattleCardSystem] 행동력이 부족해 카드를 사용할 수 없습니다: {playCardGA.Card.Title}, need={Mathf.Max(0, playCardGA.Card.CurrentCost)}");
                 yield break;
             }
 

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65b348dc63c8834cb1116ccfffa0291, type: 3}
   m_Name: "\uC804\uBC29\uACF5\uACA9"
   m_EditorClassIdentifier: 
-  <CardID>k__BackingField: 10001
+  <CardID>k__BackingField: 10007
   <CardName>k__BackingField: "\uC804\uBC29\uACF5\uACA9"
   <CardType>k__BackingField: 0
-  <Image>k__BackingField: {fileID: 584017139910605470, guid: 57153bc98c84b584394a27c7ed1998ae,
+  <Image>k__BackingField: {fileID: -8289226903552542590, guid: e24895c6fe95b1a4882369eac01d9e61,
     type: 3}
   <GridImage>k__BackingField: {fileID: -6783172969570757394, guid: f454459c9f7eb9c41b2873053fc090eb,
     type: 3}
-  <ActionPointCost>k__BackingField: 4
+  <ActionPointCost>k__BackingField: 2
   <DisplayMoveRange>k__BackingField: 3
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
@@ -27,13 +27,10 @@ MonoBehaviour:
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 5001
-  - rid: 3212137787988901985
-  - rid: 3212137787988901986
-  - rid: 3212137787988902036
-  - rid: 7216728472994972308
-  description: "2\uCE78\uC774\uB3D9\uD6C4 \uC720\uB2DB\uC758 \uC8FC\uBCC0\uC744 \uBC94\uC704\uB85C
-    \uACF5\uACA9\uD558\uACE0 \uC801\uC911\uD55C \uC801\uC744 \uAE30\uC808 \uC0C1\uD0DC\uB85C
-    \uB9CC\uB4ED\uB2C8\uB2E4. \uADF8\uD6C4 2\uCE78 \uC774\uB3D9\uD569\uB2C8\uB2E4."
+  - rid: 1104878801729618362
+  - rid: 1104878801729618363
+  description: "\uBC94\uC704\uB9CC\uD07C \uC801\uB4E4\uC5D0\uAC8C {damage}\uC758
+    \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
   references:
     version: 2
     RefIds:
@@ -42,42 +39,32 @@ MonoBehaviour:
       data:
         targetType: 1
         amount: 3
-        includeSourceUnitSpeed: 1
-    - rid: 3212137787988901985
+        includeSourceUnitSpeed: 0
+    - rid: 1104878801729618362
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
-        targetType: 2
-        range: 8
-        targetCount: 99
+        targetType: 1
+        range: 1
+        targetCount: 1
         selectionCount: 1
         hitsAllTargetsInRange: 1
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: 338328ebe63553f41be5a6c8750f9118,
           type: 2}
-        useSeparatePatterns: 0
+        useSeparatePatterns: 1
         targetingRange: 1
         targetingPattern: 0
-        customTargetingPattern: {fileID: 0}
+        customTargetingPattern: {fileID: 11400000, guid: 338328ebe63553f41be5a6c8750f9118,
+          type: 2}
         impactRange: 1
         impactPattern: 0
         customImpactPattern: {fileID: 0}
-    - rid: 3212137787988901986
+    - rid: 1104878801729618363
       type: {class: BattleDamageEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 2
         scalingMode: 1
         valueSourceUnit: 0
         valueType: 0
-        amount: 1
+        amount: 2
         multiplier: 1
-    - rid: 3212137787988902036
-      type: {class: BattleStatusEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
-      data:
-        targetType: 2
-        statusType: 0
-    - rid: 7216728472994972308
-      type: {class: BattleMoveEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
-      data:
-        targetType: 1
-        amount: 4
-        includeSourceUnitSpeed: 1

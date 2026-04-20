@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65b348dc63c8834cb1116ccfffa0291, type: 3}
   m_Name: "\uAE30\uBCF8\uC774\uB3D9"
   m_EditorClassIdentifier: 
-  <CardID>k__BackingField: 0
+  <CardID>k__BackingField: 10002
   <CardName>k__BackingField: "\uC774\uB3D9"
   <CardType>k__BackingField: 0
-  <Image>k__BackingField: {fileID: 6342293345636278915, guid: 1c9bc0d104c01934da10d4333b9dc48b,
+  <Image>k__BackingField: {fileID: -7815710348493759202, guid: 99df812350a14a746ac489229fb5260e,
     type: 3}
   <GridImage>k__BackingField: {fileID: 7763675160165200944, guid: b271bd2e097b3a2429a5917ec27a7ae9,
     type: 3}
@@ -27,7 +27,7 @@ MonoBehaviour:
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 7216728476613083244
-  description: "{moveAmount}\uB9CC\uD07C \uC774\uB3D9"
+  description: "{moveAmount}\uCE78 \uC774\uB3D9"
   references:
     version: 2
     RefIds:
@@ -36,4 +36,4 @@ MonoBehaviour:
       data:
         targetType: 1
         amount: 5
-        includeSourceUnitSpeed: 1
+        includeSourceUnitSpeed: 0

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65b348dc63c8834cb1116ccfffa0291, type: 3}
   m_Name: "\uB2E4\uC774\uC544\uACF5\uACA9"
   m_EditorClassIdentifier: 
-  <CardID>k__BackingField: 10001
+  <CardID>k__BackingField: 10004
   <CardName>k__BackingField: "\uB2E4\uC774\uC544 \uACF5\uACA9"
   <CardType>k__BackingField: 0
-  <Image>k__BackingField: {fileID: 584017139910605470, guid: 57153bc98c84b584394a27c7ed1998ae,
+  <Image>k__BackingField: {fileID: -1242475770833062113, guid: 01e7f9d724225434baffd2732a570477,
     type: 3}
   <GridImage>k__BackingField: {fileID: -1289238142504573597, guid: 2216ff6d1a1f88648b253ed2d8f985e2,
     type: 3}
@@ -43,11 +43,11 @@ MonoBehaviour:
     - rid: 3212137787988901985
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
-        targetType: 1
+        targetType: 2
         range: 0
         targetCount: 0
         selectionCount: 1
-        hitsAllTargetsInRange: 0
+        hitsAllTargetsInRange: 1
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: 8052a4feadd557947b535d3bb96ef7d4,
           type: 2}
@@ -66,5 +66,5 @@ MonoBehaviour:
         scalingMode: 1
         valueSourceUnit: 0
         valueType: 0
-        amount: 1
+        amount: 2
         multiplier: 1

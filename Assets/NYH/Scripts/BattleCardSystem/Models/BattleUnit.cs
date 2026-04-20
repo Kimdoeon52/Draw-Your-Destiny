@@ -1,4 +1,4 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using UnityEngine;
 
@@ -115,10 +115,15 @@ namespace NYH.BattleCardSystem
         {
             if (amount <= 0 || !IsAlive)
             {
+                /*Debug.Log($"[BattleUnit] 데미지 처리 건너뜀 unit={name}, amount={amount}, isAlive={IsAlive}");*/
                 return;
             }
 
+            int beforeHealth = CurrentHealth;
             CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
+            /*Debug.Log($"[BattleUnit] 데미지 처리 unit={name}, amount={amount}," +
+                $" hp={beforeHealth}->{CurrentHealth}, hasAIProfile={(aiProfile != null)}," +
+                $" hasHitFlash={(hitFlash != null)}");*/
             aiProfile?.ShowDamage(amount);
             hitFlash?.Play();
 
@@ -132,7 +137,7 @@ namespace NYH.BattleCardSystem
             //    if (CurrentHealth == 0)
             //    {
             //        Debug.Log(
-            //            $"[BattleUnitDebug] ??彛? unit={name}, team={team}, grid={gridPosition}");
+            //            $"[BattleUnitDebug] ??壤? unit={name}, team={team}, grid={gridPosition}");
             //    }
             //}
         }

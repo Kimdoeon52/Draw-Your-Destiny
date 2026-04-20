@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65b348dc63c8834cb1116ccfffa0291, type: 3}
   m_Name: "\uAE30\uBCF8\uC774\uB3D9\uACF5\uACA9"
   m_EditorClassIdentifier: 
-  <CardID>k__BackingField: 0
+  <CardID>k__BackingField: 10003
   <CardName>k__BackingField: "\uC774\uB3D9\uACF5\uACA9"
   <CardType>k__BackingField: 0
-  <Image>k__BackingField: {fileID: -8667803144176668281, guid: 1c9bc0d104c01934da10d4333b9dc48b,
+  <Image>k__BackingField: {fileID: 3426321403311950954, guid: 866d019cc2d1f6a4aa9a8f7629cf6f6d,
     type: 3}
   <GridImage>k__BackingField: {fileID: 328479371371019989, guid: a17f7f14319a08645af6d58904e892ca,
     type: 3}
@@ -29,7 +29,8 @@ MonoBehaviour:
   - rid: 7216728476613083245
   - rid: 7216728476613083246
   - rid: 7216728476613083247
-  description: "6\uCE78 \uC774\uB3D9\uD6C4 \uACF5\uACA9"
+  description: "\uC120\uD0DD\uD55C \uC801\uC5D0\uAC8C {damage}\uC758 \uD53C\uD574\uB97C
+    \uC90D\uB2C8\uB2E4."
   references:
     version: 2
     RefIds:
@@ -47,23 +48,21 @@ MonoBehaviour:
         targetCount: 1
         selectionCount: 1
         hitsAllTargetsInRange: 0
-        attackPattern: 2
+        attackPattern: 0
         customAttackPattern: {fileID: 0}
-        useSeparatePatterns: 1
+        useSeparatePatterns: 0
         targetingRange: 1
         targetingPattern: 0
-        customTargetingPattern: {fileID: 11400000, guid: 936df70eff912154fa876eb036218aab,
-          type: 2}
+        customTargetingPattern: {fileID: 0}
         impactRange: 1
         impactPattern: 0
-        customImpactPattern: {fileID: 11400000, guid: c0aaaca4b7582e544a53956026be0c24,
-          type: 2}
+        customImpactPattern: {fileID: 0}
     - rid: 7216728476613083247
       type: {class: BattleDamageEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 1
-        scalingMode: 2
+        scalingMode: 0
         valueSourceUnit: 0
         valueType: 0
-        amount: 0
+        amount: 2
         multiplier: 1
