@@ -219,7 +219,7 @@ public class EnemyBrainBase : MonoBehaviour
             case EnemyAction.GetGold:
                 return true;
             case EnemyAction.TryOccupy:
-                return gold >= 1000; //영지 점령은 1000골드 이상으로 자주 못하게 설정.
+                return gold >= 300; //영지 점령은 1000골드 이상으로 자주 못하게 설정.
         }
         return false;
     }
