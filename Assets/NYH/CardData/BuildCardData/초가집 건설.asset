@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: "\uCD08\uAC00\uC9D1 \uAC74\uC124"
   <cardType>k__BackingField: 0
   <cardUseType>k__BackingField: 00000000
-  <Image>k__BackingField: {fileID: 21300000, guid: e15a0aaf619d8aa429bd091186fb29a2,
+  <Image>k__BackingField: {fileID: -786496590527711328, guid: d6389842957d2e940bf202be868b445e,
     type: 3}
   <Cost>k__BackingField: 3
   description: "\uCD5C\uB300 \uC778\uAD6C \uC218\uB97C {increasePopulationAmount}\uBA85
