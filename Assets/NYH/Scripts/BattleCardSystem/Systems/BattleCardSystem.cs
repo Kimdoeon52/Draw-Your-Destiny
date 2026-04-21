@@ -37,9 +37,11 @@ namespace NYH.BattleCardSystem
         // 전투 카드 사용과 전술 액션을 처리하는 performer입니다.
         private BattlePlayPerformer playPerformer;
         private BattleTacticalPerformer tacticalPerformer;
+        private BattleCardCostService costService;
+        private BattleOpeningHandService openingHandService;
 
         public BattleCardPileState PileState => pileState;
-        public int CurrentActionPoints { get; private set; }
+        public int CurrentActionPoints => costService != null ? costService.CurrentActionPoints : 0;
 
         protected override void Awake()
         {
@@ -47,10 +49,10 @@ namespace NYH.BattleCardSystem
 
             // 전투 씬 진입 시 필요한 런타임 상태 객체와 액션 처리기를 준비합니다.
             pileState = new BattleCardPileState();
+            costService = new BattleCardCostService(maxActionPoints);
+            openingHandService = new BattleOpeningHandService();
             playPerformer = new BattlePlayPerformer(pileState, CanAffordCardCost, ResolveCardCost);
             tacticalPerformer = new BattleTacticalPerformer();
-
-            Debug.Log($"[BattleCardSystem] Awake 완료: scene={gameObject.scene.name}, fallbackBaseDeck={baseBattleDeck.Count}, fallbackEarned={earnedBattleCards.Count}, hasBattleDeckCollection={(BattleDeckCollection.Instance != null)}");
 
             // ActionSystem에서 전투 카드 관련 액션이 들어오면 이 시스템으로 라우팅합니다.
             ActionSystem.AttachPerformer<BattlePlayCardGA>(action => Perform(action));
@@ -75,7 +77,6 @@ namespace NYH.BattleCardSystem
             }
 
             pileState.Setup(mergedDeck);
-            Debug.Log($"[BattleCardSystem] SetupBattleDeck 완료: mergedDeck={mergedDeck.Count}, drawPile={pileState.DrawPileCount}, hand={pileState.HandCount}, discard={pileState.DiscardPileCount}");
         }
 
         /// <summary>
@@ -87,7 +88,6 @@ namespace NYH.BattleCardSystem
         {
             if (BattleDeckCollection.Instance != null)
             {
-                Debug.Log($"[BattleCardSystem] SetupFromInspector: BattleDeckCollection 사용, baseDeck={BattleDeckCollection.Instance.BaseBattleDeck.Count}, earned={BattleDeckCollection.Instance.EarnedBattleCards.Count}");
                 if (BattleDeckCollection.Instance.BaseBattleDeck.Count == 0 && baseBattleDeck.Count > 0)
                 {
                     Debug.LogWarning($"[BattleCardSystem] BattleDeckCollection의 기본 덱이 비어 있어 fallback 기본 덱 {baseBattleDeck.Count}장을 복사합니다.");
@@ -105,7 +105,6 @@ namespace NYH.BattleCardSystem
             }
 
             SetupActionPoints(0);
-            Debug.Log($"[BattleCardSystem] 전투 카드 시스템 초기화 완료: currentActionPoints={CurrentActionPoints}");
         }
 
         /// <summary>
@@ -113,7 +112,8 @@ namespace NYH.BattleCardSystem
         /// </summary>
         public void SetupActionPoints(int actionPoints)
         {
-            CurrentActionPoints = Mathf.Clamp(actionPoints, 0, maxActionPoints);
+            costService ??= new BattleCardCostService(maxActionPoints);
+            costService.Setup(actionPoints);
         }
 
         /// <summary>
@@ -121,7 +121,8 @@ namespace NYH.BattleCardSystem
         /// </summary>
         public void AddActionPoints(int amount)
         {
-            CurrentActionPoints = Mathf.Clamp(CurrentActionPoints + amount, 0, maxActionPoints);
+            costService ??= new BattleCardCostService(maxActionPoints);
+            costService.Add(amount);
         }
 
         /// <summary>
@@ -130,10 +131,9 @@ namespace NYH.BattleCardSystem
         /// </summary>
         public int GainTurnActionPoints(int turnNumber)
         {
-            int gainAmount = Mathf.Max(0, /*turnNumber*/ 10); // 시연 때는 턴 수 상관없이 10 AP 고정으로 증가
-            int before = CurrentActionPoints;
-            AddActionPoints(gainAmount);
-            return CurrentActionPoints - before;
+            int gainAmount = Mathf.Max(0, /*turnNumber*/ 10); // demo build: fixed 10 AP gain regardless of turn.
+            costService ??= new BattleCardCostService(maxActionPoints);
+            return costService.Add(gainAmount);
         }
 
         /// <summary>
@@ -178,7 +178,8 @@ namespace NYH.BattleCardSystem
         /// </summary>
         public List<BattleCard> DrawOpeningHand(int unitTypeCount)
         {
-            int drawCount = Mathf.Max(1, unitTypeCount + 1);
+            openingHandService ??= new BattleOpeningHandService();
+            int drawCount = openingHandService.CalculateDrawCountByAliveUnitTypes(unitTypeCount);
             return pileState.DrawCards(drawCount);
         }
 
@@ -207,7 +208,8 @@ namespace NYH.BattleCardSystem
         /// </summary>
         public List<BattleCard> DrawTurnCards(int aliveUnitTypeCount)
         {
-            int drawCount = Mathf.Max(1, aliveUnitTypeCount + 1);
+            openingHandService ??= new BattleOpeningHandService();
+            int drawCount = openingHandService.CalculateDrawCountByAliveUnitTypes(aliveUnitTypeCount);
             return pileState.DrawCards(drawCount);
         }
 
@@ -293,12 +295,8 @@ namespace NYH.BattleCardSystem
         /// </summary>
         private bool CanAffordCardCost(BattleCard card)
         {
-            if (card == null)
-            {
-                return false;
-            }
-
-            return CurrentActionPoints >= Mathf.Max(0, card.CurrentCost);
+            costService ??= new BattleCardCostService(maxActionPoints);
+            return costService.CanAfford(card);
         }
 
         /// <summary>
@@ -306,19 +304,8 @@ namespace NYH.BattleCardSystem
         /// </summary>
         private (bool paidByActionPoints, int actionPointsSpent, int healthPenalty) ResolveCardCost(BattleCard card, int userCurrentHealth)
         {
-            if (card == null)
-            {
-                return (false, 0, 0);
-            }
-
-            int cost = Mathf.Max(0, card.CurrentCost);
-            if (CurrentActionPoints < cost)
-            {
-                return (false, 0, 0);
-            }
-
-            CurrentActionPoints -= cost;
-            return (true, cost, 0);
+            costService ??= new BattleCardCostService(maxActionPoints);
+            return costService.TryPay(card);
         }
 
         /// <summary>

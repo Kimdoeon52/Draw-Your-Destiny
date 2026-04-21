@@ -46,12 +46,12 @@
         private readonly float clickThreshold = 20f;
         private float targetingThresholdY;
         private Vector3 targetingCenterPos;
-        private bool hasLoggedTargetingPreviewUpdate;
         private int originalHandIndex = -1;
 
         private Camera mainCamera;
         private HandView cachedHandView;
         private ICardViewPlayHandler customPlayHandler;
+        private CardViewPresenter presenter;
         private TMP_Text mulliganMarkText;
 
         private void Awake()
@@ -59,6 +59,15 @@
             mainCamera = Camera.main;
             cachedHandView = FindFirstObjectByType<HandView>();
             customPlayHandler = GetComponents<MonoBehaviour>().OfType<ICardViewPlayHandler>().FirstOrDefault();
+            presenter = new CardViewPresenter(
+                titleText,
+                descriptionText,
+                costText,
+                cardTypeText,
+                cardUseTypeText,
+                moveRangeText,
+                cardArtImage,
+                gridImage);
 
             targetingThresholdY = Screen.height * 0.35f;
             targetingCenterPos = new Vector3(Screen.width * 0.5f, Screen.height * 0.2f, 0f);
@@ -94,11 +103,16 @@
             }
 
             Card = card;
-            if (titleText != null) titleText.text = card.Title;
-            if (descriptionText != null) descriptionText.text = card.Description;
-            if (costText != null) costText.text = card.Cost.ToString();
-            if (cardArtImage != null && card.Image != null) cardArtImage.sprite = card.Image;
-            ApplyPresentationData(card.PresentationData);
+            presenter ??= new CardViewPresenter(
+                titleText,
+                descriptionText,
+                costText,
+                cardTypeText,
+                cardUseTypeText,
+                moveRangeText,
+                cardArtImage,
+                gridImage);
+            presenter.Apply(card);
         }
 
         public void SetMulliganMarked(bool isMarked)
@@ -319,7 +333,6 @@
                 if (CardSystem.Instance != null)
                 {
                     Vector3Int tilePos = placementService.GetCurrentPreviewTilePos();
-                    Debug.Log($"[CardView] 카드 배치 시도: {Card?.Title} -> {tilePos}");
                     if (CardSystem.Instance.TryQueuePlacementCard(Card, tilePos, IsTargetingMode))
                     {
                         placementService.CancelPlacing();
@@ -395,7 +408,6 @@
         private void EnterTargetingMode(PlacementEffect effect)
         {
             isTargetingMode = true;
-            hasLoggedTargetingPreviewUpdate = false;
             transform.DOKill();
             transform.DOMove(targetingCenterPos, 0.3f).SetEase(Ease.OutBack);
             transform.DOScale(1.2f, 0.3f);
@@ -404,7 +416,6 @@
             var placementService = FindFirstObjectByType<BuildingPlacementService>();
             if (placementService != null && effect is InstallBuildingEffect installEffect && installEffect.buildingData != null)
             {
-                Debug.Log($"[CardView] 타게팅 모드 진입: {Card?.Title}, 건물={installEffect.buildingData.buildingName}");
                 placementService.StartPlacing(installEffect.buildingData);
             }
             else
@@ -416,7 +427,6 @@
         private void ExitTargetingMode()
         {
             isTargetingMode = false;
-            hasLoggedTargetingPreviewUpdate = false;
             transform.DOKill();
             transform.DOScale(1.0f, 0.2f);
             transform.DORotate(Vector3.zero, 0.2f);
@@ -433,11 +443,6 @@
             if (placementService != null)
             {
                 Vector3Int tilePos = placementService.GetMouseTilePos();
-                if (!hasLoggedTargetingPreviewUpdate)
-                {
-                    hasLoggedTargetingPreviewUpdate = true;
-                }
-
                 placementService.UpdatePreview(tilePos);
             }
         }
@@ -520,37 +525,5 @@
             return mulliganMarkText;
         }
 
-        private void ApplyPresentationData(CardPresentationData presentationData)
-        {
-            CardPresentationData resolvedData = presentationData ?? new CardPresentationData();
-            bool isBattleCard = resolvedData.VisualKind == CardVisualKind.Battle;
-
-            SetOptionalText(cardTypeText, resolvedData.CardTypeText, !isBattleCard);
-            SetOptionalText(cardUseTypeText, resolvedData.CardUseTypeText, !isBattleCard);
-            SetOptionalText(moveRangeText, resolvedData.MoveRangeText, isBattleCard);
-            SetOptionalImage(gridImage, resolvedData.GridImage, isBattleCard);
-        }
-
-        private static void SetOptionalText(TMP_Text target, string value, bool shouldShow)
-        {
-            if (target == null)
-            {
-                return;
-            }
-
-            target.text = string.IsNullOrWhiteSpace(value) ? "-" : value;
-            target.gameObject.SetActive(shouldShow);
-        }
-
-        private static void SetOptionalImage(Image target, Sprite sprite, bool shouldShow)
-        {
-            if (target == null)
-            {
-                return;
-            }
-
-            target.sprite = sprite;
-            target.gameObject.SetActive(shouldShow && sprite != null);
-        }
     }
 }

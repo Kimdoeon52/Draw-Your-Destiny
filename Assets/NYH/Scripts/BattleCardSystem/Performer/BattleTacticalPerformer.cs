@@ -1,13 +1,17 @@
-namespace NYH.BattleCardSystem
+ï»¿namespace NYH.BattleCardSystem
 {
     using System.Collections;
     using System.Collections.Generic;
     using NYH.CoreCardSystem;
     using UnityEngine;
 
+    /// <summary>
+    /// ì´ë¯¸ ë§Œë“¤ì–´ì§„ ì´ë™/ê³µê²© GameActionì„ ì‹¤ì œ ë³´ë“œì™€ ìœ ë‹›ì— ì ìš©í•©ë‹ˆë‹¤.
+    /// ì¹´ë“œ ì‚¬ìš© ë¹„ìš©ì´ë‚˜ ì•¡ì…˜ ì²´ì¸ ìƒì„±ì€ ë‹´ë‹¹í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
+    /// </summary>
     public class BattleTacticalPerformer
     {
-        private const bool EnableMoveDebug = false;
+        private const bool EnableAttackDebug = false;
 
         public bool CanHandle(GameAction action)
         {
@@ -31,21 +35,15 @@ namespace NYH.BattleCardSystem
         {
             if (moveGA.Unit == null)
             {
-                Debug.LogWarning("[BattleCardSystem] ÀÌµ¿ÇÒ À¯´ÖÀÌ ¾ø½À´Ï´Ù.");
+                Debug.LogWarning("[BattleCardSystem] ì´ë™í•  ìœ ë‹›ì´ ì—†ìŠµë‹ˆë‹¤.");
                 yield break;
             }
 
             if (BattleBoardSystem.Instance == null)
             {
-                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemÀÌ ¾ø¾î ÀÌµ¿À» Ã³¸®ÇÒ ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemì´ ì—†ì–´ ì´ë™ì„ ì²˜ë¦¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
                 yield break;
             }
-
-            //if (EnableMoveDebug)
-            //{
-            //    Debug.Log(
-            //        $"[BattleMoveDebug] ResolveMove start unit={moveGA.Unit.name}, currentWorld={moveGA.Unit.transform.position}, currentGrid={moveGA.Unit.GridPosition}, target={moveGA.TargetPosition}, finalMove={moveGA.FinalMoveAmount}, pathCount={(moveGA.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}, path={BuildPathDebugText(moveGA.PlannedPath)}");
-            //}
 
             yield return AnimateMove(moveGA);
 
@@ -59,29 +57,16 @@ namespace NYH.BattleCardSystem
 
             if (!moved)
             {
-                // ÀÌµ¿ÀÌ ¸·Çû´Âµ¥ ÈÄ¼Ó °ø°İ±îÁö ½ÇÇàµÇ¸é
-                // ÇÏÀÌºê¸®µå Ä«µå°¡ ÀÇµµ¿Í ´Ù¸£°Ô µ¿ÀÛÇÏ¹Ç·Î ¿¬¼â ¹İÀÀÀ» Á¤¸®ÇÕ´Ï´Ù.
+                // ì´ë™ì´ ì‹¤íŒ¨í•œ ë’¤ í›„ì† ê³µê²©ì´ ì´ì–´ì§€ë©´ í•˜ì´ë¸Œë¦¬ë“œ ì¹´ë“œê°€ ì˜ëª»ëœ ìœ„ì¹˜ ê¸°ì¤€ìœ¼ë¡œ ì‹¤í–‰ë©ë‹ˆë‹¤.
                 moveGA.PerformReactions.Clear();
                 moveGA.PostReactions.Clear();
             }
-
-            //if (EnableMoveDebug)
-            //{
-            //    Debug.Log(
-            //        $"[BattleMoveDebug] ResolveMove end unit={moveGA.Unit.name}, moved={moved}, finalWorld={moveGA.Unit.transform.position}, finalGrid={moveGA.Unit.GridPosition}");
-            //}
         }
 
         private static IEnumerator AnimateMove(BattleMoveGA moveGA)
         {
             if (moveGA?.Unit == null || moveGA.PlannedPath == null || moveGA.PlannedPath.Count == 0)
             {
-                //if (EnableMoveDebug)
-                //{
-                //    Debug.LogWarning(
-                //        $"[BattleMoveDebug] AnimateMove skipped unit={(moveGA?.Unit != null ? moveGA.Unit.name : "null")}, pathCount={(moveGA?.PlannedPath != null ? moveGA.PlannedPath.Count : 0)}");
-                //}
-
                 yield break;
             }
 
@@ -95,11 +80,6 @@ namespace NYH.BattleCardSystem
             {
                 Vector2Int pathCell = moveGA.PlannedPath[i];
                 Vector3 targetWorld = BattleUnit.GetWorldPositionForGrid(pathCell, unitTransform.position.z);
-
-                //if (EnableMoveDebug)
-                //{
-                //    Debug.Log($"[BattleMoveDebug] AnimateMove waypoint index={i}, cell={pathCell}, targetWorld={targetWorld}");
-                //}
 
                 while (Vector3.Distance(currentPosition, targetWorld) > 0.01f)
                 {
@@ -121,69 +101,41 @@ namespace NYH.BattleCardSystem
             unit.SnapToGridCenter();
         }
 
-        private static string BuildPathDebugText(IReadOnlyList<Vector2Int> path)
-        {
-            if (path == null || path.Count == 0)
-            {
-                return "(empty)";
-            }
-
-            System.Text.StringBuilder builder = new();
-            for (int i = 0; i < path.Count; i++)
-            {
-                if (builder.Length > 0)
-                {
-                    builder.Append(" -> ");
-                }
-
-                builder.Append(path[i]);
-            }
-
-            return builder.ToString();
-        }
-
         private void ResolveAttack(BattleAttackGA attackGA)
         {
             if (attackGA.Attacker == null)
             {
-                Debug.LogWarning("[BattleCardSystem] °ø°İ À¯´ÖÀÌ ¾ø½À´Ï´Ù.");
+                Debug.LogWarning("[BattleCardSystem] ê³µê²© ìœ ë‹›ì´ ì—†ìŠµë‹ˆë‹¤.");
                 return;
             }
 
             if (BattleBoardSystem.Instance == null)
             {
-                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemÀÌ ¾ø¾î °ø°İÀ» Ã³¸®ÇÒ ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogWarning("[BattleCardSystem] BattleBoardSystemì´ ì—†ì–´ ê³µê²©ì„ ì²˜ë¦¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
                 return;
             }
 
-            var targets = BattleBoardSystem.Instance.GetUnitsInAttackArea(
+            List<BattleUnit> targets = BattleBoardSystem.Instance.GetUnitsInAttackArea(
                 attackGA.Attacker,
                 attackGA.TargetPosition,
                 attackGA);
-            Debug.Log(
-                $"[BattleTacticalPerformer] °ø°İ ÆÇÁ¤ ½ÃÀÛ attacker={(attackGA.Attacker != null ? attackGA.Attacker.name : "null")}, attackerGrid={(attackGA.Attacker != null ? attackGA.Attacker.GridPosition.ToString() : "null")}, targetGrid={attackGA.TargetPosition}, targetCount={(targets != null ? targets.Count : 0)}, card={(attackGA.SourceCard != null ? attackGA.SourceCard.Title : "null")}");
-            Dictionary<BattleUnit, int> targetHealthBeforeAttack = CaptureTargetHealth(targets);
+            Dictionary<BattleUnit, int> targetHealthBeforeAttack = EnableAttackDebug
+                ? CaptureTargetHealth(targets)
+                : null;
 
             if (TryApplyBattleEffects(attackGA, targets))
             {
-                LogAttackResults(attackGA, targets, targetHealthBeforeAttack, null, usedEffects: true);
+                LogAttackResultsIfEnabled(attackGA, targets, targetHealthBeforeAttack, usedEffects: true);
                 return;
             }
 
-            foreach (var target in targets)
+            foreach (BattleUnit target in targets)
             {
                 int totalDamage = Mathf.Max(0, attackGA.Damage + attackGA.Attacker.CurrentAttackPower);
-                Debug.Log(
-                    $"[BattleTacticalPerformer] µ¥¹ÌÁö Àû¿ë target={target.name}, targetGrid={target.GridPosition}, damage={totalDamage}, beforeHp={target.CurrentHealth}/{target.MaxHealth}");
                 target.TakeDamage(totalDamage);
             }
 
-            LogAttackResults(
-                attackGA,
-                targets,
-                targetHealthBeforeAttack,
-                Mathf.Max(0, attackGA.Damage + attackGA.Attacker.CurrentAttackPower),
-                usedEffects: false);
+            LogAttackResultsIfEnabled(attackGA, targets, targetHealthBeforeAttack, usedEffects: false);
         }
 
         private static Dictionary<BattleUnit, int> CaptureTargetHealth(IReadOnlyList<BattleUnit> targets)
@@ -205,17 +157,20 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
-        private static void LogAttackResults(
+        private static void LogAttackResultsIfEnabled(
             BattleAttackGA attackGA,
             IReadOnlyList<BattleUnit> targets,
             IReadOnlyDictionary<BattleUnit, int> targetHealthBeforeAttack,
-            int? baseDamageApplied,
             bool usedEffects)
         {
+            if (!EnableAttackDebug)
+            {
+                return;
+            }
+
             if (targets == null || targets.Count == 0)
             {
-                Debug.Log(
-                    $"[BattleAttackDebug] {(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")}ÀÇ °ø°İÀÌ ºø³ª°¨");
+                Debug.Log($"[BattleAttackDebug] {(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")}ì˜ ê³µê²©ì´ ë¹—ë‚˜ê°");
                 return;
             }
 
@@ -235,7 +190,7 @@ namespace NYH.BattleCardSystem
                 int afterHealth = target.CurrentHealth;
                 int actualDamage = Mathf.Max(0, beforeHealth - afterHealth);
                 string cardTitle = attackGA?.SourceCard != null ? attackGA.SourceCard.Title : "Unknown";
-                string effectLabel = usedEffects ? "È¿°ú" : "°ø°İ";
+                string effectLabel = usedEffects ? "íš¨ê³¼" : "ê³µê²©";
 
                 Debug.Log(
                     $"[BattleAttackDebug] {effectLabel}: {(attackGA?.Attacker != null ? attackGA.Attacker.name : "Unknown")} -> {target.name}, damage={actualDamage}, hp={afterHealth}/{target.MaxHealth}, alive={target.IsAlive}, card={cardTitle}");
@@ -268,8 +223,7 @@ namespace NYH.BattleCardSystem
 
                 if (battleEffect is BattleMoveEffect or BattleAttackEffect)
                 {
-                    // ÀÌµ¿/°ø°İ ÀÚÃ¼´Â GA Ã¼ÀÎ¿¡¼­ ÀÌ¹Ì Ã³¸®µÇ¹Ç·Î,
-                    // ¿©±â¼­´Â ÇÇÇØ/»óÅÂ °°Àº ºÎ°¡ ÀÌÆåÆ®¸¸ Àû¿ëÇÕ´Ï´Ù.
+                    // ì´ë™/ê³µê²© ìì²´ëŠ” GameAction ì²´ì¸ì—ì„œ ì´ë¯¸ ì²˜ë¦¬ë˜ë¯€ë¡œ í”¼í•´/ìƒíƒœ ê°™ì€ ë¶€ê°€ ì´í™íŠ¸ë§Œ ì ìš©í•©ë‹ˆë‹¤.
                     continue;
                 }
 
@@ -281,4 +235,3 @@ namespace NYH.BattleCardSystem
         }
     }
 }
-

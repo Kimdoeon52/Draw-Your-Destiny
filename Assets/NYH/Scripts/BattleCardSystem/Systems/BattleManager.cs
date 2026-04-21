@@ -336,8 +336,8 @@ namespace NYH.BattleCardSystem
         {
             RebuildUnitLists();
 
-            bool playerAlive = HasAliveUnits(playerUnits);
-            bool enemyAlive = HasAliveUnits(enemyUnits);
+            bool playerAlive = BattleResultService.HasAliveUnits(playerUnits);
+            bool enemyAlive = BattleResultService.HasAliveUnits(enemyUnits);
             if (!playerAlive)
             {
                 HandleDefeat();
@@ -391,13 +391,7 @@ namespace NYH.BattleCardSystem
         private BattleResult BuildResult(bool isVictory)
         {
             RebuildUnitLists();
-            return new BattleResult
-            {
-                IsVictory = isVictory,
-                TurnCount = BattleTurn,
-                SurvivingPlayerUnits = CountAliveUnits(playerUnits),
-                SurvivingEnemyUnits = CountAliveUnits(enemyUnits),
-            };
+            return BattleResultService.BuildResult(isVictory, BattleTurn, playerUnits, enemyUnits);
         }
 
         private void RebuildUnitLists()
@@ -428,33 +422,6 @@ namespace NYH.BattleCardSystem
         {
             CurrentPhase = phase;
             OnPhaseChanged?.Invoke(phase);
-        }
-
-        private static bool HasAliveUnits(List<BattleUnit> units)
-        {
-            foreach (BattleUnit unit in units)
-            {
-                if (unit != null && unit.IsAlive)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static int CountAliveUnits(List<BattleUnit> units)
-        {
-            int count = 0;
-            foreach (BattleUnit unit in units)
-            {
-                if (unit != null && unit.IsAlive)
-                {
-                    count++;
-                }
-            }
-
-            return count;
         }
 
         private void NotifyHandStateChanged()

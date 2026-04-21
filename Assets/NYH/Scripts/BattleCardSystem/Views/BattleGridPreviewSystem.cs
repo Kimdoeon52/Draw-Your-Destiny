@@ -1,14 +1,12 @@
 namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
-    using System.Text;
     using UnityEngine;
 
     // Draws move, attack, path, and unit selection previews over the battle grid.
+    // Targeting rules are resolved before this class is called; this class only owns preview objects.
     public class BattleGridPreviewSystem : MonoBehaviour
     {
-        private const bool EnablePathPreviewDebug = false;
-
         [SerializeField] private Color previewColor = new(0f, 1f, 0f, 0.95f);
         [SerializeField] private Color attackPreviewColor = new(1f, 0f, 0f, 0.95f);
         [SerializeField] private Color pathPreviewColor = new(0f, 0.75f, 1f, 1f);
@@ -220,7 +218,6 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            List<Vector2Int> createdCells = new();
             foreach (Vector2Int cell in cells)
             {
                 if (!BattleGridCoordinateService.Instance.TryGetWorldCenter(cell, out Vector3 previewWorld))
@@ -239,12 +236,6 @@ namespace NYH.BattleCardSystem
                 spriteRenderer.sortingOrder = rendererSortingOrder;
 
                 targetList.Add(previewCell);
-                createdCells.Add(cell);
-            }
-
-            if (EnablePathPreviewDebug && enableDetailedDebug)
-            {
-                LogPathPreviewDiagnostics(createdCells, targetList, rendererSortingOrder);
             }
         }
 
@@ -411,45 +402,6 @@ namespace NYH.BattleCardSystem
             }
 
             activeSelectionOrderMarkers.Add(label);
-        }
-
-        // Diagnostic log for broken or mis-sorted path previews.
-        private void LogPathPreviewDiagnostics(
-            IReadOnlyList<Vector2Int> cells,
-            IReadOnlyList<GameObject> previewObjects,
-            int rendererSortingOrder)
-        {
-            int brokenSegments = 0;
-            StringBuilder details = new();
-
-            for (int i = 0; i < cells.Count; i++)
-            {
-                if (i > 0)
-                {
-                    Vector2Int previous = cells[i - 1];
-                    Vector2Int current = cells[i];
-                    int manhattan = Mathf.Abs(previous.x - current.x) + Mathf.Abs(previous.y - current.y);
-                    if (manhattan != 1)
-                    {
-                        brokenSegments++;
-                    }
-                }
-
-                GameObject previewObject = i < previewObjects.Count ? previewObjects[i] : null;
-                if (details.Length > 0)
-                {
-                    details.Append(" | ");
-                }
-
-                details.Append(
-                    $"#{i}:{cells[i]},obj={(previewObject != null ? previewObject.name : "null")}," +
-                    $"world={(previewObject != null ? previewObject.transform.position.ToString() : "null")}," +
-                    $"sorting={rendererSortingOrder},scale={(previewObject != null ? previewObject.transform.localScale.ToString() : "null")}");
-            }
-
-        /*    Debug.Log(
-                $"[BattlePathDebug] previewCount={cells.Count}, brokenSegments={brokenSegments}, previewZ={previewZ}, " +
-                $"moveSorting={sortingOrder}, pathSorting={pathSortingOrder}, details={details}");*/
         }
 
         // Lazily create and reuse the white sprite used by preview cells.
