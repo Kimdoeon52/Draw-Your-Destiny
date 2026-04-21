@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-// 사격장 / 정예 사격장 — 궁수 유닛 생산
-// 체인: ArcheryRange(청동기) → ArcheryRangeElite(철기)
+// 중급 병영 — 궁수 유닛 생산
+// 체인: Barracks_ArcheryRange_Medic(청동기) → Barracks_ArcheryRange_Medic_Elite(철기)
 // 같은 Behaviour 인스턴스가 업그레이드 후에도 유지됨. instance.data만 교체됨.
 public class ArcherBarracksBehaviour : UnitProducerBehaviour
 {
@@ -14,7 +14,7 @@ public class ArcherBarracksBehaviour : UnitProducerBehaviour
         healerPool = GetComponent<HealerPool>();
     }
 
-    protected override void SpawnUnit()
+    protected override void SpawnUnit(int slotInCycle)
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Archer, instance); 로 교체
         archerPool.GetHuman(0);

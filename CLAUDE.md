@@ -91,11 +91,15 @@ Unity로 개발 중인 턴제 전략 + 덱빌딩 게임 프로젝트입니다.
 ```
 ① 영지 선택 + 카드 드로우 (5장)
 ② 내 영지 행동 — 건물 건설, 재화 생산 (중립/경제 카드 사용)
-③ 적 영지 공격 — 인접 적 노드 선택 시 전투 돌입
-   └── 승리: 해당 노드 점령 / 패배: 병력 전부 소모
-④ 빈 노드 점령 — 재화 소모 후 즉시 점령
+③ 적 영지 공격 — 인접 적 노드 클릭 → 노드 진입 후 전투 버튼 → 출발 플레이어 노드 1개 + 파견 병력 수 선택 → 전투 돌입
+   └── 승리: 생존 유닛이 해당 노드에 주둔 (hasPlayerUnits=true). 점령은 영주성 재건 후 확정
+   └── 패배: 파견한 병력 전부 소모
+④ 빈 노드 이동 — 인접 빈 노드 클릭 → 노드 진입 후 이동 버튼 → 출발 플레이어 노드 1개 + 파견 병력 수 선택 → 유닛 주둔
+   └── 이후 영주성 재건 카드 사용 시 ownerCivID=0 전환 → 점령 완료
 ⑤ 카드 3택 — 문명카드+전투카드 세트 3개 제시, 1세트 선택 또는 패스
 ⑥ ①~⑤ 반복
+
+자세한 이동/전투 시스템 설계: `Assets/KDU/Scripts/Md/UNIT_MOVEMENT_COMBAT_SPEC.md`
 ```
 
 ### 재화 (3종 확정)
@@ -186,10 +190,10 @@ civID: 0=플레이어(파랑), 1=AI1(빨강), 2=AI2(초록), 3=AI3(노랑)
 
 | 종류 | 설명 |
 |------|------|
-| 아군 노드 | ownerCivID==0. 영지 진입 및 건물 배치 가능 |
-| 유닛 주둔 노드 | hasPlayerUnits==true. ownerCivID 무관하게 진입 가능. 배치는 isMansionBuilt 여부에 따름 |
-| 적 노드 | AI 소유. 인접 아군 노드에서 공격 선언 가능 |
-| 빈 노드 | 미점령. 재화 n 소모 후 즉시 점령. 점령 후 isMansionBuilt = false |
+| 아군 노드 | ownerCivID==0 && isMansionBuilt==true. 영지 진입 및 건물 배치 가능. 타 노드로의 병력 파견 기점(출발지) |
+| 유닛 주둔 노드 | hasPlayerUnits==true. ownerCivID 무관하게 진입 가능. 배치는 isMansionBuilt 여부에 따름. 영주성 재건 전까지는 이 노드에서 다른 노드로 병력 파견 불가 |
+| 적 노드 | AI 소유. 인접 아군 노드에서 전투 버튼으로 공격 가능 |
+| 빈 노드 | 미점령. 인접 아군 노드에서 이동 버튼으로 유닛 파견 → 영주성 재건 시 점령 완료 |
 
 ### 노드 진입 조건
 
@@ -220,14 +224,16 @@ hasPlayerUnits == true  →  영지 진입 가능 (적/빈 노드여도)
 ### 영주성 재건 카드 흐름
 
 ```
-빈 노드 점령 또는 전투 승리 후 hasPlayerUnits = true
- → 노드 진입 가능, 배치 UI 잠금 상태
+빈 노드 유닛 파견 또는 전투 승리 후
+ → hasPlayerUnits = true (ownerCivID는 아직 변경되지 않음)
+ → 노드 진입 가능, 배치 UI 잠금 상태 (이 노드를 기점으로 다른 노드 파견 불가)
 
 영지 뷰 진입 후 영주성 재건 카드 사용
  → WorldMapManager.OnMansionRebuilt() 호출
  → isMansionBuilt = true
+ → ownerCivID = 0 (점령 완료)
  → 배치 UI 잠금 해제
- → 이후 건물/농장 배치 가능
+ → 이후 건물/농장 배치 가능 + 이 노드를 기점으로 다른 노드 파견 가능
 ```
 
 ### WorldMapManager 주요 메서드
@@ -310,21 +316,32 @@ Lab,      // 연구소 — 매 턴 연구 포인트 획득. 게임당 1개 제�
           //         3단계 자동 업그레이드 체인: Lab(석기)→LabBronze(청동기)→LabIron(철기)
           //         buildingType은 세 단계 모두 Lab 유지 (LabBehaviour 공유, researchPerTurn만 다름)
 Farm,     // 농장 — 매 턴 식량 획득. 영지당 최대 2개 제한 (3×3 크기)
+Bank,     // 은행 — 인접 자기 노드로 자원 운송 (턴당 1회)
 
-// 군사 건물 — 자동 업그레이드 체인
-TribePracticeGround → TrainingCamp → Barracks   // 근접(돌도끼병): 석기→청동기→철기
-ArcheryRange → ArcheryRangeElite                 // 궁수: 청동기→철기
-MedicBarracks → MedicBarracksElite               // 의무병: 청동기→철기
+// 군사 건물 — 4단계 체계 (하급/중급/상급/최상급)
+// 수치:
+//   하급       3턴/1명 생산, unitCapacity=5
+//   중급/상급  3턴/2명 생산 (두 종류 유닛 1명씩 동시), unitCapacity=10
+//   최상급    3턴/1명 생산, unitCapacity=5
 
-// 군사 건물 — 단일 (철기)
-StableBarracks                                   // 기마병
-KnightBarracks                                   // 풀플레이트 아머 기사
-GiantBarracks                                    // 자이언트 (연구포인트 200 도달 시 생산 시작)
+// 하급 병영 — 근접(RockWarrior) 전용. 석기~철기 자동 업그레이드
+Barracks_SoldierStone → Barracks_SoldierBronze → Barracks_SoldierIron
+
+// 중급 병영 — 힐러(Healer) + 궁수(Archer) 동시 생산. 청동기~철기 자동 업그레이드
+Barracks_ArcheryRange_Medic → Barracks_ArcheryRange_Medic_Elite
+
+// 상급 병영 — 기사(Knight) + 기마병(HorseWarrior) 동시 생산. 철기 전용 (단일 단계)
+Barracks_Stable_Knight
+
+// 최상급 병영 — 마법사(Wizard) 전용. 철기 + 연구포인트 200 달성 시 생산 시작
+Barracks_Wizard
 
 // 지원 건물
 PotionBuilding                                   // 포션 가게 (청동기~) — 매 턴 랜덤 포션 카드 추가
 TrapWorkshop                                     // 덫 공방   (청동기~) — 매 턴 랜덤 덫 카드 추가
 ```
+
+※ 중급/상급 병영의 "3턴/2명"은 한 사이클에 두 종류 유닛 1명씩 동시 생산 (중급=힐러1+궁수1, 상급=기사1+기마병1).
 
 ### 건물 제한
 
@@ -434,16 +451,18 @@ TileMapManager.farmSprites[18] — Inspector에서 스프라이트 연결
 | 숲 / 바위 | 이동 불가 |
 | 강 | 이동 2칸 소비 |
 
-### 유닛 종류 (6종)
+### 유닛 종류 (6종 + 경제 유닛)
 
-| 유닛 | 등장 시대 | 특성 |
-|------|------|------|
-| 돌도끼병 | 석기 | 기본 근접 유닛 |
-| 의무병 | 청동기 | 힐러. 아군 체력 회복 |
-| 궁수 | 청동기 | 원거리 공격 유닛 |
-| 기마병 | 철기 | 고속 이동. 말 체력 소진 시 근접 유닛으로 전환 |
-| 풀플레이트 아머 기사 | 철기 | 고방어 근접 유닛 |
-| 자이언트 | 철기 | 대형 고체력 근접 유닛. 연구포인트 200 도달 시 생산 시작 |
+| 유닛 | UnitType | 등장 시대 | 생산 건물 | 특성 |
+|------|----------|-----------|-----------|------|
+| 돌도끼병 | RockWarrior | 석기 | 하급 병영 (SoldierStone/Bronze/Iron) | 기본 근접 유닛 |
+| 의무병 | Healer | 청동기 | 중급 병영 (ArcheryRange_Medic/_Elite) | 힐러. 아군 체력 회복 |
+| 궁수 | Archer | 청동기 | 중급 병영 (ArcheryRange_Medic/_Elite) | 원거리 공격 유닛 |
+| 기마병 | HorseWarrior | 철기 | 상급 병영 (Stable_Knight) | 고속 이동. 말 체력 소진 시 근접 전환 |
+| 풀플레이트 아머 기사 | Knight | 철기 | 상급 병영 (Stable_Knight) | 고방어 근접 유닛 |
+| 마법사 | Wizard | 철기 | 최상급 병영 (Wizard) | 연구포인트 200 도달 시 생산 시작. 3턴/1명, cap 5 |
+| 농부 | Farmer | — | Farm 등 | 경제 유닛 |
+| 상인 | Shoper | — | Market/Bank 등 | 경제 유닛 |
 
 ※ 성별 개념 없음.
 
@@ -606,16 +625,21 @@ public class EventData : ScriptableObject
 - WorldMapManager.RebalanceUniqueGlobalBuildings() — 플레이어 노드 스캔, 동일 buildingType 1개만 active 유지
 - WorldMapManager.HasUniqueGlobalBuilding() — TileMapManager용 게임 전체 건물 존재 여부 공개 조회
 
-**건물 Behaviour 시스템 (도언) ✅ 코드 완료 / 에디터 연결 대기**
+**건물 Behaviour 시스템 (도언) ✅ 코드 완료 / 에디터 연결 대기 — 4단계 병영 재편 작업 필요**
 - BuildingBehaviour / UnitProducerBehaviour 추상 클래스 계층 구조 구현
-- Behaviour 구현 완료 (14개):
-  - BarracksBehaviour (근접 체인 TribePracticeGround→TrainingCamp→Barracks 공유)
-  - ArcherBarracksBehaviour (궁수 체인 ArcheryRange→ArcheryRangeElite 공유)
-  - HealerBarracksBehaviour (힐러 체인 MedicBarracks→MedicBarracksElite 공유)
-  - CavalryBarracksBehaviour / KnightBarracksBehaviour / GiantBarracksBehaviour (철기 단일)
-  - GiantBarracksBehaviour — 연구 포인트 200 미달 시 생산 대기 게이트 포함
+- 기존 Behaviour (Enums 재편 후 리네임/재구조화 필요):
+  - BarracksBehaviour — 하급 병영(SoldierStone/Bronze/Iron) 공유, 근접 유닛만 생산
+  - ArcherBarracksBehaviour + HealerBarracksBehaviour — 중급 병영(ArcheryRange_Medic/_Elite) 하나로 통합 필요 (힐러 1 + 궁수 1 동시 생산)
+  - CavalryBarracksBehaviour + KnightBarracksBehaviour — 상급 병영(Stable_Knight) 하나로 통합 필요 (기사 1 + 기마병 1 동시 생산)
+  - GiantBarracksBehaviour → WizardBarracksBehaviour 로 리네임 + 생산 유닛 변경 (자이언트 → 마법사, 3턴/1명, cap 5). 연구 포인트 200 게이트 그대로 유지
   - FarmBehaviour / MarketBehaviour / LabBehaviour / MansionBehaviour
   - PotionShopBehaviour / TrapWorkshopBehaviour
+- BuildingRuntimeState — 노드 이탈/재진입 시 tick/activeCount/waiting 직렬화
+- BuildingInstance.isActive — isUniqueGlobal 건물 중복 보유 시 활성/비활성 제어
+- TileMapManager — visualPrefab 프리팹 분기 + Behaviour 캐싱/OnPlaced/LoadState 연결
+- NodeDataManager.ExitNode — SaveState() 스냅샷 저장
+- GameManager.EndTurn — 현재 노드 OnTurnEnd() + 오프스크린 노드 tick 가산
+- MansionBehaviour.OnPlaced() → WorldMapManager.OnMansionRebuilt() 자동 호출 (카드 시스템 별도 호출 불필요)
 - BuildingRuntimeState — 노드 이탈/재진입 시 tick/activeCount/waiting 직렬화
 - BuildingInstance.isActive — isUniqueGlobal 건물 중복 보유 시 활성/비활성 제어
 - TileMapManager — visualPrefab 프리팹 분기 + Behaviour 캐싱/OnPlaced/LoadState 연결
@@ -629,8 +653,11 @@ public class EventData : ScriptableObject
 
 **도언 담당 — 에디터 작업**
 - 건물 프리팹 제작 (SpriteRenderer + Behaviour 스크립트 부착. 스프라이트는 SO에서 관리)
-- BuildingData SO 생성 및 연결:
-  - 신규: ArcheryRangeElite / MedicBarracksElite / KnightBarracks / TrapWorkshop
+- BuildingData SO 생성 및 연결 (새 4단계 병영 체계 기준):
+  - 하급 병영: Barracks_SoldierStone / _SoldierBronze / _SoldierIron (체인)
+  - 중급 병영: Barracks_ArcheryRange_Medic / _Elite (체인)
+  - 상급 병영: Barracks_Stable_Knight (단일)
+  - 최상급 병영: Barracks_Wizard (단일, 연구 200 게이트)
   - 체인 SO: Lab×3 / Mansion×3 / PotionBuilding×2 / TrapWorkshop×2 (시대별 스프라이트 + researchPerTurn 등 수치 입력)
   - 기존 SO: upgradesTo 체인 링크 + visualPrefab / unitCapacity / productionInterval 입력
   - Lab / Mansion SO: isUniqueGlobal = true 체크
@@ -657,7 +684,7 @@ public class EventData : ScriptableObject
 | 항목 | 상태 |
 |------|------|
 | 노드 수 및 배치 | ✅ 10개 확정, nodeID 101~110 |
-| 빈 노드 점령 재화 비용 | 미확정 |
+| 빈 노드 점령 방식 | ✅ 인접 플레이어 노드에서 유닛 파견 → 영주성 재건 시 점령 완료 (재화 소모 점령 방식 폐기) |
 | 인구 한도 민가당 증가량 (시대별) | ✅ +5/+7/+10 |
 | 시대 전환 연구 포인트 | ✅ 청동기 100 / 철기 200 |
 | 카드 3택 가중치 수치 | 미확정 |
@@ -665,4 +692,4 @@ public class EventData : ScriptableObject
 | 전투 중 식량 소모량 (유닛 수 × n) | 미확정 |
 | goldPerTurn / researchPerTurn 수치 | 미확정 |
 | 카드 목록 전체 (기본 카드 8장 포함) | 미확정 |
-| 노드 피탈 시 건물 처리 방식 | 미확정 — 회의 필요. 선택지: ①파괴(빈 땅, 적이 재점령 후 자기 시대에 맞게 재건) vs ②업그레이드 상태 유지(적이 상위 티어 건물 그대로 획득). 점령 시 플레이어 시대로 자동 업그레이드는 두 선택지 모두 동일 |
+| 노드 피탈 시 건물 처리 방식 | ✅ 전투 승리 시 군사 건물 / Lab / PotionBuilding / TrapWorkshop 은 완전 파괴, Mansion/House/Market/Farm 만 잔해로 유지. 승리 턴에 "전체 재건 카드" 자동으로 플레이어 핸드에 추가됨 → 사용 시 영주성+잔해 전부 복구. 상세: `UNIT_MOVEMENT_COMBAT_SPEC.md` |

@@ -27,7 +27,7 @@ public class GiantBarracksBehaviour : UnitProducerBehaviour
         base.OnTurnEnd();
     }
 
-    protected override void SpawnUnit()
+    protected override void SpawnUnit(int slotInCycle)
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Giant, instance); 로 교체
         wizardPool.GetHuman(0);

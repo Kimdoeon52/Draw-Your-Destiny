@@ -19,7 +19,7 @@ public class FarmBehaviour : UnitProducerBehaviour
         Debug.Log($"[Farm] 식량 생산 예정 — 활성 농부={activeCount}");
     }
 
-    protected override void SpawnUnit()
+    protected override void SpawnUnit(int slotInCycle)
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Farmer, instance); 로 교체
         farmPool.GetHuman(0);

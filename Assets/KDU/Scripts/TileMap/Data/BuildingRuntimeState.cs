@@ -12,7 +12,8 @@ public class BuildingRuntimeState
 {
     public int tick;
     public int activeCount;
-    public int waiting;
+    public int waiting;          // 미완료 사이클 수 (한 사이클 = unitsPerCycle 명)
+    public int pendingSlot;      // 다음 스폰할 사이클 내 인덱스 (0..unitsPerCycle-1)
 
     // 향후 건물 타입별 추가 필드가 필요하면 extraKeys/extraValues로 확장
     public List<string> extraKeys = new List<string>();

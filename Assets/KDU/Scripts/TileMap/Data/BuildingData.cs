@@ -54,6 +54,7 @@ public class BuildingData : ScriptableObject
 
     [Header("프리팹 & 생산")]
     public GameObject visualPrefab;       // null이면 기존 빈 GO 방식으로 fallback
-    public int productionInterval = 3;    // 몇 턴마다 유닛 1명 생산
+    public int productionInterval = 3;    // 몇 턴마다 유닛 unitsPerCycle명 생산
+    public int unitsPerCycle = 1;         // 한 사이클당 생산되는 유닛 수
     public int unitCapacity = 0;          // 최대 수용치 (0이면 생산 건물 아님). 군사 건물도 이걸 사용
 }

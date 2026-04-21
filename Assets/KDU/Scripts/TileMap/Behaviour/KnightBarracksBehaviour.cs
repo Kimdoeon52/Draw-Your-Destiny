@@ -10,7 +10,7 @@ public class KnightBarracksBehaviour : UnitProducerBehaviour
         superUnitPool = GetComponent<SuperUnitPool>();
     }
 
-    protected override void SpawnUnit()
+    protected override void SpawnUnit(int slotInCycle)
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Knight, instance); 로 교체
         superUnitPool.GetHuman(0);
