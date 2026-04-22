@@ -32,4 +32,5 @@ MonoBehaviour:
   visualPrefab: {fileID: 4618862662295205576, guid: 96b557e8338de724fad9d5de55d457ac,
     type: 3}
   productionInterval: 3
+  unitsPerCycle: 2
   unitCapacity: 5

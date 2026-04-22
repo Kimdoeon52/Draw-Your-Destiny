@@ -84,11 +84,12 @@ namespace Base
         protected virtual void OnEnable()//초기화
         {
             UnitAppear();
-
+            GameManager.Instance.OnTurnFin += UnitNextTurn; //턴이 끝날 때마다 UnitNextTurn 실행하도록 이벤트 등록
         }
         protected virtual void OnDisable() //유닛이 비활성화 될 때 이동 루프 정지
         {
             StopMoveLoop();
+            GameManager.Instance.OnTurnFin -= UnitNextTurn;
         }
         void UnitAppear() //유닛이 소환되면 초기화 시킴.
         {

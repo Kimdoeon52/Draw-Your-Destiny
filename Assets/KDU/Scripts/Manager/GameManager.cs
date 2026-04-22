@@ -46,7 +46,7 @@ public class GameManager : PersistentSingleton<GameManager>
     [SerializeField] PlayerLordCastle playerLordCastle;
 
     private CitySpawnManager citySpawnManager;
-
+    public event System.Action OnTurnFin;//턴 끝났다는 걸 알리는 이벤트임.
     protected override void Awake()
     {
         base.Awake();
@@ -137,6 +137,7 @@ public class GameManager : PersistentSingleton<GameManager>
 
     public void EndTurn()
     {
+        OnTurnFin?.Invoke(); // 턴 종료 알림 이벤트 호출
         endTurn = true;
         startTurn = false;
         CardModifierSystem.OnTurnEnd();
