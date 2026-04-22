@@ -5,7 +5,7 @@ using Base;
 
 namespace PoolBase
 {
-    public class HumanPool : Singleton<HumanPool>, IHumanPool
+    public class HumanPool : MonoBehaviour, IHumanPool
     {
         [Header("유닛")]
         [SerializeField] private GameObject humanPrefab;
