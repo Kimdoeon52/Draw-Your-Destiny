@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using NYH.CoreCardSystem;
 
 [CreateAssetMenu(menuName = "Data/Era Card")]

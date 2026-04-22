@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e102dccbb6eeb98418626d7ed9c68e2d, type: 3}
-  m_Name: house
+  m_Name: New Era Card Data
   m_EditorClassIdentifier: 
   sharedCardID: 0
-  stoneCard: {fileID: 11400000, guid: f5120800baa0d7c48bbf07e1a9f40231, type: 2}
+  stoneCard: {fileID: 0}
   bronzeCard: {fileID: 0}
   ironCard: {fileID: 0}
