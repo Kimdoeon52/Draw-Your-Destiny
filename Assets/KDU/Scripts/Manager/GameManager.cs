@@ -47,6 +47,7 @@ public class GameManager : PersistentSingleton<GameManager>
 
     private CitySpawnManager citySpawnManager;
     public event System.Action OnTurnFin;//턴 끝났다는 걸 알리는 이벤트임.
+
     protected override void Awake()
     {
         base.Awake();
@@ -112,6 +113,9 @@ public class GameManager : PersistentSingleton<GameManager>
         tileMapManager = TileMapManager.Instance;
         placementService = FindFirstObjectByType<BuildingPlacementService>();
         citySpawnManager = FindFirstObjectByType<CitySpawnManager>();
+        if (enemyA == null) enemyA = FindFirstObjectByType<EnemyA>();
+        if (enemyB == null) enemyB = FindFirstObjectByType<EnemyB>();
+        if (enemyC == null) enemyC = FindFirstObjectByType<EnemyC>();
     }
 
     // ── 건물 배치 ─────────────────────────────────────────────
@@ -144,9 +148,9 @@ public class GameManager : PersistentSingleton<GameManager>
         CardSystem.Instance?.RefreshVisibleCardViews();
         checkResearch();
         OngoingEffectSystem.Instance.OnTurnStartOrEnd();
-        enemyA.StartEnemyTurn();
-        enemyB.StartEnemyTurn();
-        enemyC.StartEnemyTurn();
+        TryStartEnemyTurn(enemyA, nameof(enemyA));
+        TryStartEnemyTurn(enemyB, nameof(enemyB));
+        TryStartEnemyTurn(enemyC, nameof(enemyC));
         // 현재 진입 중인 노드의 건물 턴 처리 (Behaviour.OnTurnEnd)
         if (tileMapManager != null)
         {
@@ -164,6 +168,17 @@ public class GameManager : PersistentSingleton<GameManager>
         // 턴 종료 자동 저장
         if (SaveManager.Instance != null)
             SaveManager.Instance.OnClickSave();
+    }
+
+    private static void TryStartEnemyTurn(EnemyBrainBase enemy, string enemyFieldName)
+    {
+        if (enemy == null)
+        {
+            Debug.LogWarning($"[GameManager] {enemyFieldName}가 연결되지 않아 해당 적 턴을 건너뜁니다.");
+            return;
+        }
+
+        enemy.StartEnemyTurn();
     }
 
     // ── 재화 관리 ─────────────────────────────────────────────

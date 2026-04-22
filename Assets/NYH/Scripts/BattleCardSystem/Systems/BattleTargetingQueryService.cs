@@ -298,14 +298,30 @@ namespace NYH.BattleCardSystem
             IReadOnlyList<Vector2Int> confirmedMovePath,
             Vector2Int targetGrid)
         {
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            Vector2Int attackOrigin = confirmedMovePath != null && confirmedMovePath.Count > 0
+                ? confirmedMovePath[confirmedMovePath.Count - 1]
+                : userUnit != null ? userUnit.GridPosition : Vector2Int.zero;
+
+            if (attackEffect != null
+                && attackEffect.PatternOriginMode == BattleAttackPatternOriginMode.MeleePattern
+                && IsMeleeLinePreviewTarget(attackEffect, attackOrigin, targetGrid))
+            {
+                return BuildMeleeLinePathPreview(
+                    boardSystem,
+                    userUnit,
+                    attackEffect,
+                    attackOrigin,
+                    targetGrid,
+                    attackEffect.TargetingRange);
+            }
+
             HashSet<Vector2Int> rawImpactCells = ResolveRawPreviewAttackCells(
                 boardSystem,
                 battleCard,
                 userUnit,
                 confirmedMovePath,
                 targetGrid);
-
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
             if (attackEffect == null
                 || attackEffect.HitsAllTargetsInRange
                 || attackEffect.TargetCount <= 0)
@@ -313,9 +329,6 @@ namespace NYH.BattleCardSystem
                 return rawImpactCells;
             }
 
-            Vector2Int attackOrigin = confirmedMovePath != null && confirmedMovePath.Count > 0
-                ? confirmedMovePath[confirmedMovePath.Count - 1]
-                : userUnit != null ? userUnit.GridPosition : Vector2Int.zero;
             List<BattleUnit> previewTargets = ResolvePreviewAttackTargets(
                 boardSystem,
                 userUnit,
@@ -328,6 +341,11 @@ namespace NYH.BattleCardSystem
                 return rawImpactCells;
             }
 
+            if (attackEffect.ImpactPattern == BattleAttackPattern.Line)
+            {
+                return LimitLinePreviewCellsToHitPath(rawImpactCells, attackOrigin, previewTargets);
+            }
+
             HashSet<Vector2Int> limitedImpactCells = new();
             for (int i = 0; i < previewTargets.Count; i++)
             {
@@ -338,6 +356,113 @@ namespace NYH.BattleCardSystem
             }
 
             return limitedImpactCells.Count > 0 ? limitedImpactCells : rawImpactCells;
+        }
+
+        private static bool IsMeleeLinePreviewTarget(
+            BattleAttackEffect attackEffect,
+            Vector2Int attackOrigin,
+            Vector2Int targetGrid)
+        {
+            if (attackEffect == null)
+            {
+                return false;
+            }
+
+            bool usesLineLikeTargeting = attackEffect.TargetingPattern == BattleAttackPattern.Line
+                || attackEffect.TargetingPattern == BattleAttackPattern.None;
+            if (!usesLineLikeTargeting)
+            {
+                return false;
+            }
+
+            Vector2Int delta = targetGrid - attackOrigin;
+            return (delta.x == 0 && delta.y != 0)
+                || (delta.y == 0 && delta.x != 0);
+        }
+
+        private static HashSet<Vector2Int> BuildMeleeLinePathPreview(
+            BattleBoardSystem boardSystem,
+            BattleUnit userUnit,
+            BattleAttackEffect attackEffect,
+            Vector2Int attackOrigin,
+            Vector2Int targetGrid,
+            int maxPreviewRange)
+        {
+            HashSet<Vector2Int> result = new();
+            Vector2Int delta = targetGrid - attackOrigin;
+            Vector2Int direction;
+            int maxDistance;
+
+            if (delta.x == 0 && delta.y != 0)
+            {
+                direction = delta.y > 0 ? Vector2Int.up : Vector2Int.down;
+                maxDistance = Mathf.Max(1, maxPreviewRange);
+            }
+            else if (delta.y == 0 && delta.x != 0)
+            {
+                direction = delta.x > 0 ? Vector2Int.right : Vector2Int.left;
+                maxDistance = Mathf.Max(1, maxPreviewRange);
+            }
+            else
+            {
+                return result;
+            }
+
+            for (int i = 1; i <= maxDistance; i++)
+            {
+                Vector2Int cell = attackOrigin + (direction * i);
+                result.Add(cell);
+
+                BattleUnit unit = boardSystem != null ? boardSystem.GetUnitAt(cell) : null;
+                if (unit != null
+                    && unit != userUnit
+                    && unit.IsAlive
+                    && BattleUnitTargetFilterUtility.Matches(userUnit, unit, attackEffect.ImpactTargetFilter))
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        private static HashSet<Vector2Int> LimitLinePreviewCellsToHitPath(
+            HashSet<Vector2Int> rawImpactCells,
+            Vector2Int attackOrigin,
+            IReadOnlyList<BattleUnit> previewTargets)
+        {
+            HashSet<Vector2Int> result = new();
+            if (rawImpactCells == null || previewTargets == null || previewTargets.Count == 0)
+            {
+                return rawImpactCells ?? result;
+            }
+
+            int maxDistance = 0;
+            for (int i = 0; i < previewTargets.Count; i++)
+            {
+                BattleUnit target = previewTargets[i];
+                if (target == null)
+                {
+                    continue;
+                }
+
+                maxDistance = Mathf.Max(maxDistance, ManhattanDistance(attackOrigin, target.GridPosition));
+            }
+
+            if (maxDistance <= 0)
+            {
+                return rawImpactCells;
+            }
+
+            foreach (Vector2Int cell in rawImpactCells)
+            {
+                if (cell != attackOrigin && ManhattanDistance(attackOrigin, cell) <= maxDistance)
+                {
+                    result.Add(cell);
+                }
+            }
+
+            return result.Count > 0 ? result : rawImpactCells;
         }
 
         private static HashSet<Vector2Int> ResolveRawPreviewAttackCells(
@@ -376,13 +501,17 @@ namespace NYH.BattleCardSystem
                     healEffect.HealPatternOriginMode);
             }
 
-            return BattleAttackImpactCellResolver.ResolveImpactCells(
+            HashSet<Vector2Int> attackCells = BattleAttackImpactCellResolver.ResolveImpactCells(
                 attackOrigin,
                 targetGrid,
                 attackEffect.ImpactRange,
                 attackEffect.ImpactPattern,
                 attackEffect.CustomImpactPattern,
                 attackEffect.PatternOriginMode);
+
+            // 공격 미리보기에서는 카드 패턴이 자기 칸을 포함하더라도 공격자 본인은 표시하지 않습니다.
+            attackCells.Remove(attackOrigin);
+            return attackCells;
         }
 
         public static List<BattleUnit> ResolvePreviewImpactTargets(
@@ -409,7 +538,9 @@ namespace NYH.BattleCardSystem
             {
                 BattleUnit unit = boardSystem.GetUnitAt(cell);
                 BattleUnitTargetFilter targetFilter = ResolvePreviewTargetFilter(battleCard);
+                bool isAttackPreview = BattleEffectResolver.GetAttackEffect(battleCard) != null;
                 if (unit == null
+                    || (isAttackPreview && unit == userUnit)
                     || !unit.IsAlive
                     || !BattleUnitTargetFilterUtility.Matches(userUnit, unit, targetFilter)
                     || result.Contains(unit))
@@ -475,6 +606,11 @@ namespace NYH.BattleCardSystem
 
             BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard);
             return healEffect != null ? healEffect.HealTargetFilter : BattleUnitTargetFilter.EnemiesOnly;
+        }
+
+        private static int ManhattanDistance(Vector2Int a, Vector2Int b)
+        {
+            return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
 
     }

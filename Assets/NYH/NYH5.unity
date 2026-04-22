@@ -81609,15 +81609,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseBattleDeck:
-  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
-  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
-  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
-  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
-  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
-  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
-  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
-  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
-  - {fileID: 11400000, guid: 2f22587a905266c468faba119bd9332c, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
   earnedBattleCards: []
 --- !u!4 &1008384001
 Transform:

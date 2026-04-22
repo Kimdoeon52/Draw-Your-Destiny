@@ -34,6 +34,7 @@ namespace NYH.BattleCardSystem
             {
                 BattleUnit unit = pair.Value;
                 if (unit == null
+                    || unit == attacker
                     || !unit.IsAlive
                     || !BattleUnitTargetFilterUtility.Matches(attacker, unit, attackGA.TargetFilter))
                 {
@@ -92,6 +93,7 @@ namespace NYH.BattleCardSystem
             if (customTargetingPattern != null)
             {
                 AddCustomPatternCells(attackerPosition, customTargetingPattern, result);
+                result.Remove(attackerPosition);
                 return result;
             }
 
