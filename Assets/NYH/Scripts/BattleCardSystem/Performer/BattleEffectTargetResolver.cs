@@ -46,6 +46,12 @@ namespace NYH.BattleCardSystem
                 return resolvedTargets;
             }
 
+            if (ShouldResolveHealArea(playCardGA))
+            {
+                ResolveHealAreaTargets(playCardGA, resolvedTargets);
+                return resolvedTargets;
+            }
+
             if (playCardGA.TargetUnit != null)
             {
                 resolvedTargets.Add(playCardGA.TargetUnit);
@@ -58,6 +64,43 @@ namespace NYH.BattleCardSystem
         {
             return playCardGA?.Card != null
                 && (playCardGA.Card.CardType == BattleCardType.Attack || HasEffect<BattleDamageEffect>(playCardGA.Card));
+        }
+
+        private static bool ShouldResolveHealArea(BattlePlayCardGA playCardGA)
+        {
+            return playCardGA?.Card != null && HasEffect<BattleHealEffect>(playCardGA.Card);
+        }
+
+        private static void ResolveHealAreaTargets(BattlePlayCardGA playCardGA, List<BattleUnit> resolvedTargets)
+        {
+            BattleBoardSystem boardSystem = BattleBoardSystem.Instance;
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(playCardGA.Card);
+            if (boardSystem == null || healEffect == null || playCardGA.UserUnit == null || resolvedTargets == null)
+            {
+                return;
+            }
+
+            foreach (Vector2Int targetPosition in BattleCardActionFactory.EnumerateAttackTargetPositions(playCardGA))
+            {
+                HashSet<Vector2Int> healCells = BattleAttackImpactCellResolver.ResolveImpactCells(
+                    playCardGA.UserUnit.GridPosition,
+                    targetPosition,
+                    healEffect.Range,
+                    healEffect.HealPattern,
+                    healEffect.CustomHealPattern,
+                    healEffect.HealPatternOriginMode);
+
+                foreach (BattleUnit unit in boardSystem.GetUnitsInCells(
+                    playCardGA.UserUnit,
+                    healCells,
+                    healEffect.HealTargetFilter))
+                {
+                    if (unit != null && !resolvedTargets.Contains(unit))
+                    {
+                        resolvedTargets.Add(unit);
+                    }
+                }
+            }
         }
 
         private static bool HasEffect<TEffect>(BattleCard card)

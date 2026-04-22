@@ -24,6 +24,7 @@ MonoBehaviour:
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 4
+  allowedUserUnitTypes: 
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 5001
@@ -48,9 +49,11 @@ MonoBehaviour:
         targetCount: 1
         selectionCount: 1
         hitsAllTargetsInRange: 1
+        impactTargetFilter: 2
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: 338328ebe63553f41be5a6c8750f9118,
           type: 2}
+        patternOriginMode: 0
         useSeparatePatterns: 1
         targetingRange: 1
         targetingPattern: 0

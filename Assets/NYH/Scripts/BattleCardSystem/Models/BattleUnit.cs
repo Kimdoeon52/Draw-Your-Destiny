@@ -15,6 +15,7 @@ namespace NYH.BattleCardSystem
      * Tracks health, attack, speed, team, and grid position.
      *
      * Inspector fields:
+     * - Unit Type: 카드 사용 제한과 군단 소환에서 쓰는 병종
      * - Team: Player or Enemy
      * - Max Health: starting and maximum HP
      * - Attack Power: base attack value
@@ -30,6 +31,7 @@ namespace NYH.BattleCardSystem
         private const bool EnableDamageDebug = false;
 
         [SerializeField] private string unitId;
+        [SerializeField] private UnitType unitType = UnitType.RockWarrior;
         [SerializeField] private BattleTeam team;
         [SerializeField] private int maxHealth = 10;
         [SerializeField] private int attackPower = 1;
@@ -39,6 +41,7 @@ namespace NYH.BattleCardSystem
         [SerializeField] private bool enableGridAlignmentDebug;
 
         public string UnitId => unitId;
+        public UnitType UnitType => unitType;
         public BattleTeam Team => team;
         public int MaxHealth => maxHealth;
         public int CurrentHealth { get; private set; }
@@ -88,6 +91,12 @@ namespace NYH.BattleCardSystem
             gridPosition = startPosition;
             CurrentHealth = Mathf.Clamp(health, 0, maxHealth);
             ApplyGridWorldPosition();
+        }
+
+        public void Initialize(Vector2Int startPosition, int health, UnitType newUnitType)
+        {
+            unitType = newUnitType;
+            Initialize(startPosition, health);
         }
 
         public void SetGridPosition(Vector2Int newPosition)
@@ -188,6 +197,16 @@ namespace NYH.BattleCardSystem
             {
                 HandleDeath();
             }
+        }
+
+        public void Heal(int amount)
+        {
+            if (amount <= 0 || !IsAlive)
+            {
+                return;
+            }
+
+            CurrentHealth = Mathf.Min(maxHealth, CurrentHealth + amount);
         }
 
         private void HandleDeath()

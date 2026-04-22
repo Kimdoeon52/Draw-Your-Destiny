@@ -8,9 +8,10 @@ namespace NYH.BattleCardSystem
     /// </summary>
     internal sealed class BattleOpeningHandService
     {
-        public int CalculateDrawCountByAliveUnitTypes(int aliveUnitTypeCount)
+        
+        public int CalculateDrawCountByAliveUnitTypes(int aliveUnitTypeCount,int baseDrawCount)
         {
-            return Mathf.Max(1, aliveUnitTypeCount + 1);
+            return Mathf.Max(1, aliveUnitTypeCount + baseDrawCount);
         }
     }
 }

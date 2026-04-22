@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: "\uCC3D\uCC0C\uB974\uAE30"
   m_EditorClassIdentifier: 
   <CardID>k__BackingField: 10008
-  <CardName>k__BackingField: "\uCC3D\uCC0C\uB974\uAE30"
+  <CardName>k__BackingField: "\uCC3D\uCC0C\uB974\uAE301"
   <CardType>k__BackingField: 0
   <Image>k__BackingField: {fileID: -1615217524476387044, guid: 34e87aa0cb674e149b52ac1a475113d3,
     type: 3}
@@ -24,6 +24,7 @@ MonoBehaviour:
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 4
+  allowedUserUnitTypes: 
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 5001
@@ -48,9 +49,11 @@ MonoBehaviour:
         targetCount: 1
         selectionCount: 1
         hitsAllTargetsInRange: 0
+        impactTargetFilter: 2
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: 42822d1c8e1cd9944a3143a3ed86ad35,
           type: 2}
+        patternOriginMode: 1
         useSeparatePatterns: 0
         targetingRange: 1
         targetingPattern: 0

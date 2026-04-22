@@ -5,40 +5,24 @@ namespace NYH.BattleCardSystem
     using NYH.CoreCardSystem;
     using UnityEngine;
 
-    /*
-     * BattleCardSystem
-     *
-     * 전투 씬에서 사용하는 카드 시스템 본체입니다.
-     *
-     * 담당 역할:
-     * - 전투 덱 / 손패 / 버림더미 같은 런타임 카드 상태 관리
-     * - 시작 손패 드로우, 턴 드로우, 멀리건 처리
-     * - 전투 카드 플레이 시 ActionSystem으로 액션 위임
-     * - 행동력(AP) 기반 카드 코스트 계산
-     *
-     * 사용 흐름:
-     * - 전투 시작 전에 SetupFromInspector() 또는 SetupBattleDeck()으로 덱 준비
-     * - BattleManager가 DrawOpeningHand(), DrawTurnCards() 호출
-     * - 카드 사용 시 PlayCard() 호출
-     */
+    // 전투 중 사용하는 카드 덱/손패/AP/카드 실행 흐름의 외부 진입점입니다.
     public class BattleCardSystem : Singleton<BattleCardSystem>
     {
         [Header("Fallback Battle Deck Sources")]
-        // BattleDeckCollection이 없는 경우에만 사용하는 기본 전투 덱/보상 덱입니다.
         [SerializeField] private List<BattleCardData> baseBattleDeck = new();
         [SerializeField] private List<BattleCardData> earnedBattleCards = new();
 
         [Header("Battle Cost Rules")]
-        // 카드 사용 시 적용되는 AP 최대치입니다.
         [SerializeField] private int maxActionPoints = 15;
 
-        // 실제 전투 중 사용하는 런타임 더미/손패 상태입니다.
         private BattleCardPileState pileState;
-        // 전투 카드 사용과 전술 액션을 처리하는 performer입니다.
         private BattlePlayPerformer playPerformer;
         private BattleTacticalPerformer tacticalPerformer;
         private BattleCardCostService costService;
-        private BattleOpeningHandService openingHandService;
+        private BattleDeckSetupService deckSetupService;
+        private BattleCardRewardService rewardService;
+        private BattleHandDrawService handDrawService;
+        private BattleCardPileViewService pileViewService;
 
         public BattleCardPileState PileState => pileState;
         public int CurrentActionPoints => costService != null ? costService.CurrentActionPoints : 0;
@@ -47,88 +31,47 @@ namespace NYH.BattleCardSystem
         {
             base.Awake();
 
-            // 전투 씬 진입 시 필요한 런타임 상태 객체와 액션 처리기를 준비합니다.
             pileState = new BattleCardPileState();
             costService = new BattleCardCostService(maxActionPoints);
-            openingHandService = new BattleOpeningHandService();
             playPerformer = new BattlePlayPerformer(pileState, CanAffordCardCost, ResolveCardCost);
             tacticalPerformer = new BattleTacticalPerformer();
 
-            // ActionSystem에서 전투 카드 관련 액션이 들어오면 이 시스템으로 라우팅합니다.
-            ActionSystem.AttachPerformer<BattlePlayCardGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<BattleAttackGA>(action => Perform(action));
-            ActionSystem.AttachPerformer<BattleMoveGA>(action => Perform(action));
+            deckSetupService = new BattleDeckSetupService(pileState);
+            rewardService = new BattleCardRewardService(pileState, earnedBattleCards);
+            handDrawService = new BattleHandDrawService(pileState);
+            pileViewService = new BattleCardPileViewService(pileState);
+
+            BattleCardActionRegistrar.RegisterAll(this);
         }
 
-        /// <summary>
-        /// 기본 전투 덱과 보상으로 얻은 전투 카드를 합쳐 현재 전투용 draw pile을 구성합니다.
-        /// </summary>
+        // 기본 전투 덱과 보상 전투 카드를 합쳐 현재 전투 draw pile을 구성합니다.
         public void SetupBattleDeck(IEnumerable<BattleCardData> baseDeck, IEnumerable<BattleCardData> earnedCards)
         {
-            List<BattleCardData> mergedDeck = new();
-            if (baseDeck != null)
-            {
-                mergedDeck.AddRange(baseDeck);
-            }
-
-            if (earnedCards != null)
-            {
-                mergedDeck.AddRange(earnedCards);
-            }
-
-            pileState.Setup(mergedDeck);
+            deckSetupService.SetupBattleDeck(baseDeck, earnedCards);
         }
 
-        /// <summary>
-        /// 가능하면 BattleDeckCollection에서 전투 덱을 읽어오고,
-        /// 컬렉션이 없으면 인스펙터에 넣어둔 fallback 덱으로 세팅합니다.
-        /// 전투 시작 시 AP도 0으로 초기화합니다.
-        /// </summary>
+        // BattleDeckCollection이 있으면 그 덱을, 없으면 인스펙터 fallback 덱을 사용해 전투를 준비합니다.
         public void SetupFromInspector()
         {
-            if (BattleDeckCollection.Instance != null)
-            {
-                if (BattleDeckCollection.Instance.BaseBattleDeck.Count == 0 && baseBattleDeck.Count > 0)
-                {
-                    Debug.LogWarning($"[BattleCardSystem] BattleDeckCollection의 기본 덱이 비어 있어 fallback 기본 덱 {baseBattleDeck.Count}장을 복사합니다.");
-                    BattleDeckCollection.Instance.ConfigureBaseDeck(baseBattleDeck);
-                }
-
-                SetupBattleDeck(
-                    BattleDeckCollection.Instance.BaseBattleDeck,
-                    BattleDeckCollection.Instance.EarnedBattleCards);
-            }
-            else
-            {
-                Debug.LogWarning($"[BattleCardSystem] SetupFromInspector: BattleDeckCollection이 없어 fallback 덱을 사용합니다. baseDeck={baseBattleDeck.Count}, earned={earnedBattleCards.Count}");
-                SetupBattleDeck(baseBattleDeck, earnedBattleCards);
-            }
-
+            deckSetupService.SetupFromInspector(baseBattleDeck, earnedBattleCards);
             SetupActionPoints(0);
         }
 
-        /// <summary>
-        /// 현재 AP를 최대치 범위 안에서 강제로 설정합니다.
-        /// </summary>
+        // 현재 AP를 최대 AP 범위 안에서 지정 값으로 초기화합니다.
         public void SetupActionPoints(int actionPoints)
         {
             costService ??= new BattleCardCostService(maxActionPoints);
             costService.Setup(actionPoints);
         }
 
-        /// <summary>
-        /// AP를 증감시키되 0과 최대치 사이로 보정합니다.
-        /// </summary>
+        // 현재 AP를 지정량만큼 증감하고 최대 AP 범위 안으로 보정합니다.
         public void AddActionPoints(int amount)
         {
             costService ??= new BattleCardCostService(maxActionPoints);
             costService.Add(amount);
         }
 
-        /// <summary>
-        /// 플레이어 턴 시작 시 턴 수만큼 AP를 얻습니다.
-        /// 예: 3턴 시작이면 AP 3 증가
-        /// </summary>
+        // 플레이어 턴 시작 시 얻는 AP를 계산해 현재 AP에 더합니다.
         public int GainTurnActionPoints(int turnNumber)
         {
             int gainAmount = Mathf.Max(0, /*turnNumber*/ 10); // demo build: fixed 10 AP gain regardless of turn.
@@ -136,125 +79,61 @@ namespace NYH.BattleCardSystem
             return costService.Add(gainAmount);
         }
 
-        /// <summary>
-        /// 전투 보상 카드를 전투 덱에 추가합니다.
-        /// BattleDeckCollection이 있으면 영속 컬렉션에 반영하고,
-        /// 없으면 현재 런타임 pileState에 직접 반영합니다.
-        /// </summary>
+        // 전투 보상 카드를 영속 덱 또는 현재 전투 덱에 추가합니다.
         public BattleDeckAddResult AddEarnedBattleCard(BattleCardData data, BattleCard replaceTarget = null)
         {
-            if (BattleDeckCollection.Instance != null)
-            {
-                BattleCardData replaceTargetData = replaceTarget != null ? replaceTarget.Data : null;
-                return BattleDeckCollection.Instance.AddBattleRewardCard(data, replaceTargetData);
-            }
-
-            BattleDeckAddResult result = pileState.AddRewardCard(data, replaceTarget);
-            if (result == BattleDeckAddResult.Added || result == BattleDeckAddResult.Replaced)
-            {
-                earnedBattleCards.Add(data);
-            }
-
-            return result;
+            return rewardService.AddEarnedBattleCard(data, replaceTarget);
         }
 
-        /// <summary>
-        /// 포션 카드는 일반 제한 카드와 다르게 바로 전투 덱에 추가합니다.
-        /// </summary>
+        // 포션처럼 일반 제한과 다르게 즉시 전투 덱에 추가되는 카드를 넣습니다.
         public void AddPotionCard(BattleCardData potionData)
         {
-            if (BattleDeckCollection.Instance != null)
-            {
-                BattleDeckCollection.Instance.AddPotionCard(potionData);
-                return;
-            }
-
-            pileState.AddPotionCard(potionData);
+            rewardService.AddPotionCard(potionData);
         }
 
-        /// <summary>
-        /// 전투 시작 손패를 뽑습니다.
-        /// 현재 규칙은 "살아 있는 플레이어 유닛 종류 수 + 1장"이며 최소 1장입니다.
-        /// </summary>
+        // 전투 시작 손패 규칙에 따라 카드를 뽑습니다.
         public List<BattleCard> DrawOpeningHand(int unitTypeCount)
         {
-            openingHandService ??= new BattleOpeningHandService();
-            int drawCount = openingHandService.CalculateDrawCountByAliveUnitTypes(unitTypeCount);
-            return pileState.DrawCards(drawCount);
+            return handDrawService.DrawOpeningHand(unitTypeCount);
         }
 
-        /// <summary>
-        /// 멀리건 시 손패를 덱으로 되돌리고 섞은 뒤,
-        /// 시작 손패 규칙으로 다시 카드를 뽑습니다.
-        /// </summary>
+        // 멀리건에서 손패 전체를 덱으로 되돌린 뒤 시작 손패를 다시 뽑습니다.
         public List<BattleCard> MulliganOpeningHand(int unitTypeCount)
         {
-            pileState.ReturnHandToDrawPileAndShuffle();
-            return DrawOpeningHand(unitTypeCount);
+            return handDrawService.MulliganOpeningHand(unitTypeCount);
         }
 
-        /// <summary>
-        /// 시작 멀리건에서 선택한 카드만 덱으로 되돌리고 다시 뽑습니다.
-        /// 선택하지 않은 카드는 손패에 그대로 유지됩니다.
-        /// </summary>
+        // 멀리건에서 선택한 카드만 덱으로 되돌리고 같은 수만큼 다시 뽑습니다.
         public BattleMulliganResult MulliganSelectedCards(IReadOnlyList<BattleCard> selectedCards)
         {
-            return pileState.MulliganSelectedCards(selectedCards);
+            return handDrawService.MulliganSelectedCards(selectedCards);
         }
 
-        /// <summary>
-        /// 플레이어 턴 시작 시 드로우합니다.
-        /// 현재 규칙은 시작 손패와 동일하게 "살아 있는 유닛 종류 수 + 1장"입니다.
-        /// </summary>
+        // 플레이어 턴 시작 규칙에 따라 카드를 뽑습니다.
         public List<BattleCard> DrawTurnCards(int aliveUnitTypeCount)
         {
-            openingHandService ??= new BattleOpeningHandService();
-            int drawCount = openingHandService.CalculateDrawCountByAliveUnitTypes(aliveUnitTypeCount);
-            return pileState.DrawCards(drawCount);
+            return handDrawService.DrawTurnCards(aliveUnitTypeCount);
         }
 
-        /// <summary>
-        /// 턴 종료 시 손패를 전부 버립니다.
-        /// </summary>
+        // 턴 종료 시 현재 손패를 모두 버림 더미로 보냅니다.
         public void EndTurnDiscardHand()
         {
-            pileState.DiscardHand();
+            handDrawService.EndTurnDiscardHand();
         }
 
-        /// <summary>
-        /// 현재 draw pile을 일반 카드 미리보기 UI로 변환해 보여줍니다.
-        /// </summary>
+        // 현재 전투 draw pile을 일반 카드 미리보기 UI로 보여줍니다.
         public void ShowDeck()
         {
-            if (pileState.DrawPileCount == 0 || CardListUI.Instance == null)
-            {
-                return;
-            }
-
-            CardListUI.Instance.Show(
-                ConvertToPreviewCards(pileState.GetShuffledDrawPileCopy()),
-                "전투 덱 확인");
+            pileViewService.ShowDeck();
         }
 
-        /// <summary>
-        /// 현재 discard pile을 일반 카드 미리보기 UI로 변환해 보여줍니다.
-        /// </summary>
+        // 현재 전투 discard pile을 일반 카드 미리보기 UI로 보여줍니다.
         public void ShowDiscardPile()
         {
-            if (pileState.DiscardPileCount == 0 || CardListUI.Instance == null)
-            {
-                return;
-            }
-
-            CardListUI.Instance.Show(
-                ConvertToPreviewCards(pileState.GetShuffledDiscardPileCopy()),
-                "전투 버림더미 확인");
+            pileViewService.ShowDiscardPile();
         }
 
-        /// <summary>
-        /// 전투 카드 플레이를 ActionSystem에 위임합니다.
-        /// 실제 처리 자체는 BattlePlayPerformer / BattleTacticalPerformer 쪽에서 수행됩니다.
-        /// </summary>
+        // 전투 카드 사용 요청을 ActionSystem에 전달합니다.
         public void PlayCard(
             BattleCard card,
             BattleUnit userUnit,
@@ -273,9 +152,7 @@ namespace NYH.BattleCardSystem
                 onFinished);
         }
 
-        /// <summary>
-        /// ActionSystem에서 전달받은 전투 관련 액션을 적절한 performer로 라우팅합니다.
-        /// </summary>
+        // ActionSystem에서 받은 전투 카드 관련 GameAction을 적절한 performer로 라우팅합니다.
         public IEnumerator Perform(GameAction action)
         {
             if (playPerformer.CanHandle(action))
@@ -290,46 +167,18 @@ namespace NYH.BattleCardSystem
             }
         }
 
-        /// <summary>
-        /// 카드 코스트를 현재 AP로 지불할 수 있는지 확인합니다.
-        /// </summary>
+        // 현재 AP로 카드 비용을 지불할 수 있는지 확인합니다.
         private bool CanAffordCardCost(BattleCard card)
         {
             costService ??= new BattleCardCostService(maxActionPoints);
             return costService.CanAfford(card);
         }
 
-        /// <summary>
-        /// 카드 코스트를 AP로 지불하고, 부족하면 실패합니다.
-        /// </summary>
+        // 카드 비용을 AP로 지불하고, AP 부족 시 체력 페널티 정보를 계산합니다.
         private (bool paidByActionPoints, int actionPointsSpent, int healthPenalty) ResolveCardCost(BattleCard card, int userCurrentHealth)
         {
             costService ??= new BattleCardCostService(maxActionPoints);
             return costService.TryPay(card);
-        }
-
-        /// <summary>
-        /// 전투 카드 목록을 CoreCardSystem용 미리보기 Card 목록으로 변환합니다.
-        /// 덱/버림더미 UI에서 재사용하기 위한 어댑터 역할입니다.
-        /// </summary>
-        private static List<Card> ConvertToPreviewCards(IEnumerable<BattleCard> battleCards)
-        {
-            List<Card> previewCards = new();
-            if (battleCards == null)
-            {
-                return previewCards;
-            }
-
-            foreach (var battleCard in battleCards)
-            {
-                Card previewCard = BattleCardViewAdapter.CreatePreviewCard(battleCard);
-                if (previewCard != null)
-                {
-                    previewCards.Add(previewCard);
-                }
-            }
-
-            return previewCards;
         }
     }
 }

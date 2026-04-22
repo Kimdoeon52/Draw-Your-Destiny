@@ -22,34 +22,28 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            BattleTeam targetTeam = attacker.Team == BattleTeam.Player ? BattleTeam.Enemy : BattleTeam.Player;
-            HashSet<Vector2Int> customPatternCells = null;
-            if (attackGA.CustomAttackPattern != null)
-            {
-                customPatternCells = AttackPatternResolver.ResolvePatternCellsAtAnchor(
-                    targetPosition,
-                    attackerPosition,
-                    targetPosition,
-                    attackGA.CustomAttackPattern,
-                    includeAnchorCell: true);
-            }
+            HashSet<Vector2Int> impactCells = BattleAttackImpactCellResolver.ResolveImpactCells(
+                attackerPosition,
+                targetPosition,
+                attackGA.Range,
+                attackGA.AttackPattern,
+                attackGA.CustomAttackPattern,
+                attackGA.PatternOriginMode);
 
             foreach (var pair in units)
             {
                 BattleUnit unit = pair.Value;
-                if (unit == null || !unit.IsAlive || unit.Team != targetTeam)
+                if (unit == null
+                    || !unit.IsAlive
+                    || !BattleUnitTargetFilterUtility.Matches(attacker, unit, attackGA.TargetFilter))
                 {
                     continue;
                 }
 
-                if (customPatternCells != null)
-                {
-                    if (customPatternCells.Contains(unit.GridPosition))
-                    {
-                        result.Add(unit);
-                    }
-                }
-                else if (IsInAttackArea(attackerPosition, targetPosition, unit.GridPosition, attackGA))
+                if (impactCells.Contains(unit.GridPosition)
+                    || (attackGA.AttackPattern == BattleAttackPattern.None
+                        && attackGA.PrimaryTarget != null
+                        && unit.GridPosition == attackGA.PrimaryTarget.GridPosition))
                 {
                     result.Add(unit);
                 }
@@ -79,28 +73,39 @@ namespace NYH.BattleCardSystem
             }
 
             BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
-            if (attackEffect == null)
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard);
+            if (attackEffect == null && healEffect == null)
             {
                 return result;
             }
 
-            if (attackEffect.CustomTargetingPattern != null)
+            AttackPatternData customTargetingPattern = attackEffect != null
+                ? attackEffect.CustomTargetingPattern
+                : healEffect.CustomHealPattern;
+            BattleAttackPattern targetingPattern = attackEffect != null
+                ? attackEffect.TargetingPattern
+                : healEffect.HealPattern;
+            int targetingRange = attackEffect != null
+                ? attackEffect.TargetingRange
+                : healEffect.Range;
+
+            if (customTargetingPattern != null)
             {
-                AddCustomPatternCells(attackerPosition, attackEffect.CustomTargetingPattern, result);
+                AddCustomPatternCells(attackerPosition, customTargetingPattern, result);
                 return result;
             }
 
-            switch (attackEffect.TargetingPattern)
+            switch (targetingPattern)
             {
                 case BattleAttackPattern.Line:
-                    AttackPatternResolver.AddLineCells(attackerPosition, attackEffect.TargetingRange, result);
+                    AttackPatternResolver.AddLineCells(attackerPosition, targetingRange, result);
                     break;
 
                 case BattleAttackPattern.Area:
                 case BattleAttackPattern.Adjacent4:
                 case BattleAttackPattern.None:
                 default:
-                    AttackPatternResolver.AddDiamondCells(attackerPosition, attackEffect.TargetingRange, result);
+                    AttackPatternResolver.AddDiamondCells(attackerPosition, targetingRange, result);
                     break;
             }
 
@@ -140,47 +145,6 @@ namespace NYH.BattleCardSystem
                     destination.Add(cell);
                 }
             }
-        }
-
-        private static bool IsInAttackArea(Vector2Int attackerPos, Vector2Int targetPos, Vector2Int unitPos, BattleAttackGA attackGA)
-        {
-            switch (attackGA.AttackPattern)
-            {
-                case BattleAttackPattern.Adjacent4:
-                    return ManhattanDistance(targetPos, unitPos) <= 1;
-
-                case BattleAttackPattern.Line:
-                    if (attackerPos.x != targetPos.x && attackerPos.y != targetPos.y)
-                    {
-                        return false;
-                    }
-
-                    if (attackerPos.x == targetPos.x && unitPos.x == attackerPos.x)
-                    {
-                        return IsBetween(attackerPos.y, targetPos.y, unitPos.y);
-                    }
-
-                    if (attackerPos.y == targetPos.y && unitPos.y == attackerPos.y)
-                    {
-                        return IsBetween(attackerPos.x, targetPos.x, unitPos.x);
-                    }
-
-                    return false;
-
-                case BattleAttackPattern.Area:
-                    return ManhattanDistance(targetPos, unitPos) <= Mathf.Max(0, attackGA.Range);
-
-                case BattleAttackPattern.None:
-                default:
-                    return unitPos == targetPos || (attackGA.PrimaryTarget != null && unitPos == attackGA.PrimaryTarget.GridPosition);
-            }
-        }
-
-        private static bool IsBetween(int start, int end, int value)
-        {
-            int min = Mathf.Min(start, end);
-            int max = Mathf.Max(start, end);
-            return value >= min && value <= max;
         }
 
         private static int ManhattanDistance(Vector2Int a, Vector2Int b)

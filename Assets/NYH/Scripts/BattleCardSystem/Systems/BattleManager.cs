@@ -104,7 +104,6 @@ namespace NYH.BattleCardSystem
 
             if (battleCardSystem == null)
             {
-                Debug.LogWarning($"[BattleManager] BattleCardSystem�� ���� ������ �� �����ϴ�. caller={caller}");
                 return false;
             }
 
@@ -117,9 +116,6 @@ namespace NYH.BattleCardSystem
             {
                 return;
             }
-
-            BattleGridCoordinateService.Instance.RefreshFromTilemaps();
-            BattleBoardSystem.Instance?.ReloadCombatTilesFromCoordinateService();
 
             BattleStartContext resolvedContext = context ?? defaultStartContext ?? new BattleStartContext();
             ResetBattleState();
@@ -296,7 +292,7 @@ namespace NYH.BattleCardSystem
             }
 
             int drawCount = GetAlivePlayerUnitTypeCount();
-            battleCardSystem.DrawOpeningHand(drawCount + 4); // 시연때만 +4장 드로우
+            battleCardSystem.DrawOpeningHand(drawCount + 3); // 시작시만 유닛 타입 수 +3장 뽑기
             hasOpeningHandPrepared = true;
             NotifyHandStateChanged();
         }
@@ -336,8 +332,8 @@ namespace NYH.BattleCardSystem
         {
             RebuildUnitLists();
 
-            bool playerAlive = BattleResultService.HasAliveUnits(playerUnits);
-            bool enemyAlive = BattleResultService.HasAliveUnits(enemyUnits);
+            bool playerAlive = HasAliveUnits(playerUnits);
+            bool enemyAlive = HasAliveUnits(enemyUnits);
             if (!playerAlive)
             {
                 HandleDefeat();
@@ -391,7 +387,13 @@ namespace NYH.BattleCardSystem
         private BattleResult BuildResult(bool isVictory)
         {
             RebuildUnitLists();
-            return BattleResultService.BuildResult(isVictory, BattleTurn, playerUnits, enemyUnits);
+            return new BattleResult
+            {
+                IsVictory = isVictory,
+                TurnCount = BattleTurn,
+                SurvivingPlayerUnits = CountAliveUnits(playerUnits),
+                SurvivingEnemyUnits = CountAliveUnits(enemyUnits),
+            };
         }
 
         private void RebuildUnitLists()
@@ -424,9 +426,37 @@ namespace NYH.BattleCardSystem
             OnPhaseChanged?.Invoke(phase);
         }
 
+        private static bool HasAliveUnits(List<BattleUnit> units)
+        {
+            foreach (BattleUnit unit in units)
+            {
+                if (unit != null && unit.IsAlive)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static int CountAliveUnits(List<BattleUnit> units)
+        {
+            int count = 0;
+            foreach (BattleUnit unit in units)
+            {
+                if (unit != null && unit.IsAlive)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
         private void NotifyHandStateChanged()
         {
             OnHandStateChanged?.Invoke();
         }
     }
 }
+

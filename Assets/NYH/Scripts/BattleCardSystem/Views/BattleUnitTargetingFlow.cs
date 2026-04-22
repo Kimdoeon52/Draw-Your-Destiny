@@ -32,6 +32,11 @@ namespace NYH.BattleCardSystem
                 return BattleUnitTargetingResult.Cancel;
             }
 
+            if (!BattleCardUnitTypeRestriction.CanUserUnitPlay(state.PendingBattleCard, clickedUnit))
+            {
+                return BattleUnitTargetingResult.None;
+            }
+
             if (state.PendingTargetingMode == BattleCardTargetingMode.MoveOnly
                 || state.PendingTargetingMode == BattleCardTargetingMode.MoveThenAttack)
             {

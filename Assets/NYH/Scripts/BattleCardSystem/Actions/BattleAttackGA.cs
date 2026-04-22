@@ -15,6 +15,8 @@ namespace NYH.BattleCardSystem
         public bool HitsAllTargetsInRange { get; }
         public BattleAttackPattern AttackPattern { get; }
         public AttackPatternData CustomAttackPattern { get; }
+        public BattleAttackPatternOriginMode PatternOriginMode { get; }
+        public BattleUnitTargetFilter TargetFilter { get; }
 
         public BattleAttackGA(
             BattleCard sourceCard,
@@ -26,7 +28,9 @@ namespace NYH.BattleCardSystem
             int targetCount,
             bool hitsAllTargetsInRange,
             BattleAttackPattern attackPattern,
-            AttackPatternData customAttackPattern = null)
+            AttackPatternData customAttackPattern = null,
+            BattleAttackPatternOriginMode patternOriginMode = BattleAttackPatternOriginMode.RangedPattern,
+            BattleUnitTargetFilter targetFilter = BattleUnitTargetFilter.EnemiesOnly)
         {
             SourceCard = sourceCard;
             Attacker = attacker;
@@ -38,6 +42,8 @@ namespace NYH.BattleCardSystem
             HitsAllTargetsInRange = hitsAllTargetsInRange;
             AttackPattern = attackPattern;
             CustomAttackPattern = customAttackPattern;
+            PatternOriginMode = patternOriginMode;
+            TargetFilter = targetFilter;
         }
     }
 }

@@ -3,8 +3,8 @@ namespace NYH.BattleCardSystem
     using System.Collections.Generic;
     using UnityEngine;
 
-    // Draws move, attack, path, and unit selection previews over the battle grid.
-    // Targeting rules are resolved before this class is called; this class only owns preview objects.
+    // 전투 그리드 프리뷰의 외부 진입점입니다.
+    // 실제 생성/삭제 로직은 전용 Layer 클래스에 위임해 씬 연결과 public API를 유지합니다.
     public class BattleGridPreviewSystem : MonoBehaviour
     {
         [SerializeField] private Color previewColor = new(0f, 1f, 0f, 0.95f);
@@ -19,406 +19,134 @@ namespace NYH.BattleCardSystem
         [SerializeField] private int pathSortingOrder = 2100;
         [SerializeField] private float previewZ = -0.25f;
 
-        private readonly List<GameObject> activeMovePreviewCells = new();
-        private readonly List<GameObject> activeAttackPreviewCells = new();
-        private readonly List<GameObject> activePathPreviewCells = new();
-        private readonly List<GameObject> activeUnitBorders = new();
-        private readonly List<GameObject> activeImpactUnitBorders = new();
-        private readonly List<GameObject> activeHoverCellBorders = new();
-        private readonly List<GameObject> activeAttackImpactPreviewCells = new();
-        private readonly List<GameObject> activeSelectionOrderMarkers = new();
-        private readonly Dictionary<SpriteRenderer, Color> highlightedUnitColors = new();
-        private static Sprite cachedPreviewSprite;
+        private BattleGridCellPreviewLayer movePreviewLayer;
+        private BattleGridCellPreviewLayer attackPreviewLayer;
+        private BattleGridCellPreviewLayer pathPreviewLayer;
+        private BattleGridCellPreviewLayer attackImpactPreviewLayer;
+        private BattleGridUnitBorderLayer unitBorderLayer;
+        private BattleGridUnitBorderLayer impactUnitBorderLayer;
+        private BattleGridUnitBorderLayer hoverCellBorderLayer;
+        private BattleGridSelectionOrderLayer selectionOrderLayer;
+        private BattleUnitHighlightLayer unitHighlightLayer;
 
-        // Backward-compatible wrapper for older callers.
+        // 프리뷰 Layer들을 준비해 public 메서드가 바로 위임할 수 있게 합니다.
+        private void Awake()
+        {
+            InitializeLayers();
+        }
+
+        // 기존 ShowCells 호출을 이동 셀 프리뷰로 연결하는 호환용 래퍼입니다.
         public void ShowCells(IEnumerable<Vector2Int> cells)
         {
             ShowMoveCells(cells);
         }
 
-        // Show selectable move cells in green.
+        // 이동 가능한 셀들을 초록색 프리뷰로 표시합니다.
         public void ShowMoveCells(IEnumerable<Vector2Int> cells)
         {
-            ShowCellsInternal(cells, previewColor, activeMovePreviewCells, sortingOrder, "move", false);
+            EnsureLayers();
+            movePreviewLayer.Show(cells, previewColor, sortingOrder, "move");
         }
 
-        // Show selectable attack cells in red.
+        // 공격 가능한 셀들을 빨간색 프리뷰로 표시합니다.
         public void ShowAttackCells(IEnumerable<Vector2Int> cells)
         {
-            ShowCellsInternal(cells, attackPreviewColor, activeAttackPreviewCells, sortingOrder, "attack", false);
+            EnsureLayers();
+            attackPreviewLayer.Show(cells, attackPreviewColor, sortingOrder, "attack");
         }
 
-        // Highlight the actual drawn move path separately from selectable cells.
+        // 플레이어가 실제로 그린 이동 경로를 별도 색상으로 표시합니다.
         public void ShowPathCells(IEnumerable<Vector2Int> cells)
         {
-            ShowCellsInternal(cells, pathPreviewColor, activePathPreviewCells, pathSortingOrder, "path", true);
+            EnsureLayers();
+            pathPreviewLayer.Show(cells, pathPreviewColor, pathSortingOrder, "path");
         }
 
-        // Clear every active preview in one pass.
+        // 현재 떠 있는 모든 셀/테두리/마커/유닛 하이라이트를 제거합니다.
         public void Clear()
         {
-            ClearAllPreviewCells();
-            ClearUnitBorders();
-            ClearImpactUnitBorders();
-            ClearHoverCellBorders();
-            ClearSelectionOrderMarkers();
-            ClearUnitHighlights();
+            EnsureLayers();
+            movePreviewLayer.Clear();
+            attackPreviewLayer.Clear();
+            pathPreviewLayer.Clear();
+            attackImpactPreviewLayer.Clear();
+            unitBorderLayer.Clear();
+            impactUnitBorderLayer.Clear();
+            hoverCellBorderLayer.Clear();
+            selectionOrderLayer.Clear();
+            unitHighlightLayer.Clear();
         }
 
-        // Safety reset for cases where highlight / hit-flash color states get out of sync.
+        // 하이라이트나 피격 플래시가 꼬였을 때 모든 유닛 색상을 즉시 초기화합니다.
         public void ResetAllUnitColorsImmediate()
         {
-            ClearUnitHighlights();
-
-            BattleUnit[] allUnits = FindObjectsByType<BattleUnit>(FindObjectsSortMode.None);
-            for (int i = 0; i < allUnits.Length; i++)
-            {
-                BattleUnit unit = allUnits[i];
-                if (unit == null)
-                {
-                    continue;
-                }
-
-                SpriteRenderer[] renderers = unit.GetComponentsInChildren<SpriteRenderer>(true);
-                for (int j = 0; j < renderers.Length; j++)
-                {
-                    SpriteRenderer renderer = renderers[j];
-                    if (renderer == null)
-                    {
-                        continue;
-                    }
-
-                    renderer.color = Color.white;
-                }
-            }
+            EnsureLayers();
+            unitHighlightLayer.ResetAllUnitColorsImmediate();
         }
 
-        // Outline selectable unit candidates.
+        // 카드를 사용할 수 있는 유닛 후보들에 흰색 테두리를 표시합니다.
         public void ShowUnitBorders(IEnumerable<BattleUnit> units)
         {
-            ClearUnitBorders();
-            if (units == null)
-            {
-                return;
-            }
-
-            foreach (BattleUnit unit in units)
-            {
-                if (unit == null)
-                {
-                    continue;
-                }
-
-                CreateBorder(unit.GridPosition, Color.white);
-            }
+            EnsureLayers();
+            unitBorderLayer.ShowUnits(units, Color.white, pathSortingOrder + 1);
         }
 
-        // Outline only the units that would actually be hit by the current attack.
+        // 현재 공격 프리뷰에서 실제로 맞는 유닛들에 강조 테두리를 표시합니다.
         public void ShowImpactUnitBorders(IEnumerable<BattleUnit> units)
         {
-            ClearImpactUnitBorders();
-            if (units == null)
-            {
-                return;
-            }
-
-            // This is separate from the full attack range preview.
-            // It highlights only the enemies hit by the hovered target tile.
-            foreach (BattleUnit unit in units)
-            {
-                if (unit == null)
-                {
-                    continue;
-                }
-
-                CreateBorder(unit.GridPosition, impactBorderColor, activeImpactUnitBorders, pathSortingOrder + 2);
-            }
+            EnsureLayers();
+            impactUnitBorderLayer.ShowUnits(units, impactBorderColor, pathSortingOrder + 2);
         }
 
-        // Outline the currently hovered move destination in white.
+        // 이동 중 마우스가 올라간 셀에 흰색 테두리를 표시합니다.
         public void ShowHoverCellBorder(Vector2Int? cell)
         {
-            ClearHoverCellBorders();
-            if (!cell.HasValue)
-            {
-                return;
-            }
-
-            CreateBorder(cell.Value, hoverCellBorderColor, activeHoverCellBorders, pathSortingOrder + 3);
+            EnsureLayers();
+            hoverCellBorderLayer.ShowCell(cell, hoverCellBorderColor, pathSortingOrder + 3);
         }
 
-        // Show the actual impacted attack pattern cells for the hovered attack tile.
+        // 공격 대상 선택 시 실제 영향 범위 셀을 노란색 계열로 표시합니다.
         public void ShowAttackImpactCells(IEnumerable<Vector2Int> cells)
         {
-            ShowCellsInternal(
-                cells,
-                attackImpactCellColor,
-                activeAttackImpactPreviewCells,
-                pathSortingOrder + 1,
-                "impact",
-                false);
+            EnsureLayers();
+            attackImpactPreviewLayer.Show(cells, attackImpactCellColor, pathSortingOrder + 1, "impact");
         }
 
+        // 다중 공격 대상 선택 순서를 숫자 마커로 표시합니다.
         public void ShowAttackSelectionOrder(IReadOnlyList<Vector2Int> cells)
         {
-            ClearSelectionOrderMarkers();
-            if (cells == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < cells.Count; i++)
-            {
-                CreateSelectionOrderMarker(cells[i], i + 1);
-            }
+            EnsureLayers();
+            selectionOrderLayer.Show(cells, pathSortingOrder + 4, pathSortingOrder + 5);
         }
 
-        // Tint the currently controlled allied unit so it stands out.
+        // 현재 조작 중인 아군 유닛을 어둡게 칠해 눈에 띄게 합니다.
         public void ShowUnitHighlights(IEnumerable<BattleUnit> units)
         {
-            ClearUnitHighlights();
-            if (units == null)
+            EnsureLayers();
+            unitHighlightLayer.Show(units, unitHighlightColor);
+        }
+
+        // 아직 Layer가 없으면 생성해 Awake 이전 호출이나 런타임 생성 상황을 보호합니다.
+        private void EnsureLayers()
+        {
+            if (movePreviewLayer == null)
             {
-                return;
-            }
-
-            foreach (BattleUnit unit in units)
-            {
-                if (unit == null)
-                {
-                    continue;
-                }
-
-                SpriteRenderer[] renderers = unit.GetComponentsInChildren<SpriteRenderer>();
-                foreach (SpriteRenderer renderer in renderers)
-                {
-                    if (renderer == null || highlightedUnitColors.ContainsKey(renderer))
-                    {
-                        continue;
-                    }
-
-                    highlightedUnitColors.Add(renderer, renderer.color);
-                    renderer.color = unitHighlightColor;
-                }
+                InitializeLayers();
             }
         }
 
-        // Rebuild one preview layer from the supplied cell list.
-        private void ShowCellsInternal(
-            IEnumerable<Vector2Int> cells,
-            Color color,
-            List<GameObject> targetList,
-            int rendererSortingOrder,
-            string debugLabel,
-            bool enableDetailedDebug)
+        // 인스펙터 설정값을 사용해 역할별 프리뷰 Layer를 생성합니다.
+        private void InitializeLayers()
         {
-            ClearPreviewList(targetList);
-            if (cells == null)
-            {
-                return;
-            }
-
-            foreach (Vector2Int cell in cells)
-            {
-                if (!BattleGridCoordinateService.Instance.TryGetWorldCenter(cell, out Vector3 previewWorld))
-                {
-                    continue;
-                }
-
-                GameObject previewCell = new($"BattlePreview_{debugLabel}_{cell.x}_{cell.y}");
-                previewCell.transform.SetParent(transform, false);
-                previewCell.transform.position = new Vector3(previewWorld.x, previewWorld.y, previewZ);
-                previewCell.transform.localScale = cellScale;
-
-                SpriteRenderer spriteRenderer = previewCell.AddComponent<SpriteRenderer>();
-                spriteRenderer.sprite = GetPreviewSprite();
-                spriteRenderer.color = color;
-                spriteRenderer.sortingOrder = rendererSortingOrder;
-
-                targetList.Add(previewCell);
-            }
-        }
-
-        // Remove all move, attack, path, and impact preview cells.
-        private void ClearAllPreviewCells()
-        {
-            ClearPreviewList(activeMovePreviewCells);
-            ClearPreviewList(activeAttackPreviewCells);
-            ClearPreviewList(activePathPreviewCells);
-            ClearPreviewList(activeAttackImpactPreviewCells);
-        }
-
-        // Safely destroy and clear a preview object list.
-        private static void ClearPreviewList(List<GameObject> previewList)
-        {
-            for (int i = 0; i < previewList.Count; i++)
-            {
-                if (previewList[i] != null)
-                {
-                    Destroy(previewList[i]);
-                }
-            }
-
-            previewList.Clear();
-        }
-
-        // Restore original colors after unit highlight preview ends.
-        private void ClearUnitHighlights()
-        {
-            foreach (var pair in highlightedUnitColors)
-            {
-                if (pair.Key != null)
-                {
-                    pair.Key.color = pair.Value;
-                }
-            }
-
-            highlightedUnitColors.Clear();
-        }
-
-        // Clear candidate unit borders.
-        private void ClearUnitBorders()
-        {
-            for (int i = 0; i < activeUnitBorders.Count; i++)
-            {
-                if (activeUnitBorders[i] != null)
-                {
-                    Destroy(activeUnitBorders[i]);
-                }
-            }
-
-            activeUnitBorders.Clear();
-        }
-
-        // Clear impact target borders.
-        private void ClearImpactUnitBorders()
-        {
-            for (int i = 0; i < activeImpactUnitBorders.Count; i++)
-            {
-                if (activeImpactUnitBorders[i] != null)
-                {
-                    Destroy(activeImpactUnitBorders[i]);
-                }
-            }
-
-            activeImpactUnitBorders.Clear();
-        }
-
-        private void ClearHoverCellBorders()
-        {
-            for (int i = 0; i < activeHoverCellBorders.Count; i++)
-            {
-                if (activeHoverCellBorders[i] != null)
-                {
-                    Destroy(activeHoverCellBorders[i]);
-                }
-            }
-
-            activeHoverCellBorders.Clear();
-        }
-
-        private void ClearSelectionOrderMarkers()
-        {
-            for (int i = 0; i < activeSelectionOrderMarkers.Count; i++)
-            {
-                if (activeSelectionOrderMarkers[i] != null)
-                {
-                    Destroy(activeSelectionOrderMarkers[i]);
-                }
-            }
-
-            activeSelectionOrderMarkers.Clear();
-        }
-
-        // Create the default unit-selection border.
-        private void CreateBorder(Vector2Int centerCell, Color color)
-        {
-            CreateBorder(centerCell, color, activeUnitBorders, pathSortingOrder + 1);
-        }
-
-        // Build a rectangular outline from four thin sprite pieces.
-        private void CreateBorder(Vector2Int centerCell, Color color, List<GameObject> targetList, int borderSortingOrder)
-        {
-            CreateBorderSegment(centerCell, new Vector3(0f, 0.52f, previewZ), new Vector3(1.18f, 0.12f, 1f), color, targetList, borderSortingOrder);
-            CreateBorderSegment(centerCell, new Vector3(0f, -0.52f, previewZ), new Vector3(1.18f, 0.12f, 1f), color, targetList, borderSortingOrder);
-            CreateBorderSegment(centerCell, new Vector3(-0.52f, 0f, previewZ), new Vector3(0.12f, 1.18f, 1f), color, targetList, borderSortingOrder);
-            CreateBorderSegment(centerCell, new Vector3(0.52f, 0f, previewZ), new Vector3(0.12f, 1.18f, 1f), color, targetList, borderSortingOrder);
-        }
-
-        // Create one edge segment for the border outline.
-        private void CreateBorderSegment(
-            Vector2Int centerCell,
-            Vector3 localOffset,
-            Vector3 scale,
-            Color color,
-            List<GameObject> targetList,
-            int borderSortingOrder)
-        {
-            GameObject border = new("BattleUnitBorder");
-            border.transform.SetParent(transform, false);
-            if (!BattleGridCoordinateService.Instance.TryGetWorldCenter(centerCell, out Vector3 borderWorld))
-            {
-                Destroy(border);
-                return;
-            }
-
-            border.transform.position = new Vector3(borderWorld.x, borderWorld.y, 0f) + localOffset;
-            border.transform.localScale = scale;
-
-            SpriteRenderer spriteRenderer = border.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = GetPreviewSprite();
-            spriteRenderer.color = color;
-            spriteRenderer.sortingOrder = borderSortingOrder;
-
-            targetList.Add(border);
-        }
-
-        private void CreateSelectionOrderMarker(Vector2Int centerCell, int order)
-        {
-            CreateBorder(centerCell, new Color(1f, 0.92f, 0.35f, 1f), activeSelectionOrderMarkers, pathSortingOrder + 4);
-
-            GameObject label = new($"BattleAttackOrder_{order}");
-            label.transform.SetParent(transform, false);
-            if (!BattleGridCoordinateService.Instance.TryGetWorldCenter(centerCell, out Vector3 labelWorld))
-            {
-                Destroy(label);
-                return;
-            }
-
-            label.transform.position = new Vector3(labelWorld.x, labelWorld.y, previewZ - 0.01f);
-
-            TextMesh textMesh = label.AddComponent<TextMesh>();
-            textMesh.text = order.ToString();
-            textMesh.fontSize = 64;
-            textMesh.characterSize = 0.09f;
-            textMesh.alignment = TextAlignment.Center;
-            textMesh.anchor = TextAnchor.MiddleCenter;
-            textMesh.color = new Color(0.15f, 0.05f, 0.05f, 1f);
-
-            MeshRenderer renderer = label.GetComponent<MeshRenderer>();
-            if (renderer != null)
-            {
-                renderer.sortingOrder = pathSortingOrder + 5;
-            }
-
-            activeSelectionOrderMarkers.Add(label);
-        }
-
-        // Lazily create and reuse the white sprite used by preview cells.
-        private static Sprite GetPreviewSprite()
-        {
-            if (cachedPreviewSprite != null)
-            {
-                return cachedPreviewSprite;
-            }
-
-            cachedPreviewSprite = Sprite.Create(
-                Texture2D.whiteTexture,
-                new Rect(0f, 0f, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height),
-                new Vector2(0.5f, 0.5f),
-                Texture2D.whiteTexture.width);
-
-            return cachedPreviewSprite;
+            movePreviewLayer = new BattleGridCellPreviewLayer(transform, cellScale, previewZ);
+            attackPreviewLayer = new BattleGridCellPreviewLayer(transform, cellScale, previewZ);
+            pathPreviewLayer = new BattleGridCellPreviewLayer(transform, cellScale, previewZ);
+            attackImpactPreviewLayer = new BattleGridCellPreviewLayer(transform, cellScale, previewZ);
+            unitBorderLayer = new BattleGridUnitBorderLayer(transform, previewZ);
+            impactUnitBorderLayer = new BattleGridUnitBorderLayer(transform, previewZ);
+            hoverCellBorderLayer = new BattleGridUnitBorderLayer(transform, previewZ);
+            selectionOrderLayer = new BattleGridSelectionOrderLayer(transform, previewZ);
+            unitHighlightLayer = new BattleUnitHighlightLayer();
         }
     }
 }

@@ -89,6 +89,35 @@ namespace NYH.BattleCardSystem
             return unitMap.TryGetValue(position, out BattleUnit unit) ? unit : null;
         }
 
+        public List<BattleUnit> GetUnitsInCells(
+            BattleUnit sourceUnit,
+            IEnumerable<Vector2Int> cells,
+            BattleUnitTargetFilter targetFilter)
+        {
+            List<BattleUnit> result = new();
+            if (sourceUnit == null || cells == null)
+            {
+                return result;
+            }
+
+            HashSet<Vector2Int> cellSet = cells as HashSet<Vector2Int> ?? new HashSet<Vector2Int>(cells);
+            foreach (var pair in unitMap)
+            {
+                BattleUnit unit = pair.Value;
+                if (unit == null
+                    || !unit.IsAlive
+                    || !cellSet.Contains(pair.Key)
+                    || !BattleUnitTargetFilterUtility.Matches(sourceUnit, unit, targetFilter))
+                {
+                    continue;
+                }
+
+                result.Add(unit);
+            }
+
+            return result;
+        }
+
         public bool TryMoveUnit(
             BattleUnit unit,
             Vector2Int targetPosition,

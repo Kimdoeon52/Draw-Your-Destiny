@@ -11,7 +11,7 @@
     /// </summary>
     public class BattleTacticalPerformer
     {
-        private const bool EnableAttackDebug = false;
+        private static readonly bool EnableAttackDebug = false;
 
         public bool CanHandle(GameAction action)
         {

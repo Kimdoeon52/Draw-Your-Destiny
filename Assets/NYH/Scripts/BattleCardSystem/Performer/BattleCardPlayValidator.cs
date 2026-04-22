@@ -27,6 +27,12 @@ namespace NYH.BattleCardSystem
                 return false;
             }
 
+            if (!BattleCardUnitTypeRestriction.CanUserUnitPlay(playCardGA.Card, userUnit))
+            {
+                Debug.LogWarning($"[BattleCardSystem] {userUnit.UnitType} 병종은 이 카드를 사용할 수 없습니다: {playCardGA.Card.Title}");
+                return false;
+            }
+
             bool requiresAttackCapability = playCardGA.Card.CardType == BattleCardType.Attack
                 || HasEffect<BattleDamageEffect>(playCardGA.Card);
             bool requiresMoveCapability = playCardGA.Card.CardType == BattleCardType.Move

@@ -18,6 +18,7 @@
         public BattleCardTargetingMode TargetingMode => Data != null ? Data.TargetingMode : BattleCardTargetingMode.Auto;
         public bool IgnoresDeckLimit => Data.IgnoresDeckLimit || Data.CardType == BattleCardType.Potion;
         public bool IsConsumable => Data.IsConsumable;
+        public IReadOnlyList<UnitType> AllowedUserUnitTypes => Data != null ? Data.AllowedUserUnitTypes : null;
         public IReadOnlyList<BattleCardKeyword> Keywords => Data.Keywords;
 
         public int RuntimeCardID => CardID;
@@ -100,6 +101,7 @@
             bool hasAttack = card.CardType == BattleCardType.Attack
                 || BattleEffectResolver.GetAttackEffect(card) != null
                 || HasEffect<BattleDamageEffect>(card)
+                || HasEffect<BattleHealEffect>(card)
                 || HasEffect<BattleStatusEffect>(card)
                 || HasEffect<BattleStatModifierEffect>(card);
 

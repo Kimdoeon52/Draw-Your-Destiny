@@ -37,5 +37,23 @@ namespace NYH.BattleCardSystem
 
             return null;
         }
+
+        public static BattleHealEffect GetHealEffect(BattleCard card)
+        {
+            if (card?.RuntimeEffects == null)
+            {
+                return null;
+            }
+
+            foreach (var effect in card.RuntimeEffects)
+            {
+                if (effect is BattleHealEffect healEffect)
+                {
+                    return healEffect;
+                }
+            }
+
+            return null;
+        }
     }
 }

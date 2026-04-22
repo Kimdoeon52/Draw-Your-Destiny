@@ -40,6 +40,11 @@ namespace NYH.BattleCardSystem
                     continue;
                 }
 
+                if (!BattleCardUnitTypeRestriction.CanUserUnitPlay(battleCard, unit))
+                {
+                    continue;
+                }
+
                 BattleCardTargetingMode targetingMode = BattleCardTargetingUtility.ResolveTargetingMode(battleCard);
                 if ((targetingMode == BattleCardTargetingMode.MoveOnly || targetingMode == BattleCardTargetingMode.MoveThenAttack)
                     && boardSystem != null)
@@ -265,6 +270,11 @@ namespace NYH.BattleCardSystem
 
         public static bool IsGroundTargetAttack(BattleCard battleCard)
         {
+            if (BattleEffectResolver.GetHealEffect(battleCard) != null)
+            {
+                return true;
+            }
+
             BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
             if (attackEffect == null)
             {
@@ -288,6 +298,55 @@ namespace NYH.BattleCardSystem
             IReadOnlyList<Vector2Int> confirmedMovePath,
             Vector2Int targetGrid)
         {
+            HashSet<Vector2Int> rawImpactCells = ResolveRawPreviewAttackCells(
+                boardSystem,
+                battleCard,
+                userUnit,
+                confirmedMovePath,
+                targetGrid);
+
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            if (attackEffect == null
+                || attackEffect.HitsAllTargetsInRange
+                || attackEffect.TargetCount <= 0)
+            {
+                return rawImpactCells;
+            }
+
+            Vector2Int attackOrigin = confirmedMovePath != null && confirmedMovePath.Count > 0
+                ? confirmedMovePath[confirmedMovePath.Count - 1]
+                : userUnit != null ? userUnit.GridPosition : Vector2Int.zero;
+            List<BattleUnit> previewTargets = ResolvePreviewAttackTargets(
+                boardSystem,
+                userUnit,
+                attackOrigin,
+                battleCard,
+                targetGrid);
+
+            if (previewTargets.Count == 0)
+            {
+                return rawImpactCells;
+            }
+
+            HashSet<Vector2Int> limitedImpactCells = new();
+            for (int i = 0; i < previewTargets.Count; i++)
+            {
+                if (previewTargets[i] != null)
+                {
+                    limitedImpactCells.Add(previewTargets[i].GridPosition);
+                }
+            }
+
+            return limitedImpactCells.Count > 0 ? limitedImpactCells : rawImpactCells;
+        }
+
+        private static HashSet<Vector2Int> ResolveRawPreviewAttackCells(
+            BattleBoardSystem boardSystem,
+            BattleCard battleCard,
+            BattleUnit userUnit,
+            IReadOnlyList<Vector2Int> confirmedMovePath,
+            Vector2Int targetGrid)
+        {
             HashSet<Vector2Int> result = new();
             if (boardSystem == null || battleCard == null || userUnit == null)
             {
@@ -295,7 +354,8 @@ namespace NYH.BattleCardSystem
             }
 
             BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
-            if (attackEffect == null)
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard);
+            if (attackEffect == null && healEffect == null)
             {
                 result.Add(targetGrid);
                 return result;
@@ -305,37 +365,24 @@ namespace NYH.BattleCardSystem
                 ? confirmedMovePath[confirmedMovePath.Count - 1]
                 : userUnit.GridPosition;
 
-            if (attackEffect.CustomImpactPattern != null)
+            if (healEffect != null && attackEffect == null)
             {
-                return boardSystem.ResolvePatternCellsAtAnchor(
-                    targetGrid,
+                return BattleAttackImpactCellResolver.ResolveImpactCells(
                     attackOrigin,
                     targetGrid,
-                    attackEffect.CustomImpactPattern,
-                    includeAnchorCell: true);
+                    healEffect.Range,
+                    healEffect.HealPattern,
+                    healEffect.CustomHealPattern,
+                    healEffect.HealPatternOriginMode);
             }
 
-            switch (attackEffect.ImpactPattern)
-            {
-                case BattleAttackPattern.Area:
-                    AttackPatternResolver.AddDiamondCells(targetGrid, attackEffect.ImpactRange, result);
-                    break;
-
-                case BattleAttackPattern.Line:
-                    AddLineCellsTowardsTarget(attackOrigin, targetGrid, attackEffect.ImpactRange, result);
-                    break;
-
-                case BattleAttackPattern.Adjacent4:
-                    AttackPatternResolver.AddDiamondCells(targetGrid, 1, result);
-                    break;
-
-                case BattleAttackPattern.None:
-                default:
-                    result.Add(targetGrid);
-                    break;
-            }
-
-            return result;
+            return BattleAttackImpactCellResolver.ResolveImpactCells(
+                attackOrigin,
+                targetGrid,
+                attackEffect.ImpactRange,
+                attackEffect.ImpactPattern,
+                attackEffect.CustomImpactPattern,
+                attackEffect.PatternOriginMode);
         }
 
         public static List<BattleUnit> ResolvePreviewImpactTargets(
@@ -361,9 +408,10 @@ namespace NYH.BattleCardSystem
             foreach (Vector2Int cell in impactCells)
             {
                 BattleUnit unit = boardSystem.GetUnitAt(cell);
+                BattleUnitTargetFilter targetFilter = ResolvePreviewTargetFilter(battleCard);
                 if (unit == null
                     || !unit.IsAlive
-                    || unit.Team == userUnit.Team
+                    || !BattleUnitTargetFilterUtility.Matches(userUnit, unit, targetFilter)
                     || result.Contains(unit))
                 {
                     continue;
@@ -404,7 +452,9 @@ namespace NYH.BattleCardSystem
                 attackEffect.TargetCount,
                 attackEffect.HitsAllTargetsInRange,
                 attackEffect.ImpactPattern,
-                attackEffect.CustomImpactPattern);
+                attackEffect.CustomImpactPattern,
+                attackEffect.PatternOriginMode,
+                attackEffect.ImpactTargetFilter);
 
             result.AddRange(boardSystem.GetUnitsInAttackArea(
                 attacker,
@@ -415,29 +465,18 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
-        private static void AddLineCellsTowardsTarget(
-            Vector2Int origin,
-            Vector2Int target,
-            int range,
-            HashSet<Vector2Int> destination)
+        private static BattleUnitTargetFilter ResolvePreviewTargetFilter(BattleCard battleCard)
         {
-            Vector2Int delta = target - origin;
-            Vector2Int direction;
-
-            if (Mathf.Abs(delta.x) >= Mathf.Abs(delta.y))
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            if (attackEffect != null)
             {
-                direction = delta.x >= 0 ? Vector2Int.right : Vector2Int.left;
-            }
-            else
-            {
-                direction = delta.y >= 0 ? Vector2Int.up : Vector2Int.down;
+                return attackEffect.ImpactTargetFilter;
             }
 
-            for (int i = 1; i <= Mathf.Max(1, range); i++)
-            {
-                destination.Add(origin + (direction * i));
-            }
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard);
+            return healEffect != null ? healEffect.HealTargetFilter : BattleUnitTargetFilter.EnemiesOnly;
         }
+
     }
 
     internal enum BattleMovePathEditResult

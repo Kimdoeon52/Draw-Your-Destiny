@@ -58,7 +58,9 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            Clear(returnCardToHand: false);
+            // 다른 카드가 이미 중앙 선택 상태라면 먼저 원래 손패 자리로 돌려보냅니다.
+            // 새 카드 선택 시 이전 카드가 중앙에 남아 입력이 망가지는 상황을 막습니다.
+            Clear(returnCardToHand: true);
             state.Begin(battleCard, cardView);
             state.SelectableUnits.AddRange(BattleTargetingQueryService.FindUsablePlayerUnits(battleCard));
             inputRouter.Phase = BattleCardTargetingPhase.SelectUnit;

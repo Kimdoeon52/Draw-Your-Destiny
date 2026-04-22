@@ -399,6 +399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitId: 1
+  unitType: 5
   team: 0
   maxHealth: 10
   attackPower: 1

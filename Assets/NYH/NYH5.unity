@@ -81309,6 +81309,7 @@ MonoBehaviour:
   enemyLevel: 0
   enemyID: 0
   countEnemyTurn: 0
+  cardCount: 0
 --- !u!4 &938640873
 Transform:
   m_ObjectHideFlags: 0
@@ -92889,6 +92890,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1bc551fb61d931b418d87544608e03f5, type: 2}
   - {fileID: 11400000, guid: e869f286f0b234a48a424868b6b21c5a, type: 2}
   - {fileID: 11400000, guid: 354ffbcfb90c12c47be4b5c2c65e00e3, type: 2}
+  - {fileID: 11400000, guid: bd2d938231ca2bd46a39604ecbfada47, type: 2}
+  - {fileID: 11400000, guid: c61c37fb499c664449768d83c0dec7bc, type: 2}
+  - {fileID: 11400000, guid: be64ed28ee3d6e1439e96d2ed9219c3d, type: 2}
+  - {fileID: 11400000, guid: e78ba37b946c02a4f9f4dc1ff5f274c4, type: 2}
+  - {fileID: 11400000, guid: cdda3b466226ef0449219e9eb2894c7a, type: 2}
+  - {fileID: 11400000, guid: ddea4d78090fab942ad40dc5607f42d9, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
 --- !u!4 &1089494668
 Transform:
   m_ObjectHideFlags: 0
@@ -108236,6 +108244,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyA: {fileID: 938640872}
+  enemyB: {fileID: 0}
+  enemyC: {fileID: 0}
   currentTurn: 0
   endTurn: 0
   startTurn: 0

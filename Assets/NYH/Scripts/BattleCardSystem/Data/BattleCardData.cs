@@ -41,6 +41,27 @@
         Area,
     }
 
+    public enum BattleAttackPatternOriginMode
+    {
+        [InspectorName("원거리 패턴 - 선택한 칸 기준")]
+        RangedPattern,
+
+        [InspectorName("근거리 패턴 - 유닛 앞 기준")]
+        MeleePattern,
+    }
+
+    public enum BattleUnitTargetFilter
+    {
+        [InspectorName("적만")]
+        EnemiesOnly,
+
+        [InspectorName("아군만")]
+        AlliesOnly,
+
+        [InspectorName("모든 유닛")]
+        AllUnits,
+    }
+
     public enum BattleCardTargetingMode
     {
         [InspectorName("자동")]
@@ -85,6 +106,10 @@
         // 필요할 때만 자산에서 강제로 모드를 지정합니다.
         [field: SerializeField] public BattleCardTargetingMode TargetingMode { get; private set; } = BattleCardTargetingMode.Auto;
 
+        [Header("사용 가능 병종 제한")]
+        [Tooltip("비워두면 모든 아군 전투 유닛이 사용할 수 있습니다.\n값을 넣으면 해당 UnitType 병종만 이 카드를 사용할 수 있습니다.")]
+        [SerializeField] private List<UnitType> allowedUserUnitTypes = new();
+
         [Header("키워드")]
         [field: SerializeField] public List<BattleCardKeyword> Keywords { get; private set; } = new();
 
@@ -97,6 +122,7 @@
         private string description;
 
         public string Description => description;
+        public IReadOnlyList<UnitType> AllowedUserUnitTypes => allowedUserUnitTypes;
 
         public override int SharedCardID => CardID;
         public override string SharedCardName => CardName;

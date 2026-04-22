@@ -257,7 +257,9 @@ namespace NYH.BattleCardSystem
                 attackEffect != null ? attackEffect.TargetCount : 1,
                 attackEffect != null && attackEffect.HitsAllTargetsInRange,
                 attackEffect != null ? attackEffect.ImpactPattern : BattleAttackPattern.None,
-                attackEffect != null ? attackEffect.CustomImpactPattern : null);
+                attackEffect != null ? attackEffect.CustomImpactPattern : null,
+                attackEffect != null ? attackEffect.PatternOriginMode : BattleAttackPatternOriginMode.RangedPattern,
+                attackEffect != null ? attackEffect.ImpactTargetFilter : BattleUnitTargetFilter.EnemiesOnly);
         }
 
         private static GameAction BuildAttackReactionChain(BattlePlayCardGA playCardGA, BattleAttackEffect attackEffect)
