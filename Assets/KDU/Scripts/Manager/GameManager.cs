@@ -25,6 +25,8 @@ public class GameManager : PersistentSingleton<GameManager>
     private TileMapManager tileMapManager;
     private BuildingPlacementService placementService;
     [SerializeField]private EnemyA enemyA;
+    [SerializeField]private EnemyB enemyB;
+    [SerializeField]private EnemyC enemyC;
     [Header("Game State")]
     public int currentTurn = 0;
 
@@ -142,6 +144,8 @@ public class GameManager : PersistentSingleton<GameManager>
         checkResearch();
         OngoingEffectSystem.Instance.OnTurnStartOrEnd();
         enemyA.StartEnemyTurn();
+        enemyB.StartEnemyTurn();
+        enemyC.StartEnemyTurn();
         // 현재 진입 중인 노드의 건물 턴 처리 (Behaviour.OnTurnEnd)
         if (tileMapManager != null)
         {

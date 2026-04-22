@@ -9,7 +9,8 @@ public enum EnemyAction
 {
     Building, //시대에 따른 건물 짓기를 다르게 할 것
     GetGold, //골드나 식량을 동시에 얻을꺼임.
-    TryOccupy //영지 점령 시도
+    TryOccupy, //영지 점령 시도
+    Rest //벨런스를 위한 턴 스킵.
 }
 
 public enum EnemyState
@@ -55,6 +56,9 @@ public class EnemyBrainBase : MonoBehaviour
 
     [Header("턴 진행 여부")] //적 종류마다 다르게 설정할꺼임.
     [SerializeField] public int countEnemyTurn; //이건 턴 진행마다 해야할꺼. 예를 들어 턴 3턴마다 영지 점령 시도 이런거.
+
+    [Header("적의 카드 갯수")]
+    [SerializeField] protected int cardCount; //적이 가진 카드 갯수를 생각중.
 
     public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음.
 
@@ -115,6 +119,7 @@ public class EnemyBrainBase : MonoBehaviour
         actionCases.Add(new ActionCases { action = EnemyAction.Building, state = EnemyState.Defend, weight = 50 });
         actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 40 });
         actionCases.Add(new ActionCases { action = EnemyAction.TryOccupy, state = EnemyState.Attack, weight = 10 });
+        actionCases.Add(new ActionCases { action = EnemyAction.Rest, state = EnemyState.Defend, weight = 0 });
     }
 
     protected virtual void UpdateActionCases() //적 행동 확률 업데이트하는 함수임. 예를 들어 레벨업하면 건물 짓는 행동 확률이 올라가는 식으로.
@@ -125,12 +130,14 @@ public class EnemyBrainBase : MonoBehaviour
             actionCases[0].weight = 50; //건물 짓기 확률 40%
             actionCases[1].weight = 30; //골드 얻기 확률 40%
             actionCases[2].weight = 20; //영지 점령 시도 확률 20%
+            actionCases[3].weight = 0; //턴 스킵 확률 0% -> 레벨업하면서 턴 스킵 안하게 하기
         }
         else if (enemyLevel == 3) //공격적으로 변함.
         {
             actionCases[0].weight = 60; //건물 짓기 확률 60%
             actionCases[1].weight = 0; //건물 위주로 하기 위해 골드 얻기 x
             actionCases[2].weight = 40; //영지 점령 시도 확률 40%
+            actionCases[3].weight = 0; //턴 스킵 확률 0% -> 레벨업하면서 턴 스킵 안하게 하기
         }
     }
     protected virtual EnemyAction GetWeightedRandomAction()
@@ -169,7 +176,7 @@ public class EnemyBrainBase : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < 5; i++) //한 턴에 5번 행동
+        for (int i = 0; i < cardCount; i++) //한 턴에 CardCount만큼 행동
         {
             NodeData target = owned[Random.Range(0, owned.Count)]; //소유 노드 중 랜덤 1개
             int nodeID = target.nodeID;
@@ -195,6 +202,9 @@ public class EnemyBrainBase : MonoBehaviour
                     Debug.Log($"<color=pink>[행동 {i+1}] 노드 {nodeID} 점령 시도</color> ");
                     TryToOccupyAdjacentNode(nodeID);
                     break;
+                case EnemyAction.Rest: //턴 스킵
+                    Debug.Log($"<color=blue>[행동 {i+1}] 노드 {nodeID} 턴 스킵</color> ");
+                    break;
             }
         }
         countEnemyTurn++;
@@ -219,7 +229,9 @@ public class EnemyBrainBase : MonoBehaviour
             case EnemyAction.GetGold:
                 return true;
             case EnemyAction.TryOccupy:
-                return gold >= 300; //영지 점령은 1000골드 이상으로 자주 못하게 설정.
+                return gold >= 300; //영지 점령은 500골드 이상으로 자주 못하게 설정.
+            case EnemyAction.Rest:
+                return true;
         }
         return false;
     }
