@@ -32,6 +32,9 @@ public class NodeButton : MonoBehaviour
 
         if (backgroundImage == null)
             backgroundImage = GetComponent<Image>();
+
+        if(backgroundImage != null)
+            backgroundImage.alphaHitTestMinimumThreshold = 0.3f;
     }
 
     private void OnClick()

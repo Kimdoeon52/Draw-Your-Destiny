@@ -36064,7 +36064,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -45803,7 +45803,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -51242,10 +51242,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 883145493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -193, y: -100}
+  m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &178040094
 MonoBehaviour:
@@ -51294,7 +51294,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -58105,8 +58105,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 782, y: -401}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 736.75, y: -380.10648}
+  m_SizeDelta: {x: 422.5, y: 293.9471}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &218688442
 MonoBehaviour:
@@ -58121,7 +58121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 115
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 218688444}
   nameLabel: {fileID: 551346871}
   mansionIcon: {fileID: 0}
 --- !u!114 &218688443
@@ -58188,8 +58188,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -5878235042330280752, guid: 3f6012c0063bd944eb18dfbd24e90007,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -58643,7 +58644,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -58732,8 +58733,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -320, y: -170}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -320.5, y: -166.5}
+  m_SizeDelta: {x: 153, y: 131}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &231646639
 MonoBehaviour:
@@ -58748,7 +58749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 126
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 231646641}
   nameLabel: {fileID: 523792427}
   mansionIcon: {fileID: 0}
 --- !u!114 &231646640
@@ -58815,8 +58816,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -3666816666773783880, guid: ebd9884618b03e44f83f5350f7e5afcc,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -63971,8 +63973,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 49, y: 103}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 28, y: 96}
+  m_SizeDelta: {x: 255, y: 179}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &246902881
 MonoBehaviour:
@@ -63987,7 +63989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 119
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 246902883}
   nameLabel: {fileID: 1141716262}
   mansionIcon: {fileID: 0}
 --- !u!114 &246902882
@@ -64054,8 +64056,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -8336041192980952098, guid: 0271b9fa04601194ca3454f4f4826746,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -69164,7 +69167,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -80033,7 +80036,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -99642,8 +99645,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -243, y: -67}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -260, y: -75}
+  m_SizeDelta: {x: 169, y: 185}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &365446078
 MonoBehaviour:
@@ -99658,7 +99661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 125
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 365446080}
   nameLabel: {fileID: 1197203037}
   mansionIcon: {fileID: 0}
 --- !u!114 &365446079
@@ -99725,8 +99728,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -7114331648812139581, guid: eb3e7429e2aba5547a91e3c35aac3546,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -104714,10 +104718,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1123479301}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 59.546875, y: 65.21796}
+  m_SizeDelta: {x: 274.9063, y: 241.5641}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &392378207
 MonoBehaviour:
@@ -104766,7 +104770,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -118592,8 +118596,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -426, y: -241}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -403.5, y: -234}
+  m_SizeDelta: {x: 252, y: 235}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &424921318
 MonoBehaviour:
@@ -118608,7 +118612,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 129
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 424921320}
   nameLabel: {fileID: 1311770524}
   mansionIcon: {fileID: 0}
 --- !u!114 &424921319
@@ -118675,8 +118679,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 8072719712370212721, guid: 329cce8fe0dc3ad4fa340229f4d2c80c,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -119146,8 +119151,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 111, y: -186}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 106.634766, y: -202.04001}
+  m_SizeDelta: {x: 264.2694, y: 242.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &442111321
 MonoBehaviour:
@@ -119162,7 +119167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 121
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 442111323}
   nameLabel: {fileID: 1147790700}
   mansionIcon: {fileID: 0}
 --- !u!114 &442111322
@@ -119229,8 +119234,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5226221235608444792, guid: dd9626cb46572e84baf6d6833faf4f20,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -123987,7 +123993,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -134226,8 +134232,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 727, y: 116}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 742.6395, y: 91.520004}
+  m_SizeDelta: {x: 205.2791, y: 345.04}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &509348948
 MonoBehaviour:
@@ -134242,7 +134248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 111
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 509348950}
   nameLabel: {fileID: 1728034038}
   mansionIcon: {fileID: 0}
 --- !u!114 &509348949
@@ -134309,8 +134315,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 3134683511766637874, guid: b0375e68a533b6e4a800a854de7f0a30,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -144316,7 +144323,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -144453,8 +144460,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 570, y: 125}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 566.5, y: 125.94}
+  m_SizeDelta: {x: 232, y: 232.89}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &527775639
 MonoBehaviour:
@@ -144520,8 +144527,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 7199875392690700444, guid: 93611974f206b8848b81775f6a44c92b,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -144551,7 +144559,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 109
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 527775640}
   nameLabel: {fileID: 100859569}
   mansionIcon: {fileID: 0}
 --- !u!1 &537055789
@@ -144704,7 +144712,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -144793,8 +144801,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 126, y: 305}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 145.22, y: 281.26}
+  m_SizeDelta: {x: 399.44, y: 255.52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &553488622
 MonoBehaviour:
@@ -144860,8 +144868,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 1869563365499494199, guid: f1964f1b51358f44590828002023cf7c,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -144891,7 +144900,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 105
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 553488623}
   nameLabel: {fileID: 1633476676}
   mansionIcon: {fileID: 0}
 --- !u!1 &555562559
@@ -163867,8 +163876,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -503, y: -90}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -512, y: -102}
+  m_SizeDelta: {x: 245, y: 187}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &599140931
 MonoBehaviour:
@@ -163883,7 +163892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 128
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 599140933}
   nameLabel: {fileID: 2091983744}
   mansionIcon: {fileID: 0}
 --- !u!114 &599140932
@@ -163950,8 +163959,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5953939825780358348, guid: 8a5b62424204fde4dbb0290aed982a95,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -174290,8 +174300,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -647, y: -225}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -643.5, y: -207.5}
+  m_SizeDelta: {x: 251, y: 343}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &619673321
 MonoBehaviour:
@@ -174306,7 +174316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 130
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 619673323}
   nameLabel: {fileID: 230496097}
   mansionIcon: {fileID: 0}
 --- !u!114 &619673322
@@ -174373,8 +174383,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -5182311704596160463, guid: f42602bbb8d6d024d9696c3445c00e86,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -194162,7 +194173,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -209739,8 +209750,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -463, y: 251}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -474.4813, y: 219.34332}
+  m_SizeDelta: {x: 270.0374, y: 307.6866}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &762674761
 MonoBehaviour:
@@ -209806,8 +209817,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -810417422143218293, guid: 3b0ce6fddf9591d4fa26b7791fb1bfe7,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -209837,7 +209849,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 102
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 762674762}
   nameLabel: {fileID: 1036983623}
   mansionIcon: {fileID: 0}
 --- !u!1 &770071186
@@ -210033,8 +210045,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 595, y: 9}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 593.4885, y: 12.5}
+  m_SizeDelta: {x: 198.4185, y: 106}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &789489961
 MonoBehaviour:
@@ -210049,7 +210061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 112
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 789489963}
   nameLabel: {fileID: 1435645934}
   mansionIcon: {fileID: 0}
 --- !u!114 &789489962
@@ -210116,8 +210128,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -1987997834694424885, guid: da02953511985a04fada64904bf4424d,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -215106,8 +215119,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -169, y: 93}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -148.5, y: 100.5}
+  m_SizeDelta: {x: 204, y: 226}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &825681747
 MonoBehaviour:
@@ -215122,7 +215135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 124
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 825681749}
   nameLabel: {fileID: 1227739158}
   mansionIcon: {fileID: 0}
 --- !u!114 &825681748
@@ -215189,8 +215202,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -4983054317040644087, guid: e9574b68ad723f94a85c9bafaaad7b3d,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -215277,8 +215291,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -284, y: 247}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -277.4925, y: 271.09}
+  m_SizeDelta: {x: 180.7317, y: 239.18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &838025874
 MonoBehaviour:
@@ -215344,8 +215358,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -616107208644381034, guid: b2fbfc5ee8d48a54e8ac868cf428a143,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -215375,7 +215390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 103
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 838025875}
   nameLabel: {fileID: 2101729062}
   mansionIcon: {fileID: 0}
 --- !u!1 &839842455
@@ -222986,8 +223001,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -753, y: -443}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -645.23, y: -314.04}
+  m_SizeDelta: {x: 611.54, y: 426.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &883145494
 MonoBehaviour:
@@ -223002,7 +223017,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 132
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 883145496}
   nameLabel: {fileID: 178040094}
   mansionIcon: {fileID: 0}
 --- !u!114 &883145495
@@ -223069,8 +223084,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 5501529628578856956, guid: c39086750a9cb4b44a4a5ace45e0062e,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -223171,7 +223187,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -252029,8 +252045,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 429, y: -260}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 412.71777, y: -252.38}
+  m_SizeDelta: {x: 194.4354, y: 179.77}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1033701882
 MonoBehaviour:
@@ -252045,7 +252061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 116
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1033701884}
   nameLabel: {fileID: 1079705221}
   mansionIcon: {fileID: 0}
 --- !u!114 &1033701883
@@ -252112,8 +252128,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 1760312425754169979, guid: 10b618d91629a1246a310ea9be40c982,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -265961,7 +265978,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -273982,7 +273999,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -274904,8 +274921,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 692, y: -73}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 661.71, y: -73.37207}
+  m_SizeDelta: {x: 165.58, y: 137.74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1118265240
 MonoBehaviour:
@@ -274920,7 +274937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 113
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1118265242}
   nameLabel: {fileID: 137895940}
   mansionIcon: {fileID: 0}
 --- !u!114 &1118265241
@@ -274987,8 +275004,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 4444008867417168882, guid: 0239738fb5e0f5c48b7589946bac2b6b,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -275090,8 +275108,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 711, y: 344}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 751, y: 341.35}
+  m_SizeDelta: {x: 394, y: 371}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1123479302
 MonoBehaviour:
@@ -275157,8 +275175,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 4247834461821843606, guid: 61af00bd22fabde4ab20bfb9226b8daa,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -275188,7 +275207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 110
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1123479303}
   nameLabel: {fileID: 392378207}
   mansionIcon: {fileID: 0}
 --- !u!1 &1125273227
@@ -275228,8 +275247,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -769, y: 373}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -678.25, y: 320.765}
+  m_SizeDelta: {x: 545.5, y: 412.1717}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1125273229
 MonoBehaviour:
@@ -275295,8 +275314,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 983537774445037097, guid: 297baa7c327a5984baa64007e9418a1c, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -275326,7 +275345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 101
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1125273230}
   nameLabel: {fileID: 1647773481}
   mansionIcon: {fileID: 0}
 --- !u!1 &1128289305
@@ -275366,8 +275385,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 298, y: 25}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 293.65, y: 37.5}
+  m_SizeDelta: {x: 189.71, y: 228}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1128289307
 MonoBehaviour:
@@ -275433,8 +275452,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -3062216686496059257, guid: 4c5454c93fa329741ace831ce23e42c2,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -275464,7 +275484,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 107
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1128289308}
   nameLabel: {fileID: 1967070390}
   mansionIcon: {fileID: 0}
 --- !u!1 &1131746162
@@ -275551,7 +275571,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -279855,7 +279875,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -280114,7 +280134,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -284523,6 +284543,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyA: {fileID: 0}
+  enemyB: {fileID: 0}
+  enemyC: {fileID: 0}
   currentTurn: 0
   endTurn: 0
   startTurn: 0
@@ -289642,7 +289664,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -295010,7 +295032,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -306022,7 +306044,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -306158,7 +306180,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -310999,7 +311021,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -314689,7 +314711,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -319556,8 +319578,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 557, y: -145}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 554, y: -153.29}
+  m_SizeDelta: {x: 257, y: 339.58}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1328986653
 MonoBehaviour:
@@ -319572,7 +319594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 114
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1328986655}
   nameLabel: {fileID: 447853182}
   mansionIcon: {fileID: 0}
 --- !u!114 &1328986654
@@ -319639,8 +319661,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 7232825125503258721, guid: 27ea3e3ce718b17489bc4c932a7dddc7,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -319790,8 +319813,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 146, y: -39}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 141.78969, y: -35.196404}
+  m_SizeDelta: {x: 208.6907, y: 170.3968}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1338297093
 MonoBehaviour:
@@ -319806,7 +319829,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 120
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1338297095}
   nameLabel: {fileID: 889619164}
   mansionIcon: {fileID: 0}
 --- !u!114 &1338297094
@@ -319873,8 +319896,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -2518928426559931334, guid: 2e41898d8b91b3543a5cc02864452559,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -328889,7 +328913,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 43.1
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -338348,7 +338372,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 56.45
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -358148,8 +358172,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -92, y: -212}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -48.25, y: -195.55347}
+  m_SizeDelta: {x: 102.5, y: 150.107}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1585743760
 MonoBehaviour:
@@ -358164,7 +358188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 122
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1585743762}
   nameLabel: {fileID: 1477377971}
   mansionIcon: {fileID: 0}
 --- !u!114 &1585743761
@@ -358231,8 +358255,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 4781802827705774384, guid: 62dc4c9b4f25abc4094f81dad61798d3,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -363151,7 +363176,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -363640,8 +363665,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -519, y: -350}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -491.35547, y: -340.2748}
+  m_SizeDelta: {x: 246.991, y: 179.1165}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1646699084
 MonoBehaviour:
@@ -363656,7 +363681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 131
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1646699086}
   nameLabel: {fileID: 1286914082}
   mansionIcon: {fileID: 0}
 --- !u!114 &1646699085
@@ -363723,8 +363748,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -2473272810691143733, guid: c738235c86ce8f945ad0e6b2ad78b24a,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -363773,10 +363799,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1125273228}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -109.16919, y: 80.8136}
+  m_SizeDelta: {x: 327.6617, y: 250.3728}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1647773481
 MonoBehaviour:
@@ -363825,7 +363851,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -370126,8 +370152,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 426, y: 143}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 435.21997, y: 124.64166}
+  m_SizeDelta: {x: 180.56, y: 288.7916}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1683579160
 MonoBehaviour:
@@ -370193,8 +370219,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -6477227079553487087, guid: 8cacd07a952da544f9a50923e5e75ef9,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -370224,7 +370251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 108
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1683579161}
   nameLabel: {fileID: 287453947}
   mansionIcon: {fileID: 0}
 --- !u!1 &1689823481
@@ -374603,8 +374630,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 278, y: -125}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 267, y: -135.5}
+  m_SizeDelta: {x: 180, y: 209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1716747559
 MonoBehaviour:
@@ -374619,7 +374646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 118
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1716747561}
   nameLabel: {fileID: 262546179}
   mansionIcon: {fileID: 0}
 --- !u!114 &1716747560
@@ -374686,8 +374713,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -1301539596099775331, guid: cd468bd12f0fd0a4e8d9a2fdbd25174c,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -374861,8 +374889,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -23, y: -14}
+  m_SizeDelta: {x: -79.3958, y: -170.1339}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1728034038
 MonoBehaviour:
@@ -374911,7 +374939,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 45
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -394093,8 +394121,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -368, y: 51}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -371, y: 30.5}
+  m_SizeDelta: {x: 264, y: 293}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1793529050
 MonoBehaviour:
@@ -394109,7 +394137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 127
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1793529052}
   nameLabel: {fileID: 1836377468}
   mansionIcon: {fileID: 0}
 --- !u!114 &1793529051
@@ -394176,8 +394204,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -2144529339754257964, guid: 3eec642a6ef9f924d88e773161785f08,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -394910,8 +394939,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 218, y: 124}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 216.16406, y: 125.83588}
+  m_SizeDelta: {x: 177.4033, y: 190.7467}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1821084637
 MonoBehaviour:
@@ -394977,8 +395006,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -1881735136602428280, guid: 36f0d92d41e2bdc4a88f3f23cf5f1872,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -395008,7 +395038,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 106
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 1821084638}
   nameLabel: {fileID: 1131746164}
   mansionIcon: {fileID: 0}
 --- !u!1 &1823117636
@@ -398494,7 +398524,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -407672,7 +407702,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 187462b630b3fde42aeca64e906b4b58, type: 3}
+  m_Sprite: {fileID: -8058646159064074401, guid: 30b5950bb31c55e48864b1b91841a7b5,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -430882,7 +430913,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -456662,8 +456693,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -124, y: 274}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -104.723755, y: 297.04}
+  m_SizeDelta: {x: 247.5975, y: 269.09}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2073917159
 MonoBehaviour:
@@ -456729,8 +456760,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 7571779219867845703, guid: 4138ee1136a14cf4d82a8071f37f3b45,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -456760,7 +456792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 104
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 2073917160}
   nameLabel: {fileID: 1266219268}
   mansionIcon: {fileID: 0}
 --- !u!1 &2079772231
@@ -471555,7 +471587,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -476220,7 +476252,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 41.3
+  m_fontSize: 72
   m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -489943,8 +489975,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 400, y: -93}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: 398.9663, y: -99.5}
+  m_SizeDelta: {x: 142.0058, y: 208}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2119853156
 MonoBehaviour:
@@ -489959,7 +489991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 117
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 2119853158}
   nameLabel: {fileID: 1264242912}
   mansionIcon: {fileID: 0}
 --- !u!114 &2119853157
@@ -490026,8 +490058,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 2586158438866828715, guid: 4157d5df344bb014d8de2317b2cbd669,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -493272,8 +493305,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -63, y: -42}
-  m_SizeDelta: {x: 75, y: 75}
+  m_AnchoredPosition: {x: -64.5, y: -49.5}
+  m_SizeDelta: {x: 266, y: 198}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2130980151
 MonoBehaviour:
@@ -493288,7 +493321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeID: 123
-  backgroundImage: {fileID: 0}
+  backgroundImage: {fileID: 2130980153}
   nameLabel: {fileID: 671501868}
   mansionIcon: {fileID: 0}
 --- !u!114 &2130980152
@@ -493355,8 +493388,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -1750994582652129013, guid: d26398ae2cdeca54f96acb3bfe5fba80,
+    type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
