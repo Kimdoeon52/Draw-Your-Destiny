@@ -42,9 +42,7 @@ namespace NYH.BattleCardSystem
                     BattleDeckCollection.Instance.ConfigureBaseDeck(baseBattleDeck);
                 }
 
-                SetupBattleDeck(
-                    BattleDeckCollection.Instance.BaseBattleDeck,
-                    BattleDeckCollection.Instance.EarnedBattleCards);
+                pileState.Setup(BattleDeckCollection.Instance.BuildBattleDeckSources());
                 return;
             }
 

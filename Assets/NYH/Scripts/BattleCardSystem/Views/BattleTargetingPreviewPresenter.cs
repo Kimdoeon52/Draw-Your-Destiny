@@ -1,4 +1,4 @@
-namespace NYH.BattleCardSystem
+﻿namespace NYH.BattleCardSystem
 {
     using System.Collections.Generic;
     using UnityEngine;

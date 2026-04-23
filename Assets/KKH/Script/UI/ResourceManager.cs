@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 
 /// <summary>
@@ -76,6 +76,7 @@ public class ResourceManager : MonoBehaviour
     // =====================================================================
     #region ── 공개 API: 자원 증감 ──
     // =====================================================================
+
 
     /// <summary>골드를 증감시킨다. 음수로 차감 가능.</summary>
     public void AddGold(int amount)

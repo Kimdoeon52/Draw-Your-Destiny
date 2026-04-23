@@ -39,7 +39,9 @@
         public bool CanHandle(GameAction action)
         {
             return action is SetCardTypeMultiplierGA
-                || action is DisableCardTypeGA;
+                || action is DisableCardTypeGA
+                || action is LockDrawGA
+                || action is SelectOneAndCopyGA;
         }
 
         public IEnumerator Perform(GameAction action)
@@ -61,9 +63,13 @@
                 refreshCardViews?.Invoke();
                 yield return null;
             }
-            else if(action is LockDrawGA lockDrawGA)
+            else if (action is LockDrawGA lockDrawGA)
             {
                 CardModifierSystem.DrawLock();
+            }
+            else if (action is SelectOneAndCopyGA selectOneAndCopyGA)
+            {
+                CardSystem.Instance.ShowDeckDistinct();
             }
         }
     }

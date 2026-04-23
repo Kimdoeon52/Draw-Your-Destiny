@@ -15,15 +15,15 @@ public enum EnemyAction
 
 public enum EnemyState
 {
-    Attack, //공격 <- 전투 전용 행동 타입
-    Defend //방어 <- 일반적인 문명 행동 타입
+    Money, //경제트리 <- 전투 전용 행동 타입
+    Fight //전투트리 <- 일반적인 문명 행동 타입
 }
 
 [System.Serializable]
 public class ActionCases
 {
     public EnemyAction action;
-    public EnemyState state;
+    //public EnemyState state;
     [Range(0, 100)] public int weight; //행동 확률
 }
 
@@ -41,12 +41,15 @@ public class EnemyBrainBase : MonoBehaviour
     [SerializeField] protected BuildingData houseData;
     [Header("병영 건물")] //0번은 석기시대 병영 1번 2번은 청동기 3,4,5번은 철기
     [SerializeField] protected List<BuildingData> barracksData = new List<BuildingData>();
+    [Header("특수 건물")]
+    [SerializeField] protected List<BuildingData> specialBuildData = new List<BuildingData>(); //트리별 다른 건물 짓기.
     [Header("병영별 풀 (barracksData와 인덱스 일치)")]
-    [SerializeField] protected List<EnemyAPool.EnemyAPoolBase> barracksPools = new List<EnemyAPool.EnemyAPoolBase>();
+    [SerializeField] protected List<List<EnemyAPoolBase>> barracksPools = new List<List<EnemyAPoolBase>>();
 
     [Header("골드 및 과학")]
     [SerializeField] protected int gold;
     [SerializeField] protected int science;
+    [SerializeField] protected int food;
 
     [Header("시대 레벨")]
     [SerializeField] protected int enemyLevel; //적의 시대를 나타낼 레벨임
@@ -59,6 +62,9 @@ public class EnemyBrainBase : MonoBehaviour
 
     [Header("적의 카드 갯수")]
     [SerializeField] protected int cardCount; //적이 가진 카드 갯수를 생각중.
+
+    [Header("경제? 전투?")]
+    [SerializeField] protected EnemyState enemyState; //적의 행동 패턴을 결정하는 상태 변수
 
     public event System.Action OnTurnPassed; //using System을 쓰면 Random쓰기 귀찮음.
 
@@ -115,13 +121,45 @@ public class EnemyBrainBase : MonoBehaviour
     {
         actionCases.Clear();//일단 비워주고
         enemyLevel = 1;
+        food = 0;
+        DefineEnemyState();
         //적 행동 확률 초기화
-        actionCases.Add(new ActionCases { action = EnemyAction.Building, state = EnemyState.Defend, weight = 50 });
-        actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 40 });
-        actionCases.Add(new ActionCases { action = EnemyAction.TryOccupy, state = EnemyState.Attack, weight = 10 });
-        actionCases.Add(new ActionCases { action = EnemyAction.Rest, state = EnemyState.Defend, weight = 0 });
+        switch(enemyState)
+        {
+            case EnemyState.Money: //경제트리라면 행동을 이걸로. 짓는 건물이 다름.
+                AddMoneyAction();
+                break;
+            case EnemyState.Fight: //전투트리라면 행동을 이걸로. 짓는 건물이 다름.
+                AddFightAction();
+                break;
+        }
+        //actionCases.Add(new ActionCases { action = EnemyAction.Building, state = EnemyState.Defend, weight = 50 });
+        //actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 40 });
+        //actionCases.Add(new ActionCases { action = EnemyAction.TryOccupy, state = EnemyState.Attack, weight = 10 });
+        //actionCases.Add(new ActionCases { action = EnemyAction.Rest, state = EnemyState.Defend, weight = 0 });
     }
-
+    protected virtual void DefineEnemyState()
+    {
+        //적의 상태 정의 (예: 경제 트리, 전투 트리 등)
+        enemyState = EnemyState.Fight; //전투트리가 일반적
+        //이 함수는 필요에 따라 적의 행동 패턴을 변경하는 데 사용할 수 있습니다.
+    }
+    protected virtual void AddMoneyAction()
+    {
+        //Override해서 적마다 행동 추가.
+        //여기에 각 Enemy의 초기 행동을 추가하면될듯함.
+        //예를 들면 AddActionCase(EnemyAction.Building, 40); 이런식으로 행동과 확률 추가하면 됩니데이.
+    }
+    protected virtual void AddFightAction()
+    {
+        //Override해서 적마다 행동 추가.
+        //여기에 각 Enemy의 초기 행동을 추가하면될듯함.
+        //예를 들면 AddActionCase(EnemyAction.Building, 40); 이런식으로 행동과 확률 추가하면 됩니데이.
+    }
+    protected virtual void AddActionCase(EnemyAction action, int weight) //적 행동 확률 추가하는 함수임.
+    {
+        actionCases.Add(new ActionCases { action = action, weight = weight });
+    }
     protected virtual void UpdateActionCases() //적 행동 확률 업데이트하는 함수임. 예를 들어 레벨업하면 건물 짓는 행동 확률이 올라가는 식으로.
     {
         //적 행동 확률 업데이트 구현
@@ -229,7 +267,7 @@ public class EnemyBrainBase : MonoBehaviour
             case EnemyAction.GetGold:
                 return true;
             case EnemyAction.TryOccupy:
-                return gold >= 300; //영지 점령은 500골드 이상으로 자주 못하게 설정.
+                return TryToOccupy(); //영지 점령은 조건을 걸어야할꺼같은데 뭘로 하는게 좋을지 생각해봅시다.
             case EnemyAction.Rest:
                 return true;
         }
@@ -252,6 +290,20 @@ public class EnemyBrainBase : MonoBehaviour
                 break;
         }
         gold -= 300;
+    }
+
+    protected virtual void BuildSpecialBuilding(int nodeID) //특수 건물 짓는 함수. 레벨 2,3에서 추가 행동으로 지을 수 있게 하기.
+    {
+        int specialChoice = Random.Range(0, specialBuildData.Count);
+        switch(enemyState)
+        {
+            case EnemyState.Money:
+                SpawnBuilding(nodeID, specialBuildData[0]); //0번째에는 포션건물
+                break;
+            case EnemyState.Fight:
+                SpawnBuilding(nodeID, specialBuildData[1]); //1번째에는 덫건물
+                break;
+        }
     }
     protected virtual void BuildLevelOne(int nodeID)
     {
@@ -282,7 +334,6 @@ public class EnemyBrainBase : MonoBehaviour
             case 2: //병영 건물
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [병영 짓자.]</color> ");
                 SpawnBuilding(nodeID, barracksData[0]); //석기 시대 병영
-                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this, nodeID);
                 break;
             case 3:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
@@ -295,10 +346,11 @@ public class EnemyBrainBase : MonoBehaviour
     {
         NodeData node = WorldMapManager.Instance.GetNode(nodeID);
         //적의 청동기 시대 건물 짓기 행동 구현
-        int buildingChoice = Random.Range(0, 5); //농장, 상점, 병영 중 하나 선택
+        //선택지: 농장, 상점, SoldierStone(돌도끼병), ArcheryRange_Medic(아처+힐러) [+ 민가]
+        int buildingChoice = Random.Range(0, 5);
         if (node.maxHuman <= 100)
         {
-            buildingChoice = Random.Range(0, 6); //농장, 상점, 병영, 민가 중 하나 선택
+            buildingChoice = Random.Range(0, 6); //민가 포함
         }
         switch (buildingChoice)
         {
@@ -316,20 +368,16 @@ public class EnemyBrainBase : MonoBehaviour
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 건물 짓자.]</color> ");
                 SpawnBuilding(nodeID, marketData);
                 break;
-            case 2: //병영 건물
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
-                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this, nodeID);
+            case 2: //하급 병영 — 돌도끼병
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [SoldierStone 짓자.]</color> ");
+                SpawnBuilding(nodeID, barracksData[0]);
                 break;
-            case 3: //병영 건물
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
-                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this, nodeID);
+            case 3: //중급 병영 — 아처 + 힐러
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [ArcheryRange_Medic 짓자.]</color> ");
+                SpawnBuilding(nodeID, barracksData[1]);
                 break;
-            case 4: //병영 건물
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
-                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this, nodeID);
+            case 4:
+                BuildSpecialBuilding(nodeID); //레벨 2부터는 특수 건물도 지을 수 있게 하기.
                 break;
             case 5:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
@@ -342,10 +390,12 @@ public class EnemyBrainBase : MonoBehaviour
     {
         NodeData node = WorldMapManager.Instance.GetNode(nodeID);
         //적의 철기 시대 건물 짓기 행동 구현
-        int buildingChoice = Random.Range(0, 8); //농장, 상점, 병영 중 하나 선택
+        //선택지: 농장, 상점, SoldierStone(돌도끼병), ArcheryRange_Medic(아처+힐러),
+        //       StableBarracks(기마병+메탈킹), WizzardBuild(마법사) [+ 민가]
+        int buildingChoice = Random.Range(0, 7);
         if (node.maxHuman <= 100)
         {
-            buildingChoice = Random.Range(0, 9); //농장, 상점, 병영, 민가 중 하나 선택
+            buildingChoice = Random.Range(0, 8); //민가 포함
         }
         switch (buildingChoice)
         {
@@ -363,40 +413,30 @@ public class EnemyBrainBase : MonoBehaviour
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [상점 짓자.]</color> ");
                 SpawnBuilding(nodeID, marketData);
                 break;
-            case 2: //병영 건물
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [아처 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[1]); //청동기 시대 병영
-                if (barracksPools.Count > 1 && barracksPools[1] != null) barracksPools[1].Init(this, nodeID);
+            case 2: //하급 병영 — 돌도끼병
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [SoldierStone 짓자.]</color> ");
+                SpawnBuilding(nodeID, barracksData[0]);
                 break;
-            case 3: //병영 건물
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [힐러 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[2]); //청동기 시대 병영
-                if (barracksPools.Count > 2 && barracksPools[2] != null) barracksPools[2].Init(this, nodeID);
+            case 3: //중급 병영 — 아처 + 힐러
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [ArcheryRange_Medic 짓자.]</color> ");
+                SpawnBuilding(nodeID, barracksData[1]);
                 break;
-            case 4: //병영 건물
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [우가우가 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[0]); //청동기 시대 병영
-                if (barracksPools.Count > 0 && barracksPools[0] != null) barracksPools[0].Init(this, nodeID);
+            case 4: //상급 병영 — 기마병 + 메탈킹
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [StableBarracks 짓자.]</color> ");
+                SpawnBuilding(nodeID, barracksData[2]);
                 break;
-            case 5:
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [기마병 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[3]); //철기 시대 병영
-                if (barracksPools.Count > 3 && barracksPools[3] != null) barracksPools[3].Init(this, nodeID);
+            case 5: //최상급 병영 — 마법사
+                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [WizzardBuild 짓자.]</color> ");
+                SpawnBuilding(nodeID, barracksData[3]);
                 break;
             case 6:
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [마법사 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[4]); //철기 시대 병영
-                if (barracksPools.Count > 4 && barracksPools[4] != null) barracksPools[4].Init(this, nodeID);
+                BuildSpecialBuilding(nodeID); //레벨 3부터는 특수 건물도 지을 수 있게 하기.
                 break;
             case 7:
-                Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [슈퍼유닛 짓자.]</color> ");
-                SpawnBuilding(nodeID, barracksData[5]);
-                if (barracksPools.Count > 5 && barracksPools[5] != null) barracksPools[5].Init(this, nodeID);
-                break;
-            case 8:
                 Debug.Log($"<color=yellow>{enemyLevel}<-적 레벨 [민가 짓자.]</color> ");
                 SpawnBuilding(nodeID, houseData);
                 node.maxHuman += 10;
+                break;
                 break;
         }
     }
@@ -442,11 +482,14 @@ public class EnemyBrainBase : MonoBehaviour
         foreach (var r in build.GetComponentsInChildren<Renderer>(true)) r.enabled = false;
         instance.visual = build;
 
-        var poolBase = build.GetComponent<EnemyAPool.EnemyAPoolBase>();
-        if (poolBase != null)
+        // 한 건물 프리팹에 여러 EnemyAPoolBase 컴포넌트가 붙을 수 있음
+        // (예: ArcheryRange_Medic = Archer풀 + Healer풀, StableBarracks = HorseWarrior풀 + SuperUnit풀) 여러개 소환하려고 한거임 한건물에서
+        var poolBases = build.GetComponents<EnemyAPool.EnemyAPoolBase>();
+        foreach (var poolBase in poolBases)
         {
-            poolBase.Init(this, nodeID);
-            Debug.Log($"<color=cyan>[신규 병영] {buildingData.buildingName} 구독 완료</color>");
+            if (poolBase == null) continue;
+            poolBase.Init(this, nodeID); //모든 Init이 EnemyBrainBase의 StartEnemyTurn 이벤트에 구독되도록 하기
+            Debug.Log($"<color=cyan>[신규 병영 풀] {buildingData.buildingName} / {poolBase.GetType().Name} 구독 완료</color>");
         }
         node.buildings.Add(instance); // 노드의 건물 리스트에 새 건물 인스턴스 추가
 
@@ -525,11 +568,24 @@ public class EnemyBrainBase : MonoBehaviour
     protected virtual void CheckLevelUp()
     {
         //적의 레벨업 조건 구현
-        if (science >= 1000)
+        switch (enemyLevel)
         {
-            enemyLevel++;
-            science = 0; //레벨업 후 과학 초기화
+            case 1:
+                if (countEnemyTurn >= 10) //10턴마다 레벨업
+                {
+                    enemyLevel = 2;
+                    Debug.Log($"<color=green>[레벨업!!] 적 레벨이 {enemyLevel}로 상승했습니다.</color>");
+                }
+                break;
+            case 2:
+                if (countEnemyTurn >= 20) //20턴마다 레벨업
+                {
+                    enemyLevel = 3;
+                    Debug.Log($"<color=green>[레벨업!!] 적 레벨이 {enemyLevel}로 상승했습니다.</color>");
+                }
+                break;
         }
+        return;
     }
     //==============================점령 시도===========================================
     //적이 영지 점령 시도하는 행동 구현
@@ -540,7 +596,7 @@ public class EnemyBrainBase : MonoBehaviour
         {
             return true; //골드가 충분하면 점령 시도
         }
-        return false;
+        return false; //아님말구
     }
     //인접한 노드 탐색
     //조건1: 인접한 노드가 비어있는가. <- 비어있다면 해당 노드에 있는 Brain Active를 킨다. 키면 해당 영지는 본인 것으로 설정.

@@ -1,4 +1,4 @@
-namespace NYH.CoreCardSystem
+ï»¿namespace NYH.CoreCardSystem
 {
     using UnityEngine;
 
@@ -17,7 +17,7 @@ namespace NYH.CoreCardSystem
                 string visualKind = card?.PresentationData != null
                     ? card.PresentationData.VisualKind.ToString()
                     : "Unknown";
-                Debug.LogWarning($"[CardViewCreator] »ç¿ëÇÒ Ä«µå ÇÁ¸®ÆÕÀÌ ¾ø½À´Ï´Ù. title={title}, visualKind={visualKind}");
+                Debug.LogWarning($"[CardViewCreator] ì‚¬ìš©í•  ì¹´ë“œ í”„ë¦¬íŒ¹ì´ ì—†ìŠµë‹ˆë‹¤. title={title}, visualKind={visualKind}");
                 return null;
             }
 

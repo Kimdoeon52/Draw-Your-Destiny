@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
+  m_Name: Archer&Healer
+  m_EditorClassIdentifier: 
+  id: 
+  buildingName: "\uC544\uCC98\uBE4C\uB529"
+  buildingType: 10
+  sprite: {fileID: 7554988477733573114, guid: fbe838bf417961a4abbeed4e9bc701cf, type: 3}
+  requiredEra: 1
+  isAutoUpgrade: 0
+  upgradesTo: {fileID: 0}
+  goldCost: 0
+  width: 2
+  height: 2
+  allowedTiles: 04000000
+  maxPerTerritory: -1
+  isUniqueGlobal: 0
+  goldPerTurn: 0
+  researchPerTurn: 0
+  foodPerTurn: 0
+  populationCapBonus: 0
+  visualPrefab: {fileID: 540754806412210765, guid: be2fda9de7e70a7418a8016121360eb4,
+    type: 3}
+  productionInterval: 3
+  unitCapacity: 5

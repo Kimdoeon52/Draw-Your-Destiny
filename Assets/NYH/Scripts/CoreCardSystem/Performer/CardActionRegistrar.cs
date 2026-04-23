@@ -48,6 +48,8 @@
             ActionSystem.AttachPerformer<DisableCardTypeGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<AddCardGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<LockDrawGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<AddResearchByCurResearchGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<SelectOneAndCopyGA>(action => cardSystem.Perform(action));
         }
     }
 }

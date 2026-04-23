@@ -8,22 +8,27 @@
 
     public enum BattleCardType
     {
-        Attack,
-        Move,
-        Skill,
-        Potion,
+        Attack, // 공격
+        Move,  // 이동
+        Skill, // 특수 행동 (공격/이동 외 효과, 예: 버프, 디버프, 힐 등)
+        Potion, // 포션 - 경제 트리를 갔을 때만 얻을 수 있는 포션 
+        Trap,   // 함정 - 전투 트리를 갔을 때만 얻을 수 있는 함정 카드
     }
 
     public enum BattleCardKeyword
     {
-        None,
-        Stun,
-        Slow,
-        Disarm,
-        Push,
-        Pull,
-        MoveSpeedUp,
-        AttackPowerUp,
+        None,  // 타입 없음
+        Ranged, //원거리
+        Melle, //근거리 
+        Stun,  //기절
+        Slow,  //둔화
+        Disarm, //무장해제(n 턴간 공격력 0으로)
+        Push,   //밀기
+        Pull,   //당기기
+        MoveSpeedUp, //이동속도 증가
+        AttackPowerUp, //공격력 증가
+        AreaAttack, //범위 공격
+        NonPiercing, //비관통
     }
 
     public enum BattleAttackPattern
@@ -87,16 +92,24 @@
     public class BattleCardData : CardDataBase
     {
         [Header("기본 정보")]
+        [Tooltip("카드의 ID 중복되지 않게 지정")]
         [field: SerializeField] public int CardID { get; private set; }
+        [Tooltip("카드의 이름")]
         [field: SerializeField] public string CardName { get; private set; }
+        [Tooltip("카드의 타입")]
         [field: SerializeField] public BattleCardType CardType { get; private set; }
+        [Tooltip("전투 카드 가장 큰 이미지")]
         [field: SerializeField] public Sprite Image { get; private set; }
+        [Tooltip("전투 카드의 공격 범위를 보여줄 이미지")]
         [field: SerializeField] public Sprite GridImage { get; private set; }
 
         [Header("전투 코스트 / 덱 규칙")]
         [field: FormerlySerializedAs("<FoodCost>k__BackingField")]
+        [Tooltip("전투 코스트 사용량")]
         [field: SerializeField] public int ActionPointCost { get; private set; }
+        [Tooltip("디스플레이 이동 범위")]
         [field: SerializeField] public int DisplayMoveRange { get; private set; }
+        [Tooltip("덱 제한에 걸리는 카드인지 아닌지")]
         [field: SerializeField] public bool IgnoresDeckLimit { get; private set; }
         [Header("사용 시 소멸 여부")]
         [field: SerializeField] public bool IsConsumable { get; private set; } = false;
@@ -130,5 +143,6 @@
         public override string SharedDescription => Description;
         public override int SharedBaseCost => ActionPointCost;
         public override IReadOnlyList<Effect> SharedEffects => Effects;
+        
     }
 }

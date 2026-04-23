@@ -32,7 +32,7 @@ namespace NYH.BattleCardSystem
                 ResolvePreviewCardType(battleCardData.CardType),
                 battleCardData.Image,
                 battleCardData.ActionPointCost,
-                battleCardData.Description,
+                BattleCard.FormatBattleDescription(battleCardData.Description, battleCardData.Keywords),
                 battleCardData.Effects,
                 CardPresentationTextFormatter.CreateForBattle(battleCardData));
         }
@@ -50,7 +50,7 @@ namespace NYH.BattleCardSystem
                 ResolvePreviewCardType(battleCard.CardType),
                 battleCard.Image,
                 battleCard.CurrentCost,
-                battleCard.Data != null ? battleCard.Data.Description : string.Empty,
+                battleCard.Description,
                 battleCard.Data != null ? battleCard.Data.Effects : null,
                 CardPresentationTextFormatter.CreateForBattle(battleCard.Data));
         }
