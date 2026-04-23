@@ -303,9 +303,7 @@ namespace NYH.BattleCardSystem
                 ? confirmedMovePath[confirmedMovePath.Count - 1]
                 : userUnit != null ? userUnit.GridPosition : Vector2Int.zero;
 
-            if (attackEffect != null
-                && attackEffect.PatternOriginMode == BattleAttackPatternOriginMode.MeleePattern
-                && IsMeleeLinePreviewTarget(attackEffect, attackOrigin, targetGrid))
+            if (ShouldUseBlockingMeleeLinePreview(attackEffect, attackOrigin, targetGrid))
             {
                 return BuildMeleeLinePathPreview(
                     boardSystem,
@@ -322,7 +320,15 @@ namespace NYH.BattleCardSystem
                 userUnit,
                 confirmedMovePath,
                 targetGrid);
+            rawImpactCells = FilterBlockedPreviewImpactCells(
+                boardSystem,
+                battleCard,
+                userUnit,
+                attackOrigin,
+                targetGrid,
+                rawImpactCells);
             if (attackEffect == null
+                || attackEffect.BlocksBehindTargets
                 || attackEffect.HitsAllTargetsInRange
                 || attackEffect.TargetCount <= 0)
             {
@@ -358,12 +364,60 @@ namespace NYH.BattleCardSystem
             return limitedImpactCells.Count > 0 ? limitedImpactCells : rawImpactCells;
         }
 
-        private static bool IsMeleeLinePreviewTarget(
+        public static HashSet<Vector2Int> ResolvePreviewAttackDisplayCells(
+            BattleBoardSystem boardSystem,
+            BattleCard battleCard,
+            BattleUnit userUnit,
+            IReadOnlyList<Vector2Int> confirmedMovePath,
+            Vector2Int targetGrid,
+            IEnumerable<Vector2Int> selectableAttackCells)
+        {
+            HashSet<Vector2Int> result = selectableAttackCells != null
+                ? new HashSet<Vector2Int>(selectableAttackCells)
+                : new HashSet<Vector2Int>();
+
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            if (attackEffect == null
+                || !attackEffect.BlocksBehindTargets
+                || attackEffect.PatternOriginMode != BattleAttackPatternOriginMode.MeleePattern)
+            {
+                return result;
+            }
+
+            foreach (Vector2Int cell in ResolveRawPreviewAttackCells(
+                         boardSystem,
+                         battleCard,
+                         userUnit,
+                         confirmedMovePath,
+                         targetGrid))
+            {
+                result.Add(cell);
+            }
+
+            return result;
+        }
+
+        private static bool ShouldUseBlockingMeleeLinePreview(
             BattleAttackEffect attackEffect,
             Vector2Int attackOrigin,
             Vector2Int targetGrid)
         {
             if (attackEffect == null)
+            {
+                return false;
+            }
+
+            if (attackEffect.PatternOriginMode != BattleAttackPatternOriginMode.MeleePattern
+                || attackEffect.HitsAllTargetsInRange
+                || attackEffect.BlocksBehindTargets
+                || attackEffect.CustomImpactPattern != null)
+            {
+                return false;
+            }
+
+            bool usesLineLikeImpact = attackEffect.ImpactPattern == BattleAttackPattern.Line
+                || attackEffect.ImpactPattern == BattleAttackPattern.None;
+            if (!usesLineLikeImpact)
             {
                 return false;
             }
@@ -463,6 +517,68 @@ namespace NYH.BattleCardSystem
             }
 
             return result.Count > 0 ? result : rawImpactCells;
+        }
+
+        private static HashSet<Vector2Int> FilterBlockedPreviewImpactCells(
+            BattleBoardSystem boardSystem,
+            BattleCard battleCard,
+            BattleUnit attacker,
+            Vector2Int attackOrigin,
+            Vector2Int targetGrid,
+            HashSet<Vector2Int> rawImpactCells)
+        {
+            if (boardSystem == null || battleCard == null || attacker == null)
+            {
+                return rawImpactCells;
+            }
+
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            if (attackEffect == null || !attackEffect.BlocksBehindTargets)
+            {
+                return rawImpactCells;
+            }
+
+            BattleAttackGA previewAttack = new(
+                battleCard,
+                attacker,
+                null,
+                targetGrid,
+                0,
+                attackEffect.ImpactRange,
+                attackEffect.TargetCount,
+                attackEffect.HitsAllTargetsInRange,
+                attackEffect.BlocksBehindTargets,
+                attackEffect.ImpactPattern,
+                attackEffect.CustomImpactPattern,
+                attackEffect.PatternOriginMode,
+                attackEffect.ImpactTargetFilter);
+
+            return BattleAttackQueryService.FilterBlockedMeleeImpactCells(
+                rawImpactCells,
+                attacker,
+                attackOrigin,
+                targetGrid,
+                previewAttack,
+                EnumerateBoardUnits(boardSystem, rawImpactCells));
+        }
+
+        private static IEnumerable<KeyValuePair<Vector2Int, BattleUnit>> EnumerateBoardUnits(
+            BattleBoardSystem boardSystem,
+            IEnumerable<Vector2Int> cells)
+        {
+            if (boardSystem == null || cells == null)
+            {
+                yield break;
+            }
+
+            foreach (Vector2Int cell in cells)
+            {
+                BattleUnit unit = boardSystem.GetUnitAt(cell);
+                if (unit != null)
+                {
+                    yield return new KeyValuePair<Vector2Int, BattleUnit>(cell, unit);
+                }
+            }
         }
 
         private static HashSet<Vector2Int> ResolveRawPreviewAttackCells(
@@ -582,6 +698,7 @@ namespace NYH.BattleCardSystem
                 attackEffect.ImpactRange,
                 attackEffect.TargetCount,
                 attackEffect.HitsAllTargetsInRange,
+                attackEffect.BlocksBehindTargets,
                 attackEffect.ImpactPattern,
                 attackEffect.CustomImpactPattern,
                 attackEffect.PatternOriginMode,

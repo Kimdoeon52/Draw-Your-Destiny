@@ -60,6 +60,7 @@ namespace NYH.BattleCardSystem
             IEnumerable<Vector2Int> impactCells = null;
             IEnumerable<BattleUnit> impactTargets = null;
             IEnumerable<Vector2Int> pathCells = state.ConfirmedMovePath.Count > 0 ? state.ConfirmedMovePath : null;
+            IEnumerable<Vector2Int> attackCells = state.SelectableAttackCells;
 
             if (hoveredGrid.HasValue
                 && state.SelectableAttackCells.Contains(hoveredGrid.Value)
@@ -67,6 +68,13 @@ namespace NYH.BattleCardSystem
                 && state.PendingBattleCard != null
                 && state.PendingUserUnit != null)
             {
+                attackCells = BattleTargetingQueryService.ResolvePreviewAttackDisplayCells(
+                    BattleBoardSystem.Instance,
+                    state.PendingBattleCard,
+                    state.PendingUserUnit,
+                    state.ConfirmedMovePath,
+                    hoveredGrid.Value,
+                    state.SelectableAttackCells);
                 impactCells = BattleTargetingQueryService.ResolvePreviewAttackCells(
                     BattleBoardSystem.Instance,
                     state.PendingBattleCard,
@@ -83,7 +91,7 @@ namespace NYH.BattleCardSystem
 
             previewPresenter?.ShowAttackSelection(
                 state.PendingUserUnit,
-                state.SelectableAttackCells,
+                attackCells,
                 pathCells,
                 state.SelectedAttackTargetPositions,
                 impactCells,

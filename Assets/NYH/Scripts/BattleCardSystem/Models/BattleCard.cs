@@ -66,7 +66,20 @@
                 }
             }
 
-            return NormalizeDescriptionText(builder.ToString());
+            return FormatBattleDescription(
+                NormalizeDescriptionText(builder.ToString()),
+                Data.Keywords);
+        }
+
+        internal static string FormatBattleDescription(
+            string description,
+            IReadOnlyList<BattleCardKeyword> keywords)
+        {
+            string formattedDescription = BattleCardKeywordTextFormatter.ApplyKeywordColors(description, keywords);
+            string keywordLine = BattleCardKeywordTextFormatter.FormatKeywordList(keywords);
+            return string.IsNullOrEmpty(keywordLine)
+                ? formattedDescription
+                : $"{keywordLine}\n{formattedDescription}";
         }
 
         private static string NormalizeDescriptionText(string description)

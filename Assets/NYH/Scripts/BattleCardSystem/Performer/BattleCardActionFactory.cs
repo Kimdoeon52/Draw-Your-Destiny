@@ -256,6 +256,7 @@ namespace NYH.BattleCardSystem
                 attackEffect != null ? attackEffect.ImpactRange : 1,
                 attackEffect != null ? attackEffect.TargetCount : 1,
                 attackEffect != null && attackEffect.HitsAllTargetsInRange,
+                attackEffect != null && attackEffect.BlocksBehindTargets,
                 attackEffect != null ? attackEffect.ImpactPattern : BattleAttackPattern.None,
                 attackEffect != null ? attackEffect.CustomImpactPattern : null,
                 attackEffect != null ? attackEffect.PatternOriginMode : BattleAttackPatternOriginMode.RangedPattern,

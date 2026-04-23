@@ -15,7 +15,8 @@
 
     public class BattleCardPileState : CardPileStateBase<BattleCard>
     {
-        public const int MaxDeckSize = 30;
+        // 덱에 포함된 카드 중에서 덱 제한(MaxDeckSize)에 포함되는 카드의 최대 개수입니다.
+        public const int MaxDeckSize = 30; 
 
         private readonly List<BattleCard> exhaustedPile = new();
 

@@ -29,6 +29,9 @@
         [Tooltip("범위 공격이 실제로 맞출 유닛 팀을 정합니다.\n적만: 기존 공격 카드 기본값입니다.\n모든 유닛: 아군과 적을 모두 맞춥니다.")]
         [SerializeField] private BattleUnitTargetFilter impactTargetFilter = BattleUnitTargetFilter.EnemiesOnly;
 
+        [Tooltip("근거리 패턴에서 범위 안 대상이 공격을 막습니다.\n막는 대상의 칸은 맞지만, 같은 줄에서 그 뒤쪽 칸은 피격 범위에서 제외됩니다.")]
+        [SerializeField] private bool blocksBehindTargets;
+
         [Header("기본 패턴")]
         [Tooltip("분리 패턴을 끄면 이 패턴이 조준/피격 둘 다에 사용됩니다.")]
         [SerializeField] private BattleAttackPattern attackPattern = BattleAttackPattern.None;
@@ -67,6 +70,7 @@
         public int SelectionCount => Mathf.Max(1, selectionCount);
         public bool HitsAllTargetsInRange => hitsAllTargetsInRange;
         public BattleUnitTargetFilter ImpactTargetFilter => impactTargetFilter;
+        public bool BlocksBehindTargets => blocksBehindTargets;
         public BattleAttackPattern AttackPattern => attackPattern;
         public AttackPatternData CustomAttackPattern => customAttackPattern;
         public BattleAttackPatternOriginMode PatternOriginMode => patternOriginMode;

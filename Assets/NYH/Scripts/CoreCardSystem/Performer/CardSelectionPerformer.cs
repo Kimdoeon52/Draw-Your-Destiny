@@ -38,6 +38,7 @@
         private readonly Text deckCountText;
         private readonly Text discardCountText;
         private readonly System.Action refreshPileCounts;
+        private readonly BattleDeckReplacementSelector battleDeckReplacementSelector = new();
 
         public CardSelectionPerformer(
             CardPileState pileState,
@@ -185,11 +186,7 @@
                     yield break;
                 }
 
-                BattleDeckAddResult result = BattleDeckCollection.Instance.AddBattleRewardCard(selectedBundle.BattleCardData);
-                if (result == BattleDeckAddResult.NeedsReplacement)
-                {
-                    Debug.LogWarning("[CardSystem] 전투 덱이 가득 찼습니다. 교체 UI가 아직 없어 전투 카드를 추가하지 못했습니다.");
-                }
+                yield return AddBattleRewardWithReplacement(selectedBundle.BattleCardData);
             }
         }
 
@@ -249,6 +246,35 @@
             {
                 discardCountText.text = $"{pileState.DiscardPileCount}장";
             }
+        }
+
+        private IEnumerator AddBattleRewardWithReplacement(BattleCardData rewardCard)
+        {
+            BattleDeckCollection deckCollection = BattleDeckCollection.Instance;
+            if (deckCollection == null)
+            {
+                Debug.LogWarning("[CardSystem] BattleDeckCollection이 없어 전투 카드를 저장할 수 없습니다.");
+                yield break;
+            }
+
+            BattleDeckAddResult result = deckCollection.AddRewardCard(rewardCard);
+            if (result != BattleDeckAddResult.NeedsReplacement)
+            {
+                yield break;
+            }
+
+            BattleCardData replaceTarget = null;
+            yield return battleDeckReplacementSelector.SelectReplacement(
+                deckCollection.GetReplaceableCards(),
+                selected => replaceTarget = selected);
+
+            if (replaceTarget == null)
+            {
+                Debug.LogWarning("[CardSystem] 교체할 전투 카드를 선택하지 못해 보상 전투 카드를 추가하지 못했습니다.");
+                yield break;
+            }
+
+            deckCollection.ReplaceCard(replaceTarget, rewardCard);
         }
 
 

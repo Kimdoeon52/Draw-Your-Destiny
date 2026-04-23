@@ -17,7 +17,7 @@ MonoBehaviour:
   <CardType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 21300000, guid: 4883d30bace908f4c911786a1aece356,
     type: 3}
-  <GridImage>k__BackingField: {fileID: 4420822357845976506, guid: 1e980308c602f244ba46101a65c1c4d4,
+  <GridImage>k__BackingField: {fileID: -4767345366387897012, guid: 177a0cdcb88f9ad40a6c40bcee9cc1a1,
     type: 3}
   <ActionPointCost>k__BackingField: 2
   <DisplayMoveRange>k__BackingField: 4
@@ -25,13 +25,13 @@ MonoBehaviour:
   <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 4
   allowedUserUnitTypes: 
-  <Keywords>k__BackingField: 
+  <Keywords>k__BackingField: 020000000b000000
   <Effects>k__BackingField:
   - rid: 1104878801729618316
   - rid: 5001
   - rid: 1104878801729618317
-  description: "\uC120\uD0DD\uD55C \uC801\uC5D0\uAC8C {damage}\uC758 \uD53C\uD574\uB97C
-    \uC90D\uB2C8\uB2E4."
+  description: "\uBC94\uC704 \uB0B4 \uC720\uB2DB \uC5D0\uAC8C {damage}\uC758 \uD53C\uD574\uB97C
+    \uC90D\uB2C8\uB2E4.\n"
   references:
     version: 2
     RefIds:
@@ -45,11 +45,12 @@ MonoBehaviour:
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 2
-        range: 1
+        range: 3
         targetCount: 1
         selectionCount: 1
         hitsAllTargetsInRange: 1
         impactTargetFilter: 2
+        blocksBehindTargets: 1
         attackPattern: 0
         customAttackPattern: {fileID: 11400000, guid: af2b61dc10a9e9b4c87b3988250b70d9,
           type: 2}

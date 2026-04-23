@@ -13,6 +13,7 @@ namespace NYH.BattleCardSystem
         public int Range { get; }
         public int TargetCount { get; }
         public bool HitsAllTargetsInRange { get; }
+        public bool BlocksBehindTargets { get; }
         public BattleAttackPattern AttackPattern { get; }
         public AttackPatternData CustomAttackPattern { get; }
         public BattleAttackPatternOriginMode PatternOriginMode { get; }
@@ -27,6 +28,7 @@ namespace NYH.BattleCardSystem
             int range,
             int targetCount,
             bool hitsAllTargetsInRange,
+            bool blocksBehindTargets,
             BattleAttackPattern attackPattern,
             AttackPatternData customAttackPattern = null,
             BattleAttackPatternOriginMode patternOriginMode = BattleAttackPatternOriginMode.RangedPattern,
@@ -40,6 +42,7 @@ namespace NYH.BattleCardSystem
             Range = range;
             TargetCount = targetCount;
             HitsAllTargetsInRange = hitsAllTargetsInRange;
+            BlocksBehindTargets = blocksBehindTargets;
             AttackPattern = attackPattern;
             CustomAttackPattern = customAttackPattern;
             PatternOriginMode = patternOriginMode;

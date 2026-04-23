@@ -25,7 +25,7 @@ MonoBehaviour:
   <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 3
   allowedUserUnitTypes: 
-  <Keywords>k__BackingField: 
+  <Keywords>k__BackingField: 01000000
   <Effects>k__BackingField:
   - rid: 7216728472994972376
   - rid: 7216728472994972377
@@ -43,6 +43,7 @@ MonoBehaviour:
         selectionCount: 1
         hitsAllTargetsInRange: 0
         impactTargetFilter: 2
+        blocksBehindTargets: 0
         attackPattern: 1
         customAttackPattern: {fileID: 0}
         patternOriginMode: 0

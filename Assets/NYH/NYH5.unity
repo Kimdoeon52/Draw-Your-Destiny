@@ -81616,7 +81616,31 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
   - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
   - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
   earnedBattleCards: []
+  currentBattleDeck: []
 --- !u!4 &1008384001
 Transform:
   m_ObjectHideFlags: 0
@@ -174524,13 +174548,13 @@ SceneRoots:
   - {fileID: 968860956}
   - {fileID: 91458505}
   - {fileID: 893990015}
-  - {fileID: 1008384001}
   - {fileID: 1271427085}
   - {fileID: 1988197368}
   - {fileID: 299257788}
   - {fileID: 1365294297}
   - {fileID: 1752389645}
   - {fileID: 1846687610}
+  - {fileID: 1008384001}
   - {fileID: 1861604041}
   - {fileID: 571444878}
   - {fileID: 1089494668}
