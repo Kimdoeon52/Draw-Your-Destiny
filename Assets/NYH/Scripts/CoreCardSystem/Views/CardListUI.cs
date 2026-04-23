@@ -1,9 +1,10 @@
-namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
-    using TMPro;
 
     /// <summary>
     /// 덱이나 무덤처럼 많은 양의 카드를 스크롤하며 보여주는 UI 클래스입니다.
@@ -55,6 +56,22 @@ namespace NYH.CoreCardSystem
                 // UI 레이아웃에 맞게 스케일 조정 (필요 시)
                 cardView.transform.localScale = Vector3.one;
             }
+        }
+
+        public void ShowDistinct(List<Card> cards, string title)
+        {
+            // 중복 제거된 카드 리스트 생성
+            List<Card> distinctCards = new List<Card>();
+            HashSet<int> seenCardIds = new HashSet<int>();
+            foreach (var card in cards)
+            {
+                if (!seenCardIds.Contains(card.CardID))
+                {
+                    seenCardIds.Add(card.CardID);
+                    distinctCards.Add(card);
+                }
+            }
+            Show(distinctCards, title);
         }
 
         public void Close()

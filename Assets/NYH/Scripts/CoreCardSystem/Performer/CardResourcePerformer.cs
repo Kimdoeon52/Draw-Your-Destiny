@@ -1,6 +1,7 @@
-namespace NYH.CoreCardSystem
+﻿namespace NYH.CoreCardSystem
 {
     using System.Collections;
+    using Unity.VisualScripting;
     using UnityEngine;
 
     /*
@@ -61,7 +62,8 @@ namespace NYH.CoreCardSystem
                 || action is GenerateHumanGA
                 || action is IncreaseFoodGA
                 || action is ConvertGoldToFoodGA
-                || action is ZeroCostHandGA;
+                || action is ZeroCostHandGA
+                || action is AddResearchByCurResearchGA;
         }
 
         public IEnumerator Perform(GameAction action)
@@ -136,6 +138,13 @@ namespace NYH.CoreCardSystem
 
                 refreshCardViews?.Invoke();
                 yield return null;
+            }
+            else if (action is AddResearchByCurResearchGA addResearchByCurResearchGA)
+            {
+                if(ResourceManager.Instance.Research >= 50)
+                    GameManager.Instance.AddResearch(addResearchByCurResearchGA.Amount * 2);
+                else
+                    GameManager.Instance.AddResearch(addResearchByCurResearchGA.Amount);
             }
         }
     }

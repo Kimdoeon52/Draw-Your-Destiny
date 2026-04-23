@@ -180,6 +180,18 @@
             CardListUI.Instance.Show(pileState.GetShuffledDrawPileCopy(), "덱 확인");
         }
 
+        /// <summary>
+        /// 덱에 있는 카드들을 섞은 뒤 중복을 제외하고 보여줍니다.
+        /// </summary>
+        public void ShowDeckDistinct()
+        {
+            if (pileState.DrawPileCount == 0 || CardListUI.Instance == null)
+            {
+                return;
+            }
+
+            CardListUI.Instance.ShowDistinct(pileState.GetShuffledDrawPileCopy(), "덱 확인");
+        }
 
         /// <summary>
         /// 버려진 카드들을 섞어서 보여줍니다.
