@@ -4,7 +4,7 @@ public class EnemyB : EnemyBrainBase //1. 골드가 많음 2. 시대발전 빠름 3. 방어위
 {//경제트리 Enemy
     protected override void Awake()
     {
-        enemyID = 3;
+        enemyID = 2;
         enemyLevel = 1;
         cardCount = 2;
         base.Awake();

@@ -12176,6 +12176,64 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &82895340
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 82895342}
+  - component: {fileID: 82895341}
+  m_Layer: 5
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &82895341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82895340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6c5871a0a299c447abb29a0d7087221, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showOverlay: 1
+  verboseRaycastList: 1
+  overlayOffset: {x: 16, y: 16}
+  world3DMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  world2DMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  world3DDistance: 1000
+--- !u!224 &82895342
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82895340}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 960, y: 540}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &87019600
 GameObject:
   m_ObjectHideFlags: 0
@@ -248597,11 +248655,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9299b94f1ec3d96499a046c6b3cfdf80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cityTilemap: {fileID: 0}
-  farmlandTilemap: {fileID: 0}
-  groundTilemap: {fileID: 0}
-  forestTilemap: {fileID: 0}
-  riverTilemap: {fileID: 0}
+  cityTilemap: {fileID: 1704707505}
+  farmlandTilemap: {fileID: 493189522}
+  groundTilemap: {fileID: 1018025439}
+  forestTilemap: {fileID: 608934327}
+  riverTilemap: {fileID: 407091851}
 --- !u!4 &939204362
 Transform:
   m_ObjectHideFlags: 0
@@ -261754,7 +261812,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2000
   m_TargetDisplay: 0
 --- !u!224 &1050465221
 RectTransform:
@@ -397010,6 +397068,68 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1568685936
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1568685938}
+  - component: {fileID: 1568685937}
+  m_Layer: 0
+  m_Name: EnemyB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1568685937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568685936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0da2e3af4fbc04449d00b4adf0b1828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionCases: []
+  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
+  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
+  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
+  barracksData:
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
+  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
+  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
+  specialBuildData: []
+  gold: 0
+  science: 0
+  food: 0
+  enemyLevel: 0
+  enemyID: 0
+  countEnemyTurn: 0
+  cardCount: 0
+  enemyState: 0
+--- !u!4 &1568685938
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568685936}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1571553299
 GameObject:
   m_ObjectHideFlags: 0
@@ -421705,7 +421825,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 99
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &1654064291
 RectTransform:
@@ -452833,7 +452953,7 @@ MonoBehaviour:
   enemyID: 0
   countEnemyTurn: 0
   cardCount: 0
-  enemyState: 0
+  enemyState: 1
 --- !u!4 &1813612824
 Transform:
   m_ObjectHideFlags: 0
@@ -453459,6 +453579,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
   - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
   earnedBattleCards: []
+  currentBattleDeck: []
 --- !u!4 &1846909751
 Transform:
   m_ObjectHideFlags: 0
@@ -475662,6 +475783,68 @@ RectTransform:
   m_AnchoredPosition: {x: 275, y: 431}
   m_SizeDelta: {x: 362.7826, y: 151.1499}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2081630798
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2081630800}
+  - component: {fileID: 2081630799}
+  m_Layer: 0
+  m_Name: EnemyC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2081630799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081630798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba0b2edc9d373b741837aaf8a6e6e6e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionCases: []
+  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
+  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
+  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
+  barracksData:
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
+  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
+  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
+  specialBuildData: []
+  gold: 0
+  science: 0
+  food: 0
+  enemyLevel: 0
+  enemyID: 0
+  countEnemyTurn: 0
+  cardCount: 0
+  enemyState: 1
+--- !u!4 &2081630800
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081630798}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2082857386
 GameObject:
   m_ObjectHideFlags: 0
@@ -499161,6 +499344,8 @@ SceneRoots:
   - {fileID: 1582366159}
   - {fileID: 1367662849}
   - {fileID: 1813612824}
+  - {fileID: 1568685938}
+  - {fileID: 2081630800}
   - {fileID: 921747628}
   - {fileID: 1652405457}
   - {fileID: 1654064291}
@@ -499179,4 +499364,5 @@ SceneRoots:
   - {fileID: 439354297}
   - {fileID: 76886842}
   - {fileID: 1112856622}
+  - {fileID: 82895342}
   - {fileID: 1050465221}
