@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    // 피해량을 고정값으로 쓸지, 유닛 스탯 기반으로 계산할지 정합니다.
     public enum BattleDamageScalingMode
     {
         [InspectorName("고정 수치만 사용")]
@@ -15,6 +16,7 @@
         FixedPlusSourceUnitValue,
     }
 
+    // 스탯 기반 피해 계산에서 어느 유닛의 값을 읽을지 정합니다.
     public enum BattleDamageValueSourceUnit
     {
         [InspectorName("카드 사용 유닛")]
@@ -27,6 +29,7 @@
         FirstResolvedTarget,
     }
 
+    // 피해 계산에 사용할 유닛 스탯 종류입니다.
     public enum BattleUnitValueType
     {
         [InspectorName("현재 공격력")]
@@ -52,6 +55,13 @@
     }
 
     [System.Serializable]
+    /*
+     * BattleDamageEffect
+     *
+     * 역할:
+     * - 대상 유닛에게 피해를 적용합니다.
+     * - 고정 피해, 유닛 스탯 기반 피해, 고정+스탯 혼합 피해를 모두 지원합니다.
+     */
     public class BattleDamageEffect : BattleEffect
     {
         [Header("피해 계산 방식")]

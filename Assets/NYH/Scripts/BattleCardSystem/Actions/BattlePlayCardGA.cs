@@ -4,6 +4,13 @@ namespace NYH.BattleCardSystem
     using NYH.CoreCardSystem;
     using UnityEngine;
 
+    /*
+     * BattlePlayCardGA
+     *
+     * 역할:
+     * - 손패에서 전투 카드 1장을 사용하겠다는 최상위 요청 GameAction입니다.
+     * - 비용 지불 결과와 후속 이동/공격 생략 여부를 기록해 실행 체인이 공유합니다.
+     */
     public class BattlePlayCardGA : GameAction
     {
         public BattleCard Card { get; }

@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    // 전투 중 카드 효과로 수정 가능한 유닛 스탯입니다.
     public enum BattleUnitStatType
     {
         [InspectorName("공격력")]
@@ -13,6 +14,12 @@
     }
 
     [System.Serializable]
+    /*
+     * BattleStatModifierEffect
+     *
+     * 역할:
+     * - 대상 유닛의 공격력 또는 속도를 즉시 증감시킵니다.
+     */
     public class BattleStatModifierEffect : BattleEffect
     {
         [Header("능력치 변경")]

@@ -9,6 +9,7 @@ namespace NYH.BattleCardSystem
     /// </summary>
     internal static class BattleTargetingQueryService
     {
+        // 카드 이동 이펙트와 유닛 속도를 합쳐 실제 이동 예산을 계산합니다.
         public static int ResolveMoveBudget(BattleCard battleCard, BattleUnit userUnit)
         {
             if (battleCard == null || userUnit == null)
@@ -27,6 +28,7 @@ namespace NYH.BattleCardSystem
                 : Mathf.Max(0, moveEffect.Amount);
         }
 
+        // 현재 카드 사용 조건을 만족하고 실제로 이동/공격 후보가 있는 플레이어 유닛을 찾습니다.
         public static List<BattleUnit> FindUsablePlayerUnits(BattleCard battleCard)
         {
             List<BattleUnit> result = new();
@@ -93,6 +95,7 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
+        // 화면 좌표를 전투 그리드 좌표로 변환합니다.
         public static Vector2Int ResolveTargetGridPosition(Vector2 screenPosition)
         {
             Camera camera = Camera.main;
@@ -108,6 +111,7 @@ namespace NYH.BattleCardSystem
             return BattleUnit.GetGridPositionForWorld(worldPosition);
         }
 
+        // 선택된 이동 경로의 총 이동 비용을 계산합니다.
         public static int CalculatePathCost(BattleBoardSystem boardSystem, IReadOnlyList<Vector2Int> path)
         {
             if (boardSystem == null || path == null || path.Count == 0)
@@ -124,6 +128,7 @@ namespace NYH.BattleCardSystem
             return cost;
         }
 
+        // 드래그 중인 이동 경로를 현재 hover 셀까지 자연스럽게 연장합니다.
         public static bool TryExtendMovePath(
             BattleBoardSystem boardSystem,
             BattleUnit unit,
@@ -175,6 +180,7 @@ namespace NYH.BattleCardSystem
             return true;
         }
 
+        // 이동 타겟 클릭을 경로 추가/되돌리기/초기화 같은 편집 결과로 변환합니다.
         public static BattleMovePathEditResult ApplyMoveTargetClick(
             BattleBoardSystem boardSystem,
             BattleUnit unit,
@@ -220,6 +226,7 @@ namespace NYH.BattleCardSystem
             return BattleMovePathEditResult.Changed;
         }
 
+        // 마우스 드래그 입력을 이동 경로 편집으로 적용합니다.
         public static bool TryApplyMovePathDrag(
             BattleBoardSystem boardSystem,
             BattleUnit unit,
@@ -253,6 +260,7 @@ namespace NYH.BattleCardSystem
             return TryExtendMovePath(boardSystem, unit, moveBudget, drawnMovePath, hoveredGrid);
         }
 
+        // 공격 카드가 클릭할 수 있는 조준 후보 셀을 계산합니다.
         public static HashSet<Vector2Int> ResolveAttackSelectionCells(
             BattleBoardSystem boardSystem,
             BattleUnit attacker,
@@ -268,6 +276,7 @@ namespace NYH.BattleCardSystem
             return boardSystem.GetSelectableAttackCells(attacker, attackOrigin, battleCard);
         }
 
+        // 유닛 직접 선택이 아니라 빈 땅/셀을 조준하는 공격인지 확인합니다.
         public static bool IsGroundTargetAttack(BattleCard battleCard)
         {
             if (BattleEffectResolver.GetHealEffect(battleCard) != null)
@@ -291,6 +300,7 @@ namespace NYH.BattleCardSystem
                 || attackEffect.ImpactPattern == BattleAttackPattern.Adjacent4;
         }
 
+        // 현재 hover/선택 기준으로 실제 피격 프리뷰 셀을 계산합니다.
         public static HashSet<Vector2Int> ResolvePreviewAttackCells(
             BattleBoardSystem boardSystem,
             BattleCard battleCard,
@@ -364,6 +374,7 @@ namespace NYH.BattleCardSystem
             return limitedImpactCells.Count > 0 ? limitedImpactCells : rawImpactCells;
         }
 
+        // 빨간 조준 범위와 노란 피격 범위를 분리 표시할 때 사용할 표시용 공격 셀을 계산합니다.
         public static HashSet<Vector2Int> ResolvePreviewAttackDisplayCells(
             BattleBoardSystem boardSystem,
             BattleCard battleCard,
@@ -630,6 +641,7 @@ namespace NYH.BattleCardSystem
             return attackCells;
         }
 
+        // 프리뷰 피격 셀 안에서 실제로 강조할 유닛 목록을 계산합니다.
         public static List<BattleUnit> ResolvePreviewImpactTargets(
             BattleBoardSystem boardSystem,
             BattleCard battleCard,
@@ -670,6 +682,7 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
+        // 프리뷰용 공격 대상 유닛을 카드 필터/타겟 수 규칙에 맞춰 계산합니다.
         public static List<BattleUnit> ResolvePreviewAttackTargets(
             BattleBoardSystem boardSystem,
             BattleUnit attacker,

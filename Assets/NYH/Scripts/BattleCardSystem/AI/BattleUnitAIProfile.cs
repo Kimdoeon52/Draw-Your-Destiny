@@ -4,6 +4,13 @@
     using TMPro;
     using UnityEngine;
 
+    /*
+     * BattleUnitAIProfile
+     *
+     * 역할:
+     * - 개별 적 유닛의 AI 전략, 이동량, 공격 사거리를 인스펙터에서 덮어씁니다.
+     * - 간단한 데미지 텍스트 표시도 함께 담당합니다.
+     */
     public class BattleUnitAIProfile : MonoBehaviour
     {
         [Header("AI")]
@@ -27,6 +34,7 @@
             }
         }
 
+        // 유닛 위 데미지 텍스트를 잠시 표시합니다.
         public void ShowDamage(int damageAmount)
         {
             Debug.Log($"[BattleUnitAIProfile] 데미지 텍스트 요청 unit={name}, amount={damageAmount}, hasDamageText={(damageText != null)}");

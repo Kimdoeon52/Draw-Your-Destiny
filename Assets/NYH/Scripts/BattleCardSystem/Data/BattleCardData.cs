@@ -6,6 +6,7 @@
     using UnityEngine.Serialization;
     using NYH.CoreCardSystem;
 
+    // 전투 카드의 큰 분류입니다. 실제 타겟팅 방식은 이펙트와 TargetingMode도 함께 봅니다.
     public enum BattleCardType
     {
         Attack, // 공격
@@ -15,6 +16,7 @@
         Trap,   // 함정 - 전투 트리를 갔을 때만 얻을 수 있는 함정 카드
     }
 
+    // 카드 설명 상단과 본문에서 색상 태그로 표시할 키워드입니다.
     public enum BattleCardKeyword
     {
         None,  // 타입 없음
@@ -31,6 +33,7 @@
         NonPiercing, //비관통
     }
 
+    // 기본 제공 공격/회복 범위 패턴입니다.
     public enum BattleAttackPattern
     {
         [InspectorName("없음/기본 단일")]
@@ -46,6 +49,7 @@
         Area,
     }
 
+    // 패턴을 선택한 칸 기준으로 펼칠지, 사용자 유닛 앞 기준으로 펼칠지 정합니다.
     public enum BattleAttackPatternOriginMode
     {
         [InspectorName("원거리 패턴 - 선택한 칸 기준")]
@@ -55,6 +59,7 @@
         MeleePattern,
     }
 
+    // 범위 안에서 실제 대상으로 인정할 팀 필터입니다.
     public enum BattleUnitTargetFilter
     {
         [InspectorName("적만")]

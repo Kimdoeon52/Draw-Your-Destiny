@@ -5,6 +5,7 @@
     using NYH.CoreCardSystem;
     using UnityEngine;
 
+    // 전투 보상 카드를 덱에 반영하려고 시도했을 때의 결과입니다.
     public enum BattleDeckAddResult
     {
         Added,
@@ -13,6 +14,17 @@
         Invalid,
     }
 
+    /*
+     * BattleCardPileState
+     *
+     * 역할:
+     * - 전투 중 draw/hand/discard/exhausted 더미의 실제 런타임 상태를 관리합니다.
+     * - 드로우, 멀리건, 턴 종료 버림, 보상 카드 fallback 추가를 처리합니다.
+     *
+     * 담당하지 않는 것:
+     * - 영구 전투덱 저장은 BattleDeckCollection이 담당합니다.
+     * - 카드 사용 가능 여부와 비용 지불은 BattleCardSystem/CostService가 담당합니다.
+     */
     public class BattleCardPileState : CardPileStateBase<BattleCard>
     {
         // 덱에 포함된 카드 중에서 덱 제한(MaxDeckSize)에 포함되는 카드의 최대 개수입니다.
@@ -23,6 +35,7 @@
         public int ExhaustedPileCount => exhaustedPile.Count;
         public int LimitedDeckCount => CountLimitedCards(drawPile) + CountLimitedCards(hand) + CountLimitedCards(discardPile);
 
+        // BattleCardData 목록을 런타임 BattleCard로 바꿔 draw pile을 새로 구성합니다.
         public void Setup(IEnumerable<BattleCardData> deckSources)
         {
             ClearMainPiles();
@@ -44,6 +57,7 @@
             drawPile.Shuffle();
         }
 
+        // 영구 덱 저장소가 없을 때 현재 전투 더미에 보상 카드를 직접 추가하거나 교체합니다.
         public BattleDeckAddResult AddRewardCard(BattleCardData data, BattleCard replaceTarget = null)
         {
             if (data == null)
@@ -81,6 +95,7 @@
             return BattleDeckAddResult.Replaced;
         }
 
+        // 포션처럼 덱 제한을 무시하는 카드를 draw pile에 즉시 추가합니다.
         public void AddPotionCard(BattleCardData data)
         {
             if (data == null)
@@ -92,6 +107,7 @@
             drawPile.Shuffle();
         }
 
+        // 지정 수만큼 draw pile에서 카드를 뽑고, 비었으면 discard pile을 섞어 보충합니다.
         public List<BattleCard> DrawCards(int amount)
         {
             List<BattleCard> drawn = new();
@@ -115,6 +131,7 @@
             return drawn;
         }
 
+        // 멀리건 전체 교체용으로 손패 전체를 draw pile에 되돌리고 섞습니다.
         public void ReturnHandToDrawPileAndShuffle()
         {
             drawPile.AddRange(hand);
@@ -122,6 +139,7 @@
             drawPile.Shuffle();
         }
 
+        // 선택된 카드만 덱으로 되돌리고 같은 수만큼 다시 뽑아 멀리건 결과를 만듭니다.
         public BattleMulliganResult MulliganSelectedCards(IReadOnlyList<BattleCard> selectedCards)
         {
             BattleMulliganResult result = new();
@@ -166,17 +184,20 @@
             return result;
         }
 
+        // 특정 전투 카드가 현재 손패에 있는지 확인합니다.
         public bool ContainsInHand(BattleCard card)
         {
             return card != null && hand.Contains(card);
         }
 
+        // 카드를 discard pile로 보내고 필요하면 draw pile을 보충합니다.
         public void SendToDiscard(BattleCard card)
         {
             AddToDiscard(card);
             RefillDeckFromDiscardIfNeeded();
         }
 
+        // 소모/소멸 카드처럼 이번 전투에서 더 이상 쓰지 않을 카드를 exhausted pile로 보냅니다.
         public void Exhaust(BattleCard card)
         {
             if (card != null)
@@ -185,6 +206,7 @@
             }
         }
 
+        // 턴 종료 시 손패 전체를 discard pile로 이동합니다.
         public void DiscardHand()
         {
             discardPile.AddRange(hand);
@@ -192,6 +214,7 @@
             RefillDeckFromDiscardIfNeeded();
         }
 
+        // 덱 제한에 포함되는 현재 playable pile의 카드들을 모아 반환합니다.
         public List<BattleCard> GetLimitedDeckCards()
         {
             List<BattleCard> result = new();

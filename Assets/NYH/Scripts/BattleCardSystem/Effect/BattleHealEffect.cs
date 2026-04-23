@@ -4,6 +4,13 @@ namespace NYH.BattleCardSystem
     using UnityEngine;
 
     [System.Serializable]
+    /*
+     * BattleHealEffect
+     *
+     * 역할:
+     * - 범위 판정으로 선택된 대상에게 회복을 적용합니다.
+     * - 회복 범위 설정은 공격 패턴 시스템과 같은 개념을 재사용합니다.
+     */
     public class BattleHealEffect : BattleEffect
     {
         [Header("회복량")]

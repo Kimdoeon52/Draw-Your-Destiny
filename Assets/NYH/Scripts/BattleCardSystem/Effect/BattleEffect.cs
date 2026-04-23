@@ -4,6 +4,7 @@
     using NYH.CoreCardSystem;
     using UnityEngine;
 
+    // 전투 이펙트가 실제로 적용될 대상 범위를 지정합니다.
     public enum BattleEffectTargetType
     {
         [InspectorName("자기 자신")]
@@ -17,6 +18,14 @@
     }
 
     [System.Serializable]
+    /*
+     * BattleEffect
+     *
+     * 역할:
+     * - 모든 전투 전용 이펙트의 공통 기반 클래스입니다.
+     * - CoreCardSystem Effect와 달리 GameAction을 직접 만들기보다 전투 실행 중 Apply()로 처리됩니다.
+     * - targetType을 통해 자기 자신/직접 대상/범위 판정 대상 중 어디에 적용할지 통일합니다.
+     */
     public abstract class BattleEffect : Effect
     {
         [Header("대상 지정")]
@@ -30,8 +39,10 @@
             return null;
         }
 
+        // 전투 실행 중 계산된 context와 범위 대상 목록을 받아 실제 효과를 적용합니다.
         public abstract void Apply(BattleEffectContext context, IReadOnlyList<BattleUnit> resolvedTargets);
 
+        // targetType 설정에 따라 이 이펙트가 실제로 순회해야 할 유닛 목록을 만듭니다.
         protected IEnumerable<BattleUnit> ResolveTargetUnits(BattleEffectContext context, IReadOnlyList<BattleUnit> resolvedTargets)
         {
             if (context == null)

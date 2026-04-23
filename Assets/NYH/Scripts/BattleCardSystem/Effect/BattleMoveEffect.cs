@@ -5,6 +5,13 @@
     using UnityEngine;
 
     [System.Serializable]
+    /*
+     * BattleMoveEffect
+     *
+     * 역할:
+     * - 카드가 유닛 이동을 발생시키도록 BattleMoveGA를 생성합니다.
+     * - 실제 경로 검증/이동 적용은 BattleBoardSystem과 BattleTacticalPerformer가 처리합니다.
+     */
     public class BattleMoveEffect : BattleEffect
     {
         [Header("이동 수치")]

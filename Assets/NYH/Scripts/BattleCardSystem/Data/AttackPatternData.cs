@@ -4,6 +4,13 @@ namespace NYH.BattleCardSystem
     using UnityEngine;
 
     [CreateAssetMenu(menuName = "Data/Battle Attack Pattern")]
+    /*
+     * AttackPatternData
+     *
+     * 역할:
+     * - 커스텀 공격/회복 범위 모양을 ScriptableObject 자산으로 저장합니다.
+     * - cells는 패턴 원점 기준 상대 좌표이며, resolver가 카드 방향에 맞춰 회전/배치합니다.
+     */
     public class AttackPatternData : ScriptableObject
     {
         [SerializeField] private string patternName;

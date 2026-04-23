@@ -3,6 +3,13 @@ namespace NYH.BattleCardSystem
     using NYH.CoreCardSystem;
     using UnityEngine;
 
+    /*
+     * BattleAttackGA
+     *
+     * 역할:
+     * - 전투 공격 1회를 실행하기 위해 필요한 모든 계산 결과와 카드 설정을 담는 GameAction입니다.
+     * - 실제 피해 적용과 피격 대상 계산은 BattleTacticalPerformer/BattleAttackQueryService가 담당합니다.
+     */
     public class BattleAttackGA : GameAction
     {
         public BattleCard SourceCard { get; }

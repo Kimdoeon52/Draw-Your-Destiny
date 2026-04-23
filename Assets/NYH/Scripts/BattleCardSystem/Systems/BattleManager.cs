@@ -4,6 +4,8 @@ namespace NYH.BattleCardSystem
     using Cysharp.Threading.Tasks;
     using UnityEngine;
 
+    // 전투 전체의 큰 상태 흐름을 표현합니다.
+    // 세부 카드 실행, 보드 계산, AI 행동은 각각 전용 시스템으로 위임됩니다.
     public enum BattlePhase
     {
         None,
@@ -17,12 +19,14 @@ namespace NYH.BattleCardSystem
     }
 
     [System.Serializable]
+    // 전투 시작 시 외부에서 넘길 수 있는 옵션입니다.
     public class BattleStartContext
     {
         public bool StartWithMulligan = true;
     }
 
     [System.Serializable]
+    // 전투 종료 후 보상/씬 전환 쪽에서 사용할 결과 요약입니다.
     public class BattleResult
     {
         public bool IsVictory;
@@ -31,6 +35,18 @@ namespace NYH.BattleCardSystem
         public int SurvivingEnemyUnits;
     }
 
+    /*
+     * BattleManager
+     *
+     * 역할:
+     * - 전투 시작, 멀리건, 플레이어 턴, 적 턴, 승패 판정을 순서대로 조율합니다.
+     * - 손패 변화 이벤트와 전투 종료 이벤트를 발행해 UI/세션 컨트롤러가 반응하게 합니다.
+     *
+     * 담당하지 않는 것:
+     * - 카드 비용 지불과 카드 더미 조작은 BattleCardSystem이 담당합니다.
+     * - 이동/공격 가능 칸 계산은 BattleBoardSystem과 query service가 담당합니다.
+     * - 적 유닛의 실제 판단과 행동은 BattleEnemyAIController가 담당합니다.
+     */
     public class BattleManager : MonoBehaviour
     {
         [Header("Battle References")]
@@ -110,6 +126,7 @@ namespace NYH.BattleCardSystem
             return true;
         }
 
+        // 전투 시작 전 내부 상태와 카드 더미를 준비합니다.
         public void SetupBattle(BattleStartContext context = null)
         {
             if (!EnsureBattleCardSystem("SetupBattle"))
@@ -136,6 +153,7 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        // 턴/페이즈/결과/유닛 캐시를 초기 상태로 되돌립니다.
         public void ResetBattleState()
         {
             BattleTurn = 0;
@@ -147,6 +165,7 @@ namespace NYH.BattleCardSystem
             SetPhase(BattlePhase.None);
         }
 
+        // 설정된 시작 옵션에 따라 멀리건 또는 플레이어 턴으로 전투를 시작합니다.
         public void StartBattle()
         {
             if (!EnsureBattleCardSystem("StartBattle"))
@@ -157,6 +176,7 @@ namespace NYH.BattleCardSystem
             SetupBattle(defaultStartContext);
         }
 
+        // 시작 손패를 뽑고 멀리건 페이즈로 전환합니다.
         public void StartMulligan()
         {
             if (IsBattleEnded)
@@ -169,6 +189,7 @@ namespace NYH.BattleCardSystem
             DrawOpeningHand();
         }
 
+        // 멀리건 선택을 확정하고 되돌린 카드 수만큼 새 카드를 뽑습니다.
         public BattleMulliganResult ConfirmMulligan(IReadOnlyList<BattleCard> selectedCards = null)
         {
             if (!IsMulliganPhase || IsBattleEnded || battleCardSystem == null)
@@ -180,6 +201,7 @@ namespace NYH.BattleCardSystem
             return battleCardSystem.MulliganSelectedCards(selectedCards);
         }
 
+        // 멀리건 종료 후 첫 플레이어 턴으로 진입합니다.
         public void StartPlayerTurnAfterMulligan()
         {
             if (!IsBattleEnded)
@@ -188,6 +210,7 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        // 플레이어 턴을 시작하고 AP/드로우/종료 판정을 처리합니다.
         public void StartPlayerTurn()
         {
             if (!EnsureBattleCardSystem("StartPlayerTurn") || IsBattleEnded)
@@ -218,6 +241,7 @@ namespace NYH.BattleCardSystem
             OnTurnStarted?.Invoke(BattleTurn, CurrentTurnTeam);
         }
 
+        // 플레이어 턴을 끝내고 손패 정리 후 적 턴으로 넘깁니다.
         public void EndPlayerTurn()
         {
             if (!EnsureBattleCardSystem("EndPlayerTurn"))
@@ -241,6 +265,7 @@ namespace NYH.BattleCardSystem
             StartEnemyTurn();
         }
 
+        // 적 턴을 시작하고 EnemyAIController에 행동 실행을 요청합니다.
         public void StartEnemyTurn()
         {
             if (IsBattleEnded)
@@ -264,11 +289,12 @@ namespace NYH.BattleCardSystem
             }
             else
             {
-                Debug.LogWarning("[BattleManager] BattleEnemyAIController�� ���� �� ���� ��� �����մϴ�.");
+                Debug.LogWarning("[BattleManager] BattleEnemyAIController가 없어 적 턴을 즉시 종료합니다.");
                 EndEnemyTurn();
             }
         }
 
+        // 적 AI 실행 완료 콜백에서 플레이어 턴으로 돌아갑니다.
         public void EndEnemyTurn()
         {
             if (IsBattleEnded || CurrentPhase != BattlePhase.EnemyTurn)
@@ -284,6 +310,7 @@ namespace NYH.BattleCardSystem
             StartPlayerTurn();
         }
 
+        // 전투 시작 손패 규칙에 맞춰 카드를 뽑고 UI에 알립니다.
         public void DrawOpeningHand()
         {
             if (!EnsureBattleCardSystem("DrawOpeningHand"))
@@ -297,6 +324,7 @@ namespace NYH.BattleCardSystem
             NotifyHandStateChanged();
         }
 
+        // 턴 시작 드로우 규칙에 맞춰 카드를 뽑고 UI에 알립니다.
         public void DrawTurnCards()
         {
             if (!EnsureBattleCardSystem("DrawTurnCards"))
@@ -309,6 +337,7 @@ namespace NYH.BattleCardSystem
             NotifyHandStateChanged();
         }
 
+        // 살아 있는 플레이어 유닛의 병종 종류 수를 계산합니다.
         public int GetAlivePlayerUnitTypeCount()
         {
             RebuildUnitLists();
@@ -328,6 +357,7 @@ namespace NYH.BattleCardSystem
             return aliveUnitTypes.Count;
         }
 
+        // 아군/적 생존 상태를 보고 승리 또는 패배 처리 여부를 결정합니다.
         public bool CheckBattleEnd()
         {
             RebuildUnitLists();
@@ -349,6 +379,7 @@ namespace NYH.BattleCardSystem
             return false;
         }
 
+        // 승리 결과를 만들고 전투 종료 이벤트를 발행합니다.
         public void HandleVictory()
         {
             if (IsBattleEnded)
@@ -360,6 +391,7 @@ namespace NYH.BattleCardSystem
             FinishBattle(BuildResult(true));
         }
 
+        // 패배 결과를 만들고 전투 종료 이벤트를 발행합니다.
         public void HandleDefeat()
         {
             if (IsBattleEnded)
@@ -371,6 +403,7 @@ namespace NYH.BattleCardSystem
             FinishBattle(BuildResult(false));
         }
 
+        // 최종 전투 결과를 저장하고 Finished 페이즈로 전환합니다.
         public void FinishBattle(BattleResult result)
         {
             if (IsBattleEnded)
@@ -459,4 +492,3 @@ namespace NYH.BattleCardSystem
         }
     }
 }
-

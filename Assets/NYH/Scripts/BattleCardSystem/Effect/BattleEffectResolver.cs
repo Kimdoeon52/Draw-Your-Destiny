@@ -1,5 +1,12 @@
 namespace NYH.BattleCardSystem
 {
+    /*
+     * BattleEffectResolver
+     *
+     * 역할:
+     * - BattleCard가 가진 이펙트 목록에서 특정 전투 이펙트를 빠르게 찾아줍니다.
+     * - 타겟팅/프리뷰/카드 실행 코드가 이펙트 리스트를 직접 반복하지 않게 해줍니다.
+     */
     public static class BattleEffectResolver
     {
         public static BattleAttackEffect GetAttackEffect(BattleCard card)

@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
+    // 전투 유닛에게 걸 수 있는 간단한 상태이상 종류입니다.
     public enum BattleUnitStatusType
     {
         [InspectorName("기절")]
@@ -13,6 +14,12 @@
     }
 
     [System.Serializable]
+    /*
+     * BattleStatusEffect
+     *
+     * 역할:
+     * - 대상 유닛에게 기절/무장해제 같은 전투 상태를 부여합니다.
+     */
     public class BattleStatusEffect : BattleEffect
     {
         [Header("상태이상")]

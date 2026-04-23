@@ -2,6 +2,13 @@ namespace NYH.BattleCardSystem
 {
     using UnityEngine;
 
+    /*
+     * BattleUnitSpawnService
+     *
+     * 역할:
+     * - 전투 유닛 프리팹을 지정 그리드 셀에 생성하고 BattleBoardSystem에 등록합니다.
+     * - 전투 셀 여부와 점유 여부를 검증해 잘못된 소환을 막습니다.
+     */
     public class BattleUnitSpawnService : MonoBehaviour
     {
         [SerializeField] private BattleBoardSystem battleBoardSystem;
@@ -14,6 +21,7 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        // unitPrefab을 gridPosition에 생성하고 시작 체력을 적용합니다.
         public BattleUnit SpawnUnit(BattleUnit unitPrefab, Vector2Int gridPosition, int startHealth = -1)
         {
             if (unitPrefab == null || battleBoardSystem == null)

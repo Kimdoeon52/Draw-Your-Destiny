@@ -14,6 +14,7 @@ namespace NYH.BattleCardSystem
     /// <summary>
     /// 전투 보드의 현재 타일/유닛 배치 상태를 소유합니다.
     /// 이동 경로 계산, 공격 범위 계산, 패턴 회전은 전용 query/resolver 서비스로 위임합니다.
+    /// 이 클래스는 "현재 보드에 무엇이 어디에 있는가"를 보장하는 중심 저장소입니다.
     /// </summary>
     public class BattleBoardSystem : Singleton<BattleBoardSystem>
     {
@@ -21,6 +22,7 @@ namespace NYH.BattleCardSystem
         private readonly Dictionary<Vector2Int, BattleUnit> unitMap = new();
         private readonly Dictionary<BattleUnit, Vector2Int> reverseUnitMap = new();
 
+        // 특정 전투 셀의 지형 타입을 수동으로 지정합니다.
         public void SetTile(Vector2Int position, BattleTileType tileType)
         {
             if (!EnsureCombatTilesLoaded() || !BattleGridCoordinateService.Instance.IsCombatCell(position))
@@ -31,12 +33,14 @@ namespace NYH.BattleCardSystem
             tileMap[position] = tileType;
         }
 
+        // 지정 셀의 지형 타입을 반환하며, 전투 셀이 아니면 Rock으로 취급합니다.
         public BattleTileType GetTile(Vector2Int position)
         {
             EnsureCombatTilesLoaded();
             return tileMap.TryGetValue(position, out BattleTileType tileType) ? tileType : BattleTileType.Rock;
         }
 
+        // 유닛을 보드 점유 맵에 등록하고 그리드 위치를 동기화합니다.
         public bool RegisterUnit(BattleUnit unit, Vector2Int position)
         {
             if (unit == null)
@@ -67,6 +71,7 @@ namespace NYH.BattleCardSystem
             return true;
         }
 
+        // 비활성화/사망 등으로 보드에서 빠지는 유닛의 점유 정보를 제거합니다.
         public void UnregisterUnit(BattleUnit unit)
         {
             if (unit == null)
@@ -84,11 +89,13 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        // 특정 셀을 점유 중인 유닛을 조회합니다.
         public BattleUnit GetUnitAt(Vector2Int position)
         {
             return unitMap.TryGetValue(position, out BattleUnit unit) ? unit : null;
         }
 
+        // 주어진 셀 목록 안의 유닛 중 필터 조건에 맞는 유닛만 반환합니다.
         public List<BattleUnit> GetUnitsInCells(
             BattleUnit sourceUnit,
             IEnumerable<Vector2Int> cells,
@@ -118,6 +125,7 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
+        // 유닛을 targetPosition으로 이동시키고 보드 점유 맵과 Transform을 함께 갱신합니다.
         public bool TryMoveUnit(
             BattleUnit unit,
             Vector2Int targetPosition,
@@ -171,6 +179,7 @@ namespace NYH.BattleCardSystem
             return true;
         }
 
+        // fromPosition에서 targetPosition으로 한 칸 이동할 수 있는지 확인합니다.
         public bool CanStepTo(BattleUnit unit, Vector2Int fromPosition, Vector2Int targetPosition)
         {
             if (unit == null || !unit.IsAlive)
@@ -196,12 +205,14 @@ namespace NYH.BattleCardSystem
             return CanEnter(targetPosition);
         }
 
+        // 지형 타입에 따른 이동 비용을 반환합니다.
         public int GetStepCost(Vector2Int targetPosition)
         {
             BattleTileType targetTile = GetTile(targetPosition);
             return targetTile == BattleTileType.River ? 2 : 1;
         }
 
+        // 좌표 서비스의 타일맵 캐시를 다시 읽어 보드 지형 맵을 갱신합니다.
         public bool ReloadCombatTilesFromCoordinateService()
         {
             tileMap.Clear();
@@ -218,6 +229,7 @@ namespace NYH.BattleCardSystem
             return tileMap.Count > 0;
         }
 
+        // 이동 예산 안에서 시작 셀부터 목표 셀까지의 경로를 계산합니다.
         public bool TryBuildMovePath(
             BattleUnit unit,
             Vector2Int startPosition,
@@ -241,6 +253,7 @@ namespace NYH.BattleCardSystem
                 out path);
         }
 
+        // 유닛이 현재 위치에서 선택할 수 있는 이동 후보 셀을 계산합니다.
         public HashSet<Vector2Int> GetSelectableMoveCells(BattleUnit unit, int moveBudget)
         {
             HashSet<Vector2Int> empty = new();
@@ -261,6 +274,7 @@ namespace NYH.BattleCardSystem
                 GetStepCost);
         }
 
+        // BattleAttackGA 설정을 기준으로 실제 공격 범위 안의 유닛을 계산합니다.
         public List<BattleUnit> GetUnitsInAttackArea(BattleUnit attacker, Vector2Int targetPosition, BattleAttackGA attackGA)
         {
             Vector2Int attackerPosition = attacker != null ? attacker.GridPosition : Vector2Int.zero;
@@ -281,6 +295,7 @@ namespace NYH.BattleCardSystem
                 unitMap);
         }
 
+        // 카드 설정을 기준으로 공격 조준 가능한 셀을 계산합니다.
         public HashSet<Vector2Int> GetSelectableAttackCells(BattleUnit attacker, BattleCard battleCard)
         {
             Vector2Int attackerPosition = attacker != null ? attacker.GridPosition : Vector2Int.zero;

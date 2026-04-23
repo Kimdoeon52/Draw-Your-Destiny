@@ -5,6 +5,17 @@ namespace NYH.BattleCardSystem
     using Cysharp.Threading.Tasks;
     using UnityEngine;
 
+    /*
+     * BattleEnemyAIController
+     *
+     * 역할:
+     * - 적 턴 동안 살아 있는 적 유닛을 순서대로 실행합니다.
+     * - 각 유닛의 AI 전략에 필요한 보드 조회/이동/공격 API를 IBattleAIContext로 제공합니다.
+     *
+     * 담당하지 않는 것:
+     * - 구체적인 행동 판단은 AIBehaviorStrategySO가 담당합니다.
+     * - 전투 페이즈 전환은 BattleManager가 담당합니다.
+     */
     public class BattleEnemyAIController : MonoBehaviour, IBattleAIContext
     {
         [Header("Defaults")]
@@ -18,6 +29,7 @@ namespace NYH.BattleCardSystem
 
         private bool isExecutingTurn;
 
+        // 적 턴 전체를 비동기로 실행하고 완료 시 OnAITurnFinished를 호출합니다.
         public async UniTask ExecuteTurnAsync()
         {
             if (isExecutingTurn)
@@ -53,33 +65,39 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        // requester 기준 가장 가까운 플레이어 유닛을 찾습니다.
         public BattleUnit GetNearestPlayerUnit(BattleUnit requester)
         {
             return GetNearestUnit(requester, BattleTeam.Player);
         }
 
+        // requester 기준 가장 가까운 다른 적 유닛을 찾습니다.
         public BattleUnit GetNearestEnemyUnit(BattleUnit requester)
         {
             return GetNearestUnit(requester, BattleTeam.Enemy);
         }
 
+        // AI 전략이 유닛의 현재 그리드 좌표를 읽을 때 사용하는 래퍼입니다.
         public Vector2Int GetGridPosition(BattleUnit unit)
         {
             return unit != null ? unit.GridPosition : Vector2Int.zero;
         }
 
+        // 유닛별 AI 프로필이 있으면 그 값을, 없으면 기본 이동량을 반환합니다.
         public int GetMoveBudget(BattleUnit unit)
         {
             BattleUnitAIProfile profile = unit != null ? unit.GetComponent<BattleUnitAIProfile>() : null;
             return profile != null ? profile.MoveBudget : Mathf.Max(0, defaultMoveBudget);
         }
 
+        // 유닛별 AI 프로필이 있으면 그 값을, 없으면 기본 공격 사거리를 반환합니다.
         public int GetAttackRange(BattleUnit unit)
         {
             BattleUnitAIProfile profile = unit != null ? unit.GetComponent<BattleUnitAIProfile>() : null;
             return profile != null ? profile.AttackRange : Mathf.Max(1, defaultAttackRange);
         }
 
+        // 이동 가능 범위 안에서 목표 셀에 가장 가까워지는 경로를 찾습니다.
         public List<Vector2Int> FindPathTowards(BattleUnit unit, Vector2Int targetCell, int moveBudget)
         {
             List<Vector2Int> empty = new();
@@ -122,6 +140,7 @@ namespace NYH.BattleCardSystem
                 : empty;
         }
 
+        // 계산된 경로를 따라 유닛을 실제로 이동시키고 보드 점유 상태를 갱신합니다.
         public async UniTask MoveUnitAlongPathAsync(BattleUnit unit, IReadOnlyList<Vector2Int> path)
         {
             BattleBoardSystem board = BattleBoardSystem.Instance;
@@ -159,6 +178,7 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        // 사거리 안에 있는 가장 가까운 플레이어 유닛을 기본 공격으로 타격합니다.
         public bool TryAttackPlayerInRange(BattleUnit unit, int attackRange)
         {
             if (unit == null || !unit.IsAlive)
@@ -177,6 +197,7 @@ namespace NYH.BattleCardSystem
             return true;
         }
 
+        // AI 전략이 셀 이동 가능 여부를 확인할 때 사용하는 보드 래퍼입니다.
         public bool IsCellWalkable(Vector2Int cell)
         {
             BattleBoardSystem board = BattleBoardSystem.Instance;

@@ -5,6 +5,13 @@
     using UnityEngine;
     using NYH.CoreCardSystem;
 
+    /*
+     * BattleCard
+     *
+     * 역할:
+     * - BattleCardData를 전투 중 사용할 런타임 카드 형태로 감쌉니다.
+     * - 현재 비용, 설명 토큰 치환, 키워드 색상 표시, CoreCardSystem IRuntimeCard 호환을 담당합니다.
+     */
     public class BattleCard : IRuntimeCard
     {
         public BattleCardData Data { get; }
@@ -89,10 +96,12 @@
                 return string.Empty;
             }
 
-            return description.Replace("?꾩옱?띾룄", "현재속도");
+            // 예전에 잘못 저장된 "현재속도" 토큰의 mojibake 표기를 런타임에서 보정합니다.
+            return description.Replace("\u003F\uAFA9\uC631\u003F\uB77E\uB8C4", "현재속도");
         }
     }
 
+    // 카드 자산의 수동 TargetingMode가 Auto일 때 이펙트 구성으로 기본 타겟팅 방식을 추론합니다.
     public static class BattleCardTargetingUtility
     {
         public static BattleCardTargetingMode ResolveTargetingMode(BattleCard card)

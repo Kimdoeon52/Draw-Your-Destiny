@@ -4,6 +4,17 @@ namespace NYH.BattleCardSystem
     using UnityEngine;
     using UnityEngine.Tilemaps;
 
+    /*
+     * BattleGridCoordinateService
+     *
+     * 역할:
+     * - TileMapManager의 타일맵을 전투용 그리드 좌표/월드 좌표 캐시로 변환합니다.
+     * - 전투 셀 여부, 타일 타입, 셀 중심 월드 좌표를 빠르게 조회하게 합니다.
+     *
+     * 담당하지 않는 것:
+     * - 유닛 점유 상태는 BattleBoardSystem이 담당합니다.
+     * - 이동/공격 가능성 규칙은 query service가 담당합니다.
+     */
     public sealed class BattleGridCoordinateService
     {
         private static readonly Vector2Int InvalidCell = new(int.MinValue, int.MinValue);
@@ -21,12 +32,14 @@ namespace NYH.BattleCardSystem
 
         public static BattleGridCoordinateService Instance => instance ??= new BattleGridCoordinateService();
 
+        // 현재 캐시된 모든 전투 가능 셀을 반환합니다.
         public IReadOnlyCollection<Vector2Int> GetAllCombatCells()
         {
             EnsureCache();
             return allCombatCells;
         }
 
+        // 타일맵을 다시 읽어 전투 셀/타일 타입/월드 중심 캐시를 갱신합니다.
         public bool RefreshFromTilemaps()
         {
             tileTypesByCell.Clear();
@@ -69,12 +82,14 @@ namespace NYH.BattleCardSystem
             return isCacheValid;
         }
 
+        // 해당 셀이 전투 타일맵에 포함된 유효한 셀인지 확인합니다.
         public bool IsCombatCell(Vector2Int cell)
         {
             EnsureCache();
             return tileTypesByCell.ContainsKey(cell);
         }
 
+        // 전투 셀의 지형 타입을 반환하며, 없으면 Rock으로 취급합니다.
         public BattleTileType GetBattleTileType(Vector2Int cell)
         {
             EnsureCache();
@@ -83,12 +98,14 @@ namespace NYH.BattleCardSystem
                 : BattleTileType.Rock;
         }
 
+        // 그리드 셀의 월드 중심 좌표를 조회합니다.
         public bool TryGetWorldCenter(Vector2Int cell, out Vector3 world)
         {
             EnsureCache();
             return worldCentersByCell.TryGetValue(cell, out world);
         }
 
+        // 월드 좌표가 포함된 전투 셀을 찾습니다.
         public bool TryGetCell(Vector3 world, out Vector2Int cell)
         {
             EnsureCache();
