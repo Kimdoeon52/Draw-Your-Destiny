@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class EnemyB : EnemyBrainBase //1. 골드가 많음 2. 시대발전 빠름 3. 방어위주 점령 시도 잘안함 4. 건물 많이 지어서 유닛 갯수가 많아짐 //5. 초반 러너.
-{
+{//경제트리 Enemy
     protected override void Awake()
     {
         enemyID = 3;
@@ -14,15 +14,12 @@ public class EnemyB : EnemyBrainBase //1. 골드가 많음 2. 시대발전 빠름 3. 방어위
         base.OnEnable();
     }
     //===================================Enemy별 행동 확률 조정==========================================
-    protected override void InitializeActionCases()
+    protected override void AddMoneyAction() //초기 행동 확률 조정
     {
-        actionCases.Clear();//일단 비워주고
-        enemyLevel = 1;
-        //적 행동 확률 초기화
-        actionCases.Add(new ActionCases { action = EnemyAction.Building, state = EnemyState.Defend, weight = 35 });
-        actionCases.Add(new ActionCases { action = EnemyAction.GetGold, state = EnemyState.Defend, weight = 40 });
-        actionCases.Add(new ActionCases { action = EnemyAction.TryOccupy, state = EnemyState.Attack, weight = 5 });
-        actionCases.Add(new ActionCases { action = EnemyAction.Rest, state = EnemyState.Defend, weight = 20 });
+        AddActionCase(EnemyAction.Building, 35); //건물35프로
+        AddActionCase(EnemyAction.GetGold, 40); //골드 40프로
+        AddActionCase(EnemyAction.TryOccupy, 5); //영지 5프로
+        AddActionCase(EnemyAction.Rest, 20); //휴식 20프로
     }
     protected override void UpdateActionCases() //적 행동 확률 업데이트하는 함수임. 예를 들어 레벨업하면 건물 짓는 행동 확률이 올라가는 식으로.
     {
@@ -62,28 +59,35 @@ public class EnemyB : EnemyBrainBase //1. 골드가 많음 2. 시대발전 빠름 3. 방어위
                 break;
         }
     }
+    //=============================================레벨업 조건========================================== 
 
-    protected override void CheckLevelUp()
+    protected override void CheckLevelUp() //적 레벨업 조건 구현
     {
+        //적의 레벨업 조건 구현
         switch (enemyLevel)
         {
             case 1:
-                if (science >= 1000)
+                if (countEnemyTurn >= 15) //10턴마다 레벨업
                 {
                     enemyLevel = 2;
-                    Debug.Log("EnemyA가 레벨업했습니다! 현재 레벨: " + enemyLevel);
+                    Debug.Log($"<color=green>[레벨업!!] 적 레벨이 {enemyLevel}로 상승했습니다.</color>");
                 }
                 break;
             case 2:
-                if (science >= 5000)
+                if (countEnemyTurn >= 30) //20턴마다 레벨업
                 {
                     enemyLevel = 3;
-                    Debug.Log("EnemyA가 레벨업했습니다! 현재 레벨: " + enemyLevel);
+                    Debug.Log($"<color=green>[레벨업!!] 적 레벨이 {enemyLevel}로 상승했습니다.</color>");
                 }
                 break;
         }
+        return;
     }
-
+    //=================================================================================================
+    protected override void DefineEnemyState()
+    {
+        enemyState = EnemyState.Money; //경제 트리로 설정
+    }
     public override void StartEnemyTurn()
     {
         base.StartEnemyTurn();

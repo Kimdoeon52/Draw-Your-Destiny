@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 8811987735455434565}
   - component: {fileID: 4459658266898475027}
   - component: {fileID: 8563210027973749640}
+  - component: {fileID: -3643546330121226002}
   m_Layer: 0
-  m_Name: EnemyAHorseWarriorBuilding
+  m_Name: EnemyAHorse&Metalking
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,10 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f1120c50d742224ca1cf8a457c8e693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyUnitPrefab: {fileID: 3564803221627741244, guid: a6269e4616ffcd548acffe40ab09308b,
-    type: 3}
-  poolSize: 20
-  poolParent: {fileID: 8811987735455434565}
   SpawnTurn: 5
   enemyID: 1
   unitType: 5
@@ -107,3 +104,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-3643546330121226002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3889724432833660657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4f61ccffc68e094d8b5fcc8068c2ebe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpawnTurn: 5
+  enemyID: 1
+  unitType: 6

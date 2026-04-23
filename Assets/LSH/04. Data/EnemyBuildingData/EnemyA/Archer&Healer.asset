@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0a6ecf4228e0d840954ac52207e8d40, type: 3}
-  m_Name: SuperUnitBuild
+  m_Name: Archer&Healer
   m_EditorClassIdentifier: 
   id: 
-  buildingName: "\uC288\uD37C\uC720\uB2DB\uBE4C\uB529"
-  buildingType: 14
-  sprite: {fileID: 351547490480164333, guid: e38095cf06ddde341953b6564fe88ebc, type: 3}
-  requiredEra: 2
+  buildingName: "\uC544\uCC98\uBE4C\uB529"
+  buildingType: 10
+  sprite: {fileID: 7554988477733573114, guid: fbe838bf417961a4abbeed4e9bc701cf, type: 3}
+  requiredEra: 1
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
   goldCost: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
   researchPerTurn: 0
   foodPerTurn: 0
   populationCapBonus: 0
-  visualPrefab: {fileID: 5024997674719483606, guid: 4fb439a395abcba429952b4f44f6f652,
+  visualPrefab: {fileID: 540754806412210765, guid: be2fda9de7e70a7418a8016121360eb4,
     type: 3}
   productionInterval: 3
   unitCapacity: 5
