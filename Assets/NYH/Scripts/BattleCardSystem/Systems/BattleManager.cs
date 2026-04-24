@@ -23,6 +23,10 @@ namespace NYH.BattleCardSystem
     public class BattleStartContext
     {
         public bool StartWithMulligan = true;
+
+        // 전투에 투입할 유닛 로스터 (null이면 씬에 미리 배치된 유닛 또는 fallback 사용)
+        public BattleUnitRoster PlayerRoster;
+        public BattleUnitRoster EnemyRoster;
     }
 
     [System.Serializable]
@@ -52,6 +56,7 @@ namespace NYH.BattleCardSystem
         [Header("Battle References")]
         [SerializeField] private BattleCardSystem battleCardSystem;
         [SerializeField] private BattleEnemyAIController enemyAIController;
+        [SerializeField] private BattleStartSpawner battleStartSpawner;
 
         [Header("Battle Setup")]
         [SerializeField] private BattleStartContext defaultStartContext = new();
@@ -83,6 +88,11 @@ namespace NYH.BattleCardSystem
             if (enemyAIController == null)
             {
                 enemyAIController = FindFirstObjectByType<BattleEnemyAIController>(FindObjectsInactive.Include);
+            }
+
+            if (battleStartSpawner == null)
+            {
+                battleStartSpawner = FindFirstObjectByType<BattleStartSpawner>(FindObjectsInactive.Include);
             }
         }
 
@@ -136,8 +146,15 @@ namespace NYH.BattleCardSystem
 
             BattleStartContext resolvedContext = context ?? defaultStartContext ?? new BattleStartContext();
             ResetBattleState();
-            RebuildUnitLists();
             SetPhase(BattlePhase.Setup);
+
+            // 유닛 스폰: Roster가 있으면 Roster 기반, 없으면 fallback/씬 배치 유닛 사용
+            if (battleStartSpawner != null)
+            {
+                battleStartSpawner.SpawnAll(resolvedContext.PlayerRoster, resolvedContext.EnemyRoster);
+            }
+
+            RebuildUnitLists();
 
             battleCardSystem.SetupFromInspector();
             battleCardSystem.SetupActionPoints(0);

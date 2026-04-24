@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8249859303819906495}
   - component: {fileID: -44254860320424272}
   - component: {fileID: 3869539097960460042}
+  - component: {fileID: 3996323684320540842}
   m_Layer: 0
   m_Name: EnemyARockWarrior
   m_TagString: Untagged
@@ -136,3 +137,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &3996323684320540842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456425945412337596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cca038f7de0c7542955f233e782ae15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitId: 1001
+  unitType: 2
+  team: 1
+  maxHealth: 10
+  attackPower: 1
+  speed: 1
+  gridPosition: {x: 0, y: 0}
+  visualRoot: {fileID: 3930178039903472149, guid: d785018811b6aae49a0f00d14ee68c27,
+    type: 3}
+  enableGridAlignmentDebug: 0

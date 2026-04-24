@@ -59498,7 +59498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60940318082f2194ea2589e62e57019c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testBuilding: {fileID: 11400000, guid: 961a9d385ae3e1e428c1307bbba01dae, type: 2}
+  testBuilding: {fileID: 0}
   testModeKey: 116
   cancelKey: 27
 --- !u!1 &540880518
@@ -81303,13 +81303,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
   - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
   - {fileID: 11400000, guid: 0c7c8e0fe9a6ca94ca97b3a3a24cc9a7, type: 2}
-  barracksPools: []
+  specialBuildData: []
   gold: 0
   science: 0
+  food: 0
   enemyLevel: 0
   enemyID: 0
   countEnemyTurn: 0
   cardCount: 0
+  enemyState: 0
 --- !u!4 &938640873
 Transform:
   m_ObjectHideFlags: 0
@@ -81619,6 +81621,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
   - {fileID: 11400000, guid: 2f22587a905266c468faba119bd9332c, type: 2}
   earnedBattleCards: []
+  currentBattleDeck: []
 --- !u!4 &1008384001
 Transform:
   m_ObjectHideFlags: 0
@@ -108687,6 +108690,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec18e536475631d43a0a6730f681f42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testPlayerNodeID: 0
+  testEnemyNodeID: 1
   battleSessionController: {fileID: 1535182451}
   battleBoardSystem: {fileID: 297895153}
   unitsToSpawn:
@@ -124832,6 +124837,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleManager: {fileID: 1599415093}
   battleUIController: {fileID: 1433284921}
+  prefabRegistry: {fileID: 11400000, guid: e3d05df9b49ba544ea76b07d000e8775, type: 2}
   sharedHandView: {fileID: 426452551}
   civilizationModeObjects: []
   battleModeObjects: []
@@ -133376,6 +133382,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1599415094}
   - component: {fileID: 1599415093}
+  - component: {fileID: 1599415096}
+  - component: {fileID: 1599415095}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -133397,8 +133405,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   battleCardSystem: {fileID: 1596670696}
   enemyAIController: {fileID: 571444877}
+  battleStartSpawner: {fileID: 1599415095}
   defaultStartContext:
     StartWithMulligan: 1
+    PlayerRoster:
+      Team: 0
+      Entries: []
+    EnemyRoster:
+      Team: 0
+      Entries: []
   autoStartOnSceneLoad: 0
 --- !u!4 &1599415094
 Transform:
@@ -133408,13 +133423,48 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1599415092}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1157.3533, y: -36.528633, z: -7.6776505}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1599415095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599415092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de156519b57caeb4c8b35d88565e87c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnService: {fileID: 1599415096}
+  playerSpawnOrigin: {x: 8, y: 0}
+  playerRowDirection: 1
+  enemySpawnOrigin: {x: -9, y: 0}
+  enemyRowDirection: 1
+  maxColumns: 5
+  fallbackPlayerUnits: []
+  fallbackPlayerPositions: []
+  fallbackEnemyUnits: []
+  fallbackEnemyPositions: []
+--- !u!114 &1599415096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599415092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 541041acefa9fca4cbc3d186a22c3838, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleBoardSystem: {fileID: 297895153}
 --- !u!1 &1636900600
 GameObject:
   m_ObjectHideFlags: 0
@@ -174488,9 +174538,9 @@ SceneRoots:
   - {fileID: 1599415094}
   - {fileID: 1535182452}
   - {fileID: 1433284922}
-  - {fileID: 297895152}
   - {fileID: 963536237}
   - {fileID: 928906027}
+  - {fileID: 297895152}
   - {fileID: 603273959}
   - {fileID: 1122682164}
   - {fileID: 1532801342}

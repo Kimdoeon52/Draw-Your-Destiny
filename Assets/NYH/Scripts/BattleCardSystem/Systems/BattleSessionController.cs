@@ -1,4 +1,4 @@
-namespace NYH.BattleCardSystem
+ namespace NYH.BattleCardSystem
 {
     using NYH.CoreCardSystem;
     using TMPro;
@@ -17,6 +17,10 @@ namespace NYH.BattleCardSystem
         [Header("References")]
         [SerializeField] private BattleManager battleManager;
         [SerializeField] private BattleUIController battleUIController;
+
+        [Header("Unit Roster")]
+        [Tooltip("병종별 프리팹 매핑 에셋 (없으면 Roster 빌드를 건너뜁니다)")]
+        [SerializeField] private BattleUnitPrefabRegistry prefabRegistry;
 
         [Header("Optional Shared Hand View")]
         [SerializeField] private HandView sharedHandView;
@@ -81,6 +85,14 @@ namespace NYH.BattleCardSystem
 
         public void EnterBattle()
         {
+            EnterBattle(null, null);
+        }
+
+        // NodeData를 지정해 전투 진입 — 월드맵에서 공격 시 호출
+        // playerNode: 플레이어 유닛이 있는 노드
+        // enemyNode: 공격 대상(적) 노드
+        public void EnterBattle(NodeData playerNode, NodeData enemyNode)
+        {
             if (IsBattleActive)
             {
                 Debug.LogWarning("[BattleSession] 이미 전투 모드입니다.");
@@ -118,7 +130,29 @@ namespace NYH.BattleCardSystem
             IsBattleActive = true;
             RefreshDeckViewButtonLabels();
 
-            battleManager.StartBattle();
+            // 유닛 로스터 구성
+            BattleStartContext context = new BattleStartContext
+            {
+                StartWithMulligan = true
+            };
+
+            if (prefabRegistry != null)
+            {
+                if (playerNode != null)
+                {
+                    context.PlayerRoster = BattleUnitRosterBuilder.Build(
+                        playerNode, BattleTeam.Player, 0, prefabRegistry);
+                }
+
+                if (enemyNode != null)
+                {
+                    context.EnemyRoster = BattleUnitRosterBuilder.Build(
+                        enemyNode, BattleTeam.Enemy,
+                        enemyNode.ownerCivID, prefabRegistry);
+                }
+            }
+
+            battleManager.SetupBattle(context);
 
             if (battleUIController != null)
             {

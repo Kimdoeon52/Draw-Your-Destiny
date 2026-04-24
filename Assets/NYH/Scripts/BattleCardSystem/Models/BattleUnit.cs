@@ -99,6 +99,25 @@ namespace NYH.BattleCardSystem
             Initialize(startPosition, health);
         }
 
+        // 유닛 수량(count)을 스탯 배율로 적용하는 초기화.
+        // 문명 모드의 부대 수를 전투에서 1기의 강화 스탯으로 변환합니다.
+        // 예: baseHP=10, baseAtk=2, count=5 → maxHP=50, attackPower=10
+        public void InitializeWithCount(Vector2Int startPosition, int baseHealth, int baseAttack, int unitCount)
+        {
+            int count = Mathf.Max(1, unitCount);
+            maxHealth = baseHealth * count;
+            attackPower = baseAttack * count;
+            gridPosition = startPosition;
+            CurrentHealth = maxHealth;
+            ApplyGridWorldPosition();
+        }
+
+        public void InitializeWithCount(Vector2Int startPosition, int baseHealth, int baseAttack, int unitCount, UnitType newUnitType)
+        {
+            unitType = newUnitType;
+            InitializeWithCount(startPosition, baseHealth, baseAttack, unitCount);
+        }
+
         public void SetGridPosition(Vector2Int newPosition)
         {
             gridPosition = newPosition;
