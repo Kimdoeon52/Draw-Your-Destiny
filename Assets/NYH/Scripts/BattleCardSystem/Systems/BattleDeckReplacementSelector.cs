@@ -60,12 +60,13 @@ namespace NYH.BattleCardSystem
             // 기존 ShowDeck에서 쓰던 리스트 UI를 선택 모드로 열어 교체할 카드를 고릅니다.
             CardListUI.Instance.Show(
                 previewCards,
-                "교체할 전투 카드 선택",
-                selectedCard =>
-                {
-                    previewMap.TryGetValue(selectedCard, out selectedData);
-                    isChosen = true;
-                });
+                "교체할 전투 카드 선택"
+                //,selectedCard =>
+                //{
+                //    previewMap.TryGetValue(selectedCard, out selectedData);
+                //    isChosen = true;
+                //}
+                );
 
             yield return new WaitUntil(() => isChosen);
             onSelected?.Invoke(selectedData);
