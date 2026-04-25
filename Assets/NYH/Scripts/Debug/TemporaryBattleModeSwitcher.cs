@@ -109,27 +109,29 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
 
     public void SpawnConfiguredUnits()
     {
-        if (unitsToSpawn == null || unitsToSpawn.Length == 0)
+        if (WorldMapManager.Instance == null || !WorldMapManager.Instance.IsInTerritoryView)
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] 배치할 유닛 설정이 비어 있습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] 현재 영지 뷰가 아니거나 WorldMapManager가 없어 데이터를 가져올 수 없습니다.");
             return;
         }
 
-        int spawnedCount = 0;
-        foreach (UnitSpawnRequest request in unitsToSpawn)
-        {
-            if (request == null || request.unitPrefab == null)
-            {
-                continue;
-            }
+        // 1. 현재 진입해 있는 영지의 진짜 데이터를 가져옴
+        int currentNodeID = WorldMapManager.Instance.CurrentNodeID;
+        NodeData currentNodeData = WorldMapManager.Instance.GetNode(currentNodeID);
 
-            if (SpawnUnit(request.unitPrefab, request.gridPosition, request.startHealth) != null)
-            {
-                spawnedCount++;
-            }
+        if (currentNodeData == null)
+        {
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 현재 노드({currentNodeID}) 데이터를 찾을 수 없습니다.");
+            return;
         }
 
-        Debug.Log($"[TemporaryBattleModeSwitcher] 설정된 유닛 배치 완료: spawned={spawnedCount}");
+        if (!TryResolveController()) return;
+
+        Debug.Log($"[TemporaryBattleModeSwitcher] 현재 영지({currentNodeID})의 실제 유닛 데이터로 전투 진입");
+
+        // 2. 정식 전투 진입 프로세스 호출
+        // 플레이어 유닛과 적 유닛 모두 현재 노드 데이터를 사용하여 스폰 테스트
+        battleSessionController.EnterBattle(currentNodeData, currentNodeData);
     }
 
     public BattleUnit SpawnPlayerUnit(BattleUnit unitPrefab, Vector2Int gridPosition, int startHealth = 10)

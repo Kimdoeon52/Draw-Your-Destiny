@@ -173,6 +173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 103
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 1592019327}
   mansionIcon: {fileID: 0}
 --- !u!114 &24801263
@@ -3358,6 +3359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 101
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 1354734902}
   mansionIcon: {fileID: 0}
 --- !u!114 &48799171
@@ -47770,6 +47772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 104
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 1868375099}
   mansionIcon: {fileID: 0}
 --- !u!114 &435570240
@@ -65016,6 +65019,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 109
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 1981251790}
   mansionIcon: {fileID: 0}
 --- !u!114 &599245565
@@ -65466,6 +65470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 110
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 1231802845}
   mansionIcon: {fileID: 0}
 --- !u!114 &632116599
@@ -66515,6 +66520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 106
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 836787651}
   mansionIcon: {fileID: 0}
 --- !u!114 &738937552
@@ -66653,6 +66659,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 102
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 117501720}
   mansionIcon: {fileID: 0}
 --- !u!114 &745313896
@@ -66822,6 +66829,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 107
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 836186380}
   mansionIcon: {fileID: 0}
 --- !u!114 &753571291
@@ -108690,8 +108698,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec18e536475631d43a0a6730f681f42f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testPlayerNodeID: 0
-  testEnemyNodeID: 1
+  testPlayerNodeID: 1
+  testEnemyNodeID: 1001
   battleSessionController: {fileID: 1535182451}
   battleBoardSystem: {fileID: 297895153}
   unitsToSpawn:
@@ -129441,6 +129449,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 105
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 610033961}
   mansionIcon: {fileID: 0}
 --- !u!114 &1549820964
@@ -148619,6 +148628,11 @@ MonoBehaviour:
   territoryView: {fileID: 1719515412}
   fadePanel: {fileID: 333971494}
   fadeDuration: 0.4
+  cancelSelectionButton: {fileID: 0}
+  troopDispatchModal: {fileID: 0}
+  civTintAlpha: 0.3
+  highlightColor: {r: 1, g: 0.95, b: 0.3, a: 0.4}
+  dimColor: {r: 0, g: 0, b: 0, a: 0.45}
   claimCost: 30
   debugFreeEntry: 0
   allNodes:
@@ -173972,6 +173986,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeID: 108
   backgroundImage: {fileID: 0}
+  stateOverlay: {fileID: 0}
   nameLabel: {fileID: 876948064}
   mansionIcon: {fileID: 0}
 --- !u!114 &2072829786

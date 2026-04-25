@@ -149,13 +149,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cca038f7de0c7542955f233e782ae15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitId: 1001
+  unitId: 2001
   unitType: 2
   team: 1
   maxHealth: 10
   attackPower: 1
   speed: 1
-  gridPosition: {x: 0, y: 0}
+  gridPosition: {x: -9, y: 0}
   visualRoot: {fileID: 3930178039903472149, guid: d785018811b6aae49a0f00d14ee68c27,
     type: 3}
   enableGridAlignmentDebug: 0
