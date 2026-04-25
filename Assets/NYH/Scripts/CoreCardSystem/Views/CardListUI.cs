@@ -1,13 +1,13 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
-    using System.Linq;
     using TMPro;
     using UnityEngine;
     using UnityEngine.UI;
 
     /// <summary>
-    /// 덱이나 무덤처럼 많은 양의 카드를 스크롤하며 보여주는 UI 클래스입니다.
+    /// Read-only list viewer for card piles such as draw pile and discard pile.
+    /// Selection logic lives elsewhere on purpose.
     /// </summary>
     public class CardListUI : MonoBehaviour
     {
@@ -15,71 +15,117 @@
 
         [Header("UI References")]
         [SerializeField] private GameObject panel;
-        [SerializeField] private Transform container; // ScrollView의 Content (GridLayoutGroup이 있어야 함)
-        [SerializeField] private TMP_Text titleText;  // "덱 확인" 또는 "무덤 확인" 표시용
+        [SerializeField] private Transform container;
+        [SerializeField] private TMP_Text titleText;
         [SerializeField] private Button closeButton;
 
+        /// <summary>
+        /// Registers the singleton instance and hides the panel by default.
+        /// </summary>
         private void Awake()
         {
-            if (Instance != null) { Destroy(gameObject); return; }
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             Instance = this;
-            
-            if (panel != null) panel.SetActive(false);
-            if (closeButton != null) closeButton.onClick.AddListener(Close);
+
+            if (panel != null)
+            {
+                panel.SetActive(false);
+            }
+
+            if (closeButton != null)
+            {
+                closeButton.onClick.AddListener(Close);
+            }
         }
 
         /// <summary>
-        /// 카드를 화면에 나열합니다.
+        /// Opens the list and renders every supplied card in read-only mode.
         /// </summary>
-        /// <param name="cards">보여줄 카드 리스트</param>
-        /// <param name="title">UI 상단에 표시될 제목</param>
         public void Show(List<Card> cards, string title)
         {
-            if (panel == null || container == null) return;
+            if (panel == null || container == null)
+            {
+                return;
+            }
 
-            if (titleText != null) titleText.text = title;
+            if (titleText != null)
+            {
+                titleText.text = title;
+            }
+
             panel.SetActive(true);
 
-            // 1. 기존 카드 제거
-            foreach (Transform child in container) Destroy(child.gameObject);
-
-            // 2. 카드 생성 및 배치
-            foreach (var card in cards)
+            foreach (Transform child in container)
             {
-                // CardViewCreator를 사용하여 카드 생성
-                CardView cardView = CardViewCreator.Instance.CreateCardView(card, container.position, Quaternion.identity);
-                cardView.transform.SetParent(container, false);
+                Destroy(child.gameObject);
+            }
 
-                // [중요] '보기 전용' 설정: 클릭/드래그가 안 되도록 함
+            if (cards == null)
+            {
+                return;
+            }
+
+            foreach (Card card in cards)
+            {
+                if (CardViewCreator.Instance == null)
+                {
+                    continue;
+                }
+
+                CardView cardView = CardViewCreator.Instance.CreateCardView(card, container.position, Quaternion.identity);
+                if (cardView == null)
+                {
+                    continue;
+                }
+
+                cardView.transform.SetParent(container, false);
                 cardView.IsHoverPreview = true;
-                
-                // UI 레이아웃에 맞게 스케일 조정 (필요 시)
+                cardView.UseBuiltInInteractions = false;
                 cardView.transform.localScale = Vector3.one;
             }
         }
 
+        /// <summary>
+        /// Same as Show, but filters out duplicate CardIDs first.
+        /// </summary>
         public void ShowDistinct(List<Card> cards, string title)
         {
-            // 중복 제거된 카드 리스트 생성
-            List<Card> distinctCards = new List<Card>();
-            HashSet<int> seenCardIds = new HashSet<int>();
-            foreach (var card in cards)
+            List<Card> distinctCards = new();
+            HashSet<int> seenCardIds = new();
+
+            if (cards != null)
             {
-                if (!seenCardIds.Contains(card.CardID))
+                foreach (Card card in cards)
                 {
+                    if (card == null || seenCardIds.Contains(card.CardID))
+                    {
+                        continue;
+                    }
+
                     seenCardIds.Add(card.CardID);
                     distinctCards.Add(card);
                 }
             }
+
             Show(distinctCards, title);
         }
 
+        /// <summary>
+        /// Hides the list and clears any active hover preview.
+        /// </summary>
         public void Close()
         {
-            if (panel != null) panel.SetActive(false);
-            
-            // 호버 미리보기가 켜져 있을 수 있으므로 숨김 처리
-            if (CardViewHoverSystem.Instance != null) CardViewHoverSystem.Instance.Hide();
+            if (panel != null)
+            {
+                panel.SetActive(false);
+            }
+
+            CardViewHoverSystem.Instance?.Hide();
         }
     }
 }

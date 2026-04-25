@@ -1,0 +1,12 @@
+{
+  "name": "NYH.EditMode.Tests",
+  "references": [
+    "Assembly-CSharp"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

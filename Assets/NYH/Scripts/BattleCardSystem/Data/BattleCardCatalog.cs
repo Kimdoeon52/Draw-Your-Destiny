@@ -4,42 +4,43 @@ namespace NYH.BattleCardSystem
     using NYH.CoreCardSystem;
     using UnityEngine;
 
-    /*
-     * BattleCardCatalog
-     *
-     * 역할:
-     * - 게임 전체에서 사용할 전투 카드 원본 SO 목록을 보관하는 카탈로그입니다.
-     * - 보상 후보를 랜덤으로 뽑거나, 타입별 전투 카드 후보를 찾을 때 사용합니다.
-     *
-     * 인스펙터에서 넣는 것:
-     * - All Battle Cards: 게임에서 등장 가능한 전투 카드 SO 전체 목록
-     *
-     * 사용하는 법:
-     * - 문명 씬에 1개만 둡니다.
-     * - 보상 선택 시 GetRandom()으로 전투 카드 후보를 뽑습니다.
-     * - 실제 덱 저장소가 아니라 '전체 카드 풀'입니다.
-     */
+    /// <summary>
+    /// Global catalog of every battle card asset available in the game.
+    /// It is used both for reward generation and for resolving saved CardIDs back to assets.
+    /// </summary>
     public class BattleCardCatalog : Singleton<BattleCardCatalog>
     {
-        [Header("전체 전투 카드 목록 (인스펙터에서 BattleCardData SO 등록)")]
+        [Header("All Battle Card Assets")]
         [SerializeField] private List<BattleCardData> allBattleCards = new();
 
         private readonly Dictionary<int, BattleCardData> idMap = new();
 
+        /// <summary>
+        /// Builds the CardID lookup once the singleton is available.
+        /// </summary>
         protected override void Awake()
         {
             base.Awake();
             BuildIdMap();
         }
 
+        /// <summary>
+        /// Returns every registered battle card.
+        /// </summary>
         public IReadOnlyList<BattleCardData> GetAll() => allBattleCards;
 
+        /// <summary>
+        /// Looks up a battle card by its persistent CardID.
+        /// </summary>
         public BattleCardData GetById(int id)
         {
             idMap.TryGetValue(id, out var card);
             return card;
         }
 
+        /// <summary>
+        /// Returns a shuffled subset from the full catalog.
+        /// </summary>
         public List<BattleCardData> GetRandom(int amount)
         {
             List<BattleCardData> pool = new(allBattleCards);
@@ -48,10 +49,13 @@ namespace NYH.BattleCardSystem
             return pool.GetRange(0, count);
         }
 
+        /// <summary>
+        /// Returns a shuffled subset filtered by battle card type.
+        /// </summary>
         public List<BattleCardData> GetRandomByType(BattleCardType type, int amount)
         {
             List<BattleCardData> pool = new();
-            foreach (var card in allBattleCards)
+            foreach (BattleCardData card in allBattleCards)
             {
                 if (card != null && card.CardType == type)
                 {
@@ -64,13 +68,23 @@ namespace NYH.BattleCardSystem
             return pool.GetRange(0, count);
         }
 
+        /// <summary>
+        /// Builds the fast CardID lookup used by save/load.
+        /// Duplicate IDs are warned and ignored because persistent data depends on uniqueness.
+        /// </summary>
         private void BuildIdMap()
         {
             idMap.Clear();
-            foreach (var card in allBattleCards)
+            foreach (BattleCardData card in allBattleCards)
             {
-                if (card == null || idMap.ContainsKey(card.CardID))
+                if (card == null)
                 {
+                    continue;
+                }
+
+                if (idMap.ContainsKey(card.CardID))
+                {
+                    Debug.LogWarning($"[BattleCardCatalog] Duplicate CardID detected: id={card.CardID}, card={card.CardName}");
                     continue;
                 }
 

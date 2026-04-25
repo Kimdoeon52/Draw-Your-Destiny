@@ -4,19 +4,12 @@ namespace NYH.BattleCardSystem
     using NYH.CoreCardSystem;
     using UnityEngine;
 
-    /*
-     * BattleDeckCollection
-     *
-     * 역할:
-     * - 전투 시작에 사용할 "현재 전투덱"을 보관합니다.
-     * - 보상 전투카드 추가, 30장 제한 확인, 기존 카드 교체를 담당합니다.
-     * - 실제 저장/로드 방식은 BattleDeckPersistenceService에 위임합니다.
-     *
-     * 주의:
-     * - baseBattleDeck은 기본 지급 덱입니다.
-     * - earnedBattleCards는 보상으로 얻은 카드 기록입니다.
-     * - currentBattleDeck은 실제 전투에 들어갈 최종 덱입니다.
-     */
+    /// <summary>
+    /// Persistent authority for the player's battle deck.
+    /// baseBattleDeck tracks the latest scene-provided base deck,
+    /// earnedBattleCards tracks cards added beyond base,
+    /// and currentBattleDeck is the actual saved deck used for future battles.
+    /// </summary>
     public class BattleDeckCollection : Singleton<BattleDeckCollection>
     {
         [Header("Base Battle Deck")]
@@ -31,6 +24,9 @@ namespace NYH.BattleCardSystem
         public IReadOnlyList<BattleCardData> BaseBattleDeck => baseBattleDeck;
         public IReadOnlyList<BattleCardData> EarnedBattleCards => earnedBattleCards;
 
+        /// <summary>
+        /// Returns the current persisted battle deck, loading or rebuilding it on demand.
+        /// </summary>
         public IReadOnlyList<BattleCardData> CurrentBattleDeck
         {
             get
@@ -40,8 +36,10 @@ namespace NYH.BattleCardSystem
             }
         }
 
-        // 덱 제한에 포함되는 현재 전투덱 카드 수를 반환합니다.
-        // 포션이나 IgnoresDeckLimit 카드는 이 수에 포함되지 않습니다.
+        /// <summary>
+        /// Counts only cards that consume the normal deck limit.
+        /// Potions and cards with IgnoresDeckLimit are excluded.
+        /// </summary>
         public int LimitedDeckCount
         {
             get
@@ -51,6 +49,29 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        /// <summary>
+        /// Ensures a collection instance exists even when the active scene does not contain one.
+        /// </summary>
+        public static BattleDeckCollection GetOrCreate()
+        {
+            if (Instance != null)
+            {
+                return Instance;
+            }
+
+            BattleDeckCollection existing = FindFirstObjectByType<BattleDeckCollection>(FindObjectsInactive.Include);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            GameObject collectionObject = new(nameof(BattleDeckCollection));
+            return collectionObject.AddComponent<BattleDeckCollection>();
+        }
+
+        /// <summary>
+        /// Makes the collection persistent across scene changes and eagerly initializes current state.
+        /// </summary>
         protected override void Awake()
         {
             base.Awake();
@@ -65,8 +86,11 @@ namespace NYH.BattleCardSystem
             Debug.Log($"[BattleDeckCollection] Awake complete: scene={gameObject.scene.name}, object={name}, baseDeck={baseBattleDeck.Count}, earned={earnedBattleCards.Count}, current={currentBattleDeck.Count}");
         }
 
-        // 외부에서 받은 기본 전투덱을 등록합니다.
-        // 저장된 전투덱이 아직 없다면 기본덱과 획득 카드를 합쳐 currentBattleDeck을 처음 만듭니다.
+        /// <summary>
+        /// Synchronizes the latest scene base deck into persistent state.
+        /// If no saved current deck exists, currentBattleDeck is rebuilt from base + earned.
+        /// If a saved current deck exists, it is preserved and only the derived earned list is refreshed.
+        /// </summary>
         public void ConfigureBaseDeck(IEnumerable<BattleCardData> source)
         {
             baseBattleDeck.Clear();
@@ -80,28 +104,54 @@ namespace NYH.BattleCardSystem
                 RebuildCurrentDeckFromParts();
                 SaveCurrentDeck();
             }
+            else
+            {
+                EnsureCurrentDeckInitialized();
+                RecalculateEarnedCardsFromCurrentDeck();
+            }
 
             Debug.Log($"[BattleDeckCollection] Base deck configured: baseDeck={baseBattleDeck.Count}, current={currentBattleDeck.Count}");
         }
 
-        // 새 런을 시작할 때 보상 카드 기록만 초기화합니다.
-        // 현재 전투덱 저장값은 유지되므로, 영구 교체 결과는 지워지지 않습니다.
+        /// <summary>
+        /// Resets only the earned-card tracking for a fresh run.
+        /// Saved current deck contents are preserved unless there is no save yet.
+        /// </summary>
         public void ResetRun()
         {
             earnedBattleCards.Clear();
+            if (!BattleDeckPersistenceService.HasSavedDeck())
+            {
+                RebuildCurrentDeckFromParts();
+                SaveCurrentDeck();
+            }
+
             Debug.Log("[BattleDeckCollection] Run reset: earnedBattleCards cleared");
         }
 
-        // BattleCardPileState.Setup()에 넘길 현재 전투덱 사본을 만듭니다.
-        // 호출자가 리스트를 수정해도 저장소 내부 리스트가 바뀌지 않게 복사본을 반환합니다.
+        /// <summary>
+        /// Clears the saved current deck and the in-memory current deck cache.
+        /// The next ConfigureBaseDeck call will rebuild from the latest base + earned state.
+        /// </summary>
+        public void ClearSavedCurrentDeck()
+        {
+            BattleDeckPersistenceService.ClearSavedDeck();
+            currentBattleDeck.Clear();
+        }
+
+        /// <summary>
+        /// Returns a detached deck copy suitable for BattleCardPileState.Setup().
+        /// Callers can freely mutate the returned list.
+        /// </summary>
         public List<BattleCardData> BuildBattleDeckSources()
         {
             EnsureCurrentDeckInitialized();
             return new List<BattleCardData>(currentBattleDeck);
         }
 
-        // 기존 코드 호환용 진입점입니다.
-        // replaceTarget이 있으면 즉시 교체하고, 없으면 일반 보상 카드 추가 흐름을 탑니다.
+        /// <summary>
+        /// Compatibility entry point that either adds a reward card or replaces one immediately.
+        /// </summary>
         public BattleDeckAddResult AddBattleRewardCard(BattleCardData data, BattleCardData replaceTarget = null)
         {
             if (replaceTarget != null)
@@ -112,8 +162,10 @@ namespace NYH.BattleCardSystem
             return AddRewardCard(data);
         }
 
-        // 보상 전투카드를 현재 전투덱에 추가합니다.
-        // 30장 제한에 걸리면 직접 교체하지 않고 NeedsReplacement를 반환합니다.
+        /// <summary>
+        /// Adds a reward card when the limited deck has room.
+        /// Returns NeedsReplacement instead of auto-removing a card when the limit is full.
+        /// </summary>
         public BattleDeckAddResult AddRewardCard(BattleCardData data)
         {
             if (data == null)
@@ -134,8 +186,9 @@ namespace NYH.BattleCardSystem
             return BattleDeckAddResult.NeedsReplacement;
         }
 
-        // 현재 전투덱에서 removeTarget을 제거하고 addTarget을 추가합니다.
-        // 기본덱 카드도 currentBattleDeck에 들어있으면 교체 대상이 될 수 있습니다.
+        /// <summary>
+        /// Replaces one limited-deck card with a newly earned card and persists the result.
+        /// </summary>
         public BattleDeckAddResult ReplaceCard(BattleCardData removeTarget, BattleCardData addTarget)
         {
             if (removeTarget == null || addTarget == null)
@@ -168,8 +221,9 @@ namespace NYH.BattleCardSystem
             return BattleDeckAddResult.Replaced;
         }
 
-        // 새 카드가 교체 없이 들어갈 수 있는지 확인합니다.
-        // 제한 무시 카드는 덱이 30장 이상이어도 true입니다.
+        /// <summary>
+        /// Returns true if the card can be added without opening replacement flow.
+        /// </summary>
         public bool CanAddWithoutReplacement(BattleCardData data)
         {
             if (data == null)
@@ -181,8 +235,9 @@ namespace NYH.BattleCardSystem
             return ShouldIgnoreDeckLimit(data) || LimitedDeckCount < BattleCardPileState.MaxDeckSize;
         }
 
-        // 교체 UI에 보여줄 수 있는 카드만 골라 반환합니다.
-        // 포션이나 제한 무시 카드는 교체 후보에서 제외합니다.
+        /// <summary>
+        /// Returns cards that may legally be replaced in the reward replacement UI.
+        /// </summary>
         public List<BattleCardData> GetReplaceableCards()
         {
             EnsureCurrentDeckInitialized();
@@ -198,7 +253,9 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
-        // 포션처럼 덱 제한을 무시하는 카드를 현재 전투덱에 추가합니다.
+        /// <summary>
+        /// Adds a deck-limit-ignoring card, such as a potion, directly into the current deck.
+        /// </summary>
         public void AddPotionCard(BattleCardData data)
         {
             if (data == null)
@@ -212,8 +269,10 @@ namespace NYH.BattleCardSystem
             Debug.Log($"[BattleDeckCollection] Potion added: {data.CardName}, current={currentBattleDeck.Count}");
         }
 
-        // currentBattleDeck이 비어 있을 때 저장값 또는 기본 구성으로 초기화합니다.
-        // 저장값이 있는데 카탈로그가 아직 준비되지 않았다면 빈 덱으로 확정하지 않고 다음 호출을 기다립니다.
+        /// <summary>
+        /// Initializes currentBattleDeck from save when possible.
+        /// Falls back to base + earned reconstruction if no usable save exists.
+        /// </summary>
         private void EnsureCurrentDeckInitialized()
         {
             if (currentBattleDeck.Count > 0)
@@ -226,6 +285,7 @@ namespace NYH.BattleCardSystem
                 if (BattleDeckPersistenceService.TryLoadDeck(out List<BattleCardData> savedDeck))
                 {
                     currentBattleDeck.AddRange(savedDeck);
+                    RecalculateEarnedCardsFromCurrentDeck();
                     return;
                 }
 
@@ -238,7 +298,9 @@ namespace NYH.BattleCardSystem
             RebuildCurrentDeckFromParts();
         }
 
-        // 저장값이 없을 때 기본덱과 획득 카드를 합쳐 현재 전투덱을 만듭니다.
+        /// <summary>
+        /// Rebuilds the current deck from the latest base deck plus tracked earned cards.
+        /// </summary>
         private void RebuildCurrentDeckFromParts()
         {
             currentBattleDeck.Clear();
@@ -246,7 +308,9 @@ namespace NYH.BattleCardSystem
             currentBattleDeck.AddRange(earnedBattleCards);
         }
 
-        // 현재 전투덱에 카드를 넣고 필요하면 획득 카드 기록에도 남긴 뒤 저장합니다.
+        /// <summary>
+        /// Appends a card to the current deck and optionally tracks it as earned before saving.
+        /// </summary>
         private void AddCardToCurrentDeck(BattleCardData data, bool trackAsEarned)
         {
             currentBattleDeck.Add(data);
@@ -258,13 +322,59 @@ namespace NYH.BattleCardSystem
             SaveCurrentDeck();
         }
 
-        // 현재 전투덱 구성을 PlayerPrefs 저장 서비스에 넘깁니다.
+        /// <summary>
+        /// Writes the current deck order into PlayerPrefs.
+        /// </summary>
         private void SaveCurrentDeck()
         {
             BattleDeckPersistenceService.SaveDeck(currentBattleDeck);
         }
 
-        // 덱 제한에 포함되는 카드 수를 계산합니다.
+        /// <summary>
+        /// Re-derives earnedBattleCards by subtracting the base deck multiset from the current deck.
+        /// This keeps inspector/debug state aligned after loading a saved current deck.
+        /// </summary>
+        private void RecalculateEarnedCardsFromCurrentDeck()
+        {
+            if (currentBattleDeck.Count == 0)
+            {
+                return;
+            }
+
+            earnedBattleCards.Clear();
+
+            Dictionary<int, int> baseCounts = new();
+            foreach (BattleCardData card in baseBattleDeck)
+            {
+                if (card == null)
+                {
+                    continue;
+                }
+
+                baseCounts.TryGetValue(card.CardID, out int count);
+                baseCounts[card.CardID] = count + 1;
+            }
+
+            foreach (BattleCardData card in currentBattleDeck)
+            {
+                if (card == null)
+                {
+                    continue;
+                }
+
+                if (baseCounts.TryGetValue(card.CardID, out int count) && count > 0)
+                {
+                    baseCounts[card.CardID] = count - 1;
+                    continue;
+                }
+
+                earnedBattleCards.Add(card);
+            }
+        }
+
+        /// <summary>
+        /// Counts only cards that consume the normal deck cap.
+        /// </summary>
         private static int CountLimitedCards(IEnumerable<BattleCardData> source)
         {
             int count = 0;
@@ -284,7 +394,9 @@ namespace NYH.BattleCardSystem
             return count;
         }
 
-        // 덱 30장 제한과 교체 후보 제한을 무시해야 하는 카드인지 확인합니다.
+        /// <summary>
+        /// Returns true when the card should be excluded from the normal 30-card deck limit.
+        /// </summary>
         private static bool ShouldIgnoreDeckLimit(BattleCardData data)
         {
             return data != null && (data.IgnoresDeckLimit || data.CardType == BattleCardType.Potion);

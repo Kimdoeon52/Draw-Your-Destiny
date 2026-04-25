@@ -4,26 +4,26 @@ namespace NYH.BattleCardSystem
     using System.Collections.Generic;
     using UnityEngine;
 
-    /*
-     * BattleDeckPersistenceService
-     *
-     * 역할:
-     * - 현재 전투덱을 PlayerPrefs에 저장하고 다시 불러옵니다.
-     * - BattleCardData 자체가 아니라 CardID 목록만 저장합니다.
-     * - ID를 BattleCardData로 되돌리는 작업은 BattleCardCatalog를 사용합니다.
-     */
-    internal static class BattleDeckPersistenceService
+    /// <summary>
+    /// Persists the current battle deck to PlayerPrefs.
+    /// Only CardIDs are saved, so loading depends on <see cref="BattleCardCatalog"/>.
+    /// </summary>
+    public static class BattleDeckPersistenceService
     {
         private const string PlayerPrefsKey = "NYH.Battle.CurrentBattleDeck";
 
-        // 저장된 전투덱 데이터가 있는지 확인합니다.
+        /// <summary>
+        /// Returns true when a saved current battle deck exists.
+        /// </summary>
         public static bool HasSavedDeck()
         {
             return PlayerPrefs.HasKey(PlayerPrefsKey);
         }
 
-        // 전투덱을 카드 ID 목록으로 변환해 PlayerPrefs에 저장합니다.
-        // 같은 카드가 여러 장 있을 수 있으므로 ID를 중복 포함한 순서 그대로 저장합니다.
+        /// <summary>
+        /// Saves the deck as an ordered list of CardIDs.
+        /// Duplicate IDs are preserved because duplicate cards are valid deck contents.
+        /// </summary>
         public static void SaveDeck(IEnumerable<BattleCardData> cards)
         {
             BattleDeckSaveData saveData = new();
@@ -42,8 +42,25 @@ namespace NYH.BattleCardSystem
             PlayerPrefs.Save();
         }
 
-        // 저장된 카드 ID 목록을 BattleCardData 목록으로 복원합니다.
-        // 카탈로그가 아직 없거나 저장값이 비어 있으면 false를 반환합니다.
+        /// <summary>
+        /// Deletes the saved current battle deck.
+        /// This is only used from explicit reset or test flows.
+        /// </summary>
+        public static void ClearSavedDeck()
+        {
+            if (!HasSavedDeck())
+            {
+                return;
+            }
+
+            PlayerPrefs.DeleteKey(PlayerPrefsKey);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>
+        /// Attempts to rebuild a saved deck from CardIDs.
+        /// Returns false if the save is missing, invalid, or the catalog is not ready yet.
+        /// </summary>
         public static bool TryLoadDeck(out List<BattleCardData> cards)
         {
             cards = new List<BattleCardData>();
@@ -91,7 +108,6 @@ namespace NYH.BattleCardSystem
         }
 
         [Serializable]
-        // JsonUtility 직렬화를 위한 단순 저장 데이터입니다.
         private sealed class BattleDeckSaveData
         {
             public List<int> CardIds = new();

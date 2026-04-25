@@ -1,0 +1,9 @@
+{
+  "name": "NYH.PlayMode.Tests",
+  "references": [
+    "Assembly-CSharp"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}
