@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using NYH.CoreCardSystem;
 using System.Collections;
 using System.Collections.Generic;
@@ -92,8 +92,6 @@ public class GameManager : PersistentSingleton<GameManager>
                 Vector3 castlePos = playerLordCastle.transform.position;
                 cam.transform.position = new Vector3(castlePos.x, castlePos.y, cam.transform.position.z);
             }
-
-            Debug.Log("[GameManager] 플레이어 영주성 배치 완료.");
         }
         else
         {
