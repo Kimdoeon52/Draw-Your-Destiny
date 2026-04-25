@@ -28,11 +28,26 @@ public class WorldMapManager : Singleton<WorldMapManager>
     public CanvasGroup fadePanel;       // 화면 전체 검정 오버레이 CanvasGroup
     public float fadeDuration = 0.4f;   // 페이드 소요 시간(초)
 
+    [Header("선택 모드 UI")]
+    public GameObject cancelSelectionButton;        // 우상단 취소 버튼 (선택 모드 시 활성)
+    public TroopDispatchModal troopDispatchModal;   // 병력 수 선택 모달
+
+    [Header("노드 시각 색상")]
+    [Range(0f, 1f)] public float civTintAlpha = 0.3f;                   // 진영 색 투명도 (통합 배경 비치도록)
+    public Color highlightColor = new Color(1f, 0.95f, 0.3f, 0.4f);     // 선택 모드 후보 노드
+    public Color dimColor       = new Color(0f, 0f, 0f, 0.45f);         // 선택 모드 비후보 노드
+
     [Header("빈 노드 점령 비용")]
     public int claimCost = 30;          // 빈 노드 즉시 점령에 필요한 금
 
     [Header("디버그")]
     public bool debugFreeEntry = false; // true면 적/빈 노드도 영지 진입 허용
+
+    // ── 선택 모드 ────────────────────────────────────────────────
+    public enum SelectionMode { None, Attack, Move }
+    private SelectionMode selectionMode = SelectionMode.None;
+    private int selectionSourceNodeID = -1;
+    private readonly HashSet<int> selectableNodeIDs = new HashSet<int>();
 
     // 문명 ID별 노드 배경 색상 (0=플레이어 파랑, 1=AI 빨강, 2=AI 초록, 3=AI 노랑, -1=중립 회색)
     public static readonly Color[] CivColors =
@@ -67,6 +82,7 @@ public class WorldMapManager : Singleton<WorldMapManager>
             fadePanel.alpha = 0f;
             fadePanel.blocksRaycasts = false; // 투명할 때 클릭 차단 방지
         }
+        if (cancelSelectionButton != null) cancelSelectionButton.SetActive(false);
     }
 
     private void Start()
@@ -92,6 +108,14 @@ public class WorldMapManager : Singleton<WorldMapManager>
     public void OnNodeClicked(int nodeID)
     {
         if (isTransitioning) return;
+
+        // 선택 모드: 후보 노드만 받음. 비후보는 무시 (취소는 별도 버튼)
+        if (selectionMode != SelectionMode.None)
+        {
+            if (!selectableNodeIDs.Contains(nodeID)) return;
+            OpenTroopDispatchModal(nodeID);
+            return;
+        }
 
         NodeData node = GetNode(nodeID);
         if (node == null)
@@ -267,6 +291,10 @@ public class WorldMapManager : Singleton<WorldMapManager>
         node.isMansionBuilt = true;
         BuildingPlacementController.UnlockPlacement();
         Debug.Log($"[WorldMapManager] 노드 {currentNodeID} 영주성 재건 완료 — 배치 잠금 해제.");
+
+        // 공격/이동 버튼 활성 조건이 바뀌었으므로 패널 갱신
+        var actionPanel = FindFirstObjectByType<TerritoryActionPanel>();
+        if (actionPanel != null) actionPanel.Refresh();
     }
 
     // 현재 건물 배치 가능 여부 (카드 UI 등에서 버튼 활성화 판단용)
@@ -388,6 +416,157 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
     // SaveManager에서 노드 전체 순회용 (읽기 전용)
     public IReadOnlyList<NodeData> AllNodes => allNodes;
+
+    // ── 선택 모드 (공격/이동 타깃 선택) ──────────────────────────
+    // TerritoryActionPanel의 [공격]/[이동] 버튼에서 호출.
+    // 영지 뷰를 빠져나와 월드맵으로 돌아간 뒤, 후보 노드만 클릭 받음.
+
+    public bool IsSelectable(int nodeID) => selectableNodeIDs.Contains(nodeID);
+    public SelectionMode CurrentSelectionMode => selectionMode;
+    public int SelectionSourceNodeID => selectionSourceNodeID;
+
+    public void BeginAttackSelection()
+    {
+        if (isTransitioning || currentNodeID == -1) return;
+        StartCoroutine(BeginSelectionCoroutine(currentNodeID, SelectionMode.Attack));
+    }
+
+    public void BeginMoveSelection()
+    {
+        if (isTransitioning || currentNodeID == -1) return;
+        StartCoroutine(BeginSelectionCoroutine(currentNodeID, SelectionMode.Move));
+    }
+
+    private IEnumerator BeginSelectionCoroutine(int from, SelectionMode mode)
+    {
+        // 영지 뷰를 빠져나옴 (currentNodeID = -1로 클리어됨)
+        yield return ExitTerritoryCoroutine();
+
+        selectionMode = mode;
+        selectionSourceNodeID = from;
+        BuildSelectableSet();
+
+        if (cancelSelectionButton != null) cancelSelectionButton.SetActive(true);
+        RefreshAllNodeButtons();
+    }
+
+    private void BuildSelectableSet()
+    {
+        selectableNodeIDs.Clear();
+        NodeData src = GetNode(selectionSourceNodeID);
+        if (src == null) return;
+
+        foreach (int adj in src.adjacentNodeIDs)
+        {
+            NodeData a = GetNode(adj);
+            if (a == null) continue;
+            if (selectionMode == SelectionMode.Attack && a.ownerCivID > 0)
+                selectableNodeIDs.Add(adj);
+            else if (selectionMode == SelectionMode.Move && a.ownerCivID == -1)
+                selectableNodeIDs.Add(adj);
+        }
+    }
+
+    // 우상단 [취소] 버튼에서 호출. 선택 모드 종료 후 월드맵에 그대로 머무름.
+    public void CancelSelection()
+    {
+        selectionMode = SelectionMode.None;
+        selectionSourceNodeID = -1;
+        selectableNodeIDs.Clear();
+        if (cancelSelectionButton != null) cancelSelectionButton.SetActive(false);
+        RefreshAllNodeButtons();
+    }
+
+    // 후보 노드 클릭 시 모달 오픈
+    private void OpenTroopDispatchModal(int targetNodeID)
+    {
+        if (troopDispatchModal == null)
+        {
+            Debug.LogError("[WorldMapManager] troopDispatchModal 미연결");
+            return;
+        }
+        NodeData src = GetNode(selectionSourceNodeID);
+        if (src == null) return;
+
+        // 콜백 시점에 selectionMode가 None일 수 있어 미리 캡처
+        SelectionMode mode = selectionMode;
+        int from = selectionSourceNodeID;
+        int to = targetNodeID;
+
+        troopDispatchModal.Open(src.units, troops =>
+        {
+            if (mode == SelectionMode.Attack) DeclareAttack(from, to, troops);
+            else                              DeclareMove(from, to, troops);
+            CancelSelection();
+        });
+    }
+
+    // ── 공격/이동 선언 ──────────────────────────────────────────
+    // 모달 확정 시 호출됨. 출발 노드에서 병력 차감 후 후속 처리.
+
+    private void DeclareAttack(int fromNodeID, int targetNodeID, Dictionary<UnitType, int> troops)
+    {
+        NodeData src = GetNode(fromNodeID);
+        NodeData target = GetNode(targetNodeID);
+        if (src == null || target == null) return;
+
+        DeductTroops(src, troops);
+
+        Debug.Log($"[WorldMapManager] 공격 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}");
+        // TODO: 전투 시스템 연동
+        //   - target 노드의 CombatArea로 진입 (NodeDataManager 확장 필요)
+        //   - 전투 결과 처리:
+        //       승리: SetNodeOwner(targetNodeID, 0) + SetPlayerUnitsPresent(targetNodeID, true) + 생존 유닛 target.units에 추가
+        //       패배: 파견 유닛 전부 소멸 (이미 차감됨)
+        RefreshAllNodeButtons();
+    }
+
+    private void DeclareMove(int fromNodeID, int targetNodeID, Dictionary<UnitType, int> troops)
+    {
+        NodeData src = GetNode(fromNodeID);
+        NodeData target = GetNode(targetNodeID);
+        if (src == null || target == null) return;
+
+        DeductTroops(src, troops);
+        AddTroops(target, troops);
+        target.hasPlayerUnits = true;
+
+        Debug.Log($"[WorldMapManager] 이동 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}");
+        RefreshAllNodeButtons();
+    }
+
+    private static void DeductTroops(NodeData node, Dictionary<UnitType, int> troops)
+    {
+        if (troops == null) return;
+        foreach (var kv in troops)
+        {
+            if (kv.Value <= 0) continue;
+            NodeUnit u = node.units.Find(x => x.unitType == kv.Key);
+            if (u == null) continue;
+            u.count = Mathf.Max(0, u.count - kv.Value);
+        }
+        node.units.RemoveAll(x => x.count <= 0);
+    }
+
+    private static void AddTroops(NodeData node, Dictionary<UnitType, int> troops)
+    {
+        if (troops == null) return;
+        foreach (var kv in troops)
+        {
+            if (kv.Value <= 0) continue;
+            NodeUnit u = node.units.Find(x => x.unitType == kv.Key);
+            if (u == null) node.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
+            else           u.count += kv.Value;
+        }
+    }
+
+    private static string TroopsToString(Dictionary<UnitType, int> troops)
+    {
+        if (troops == null || troops.Count == 0) return "(none)";
+        var parts = new List<string>();
+        foreach (var kv in troops) if (kv.Value > 0) parts.Add($"{kv.Key}:{kv.Value}");
+        return parts.Count == 0 ? "(none)" : string.Join(", ", parts);
+    }
 
     //============================Ai전용 탐색 함수 건들지마셈^^=====================================
     public List<NodeData> GetAdjacentNodes(int nodeID)
