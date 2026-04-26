@@ -5,14 +5,21 @@ namespace NYH.BattleCardSystem
     using UnityEngine.UI;
 
     /// <summary>
-    /// 씬 프리팹에 교체 UI가 준비되지 않았을 때만 사용하는 runtime fallback 레이아웃 빌더입니다.
-    /// 평소에는 인스펙터로 연결한 UI를 쓰고, 이 코드는 안전망 역할만 합니다.
+    /// 인스펙터에서 교체 UI를 직접 연결하지 않았을 때만 사용하는
+    /// 런타임 fallback 레이아웃 생성기입니다.
+    ///
+    /// 우선순위:
+    /// 1. 인스펙터에서 연결된 실제 UI 사용
+    /// 2. 아무것도 없을 때만 이 클래스가 임시 UI 생성
+    ///
+    /// 즉, 평소 작업에서는 프리팹/씬 UI가 우선이고
+    /// 이 클래스는 "최소한 동작은 하게 만드는 안전망" 역할입니다.
     /// </summary>
     internal static class BattleDeckReplacementRuntimeLayoutBuilder
     {
         /// <summary>
-        /// 필수 참조가 모두 비어 있을 때만 임시 교체 UI를 생성합니다.
-        /// 이미 연결된 프리팹 UI가 있으면 아무 작업도 하지 않습니다.
+        /// 필수 참조가 하나도 없는 경우에만 임시 교체 UI를 생성합니다.
+        /// 이미 직접 연결된 UI가 있으면 아무 작업도 하지 않습니다.
         /// </summary>
         public static void BuildIfNeeded(
             BattleDeckReplacementViewContext context,
@@ -26,7 +33,7 @@ namespace NYH.BattleCardSystem
 
             if (context.RootRect == null)
             {
-                Debug.LogWarning("[BattleDeckReplacementUI] Runtime UI를 만들려면 루트 RectTransform이 필요합니다. 가능하면 프리팹 직접 연결을 권장합니다.");
+                Debug.LogWarning("[BattleDeckReplacementUI] 런타임 fallback UI를 만들려면 루트 RectTransform이 필요합니다.");
                 return;
             }
 
@@ -115,7 +122,8 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// 보상 카드/선택 카드 미리보기를 담는 고정 열 하나를 생성합니다.
+        /// 좌측 보상 미리보기 / 우측 선택 카드 미리보기 칼럼을 만듭니다.
+        /// 실제 카드 생성은 PreviewFactory가 담당하고, 이 메서드는 틀만 만듭니다.
         /// </summary>
         private static RectTransform CreatePreviewColumn(Transform parent, string name, string header, out TMP_Text headerText)
         {
@@ -153,7 +161,8 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// 교체 후보 실제 CardView들을 가로 스크롤로 담을 컨텐츠 열을 생성합니다.
+        /// 후보 카드가 들어갈 스크롤 영역과 Content를 만듭니다.
+        /// 후보 카드는 나중에 BattleDeckReplacementUI가 이 Content의 직접 자식으로 추가합니다.
         /// </summary>
         private static RectTransform CreateCandidateColumn(Transform parent)
         {

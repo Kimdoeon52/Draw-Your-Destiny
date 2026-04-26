@@ -7,8 +7,14 @@ namespace NYH.BattleCardSystem
 
     /// <summary>
     /// 교체 UI 컨트롤러와 helper들이 공유해서 쓰는 참조 묶음입니다.
-    /// 인스펙터 필드를 컨텍스트 객체로 복사해 helper에 넘기고,
-    /// helper가 보정한 값을 다시 컨트롤러 필드로 반영할 때 사용합니다.
+    ///
+    /// 사용 방식:
+    /// 1. BattleDeckReplacementUI가 자기 직렬화 필드를 이 컨텍스트로 복사합니다.
+    /// 2. helper들이 이 컨텍스트를 받아 UI를 보정하거나 생성합니다.
+    /// 3. 보정 결과를 다시 컨트롤러 필드로 반영합니다.
+    ///
+    /// 이렇게 하면 helper가 BattleDeckReplacementUI 내부 필드를 직접 만지지 않아도 되어
+    /// 역할 경계가 더 분명해집니다.
     /// </summary>
     internal sealed class BattleDeckReplacementViewContext
     {
@@ -18,7 +24,16 @@ namespace NYH.BattleCardSystem
             RootRect = rootRect;
         }
 
+        /// <summary>
+        /// 교체 UI 컴포넌트가 붙어 있는 루트 Transform입니다.
+        /// 런타임 fallback UI를 만들 때 부모 기준점으로 사용합니다.
+        /// </summary>
         public Transform RootTransform { get; }
+
+        /// <summary>
+        /// 루트 RectTransform입니다.
+        /// fallback 레이아웃 생성 시 stretch 기준으로 사용합니다.
+        /// </summary>
         public RectTransform RootRect { get; }
 
         public GameObject OverlayPanel;
@@ -37,8 +52,8 @@ namespace NYH.BattleCardSystem
     }
 
     /// <summary>
-    /// 교체 화면과 helper들이 함께 쓰는 공통 크기/색상 상수입니다.
-    /// 숫자와 색을 한곳에 모아 UI 조정 지점을 명확하게 유지합니다.
+    /// 교체 UI에서 공통으로 사용하는 숫자/색상 상수 모음입니다.
+    /// UI 크기와 색을 한 곳에서 관리하려고 분리했습니다.
     /// </summary>
     internal static class BattleDeckReplacementUiMetrics
     {
@@ -62,11 +77,14 @@ namespace NYH.BattleCardSystem
     }
 
     /// <summary>
-    /// 교체 화면에서 공통으로 쓰는 UI 오브젝트를 생성하는 작은 팩토리입니다.
-    /// runtime fallback 레이아웃과 미리보기 helper가 함께 사용합니다.
+    /// 교체 UI에서 반복적으로 쓰는 기본 UI 요소 생성기입니다.
+    /// 런타임 fallback 레이아웃과 placeholder/fallback 카드 생성 시 공통으로 사용합니다.
     /// </summary>
     internal static class BattleDeckReplacementViewElements
     {
+        /// <summary>
+        /// 기본 스타일이 적용된 TMP 텍스트를 하나 만듭니다.
+        /// </summary>
         public static TMP_Text CreateText(
             string name,
             Transform parent,
@@ -86,6 +104,10 @@ namespace NYH.BattleCardSystem
             return text;
         }
 
+        /// <summary>
+        /// 기본 버튼 색과 라벨을 적용한 버튼을 만듭니다.
+        /// fallback UI를 코드로 생성할 때만 사용합니다.
+        /// </summary>
         public static Button CreateButton(string name, Transform parent, string label, UnityEngine.Events.UnityAction onClick)
         {
             GameObject buttonObject = CreatePanel(name, parent, BattleDeckReplacementUiMetrics.ButtonColor);
@@ -110,6 +132,9 @@ namespace NYH.BattleCardSystem
             return button;
         }
 
+        /// <summary>
+        /// 단색 Image 패널을 하나 만듭니다.
+        /// </summary>
         public static GameObject CreatePanel(string name, Transform parent, Color color)
         {
             GameObject panel = new(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -118,6 +143,9 @@ namespace NYH.BattleCardSystem
             return panel;
         }
 
+        /// <summary>
+        /// RectTransform을 부모에 꽉 차게 늘립니다.
+        /// </summary>
         public static void StretchRect(RectTransform rectTransform)
         {
             rectTransform.anchorMin = Vector2.zero;
