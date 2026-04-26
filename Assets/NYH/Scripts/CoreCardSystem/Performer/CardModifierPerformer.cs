@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using System.Collections;
 
@@ -41,7 +41,7 @@
             return action is SetCardTypeMultiplierGA
                 || action is DisableCardTypeGA
                 || action is LockDrawGA
-                || action is SelectOneAndCopyGA;
+                || action is ShowNextCardGA;
         }
 
         public IEnumerator Perform(GameAction action)
@@ -67,9 +67,9 @@
             {
                 CardModifierSystem.DrawLock();
             }
-            else if (action is SelectOneAndCopyGA selectOneAndCopyGA)
+            else if (action is  ShowNextCardGA showNextCardGA)
             {
-                CardSystem.Instance.ShowDeckDistinct();
+                CardSystem.Instance.ShowThreeCards(showNextCardGA.CardAmount);
             }
         }
     }

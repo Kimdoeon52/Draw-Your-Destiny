@@ -22,18 +22,17 @@ MonoBehaviour:
     3\uD134 \uD6C4 50\uACE8\uB4DC\uB97C \uD68D\uB4DD\uD569\uB2C8\uB2E4."
   <Effects>k__BackingField:
   - rid: 3255626818864021592
-  - rid: 3255626818864021593
-  - rid: -2
+  - rid: 3255627022875230317
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 3255626818864021592
       type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
       data:
         playCardCost: 0
-    - rid: 3255626818864021593
-      type: {class: GoldCardEffect, ns: , asm: Assembly-CSharp}
+    - rid: 3255627022875230317
+      type: {class: interestEffect, ns: , asm: Assembly-CSharp}
       data:
-        costAmount: -30
+        minusGold: 30
+        turnAmount: 3
+        plusGold: 50

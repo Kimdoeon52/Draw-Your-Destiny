@@ -7,13 +7,12 @@ namespace NYH.CoreCardSystem
     {
         public static T Draw<T>(this List<T> list)
         {
-            if(list.Count == 0)
+            if (list.Count == 0)
             {
                 return default;
             }
-            int r = Random.Range(0, list.Count);
-            T t = list[r];
-            list.RemoveAt(r); // 객체 직접 삭제보다 인덱스 삭제가 효율적입니다.
+            T t = list[0];
+            list.RemoveAt(0);
             return t;
         }
 

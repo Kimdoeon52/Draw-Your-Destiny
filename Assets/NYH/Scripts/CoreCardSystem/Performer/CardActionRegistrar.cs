@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     /*
      * CardActionRegistrar
@@ -50,6 +50,9 @@
             ActionSystem.AttachPerformer<LockDrawGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<AddResearchByCurResearchGA>(action => cardSystem.Perform(action));
             ActionSystem.AttachPerformer<SelectOneAndCopyGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<interestGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<ShowNextCardGA>(action => cardSystem.Perform(action));
+            ActionSystem.AttachPerformer<DeleteCardGA>(action => cardSystem.Perform(action));
         }
     }
 }

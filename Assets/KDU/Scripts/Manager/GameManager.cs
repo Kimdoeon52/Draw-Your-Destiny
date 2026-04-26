@@ -30,8 +30,8 @@ public class GameManager : PersistentSingleton<GameManager>
     [Header("Game State")]
     public int currentTurn = 0;
 
+    private readonly List<PendingGoldEffect> pendingGoldEffects = new();
 
- 
     // 턴 상태 플래그 (다른 시스템에서 턴 전환 시점을 감지할 때 사용)
     public bool endTurn = false;
     public bool startTurn = false;
@@ -133,8 +133,25 @@ public class GameManager : PersistentSingleton<GameManager>
         startTurn = true;
         endTurn = false;
         currentTurn++;
-        /* OngoingEffectSystem.Instance.OnTurnStartOrEnd();*/
+        OngoingEffectSystem.Instance.OnTurnStartOrEnd();
         CardModifierSystem.IsDrawLocked = false; // 턴 시작 시 드로우 잠금 해제
+    }
+
+    public void RegisterPendingGold(int triggerTurn, int goldAmount)
+    {
+        pendingGoldEffects.Add(new PendingGoldEffect { triggerTurn = triggerTurn, goldAmount = goldAmount });
+    }
+
+    private void ProcessPendingGoldEffects()
+    {
+        for (int i = pendingGoldEffects.Count - 1; i >= 0; i--)
+        {
+            if (currentTurn >= pendingGoldEffects[i].triggerTurn)
+            {
+                AddGold(pendingGoldEffects[i].goldAmount);
+                pendingGoldEffects.RemoveAt(i);
+            }
+        }
     }
 
     public void EndTurn()
@@ -145,7 +162,8 @@ public class GameManager : PersistentSingleton<GameManager>
         CardModifierSystem.OnTurnEnd();
         CardSystem.Instance?.RefreshVisibleCardViews();
         checkResearch();
-        OngoingEffectSystem.Instance.OnTurnStartOrEnd();
+        ProcessPendingGoldEffects();
+        //OngoingEffectSystem.Instance.OnTurnStartOrEnd();
         TryStartEnemyTurn(enemyA, nameof(enemyA));
         TryStartEnemyTurn(enemyB, nameof(enemyB));
         TryStartEnemyTurn(enemyC, nameof(enemyC));

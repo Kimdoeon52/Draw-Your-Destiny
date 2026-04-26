@@ -3,6 +3,7 @@ namespace NYH.CoreCardSystem
     using System.Collections.Generic;
     using TMPro;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
     /// <summary>
@@ -87,6 +88,30 @@ namespace NYH.CoreCardSystem
                 cardView.IsHoverPreview = true;
                 cardView.UseBuiltInInteractions = false;
                 cardView.transform.localScale = Vector3.one;
+            }
+        }
+
+        /// <summary>
+        /// Show와 동일한 레이아웃으로 열되, 카드 클릭 시 onSelected를 호출하고 닫습니다.
+        /// </summary>
+        public void ShowWithSelection(List<Card> cards, string title, System.Action<Card> onSelected)
+        {
+            Show(cards, title);
+
+            foreach (Transform child in container)
+            {
+                CardView cardView = child.GetComponent<CardView>();
+                if (cardView == null) continue;
+
+                Card card = cardView.Card;
+                EventTrigger trigger = child.gameObject.AddComponent<EventTrigger>();
+                EventTrigger.Entry entry = new() { eventID = EventTriggerType.PointerClick };
+                entry.callback.AddListener(_ =>
+                {
+                    onSelected?.Invoke(card);
+                    Close();
+                });
+                trigger.triggers.Add(entry);
             }
         }
 

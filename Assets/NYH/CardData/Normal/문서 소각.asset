@@ -22,11 +22,16 @@ MonoBehaviour:
   description: "\uB371\uC5D0 \uC788\uB294 \uCE74\uB4DC 1\uC7A5\uC744 \uC120\uD0DD\uD574
     \uC18C\uBA78\uC2DC\uD0B5\uB2C8\uB2E4."
   <Effects>k__BackingField:
-  - rid: 3255626751485935706
+  - rid: 3255627022875230338
+  - rid: 3255627022875230339
   references:
     version: 2
     RefIds:
-    - rid: 3255626751485935706
-      type: {class: ExtinctionCardEffect, ns: , asm: Assembly-CSharp}
+    - rid: 3255627022875230338
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
       data:
-        ExtinctionCard: 1
+        playCardCost: 0
+    - rid: 3255627022875230339
+      type: {class: DeleteCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        cardAmount: 1

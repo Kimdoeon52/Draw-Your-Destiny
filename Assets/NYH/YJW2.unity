@@ -229607,6 +229607,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7120835988b67264798b1ea582a3c1fd, type: 2}
   - {fileID: 11400000, guid: eb9a21325cc79f24a9889b26fc5d7aa6, type: 2}
   - {fileID: 11400000, guid: 39575f64b62a7ef48ad471e5ef74b04d, type: 2}
+  - {fileID: 11400000, guid: 37e241aa85a0f9b4e92acf1a98fd9f04, type: 2}
+  - {fileID: 11400000, guid: ef762b637975aaa43b55f4ea0949430e, type: 2}
+  - {fileID: 11400000, guid: a9135e09e449bbd41be9eb701e1a4ad5, type: 2}
+  - {fileID: 11400000, guid: 9d39bbb44615e2b4692bf35efe1088de, type: 2}
+  - {fileID: 11400000, guid: 5640e260ce6785e4d925fda4ea3be8fe, type: 2}
+  - {fileID: 11400000, guid: 006ffd3eda04541468269c6bec89f385, type: 2}
+  - {fileID: 11400000, guid: 5e07d3cb92dd8184080a5fa9714c2439, type: 2}
+  - {fileID: 11400000, guid: d740c106f7ba9f74083db5bf51c1777e, type: 2}
   gameManager: {fileID: 0}
 --- !u!114 &1319902120
 MonoBehaviour:
@@ -231321,6 +231329,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 940eb43f66816844a8689165fb6f788a, type: 2}
   - {fileID: 11400000, guid: 940eb43f66816844a8689165fb6f788a, type: 2}
   earnedBattleCards: []
+  currentBattleDeck: []
 --- !u!4 &1647332590
 Transform:
   m_ObjectHideFlags: 0

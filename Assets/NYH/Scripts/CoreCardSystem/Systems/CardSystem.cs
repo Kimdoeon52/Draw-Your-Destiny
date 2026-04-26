@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using System.Collections;
     using System.Collections.Generic;
@@ -153,6 +153,18 @@
                 yield break;
             }
 
+            if (action is SelectOneAndCopyGA)
+            {
+                yield return selectionPerformer.SelectOneAndCopyToHand();
+                yield break;
+            }
+
+            if (action is DeleteCardGA deleteCardGA)
+            {
+                yield return selectionPerformer.SelectCardsFromDeckToDelete(deleteCardGA.CardAmount);
+                yield break;
+            }
+
         }
 
         public bool TryQueuePlacementCard(Card sourceCard, Vector3Int targetPos, bool isTargetingMode)
@@ -191,6 +203,25 @@
             }
 
             CardListUI.Instance.ShowDistinct(pileState.GetShuffledDrawPileCopy(), "덱 확인");
+        }
+
+        /// <summary>
+        /// 덱 맨 위 카드 3장을 순서대로 보여줍니다.
+        /// </summary>
+        public void ShowThreeCards(int amount)
+        {
+            if (pileState.DrawPileCount == 0 || CardListUI.Instance == null)
+            {
+                return;
+            }
+
+            List<Card> nextCards = pileState.PeekDrawPile(amount);
+            if (nextCards.Count == 0)
+            {
+                return;
+            }
+
+            CardListUI.Instance.Show(nextCards, $"다음 카드 {amount}장");
         }
 
         /// <summary>

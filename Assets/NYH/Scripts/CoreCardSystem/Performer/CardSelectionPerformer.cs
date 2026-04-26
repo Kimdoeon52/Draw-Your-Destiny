@@ -280,6 +280,47 @@ namespace NYH.CoreCardSystem
         }
 
         /// <summary>
+        /// 덱을 보여주고 선택한 카드를 소멸시킵니다. amount만큼 반복합니다.
+        /// </summary>
+        public IEnumerator SelectCardsFromDeckToDelete(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                if (pileState.DrawPileCount == 0 || CardListUI.Instance == null)
+                {
+                    yield break;
+                }
+
+                List<Card> drawPileCopy = pileState.GetShuffledDrawPileCopy();
+                if (drawPileCopy.Count == 0)
+                {
+                    yield break;
+                }
+
+                Card selectedCard = null;
+                bool isChosen = false;
+
+                CardListUI.Instance.ShowWithSelection(drawPileCopy, $"삭제할 카드 선택 ({i + 1}/{amount})", card =>
+                {
+                    selectedCard = card;
+                    isChosen = true;
+                });
+
+                yield return new WaitUntil(() => isChosen);
+
+                if (selectedCard == null)
+                {
+                    yield break;
+                }
+
+                pileState.RemoveFromDrawPile(selectedCard);
+                pileState.AddToExtinction(selectedCard);
+                refreshPileCounts?.Invoke();
+                UpdateTexts();
+            }
+        }
+
+        /// <summary>
         /// Debug/helper path that directly adds copies of a civilization card into the draw pile.
         /// </summary>
         public IEnumerator AddCardInMyDeck(CardData targetCard, int addAmount)
@@ -290,6 +331,64 @@ namespace NYH.CoreCardSystem
             }
 
             yield break;
+        }
+
+        /// <summary>
+        /// 덱에서 중복 없이 카드 목록을 보여주고, 선택한 카드의 복사본을 손패에 추가합니다.
+        /// 원본은 덱에 그대로 남습니다.
+        /// </summary>
+        public IEnumerator SelectOneAndCopyToHand()
+        {
+            if (CardSelectionUI.Instance == null)
+            {
+                Debug.LogWarning("[CardSystem] CardSelectionUI is missing. Skipping SelectOneAndCopy.");
+                yield break;
+            }
+
+            List<Card> allCards = pileState.GetShuffledDrawPileCopy();
+            List<Card> distinctCards = new();
+            HashSet<int> seen = new();
+            foreach (Card card in allCards)
+            {
+                if (card != null && seen.Add(card.CardID))
+                {
+                    distinctCards.Add(card);
+                }
+            }
+
+            if (distinctCards.Count == 0)
+            {
+                yield break;
+            }
+
+            Card selectedCard = null;
+            bool isChosen = false;
+
+            CardSelectionUI.Instance.Show(distinctCards, card =>
+            {
+                selectedCard = card;
+                isChosen = true;
+            });
+
+            yield return new WaitUntil(() => isChosen);
+
+            if (selectedCard?.data == null)
+            {
+                yield break;
+            }
+
+            Card copy = new Card(selectedCard.data);
+            pileState.AddToHand(copy);
+            refreshPileCounts?.Invoke();
+            UpdateTexts();
+
+            if (CardViewCreator.Instance == null)
+            {
+                yield break;
+            }
+
+            CardView cardView = CardViewCreator.Instance.CreateCardView(copy, Vector3.zero, Quaternion.identity);
+            yield return handView.AddCard(cardView);
         }
     }
 }

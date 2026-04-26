@@ -19,14 +19,18 @@ MonoBehaviour:
   <Image>k__BackingField: {fileID: -7626879660653387264, guid: 824ed8ec092a9fe43a79e16b51471fde,
     type: 3}
   <Cost>k__BackingField: 1
-  description: "\uB2E4\uC74C \uCE74\uB4DC 3\uC7A5\uC744 \uBCF4\uACE0 \uD558\uB098\uB97C
-    \uACE0\uB985\uB2C8\uB2E4."
+  description: "\uB2E4\uC74C \uCE74\uB4DC 3\uC7A5\uC744 \uBBF8\uB9AC \uBD05\uB2C8\uB2E4."
   <Effects>k__BackingField:
-  - rid: 5005894241255948367
+  - rid: 3255627022875230319
+  - rid: 3255627022875230323
   references:
     version: 2
     RefIds:
-    - rid: 5005894241255948367
-      type: {class: ChooseOneEffect, ns: , asm: Assembly-CSharp}
+    - rid: 3255627022875230319
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
       data:
-        choseOneAmount: 3
+        playCardCost: 0
+    - rid: 3255627022875230323
+      type: {class: ShowNextCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        cardAmount: 3

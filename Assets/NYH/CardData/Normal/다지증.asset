@@ -21,14 +21,21 @@ MonoBehaviour:
   description: "\uB4DC\uB85C\uC6B0\uD558\uB294 \uCE74\uB4DC\uC758 \uC7A5\uC218\uAC00
     \uC601\uAD6C\uC801\uC73C\uB85C 1\uB9CC\uD07C \uB298\uC5B4\uB0A9\uB2C8\uB2E4."
   <Effects>k__BackingField:
-  - rid: 3255626751485935697
-  - rid: -2
+  - rid: 3255627022875230299
+  - rid: 3255627022875230300
+  - rid: 3255627022875230301
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 3255626751485935697
+    - rid: 3255627022875230299
+      type: {class: PlayCostCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        playCardCost: 0
+    - rid: 3255627022875230300
       type: {class: ContinueBehaviourEffect, ns: , asm: Assembly-CSharp}
       data:
         turnAmount: 100
+    - rid: 3255627022875230301
+      type: {class: DrawCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        drawAmount: 1

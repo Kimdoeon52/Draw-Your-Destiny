@@ -1,4 +1,4 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using System.Collections;
     using Unity.VisualScripting;
@@ -63,7 +63,8 @@
                 || action is IncreaseFoodGA
                 || action is ConvertGoldToFoodGA
                 || action is ZeroCostHandGA
-                || action is AddResearchByCurResearchGA;
+                || action is AddResearchByCurResearchGA
+                || action is interestGA;
         }
 
         public IEnumerator Perform(GameAction action)
@@ -145,6 +146,14 @@
                     GameManager.Instance.AddResearch(addResearchByCurResearchGA.Amount * 2);
                 else
                     GameManager.Instance.AddResearch(addResearchByCurResearchGA.Amount);
+            }
+            else if (action is interestGA interestAction)
+            {
+                GameManager.Instance.AddGold(-interestAction.MinusGold);
+                GameManager.Instance.RegisterPendingGold(
+                    GameManager.Instance.currentTurn + interestAction.TurnAmount,
+                    interestAction.PlusGold);
+                yield return null;
             }
         }
     }
