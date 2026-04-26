@@ -5,15 +5,6 @@
     using NYH.CoreCardSystem;
     using UnityEngine;
 
-    // 전투 보상 카드를 덱에 반영하려고 시도했을 때의 결과입니다.
-    public enum BattleDeckAddResult
-    {
-        Added,
-        Replaced,
-        NeedsReplacement,
-        Invalid,
-    }
-
     /*
      * BattleCardPileState
      *

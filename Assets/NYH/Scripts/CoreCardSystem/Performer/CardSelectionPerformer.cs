@@ -95,7 +95,8 @@ namespace NYH.CoreCardSystem
 
         /// <summary>
         /// Shows reward bundles containing one civilization card and one battle card.
-        /// The chosen battle reward is routed through the persistent battle deck flow.
+        /// The chosen battle reward is routed through the persistent battle deck flow first.
+        /// If the player cancels battle-card replacement, neither reward is granted.
         /// </summary>
         public IEnumerator OfferRewardBundlesToDecks(int bundleCount)
         {
@@ -156,18 +157,26 @@ namespace NYH.CoreCardSystem
                 yield break;
             }
 
+            bool battleRewardApplied = selectedBundle.BattleCardData == null;
+            if (selectedBundle.BattleCardData != null)
+            {
+                BattleDeckCollection.GetOrCreate();
+                yield return AddBattleRewardWithReplacement(
+                    selectedBundle.BattleCardData,
+                    wasApplied => battleRewardApplied = wasApplied);
+            }
+
+            if (!battleRewardApplied)
+            {
+                yield break;
+            }
+
             if (selectedBundle.CivilizationCardData != null)
             {
                 pileState.AddToDrawPile(new Card(selectedBundle.CivilizationCardData));
                 pileState.ShuffleDrawPile();
                 refreshPileCounts?.Invoke();
                 UpdateTexts();
-            }
-
-            if (selectedBundle.BattleCardData != null)
-            {
-                BattleDeckCollection.GetOrCreate();
-                yield return AddBattleRewardWithReplacement(selectedBundle.BattleCardData);
             }
         }
 
@@ -240,14 +249,16 @@ namespace NYH.CoreCardSystem
 
         /// <summary>
         /// Adds a battle reward card and opens the replacement UI only when the deck limit is full.
+        /// The callback reports whether the battle reward was actually granted.
         /// </summary>
-        private IEnumerator AddBattleRewardWithReplacement(BattleCardData rewardCard)
+        private IEnumerator AddBattleRewardWithReplacement(BattleCardData rewardCard, System.Action<bool> onFinished)
         {
             BattleDeckCollection deckCollection = BattleDeckCollection.GetOrCreate();
 
             BattleDeckAddResult result = deckCollection.AddRewardCard(rewardCard);
             if (result != BattleDeckAddResult.NeedsReplacement)
             {
+                onFinished?.Invoke(result == BattleDeckAddResult.Added);
                 yield break;
             }
 
@@ -260,10 +271,12 @@ namespace NYH.CoreCardSystem
             if (replaceTarget == null)
             {
                 Debug.LogWarning("[CardSystem] Battle reward was not added because no replacement target was selected.");
+                onFinished?.Invoke(false);
                 yield break;
             }
 
-            deckCollection.ReplaceCard(replaceTarget, rewardCard);
+            BattleDeckAddResult replaceResult = deckCollection.ReplaceCard(replaceTarget, rewardCard);
+            onFinished?.Invoke(replaceResult == BattleDeckAddResult.Replaced);
         }
 
         /// <summary>

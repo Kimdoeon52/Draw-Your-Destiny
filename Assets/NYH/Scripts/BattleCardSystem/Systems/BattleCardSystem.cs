@@ -67,7 +67,12 @@ namespace NYH.BattleCardSystem
         public void SetupFromInspector()
         {
             BattleDeckCollection.GetOrCreate();
-            deckSetupService.SetupFromInspector(baseBattleDeck);
+            IReadOnlyList<BattleCardData> configuredBaseDeck =
+                baseBattleDeck != null && baseBattleDeck.Count > 0
+                    ? baseBattleDeck
+                    : null;
+
+            deckSetupService.SetupFromInspector(configuredBaseDeck);
             SetupActionPoints(0);
         }
 

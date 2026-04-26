@@ -23,7 +23,10 @@
         public Sprite Image => Data.Image;
         public BattleCardType CardType => Data.CardType;
         public BattleCardTargetingMode TargetingMode => Data != null ? Data.TargetingMode : BattleCardTargetingMode.Auto;
-        public bool IgnoresDeckLimit => Data.IgnoresDeckLimit || Data.CardType == BattleCardType.Potion;
+        public bool IgnoresDeckLimit =>
+            Data.IgnoresDeckLimit
+            || Data.CardType == BattleCardType.Potion
+            || Data.CardType == BattleCardType.Trap;
         public bool IsConsumable => Data.IsConsumable;
         public IReadOnlyList<UnitType> AllowedUserUnitTypes => Data != null ? Data.AllowedUserUnitTypes : null;
         public IReadOnlyList<BattleCardKeyword> Keywords => Data.Keywords;

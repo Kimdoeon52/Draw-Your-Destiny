@@ -38,7 +38,7 @@ namespace NYH.BattleCardSystem
 
         /// <summary>
         /// Counts only cards that consume the normal deck limit.
-        /// Potions and cards with IgnoresDeckLimit are excluded.
+        /// Potions, traps, and cards with IgnoresDeckLimit are excluded.
         /// </summary>
         public int LimitedDeckCount
         {
@@ -54,15 +54,35 @@ namespace NYH.BattleCardSystem
         /// </summary>
         public static BattleDeckCollection GetOrCreate()
         {
+            BattleDeckCollection[] collections = FindObjectsByType<BattleDeckCollection>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            BattleDeckCollection preferredCollection = null;
+            foreach (BattleDeckCollection collection in collections)
+            {
+                if (collection == null)
+                {
+                    continue;
+                }
+
+                if (preferredCollection == null || (preferredCollection.baseBattleDeck.Count == 0 && collection.baseBattleDeck.Count > 0))
+                {
+                    preferredCollection = collection;
+                }
+            }
+
+            if (preferredCollection != null)
+            {
+                if (Instance != null && Instance != preferredCollection)
+                {
+                    Instance.TryAdoptSceneBaseDeck(preferredCollection.baseBattleDeck);
+                    return Instance;
+                }
+
+                return preferredCollection;
+            }
+
             if (Instance != null)
             {
                 return Instance;
-            }
-
-            BattleDeckCollection existing = FindFirstObjectByType<BattleDeckCollection>(FindObjectsInactive.Include);
-            if (existing != null)
-            {
-                return existing;
             }
 
             GameObject collectionObject = new(nameof(BattleDeckCollection));
@@ -77,6 +97,7 @@ namespace NYH.BattleCardSystem
             base.Awake();
             if (Instance != this)
             {
+                Instance?.TryAdoptSceneBaseDeck(baseBattleDeck);
                 Debug.LogWarning($"[BattleDeckCollection] Duplicate instance will be destroyed: scene={gameObject.scene.name}, object={name}");
                 return;
             }
@@ -93,21 +114,35 @@ namespace NYH.BattleCardSystem
         /// </summary>
         public void ConfigureBaseDeck(IEnumerable<BattleCardData> source)
         {
-            baseBattleDeck.Clear();
             if (source != null)
             {
-                baseBattleDeck.AddRange(source);
+                List<BattleCardData> copiedBaseDeck = new();
+                foreach (BattleCardData card in source)
+                {
+                    if (card != null)
+                    {
+                        copiedBaseDeck.Add(card);
+                    }
+                }
+
+                baseBattleDeck.Clear();
+                baseBattleDeck.AddRange(copiedBaseDeck);
             }
 
             if (!BattleDeckPersistenceService.HasSavedDeck())
             {
-                RebuildCurrentDeckFromParts();
-                SaveCurrentDeck();
+                RebuildAndSaveCurrentDeckFromParts();
             }
             else
             {
                 EnsureCurrentDeckInitialized();
                 RecalculateEarnedCardsFromCurrentDeck();
+                if (ShouldRecoverCurrentDeckFromBase())
+                {
+                    Debug.LogWarning($"[BattleDeckCollection] Recovering saved deck from base deck: baseDeck={baseBattleDeck.Count}, current={currentBattleDeck.Count}, earned={earnedBattleCards.Count}");
+                    RebuildAndSaveCurrentDeckFromParts();
+                    RecalculateEarnedCardsFromCurrentDeck();
+                }
             }
 
             Debug.Log($"[BattleDeckCollection] Base deck configured: baseDeck={baseBattleDeck.Count}, current={currentBattleDeck.Count}");
@@ -122,8 +157,7 @@ namespace NYH.BattleCardSystem
             earnedBattleCards.Clear();
             if (!BattleDeckPersistenceService.HasSavedDeck())
             {
-                RebuildCurrentDeckFromParts();
-                SaveCurrentDeck();
+                RebuildAndSaveCurrentDeckFromParts();
             }
 
             Debug.Log("[BattleDeckCollection] Run reset: earnedBattleCards cleared");
@@ -254,7 +288,7 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
-        /// Adds a deck-limit-ignoring card, such as a potion, directly into the current deck.
+        /// Adds a deck-limit-ignoring card, such as a potion or trap, directly into the current deck.
         /// </summary>
         public void AddPotionCard(BattleCardData data)
         {
@@ -306,6 +340,15 @@ namespace NYH.BattleCardSystem
             currentBattleDeck.Clear();
             currentBattleDeck.AddRange(baseBattleDeck);
             currentBattleDeck.AddRange(earnedBattleCards);
+        }
+
+        /// <summary>
+        /// Rebuilds the current deck from base + earned and immediately persists the result.
+        /// </summary>
+        private void RebuildAndSaveCurrentDeckFromParts()
+        {
+            RebuildCurrentDeckFromParts();
+            SaveCurrentDeck();
         }
 
         /// <summary>
@@ -399,7 +442,36 @@ namespace NYH.BattleCardSystem
         /// </summary>
         private static bool ShouldIgnoreDeckLimit(BattleCardData data)
         {
-            return data != null && (data.IgnoresDeckLimit || data.CardType == BattleCardType.Potion);
+            return data != null
+                && (data.IgnoresDeckLimit
+                || data.CardType == BattleCardType.Potion
+                || data.CardType == BattleCardType.Trap);
+        }
+
+        /// <summary>
+        /// Adopts the scene-authored base deck when a runtime-created collection instance already exists.
+        /// This prevents an empty DontDestroyOnLoad collection from discarding the real scene default deck.
+        /// </summary>
+        private void TryAdoptSceneBaseDeck(IReadOnlyList<BattleCardData> sceneBaseDeck)
+        {
+            if (sceneBaseDeck == null || sceneBaseDeck.Count == 0 || baseBattleDeck.Count > 0)
+            {
+                return;
+            }
+
+            baseBattleDeck.AddRange(sceneBaseDeck);
+            Debug.Log($"[BattleDeckCollection] Adopted scene base deck from duplicate instance: baseDeck={baseBattleDeck.Count}");
+        }
+
+        /// <summary>
+        /// Returns true when the loaded current deck is obviously invalid for the configured base deck.
+        /// This repairs saves that were produced while the base deck was accidentally empty.
+        /// </summary>
+        private bool ShouldRecoverCurrentDeckFromBase()
+        {
+            return baseBattleDeck.Count > 0
+                && currentBattleDeck.Count < baseBattleDeck.Count
+                && BattleCardCatalog.Instance != null;
         }
     }
 }

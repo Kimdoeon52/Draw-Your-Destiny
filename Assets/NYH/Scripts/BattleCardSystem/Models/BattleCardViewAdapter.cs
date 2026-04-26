@@ -26,15 +26,7 @@ namespace NYH.BattleCardSystem
                 return null;
             }
 
-            return CreatePreviewCardInternal(
-                battleCardData.CardID,
-                battleCardData.CardName,
-                ResolvePreviewCardType(battleCardData.CardType),
-                battleCardData.Image,
-                battleCardData.ActionPointCost,
-                BattleCard.FormatBattleDescription(battleCardData.Description, battleCardData.Keywords),
-                battleCardData.Effects,
-                CardPresentationTextFormatter.CreateForBattle(battleCardData));
+            return CreatePreviewCard(new BattleCard(battleCardData));
         }
 
         public static Card CreatePreviewCard(BattleCard battleCard)
