@@ -109297,6 +109297,7 @@ MonoBehaviour:
   playerEra: 0
   lordCastleSize: 4
   playerLordCastle: {fileID: 719729715}
+  oldManCount: 0
 --- !u!4 &1169971045
 Transform:
   m_ObjectHideFlags: 0
@@ -150109,7 +150110,7 @@ MonoBehaviour:
   civTintAlpha: 0.3
   highlightColor: {r: 1, g: 0.95, b: 0.3, a: 0.4}
   dimColor: {r: 0, g: 0, b: 0, a: 0.45}
-  claimCost: 30
+  battleSessionController: {fileID: 1535182451}
   debugFreeEntry: 1
   allNodes:
   - nodeID: 101
