@@ -3,7 +3,7 @@ namespace NYH.BattleCardSystem
     using System.Collections.Generic;
     using UnityEngine;
 
-    [CreateAssetMenu(menuName = "Data/Battle Attack Pattern")]
+    [CreateAssetMenu(menuName = "CardData/Battle Attack Pattern")]
     /*
      * AttackPatternData
      *

@@ -16,9 +16,24 @@ namespace NYH.BattleCardSystem
             }
 
             BattleUnit userUnit = playCardGA.UserUnit;
+            BattlePotionEffect potionEffect = BattleEffectResolver.GetPotionEffect(playCardGA.Card);
+            BattleTrapEffect trapEffect = BattleEffectResolver.GetTrapEffect(playCardGA.Card);
+
+            if (potionEffect != null)
+            {
+                return potionEffect.TargetingType == BattlePotionTargetingType.All
+                    || BattleGridCoordinateService.Instance.IsCombatCell(playCardGA.TargetPosition);
+            }
+
+            if (trapEffect != null)
+            {
+                return BattleBoardSystem.Instance != null
+                    && BattleTargetingQueryService.IsValidTrapInstallCell(BattleBoardSystem.Instance, playCardGA.TargetPosition);
+            }
+
             if (userUnit == null)
             {
-                return true;
+                return false;
             }
 
             if (!userUnit.IsAlive)

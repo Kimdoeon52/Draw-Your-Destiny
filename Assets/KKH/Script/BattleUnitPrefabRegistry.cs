@@ -15,7 +15,7 @@ namespace NYH.BattleCardSystem
      * - 병종마다 Player/Enemy 프리팹을 드래그 앤 드롭으로 할당
      * - BattleUnitRosterBuilder 또는 BattleStartSpawner에서 참조
      */
-    [CreateAssetMenu(menuName = "Data/Battle Unit Prefab Registry")]
+    [CreateAssetMenu(menuName = "CardData/Battle Unit Prefab Registry")]
     public class BattleUnitPrefabRegistry : ScriptableObject
     {
         [System.Serializable]

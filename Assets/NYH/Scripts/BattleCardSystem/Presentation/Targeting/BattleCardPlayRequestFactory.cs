@@ -19,7 +19,14 @@ namespace NYH.BattleCardSystem
             bool skipFollowUpAttack,
             bool skipPostAttackMove)
         {
-            if (state == null || state.PendingBattleCard == null || state.PendingUserUnit == null)
+            if (state == null || state.PendingBattleCard == null)
+            {
+                return BattleCardPlayRequest.Invalid;
+            }
+
+            bool requiresUserUnit = state.PendingTargetingMode != BattleCardTargetingMode.UtilityGrid
+                && state.PendingTargetingMode != BattleCardTargetingMode.UtilityInstant;
+            if (requiresUserUnit && state.PendingUserUnit == null)
             {
                 return BattleCardPlayRequest.Invalid;
             }

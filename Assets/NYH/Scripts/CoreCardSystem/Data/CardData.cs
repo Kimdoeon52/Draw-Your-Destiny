@@ -1,10 +1,10 @@
-﻿namespace NYH.CoreCardSystem
+namespace NYH.CoreCardSystem
 {
     using System.Collections.Generic;
     using SerializeReferenceEditor;
     using UnityEngine;
 
-    [CreateAssetMenu(menuName = "Data/Card")]
+    [CreateAssetMenu(menuName = "CardData/Card")]
     public class CardData : CardDataBase
     {
         [field: SerializeField] public int cardID { get; private set; }

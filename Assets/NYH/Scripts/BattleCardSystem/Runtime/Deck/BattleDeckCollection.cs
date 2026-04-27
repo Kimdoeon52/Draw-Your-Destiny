@@ -304,6 +304,34 @@ namespace NYH.BattleCardSystem
         }
 
         /// <summary>
+        /// Permanently removes one matching card from the persisted current deck and saves immediately.
+        /// </summary>
+        public bool RemoveSinglePersistedCard(BattleCardData data)
+        {
+            if (data == null)
+            {
+                Debug.LogWarning("[BattleDeckCollection] Remove persisted card failed: data is null");
+                return false;
+            }
+
+            EnsureCurrentDeckInitialized();
+
+            int removeIndex = currentBattleDeck.IndexOf(data);
+            if (removeIndex < 0)
+            {
+                Debug.LogWarning($"[BattleDeckCollection] Remove persisted card failed: target not found, card={data.CardName}");
+                return false;
+            }
+
+            currentBattleDeck.RemoveAt(removeIndex);
+            earnedBattleCards.Remove(data);
+            SaveCurrentDeck();
+
+            Debug.Log($"[BattleDeckCollection] Persisted card removed: {data.CardName}, current={currentBattleDeck.Count}");
+            return true;
+        }
+
+        /// <summary>
         /// Initializes currentBattleDeck from save when possible.
         /// Falls back to base + earned reconstruction if no usable save exists.
         /// </summary>

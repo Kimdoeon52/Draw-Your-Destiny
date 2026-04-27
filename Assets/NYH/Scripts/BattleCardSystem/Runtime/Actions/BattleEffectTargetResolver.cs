@@ -22,7 +22,7 @@ namespace NYH.BattleCardSystem
                 BattleBoardSystem boardSystem = BattleBoardSystem.Instance;
                 if (boardSystem != null && playCardGA.UserUnit != null)
                 {
-                    BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+                    BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card, playCardGA.UserUnit);
                     foreach (Vector2Int targetPosition in BattleCardActionFactory.EnumerateAttackTargetPositions(playCardGA))
                     {
                         BattleAttackGA previewAttack = BattleCardActionFactory.CreateAttackGA(
@@ -74,7 +74,7 @@ namespace NYH.BattleCardSystem
         private static void ResolveHealAreaTargets(BattlePlayCardGA playCardGA, List<BattleUnit> resolvedTargets)
         {
             BattleBoardSystem boardSystem = BattleBoardSystem.Instance;
-            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(playCardGA.Card);
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(playCardGA.Card, playCardGA.UserUnit);
             if (boardSystem == null || healEffect == null || playCardGA.UserUnit == null || resolvedTargets == null)
             {
                 return;

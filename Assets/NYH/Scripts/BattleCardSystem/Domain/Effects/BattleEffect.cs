@@ -32,11 +32,45 @@
         [Tooltip("이 이펙트를 누구에게 적용할지 정합니다.\n자기 자신: 카드를 사용한 유닛\n직접 선택 대상 1명: 플레이어가 직접 찍은 대상\n범위 판정 대상들: 공격/범위 판정으로 실제 맞은 대상들")]
         [SerializeField] private BattleEffectTargetType targetType = BattleEffectTargetType.ResolvedTargets;
 
+        [Header("사용 유닛 조건")]
+        [Tooltip("비워두면 모든 병종이 이 이펙트를 사용할 수 있습니다.\n값을 넣으면 해당 UnitType 병종이 카드를 썼을 때만 이 이펙트가 적용됩니다.")]
+        [SerializeField] private List<UnitType> allowedSourceUnitTypes = new();
+
         public BattleEffectTargetType TargetType => targetType;
+        public IReadOnlyList<UnitType> AllowedSourceUnitTypes => allowedSourceUnitTypes;
 
         public override GameAction GetGameAction(int effectIndex = 0, Card sourceCard = null)
         {
             return null;
+        }
+
+        public bool CanApply(BattleEffectContext context)
+        {
+            return CanApplyToSourceUnit(context?.SourceUnit);
+        }
+
+        public bool CanApplyToSourceUnit(BattleUnit sourceUnit)
+        {
+            if (allowedSourceUnitTypes == null || allowedSourceUnitTypes.Count == 0)
+            {
+                return true;
+            }
+
+            if (sourceUnit == null)
+            {
+                return false;
+            }
+
+            UnitType sourceUnitType = sourceUnit.UnitType;
+            for (int i = 0; i < allowedSourceUnitTypes.Count; i++)
+            {
+                if (allowedSourceUnitTypes[i] == sourceUnitType)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // 전투 실행 중 계산된 context와 범위 대상 목록을 받아 실제 효과를 적용합니다.

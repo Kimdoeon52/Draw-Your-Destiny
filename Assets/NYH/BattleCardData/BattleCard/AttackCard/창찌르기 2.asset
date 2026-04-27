@@ -10,31 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e65b348dc63c8834cb1116ccfffa0291, type: 3}
-  m_Name: "\uCC3D\uCC0C\uB974\uAE30 3"
+  m_Name: "\uCC3D\uCC0C\uB974\uAE30 2"
   m_EditorClassIdentifier: 
   <CardID>k__BackingField: 10008
   <CardName>k__BackingField: "\uCC3D\uCC0C\uB974\uAE303"
   <CardType>k__BackingField: 0
   <Image>k__BackingField: {fileID: -1615217524476387044, guid: 34e87aa0cb674e149b52ac1a475113d3,
     type: 3}
-  <GridImage>k__BackingField: {fileID: 4354675302256720160, guid: f5b8357a781fbf54d92a083653620323,
+  <GridImage>k__BackingField: {fileID: 2122055319429908091, guid: 9d637ec8142bdb6408d6a9fcb890dbff,
     type: 3}
-  <ActionPointCost>k__BackingField: 5
+  <ActionPointCost>k__BackingField: 4
   <DisplayMoveRange>k__BackingField: 4
   <IgnoresDeckLimit>k__BackingField: 0
-  <IsConsumable>k__BackingField: 0
+  <IsConsumable>k__BackingField: 1
   <TargetingMode>k__BackingField: 4
   allowedUserUnitTypes: 
-  <Keywords>k__BackingField: 020000000a000000
+  <Keywords>k__BackingField: 020000000b000000
   <Effects>k__BackingField:
   - rid: 5001
   - rid: 1104878801729618316
   - rid: 1104878801729618317
+  - rid: -2
   description: "\uC120\uD0DD\uD55C \uC801\uC5D0\uAC8C {damage}\uC758 \uD53C\uD574\uB97C
     \uC90D\uB2C8\uB2E4."
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 5001
       type: {class: BattleMoveEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
@@ -45,14 +48,14 @@ MonoBehaviour:
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 1
-        range: 5
+        range: 4
         targetCount: 1
         selectionCount: 1
         hitsAllTargetsInRange: 0
         impactTargetFilter: 2
         blocksBehindTargets: 1
         attackPattern: 0
-        customAttackPattern: {fileID: 11400000, guid: b186838b5b260df41a456610c218a13c,
+        customAttackPattern: {fileID: 11400000, guid: 8023d8b5c75cfc74180dcafbba4a48e8,
           type: 2}
         patternOriginMode: 1
         useSeparatePatterns: 0
@@ -70,5 +73,5 @@ MonoBehaviour:
         scalingMode: 1
         valueSourceUnit: 0
         valueType: 0
-        amount: 4
+        amount: 2
         multiplier: 1

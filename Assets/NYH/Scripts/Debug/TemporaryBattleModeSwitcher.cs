@@ -1,9 +1,11 @@
 using NYH.BattleCardSystem;
 using UnityEngine;
 
-// 임시 테스트용 전투 모드 전환 스크립트.
-// 버튼 OnClick에서 EnterBattleMode / ExitBattleMode로 연결하면 됩니다.
-// enableKeyboardShortcut을 켜서 단축키로도 빠르게 테스트할 수 있습니다.
+// Temporary battle-mode helper for scene testing.
+// - F7: enter battle using real node data
+// - F8: exit battle
+// - F9: if inspector spawn data exists, enter an empty battle and spawn those units
+//       otherwise fall back to spawning from the current territory node data
 public class TemporaryBattleModeSwitcher : MonoBehaviour
 {
     [System.Serializable]
@@ -15,9 +17,7 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     }
 
     [Header("Real Connection Test")]
-    [Tooltip("WorldMapManager에서 가져올 플레이어 노드 ID (실제 데이터 테스트용)")]
     [SerializeField] private int testPlayerNodeID = 0;
-    [Tooltip("WorldMapManager에서 가져올 적 노드 ID (실제 데이터 테스트용)")]
     [SerializeField] private int testEnemyNodeID = 1;
 
     [Header("Optional Reference")]
@@ -68,30 +68,30 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     {
         if (!TryResolveController())
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController가 없어 전투 모드로 전환할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController is missing.");
             return;
         }
 
         if (WorldMapManager.Instance == null)
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] WorldMapManager가 없어 실제 데이터를 가져올 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] WorldMapManager is missing.");
             return;
         }
 
-        // WorldMapManager에서 실제 씬 데이터 가져오기
         NodeData playerNodeData = WorldMapManager.Instance.GetNode(testPlayerNodeID);
         NodeData enemyNodeData = WorldMapManager.Instance.GetNode(testEnemyNodeID);
 
         if (playerNodeData == null)
         {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 플레이어 노드 {testPlayerNodeID} 데이터를 찾을 수 없습니다.");
-        }
-        if (enemyNodeData == null)
-        {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 적 노드 {testEnemyNodeID} 데이터를 찾을 수 없습니다.");
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] Player node not found: id={testPlayerNodeID}");
         }
 
-        Debug.Log($"[TemporaryBattleModeSwitcher] 실제 데이터 연결 테스트 시작: Player Node {testPlayerNodeID}, Enemy Node {testEnemyNodeID}");
+        if (enemyNodeData == null)
+        {
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] Enemy node not found: id={testEnemyNodeID}");
+        }
+
+        Debug.Log($"[TemporaryBattleModeSwitcher] Entering battle with node data: player={testPlayerNodeID}, enemy={testEnemyNodeID}");
         battleSessionController.EnterBattle(playerNodeData, enemyNodeData);
     }
 
@@ -99,39 +99,23 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     {
         if (!TryResolveController())
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController가 없어 문명 모드로 복귀할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController is missing.");
             return;
         }
 
-        Debug.Log("[TemporaryBattleModeSwitcher] 문명 모드 복귀 요청");
+        Debug.Log("[TemporaryBattleModeSwitcher] Exiting battle mode.");
         battleSessionController.ExitBattle();
     }
 
     public void SpawnConfiguredUnits()
     {
-        if (WorldMapManager.Instance == null || !WorldMapManager.Instance.IsInTerritoryView)
+        if (unitsToSpawn != null && unitsToSpawn.Length > 0)
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] 현재 영지 뷰가 아니거나 WorldMapManager가 없어 데이터를 가져올 수 없습니다.");
+            SpawnConfiguredUnitsFromInspector();
             return;
         }
 
-        // 1. 현재 진입해 있는 영지의 진짜 데이터를 가져옴
-        int currentNodeID = WorldMapManager.Instance.CurrentNodeID;
-        NodeData currentNodeData = WorldMapManager.Instance.GetNode(currentNodeID);
-
-        if (currentNodeData == null)
-        {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 현재 노드({currentNodeID}) 데이터를 찾을 수 없습니다.");
-            return;
-        }
-
-        if (!TryResolveController()) return;
-
-        Debug.Log($"[TemporaryBattleModeSwitcher] 현재 영지({currentNodeID})의 실제 유닛 데이터로 전투 진입");
-
-        // 2. 정식 전투 진입 프로세스 호출
-        // 플레이어 유닛과 적 유닛 모두 현재 노드 데이터를 사용하여 스폰 테스트
-        battleSessionController.EnterBattle(currentNodeData, currentNodeData);
+        SpawnCurrentTerritoryUnits();
     }
 
     public BattleUnit SpawnPlayerUnit(BattleUnit unitPrefab, Vector2Int gridPosition, int startHealth = 10)
@@ -148,32 +132,32 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     {
         if (unitPrefab == null)
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] 유닛 프리팹이 없어 배치할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] Unit prefab is missing.");
             return null;
         }
 
         if (!TryResolveBoard())
         {
-            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleBoardSystem이 없어 유닛을 배치할 수 없습니다.");
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleBoardSystem is missing.");
             return null;
         }
 
         BattleGridCoordinateService coordinateService = BattleGridCoordinateService.Instance;
         if (!coordinateService.RefreshFromTilemaps() && !coordinateService.IsCombatCell(gridPosition))
         {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 좌표계 갱신 못함. pos={gridPosition}");
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] Could not refresh combat coordinates. pos={gridPosition}");
             return null;
         }
 
         if (!coordinateService.IsCombatCell(gridPosition))
         {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] 전투 셀이 아닌 위치에는 소환할 수 없습니다. pos={gridPosition}");
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] Target cell is not a combat cell. pos={gridPosition}");
             return null;
         }
 
         if (battleBoardSystem.GetUnitAt(gridPosition) != null)
         {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] {gridPosition} 위치에는 이미 유닛이 있습니다.");
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] Cell is already occupied. pos={gridPosition}");
             return null;
         }
 
@@ -185,12 +169,12 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
 
         if (!battleBoardSystem.RegisterUnit(spawnedUnit, gridPosition))
         {
-            Debug.LogWarning($"[TemporaryBattleModeSwitcher] {gridPosition} 위치의 유닛 등록 실패.");
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] Failed to register unit at {gridPosition}.");
             Destroy(spawnedUnit.gameObject);
             return null;
         }
 
-        Debug.Log($"[TemporaryBattleModeSwitcher] 유닛 배치 완료: name={spawnedUnit.name}, team={spawnedUnit.Team}, pos={gridPosition}, health={resolvedHealth}");
+        Debug.Log($"[TemporaryBattleModeSwitcher] Unit spawned: name={spawnedUnit.name}, team={spawnedUnit.Team}, pos={gridPosition}, health={resolvedHealth}");
         spawnedUnit.LogGridAlignment("TemporaryBattleModeSwitcher.SpawnUnit");
         return spawnedUnit;
     }
@@ -216,5 +200,69 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
         battleBoardSystem = BattleBoardSystem.Instance;
         return battleBoardSystem != null;
     }
-}
 
+    private void SpawnConfiguredUnitsFromInspector()
+    {
+        if (!TryResolveController())
+        {
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController is missing.");
+            return;
+        }
+
+        if (!battleSessionController.IsBattleActive)
+        {
+            Debug.Log("[TemporaryBattleModeSwitcher] Entering empty battle mode for inspector-configured unit spawn.");
+            battleSessionController.EnterBattle();
+        }
+
+        int spawnedCount = 0;
+        for (int i = 0; i < unitsToSpawn.Length; i++)
+        {
+            UnitSpawnRequest request = unitsToSpawn[i];
+            if (request == null || request.unitPrefab == null)
+            {
+                continue;
+            }
+
+            if (SpawnUnit(request.unitPrefab, request.gridPosition, request.startHealth) != null)
+            {
+                spawnedCount++;
+            }
+        }
+
+        if (spawnedCount == 0)
+        {
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] No configured units were spawned.");
+            return;
+        }
+
+        Debug.Log($"[TemporaryBattleModeSwitcher] Configured unit spawn complete: spawned={spawnedCount}");
+    }
+
+    private void SpawnCurrentTerritoryUnits()
+    {
+        if (WorldMapManager.Instance == null || !WorldMapManager.Instance.IsInTerritoryView)
+        {
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] Current territory view is unavailable and no configured units were provided.");
+            return;
+        }
+
+        int currentNodeID = WorldMapManager.Instance.CurrentNodeID;
+        NodeData currentNodeData = WorldMapManager.Instance.GetNode(currentNodeID);
+
+        if (currentNodeData == null)
+        {
+            Debug.LogWarning($"[TemporaryBattleModeSwitcher] Current node data not found: id={currentNodeID}");
+            return;
+        }
+
+        if (!TryResolveController())
+        {
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleSessionController is missing.");
+            return;
+        }
+
+        Debug.Log($"[TemporaryBattleModeSwitcher] Entering battle with current territory node data: node={currentNodeID}");
+        battleSessionController.EnterBattle(currentNodeData, currentNodeData);
+    }
+}

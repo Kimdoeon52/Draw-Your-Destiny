@@ -80,8 +80,8 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
-            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, attacker);
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard, attacker);
             if (attackEffect == null && healEffect == null)
             {
                 return result;

@@ -27,6 +27,7 @@ namespace NYH.BattleCardSystem
             Action<Vector2> handleMoveTargetHover,
             Action<Vector2> handleMovePathDrag,
             Action<Vector2> handleAttackTargetHover,
+            Action<Vector2> handleUtilityTargetHover,
             Action<Vector2> handleBoardTargetingClick,
             Action clearMoveDragState)
         {
@@ -37,7 +38,8 @@ namespace NYH.BattleCardSystem
 
             if (input.CancelPressed)
             {
-                if (Phase == BattleCardTargetingPhase.SelectAttackTarget
+                if ((Phase == BattleCardTargetingPhase.SelectAttackTarget
+                    || Phase == BattleCardTargetingPhase.SelectUtilityGrid)
                     && canUndoAttackTarget != null
                     && canUndoAttackTarget.Invoke())
                 {
@@ -70,6 +72,11 @@ namespace NYH.BattleCardSystem
                 handleAttackTargetHover?.Invoke(input.MousePosition);
             }
 
+            if (Phase == BattleCardTargetingPhase.SelectUtilityGrid)
+            {
+                handleUtilityTargetHover?.Invoke(input.MousePosition);
+            }
+
             if (input.PrimaryReleased)
             {
                 clearMoveDragState?.Invoke();
@@ -88,6 +95,7 @@ namespace NYH.BattleCardSystem
         SelectUnit,
         SelectMoveTarget,
         SelectAttackTarget,
+        SelectUtilityGrid,
     }
 
     internal readonly struct BattleCardTargetingInput

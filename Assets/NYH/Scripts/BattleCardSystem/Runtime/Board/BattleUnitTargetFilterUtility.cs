@@ -20,5 +20,20 @@ namespace NYH.BattleCardSystem
                 _ => targetUnit.Team != sourceUnit.Team,
             };
         }
+
+        public static bool Matches(BattleTeam sourceTeam, BattleUnit targetUnit, BattleUnitTargetFilter filter)
+        {
+            if (targetUnit == null)
+            {
+                return false;
+            }
+
+            return filter switch
+            {
+                BattleUnitTargetFilter.AlliesOnly => targetUnit.Team == sourceTeam,
+                BattleUnitTargetFilter.AllUnits => true,
+                _ => targetUnit.Team != sourceTeam,
+            };
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace NYH.BattleCardSystem
                 return 0;
             }
 
-            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(battleCard);
+            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(battleCard, userUnit);
             if (moveEffect == null)
             {
                 return 0;
@@ -109,6 +109,113 @@ namespace NYH.BattleCardSystem
                 screenPosition.y,
                 -camera.transform.position.z));
             return BattleUnit.GetGridPositionForWorld(worldPosition);
+        }
+
+        public static HashSet<Vector2Int> ResolveUtilitySelectionCells(BattleBoardSystem boardSystem, BattleCard battleCard)
+        {
+            HashSet<Vector2Int> result = new();
+            if (boardSystem == null || battleCard == null)
+            {
+                return result;
+            }
+
+            BattlePotionEffect potionEffect = BattleEffectResolver.GetPotionEffect(battleCard);
+            if (potionEffect != null && potionEffect.TargetingType == BattlePotionTargetingType.Range)
+            {
+                foreach (Vector2Int cell in BattleGridCoordinateService.Instance.GetAllCombatCells())
+                {
+                    result.Add(cell);
+                }
+
+                return result;
+            }
+
+            BattleTrapEffect trapEffect = BattleEffectResolver.GetTrapEffect(battleCard);
+            if (trapEffect != null)
+            {
+                foreach (Vector2Int cell in BattleGridCoordinateService.Instance.GetAllCombatCells())
+                {
+                    if (IsValidTrapInstallCell(boardSystem, cell))
+                    {
+                        result.Add(cell);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static bool IsValidTrapInstallCell(BattleBoardSystem boardSystem, Vector2Int cell)
+        {
+            if (boardSystem == null || !BattleGridCoordinateService.Instance.IsCombatCell(cell))
+            {
+                return false;
+            }
+
+            if (!boardSystem.CanEnterCell(cell))
+            {
+                return false;
+            }
+
+            return !BattleTrapSystem.HasAnyTrapAt(cell);
+        }
+
+        public static HashSet<Vector2Int> ResolveUtilityPreviewImpactCells(
+            BattleBoardSystem boardSystem,
+            BattleCard battleCard,
+            Vector2Int targetGrid)
+        {
+            if (boardSystem == null || battleCard == null)
+            {
+                return new HashSet<Vector2Int>();
+            }
+
+            BattlePotionEffect potionEffect = BattleEffectResolver.GetPotionEffect(battleCard);
+            if (potionEffect != null)
+            {
+                return BattleUtilityEffectResolver.ResolvePotionImpactCells(potionEffect, targetGrid);
+            }
+
+            BattleTrapEffect trapEffect = BattleEffectResolver.GetTrapEffect(battleCard);
+            if (trapEffect != null)
+            {
+                return BattleUtilityEffectResolver.ResolveTrapImpactCells(trapEffect, targetGrid);
+            }
+
+            return new HashSet<Vector2Int>();
+        }
+
+        public static List<BattleUnit> ResolveUtilityPreviewImpactTargets(
+            BattleBoardSystem boardSystem,
+            BattleCard battleCard,
+            Vector2Int targetGrid)
+        {
+            if (boardSystem == null || battleCard == null)
+            {
+                return new List<BattleUnit>();
+            }
+
+            BattlePotionEffect potionEffect = BattleEffectResolver.GetPotionEffect(battleCard);
+            if (potionEffect != null)
+            {
+                return BattleUtilityEffectResolver.ResolvePotionTargets(boardSystem, potionEffect, targetGrid);
+            }
+
+            BattleTrapEffect trapEffect = BattleEffectResolver.GetTrapEffect(battleCard);
+            if (trapEffect != null)
+            {
+                return BattleUtilityEffectResolver.ResolveTrapTargets(boardSystem, trapEffect, targetGrid);
+            }
+
+            return new List<BattleUnit>();
+        }
+
+        public static List<BattleUnit> ResolveTrapImpactTargets(
+            BattleBoardSystem boardSystem,
+            BattleTrapEffect trapEffect,
+            Vector2Int steppedCell)
+        {
+            return BattleUtilityEffectResolver.ResolveTrapTargets(boardSystem, trapEffect, steppedCell);
         }
 
         // 선택된 이동 경로의 총 이동 비용을 계산합니다.
@@ -277,14 +384,14 @@ namespace NYH.BattleCardSystem
         }
 
         // 유닛 직접 선택이 아니라 빈 땅/셀을 조준하는 공격인지 확인합니다.
-        public static bool IsGroundTargetAttack(BattleCard battleCard)
+        public static bool IsGroundTargetAttack(BattleCard battleCard, BattleUnit userUnit)
         {
-            if (BattleEffectResolver.GetHealEffect(battleCard) != null)
+            if (BattleEffectResolver.GetHealEffect(battleCard, userUnit) != null)
             {
                 return true;
             }
 
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, userUnit);
             if (attackEffect == null)
             {
                 return false;
@@ -308,7 +415,7 @@ namespace NYH.BattleCardSystem
             IReadOnlyList<Vector2Int> confirmedMovePath,
             Vector2Int targetGrid)
         {
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, userUnit);
             Vector2Int attackOrigin = confirmedMovePath != null && confirmedMovePath.Count > 0
                 ? confirmedMovePath[confirmedMovePath.Count - 1]
                 : userUnit != null ? userUnit.GridPosition : Vector2Int.zero;
@@ -387,7 +494,7 @@ namespace NYH.BattleCardSystem
                 ? new HashSet<Vector2Int>(selectableAttackCells)
                 : new HashSet<Vector2Int>();
 
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, userUnit);
             if (attackEffect == null
                 || !attackEffect.BlocksBehindTargets
                 || attackEffect.PatternOriginMode != BattleAttackPatternOriginMode.MeleePattern)
@@ -543,7 +650,7 @@ namespace NYH.BattleCardSystem
                 return rawImpactCells;
             }
 
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, attacker);
             if (attackEffect == null || !attackEffect.BlocksBehindTargets)
             {
                 return rawImpactCells;
@@ -605,8 +712,8 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
-            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, userUnit);
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard, userUnit);
             if (attackEffect == null && healEffect == null)
             {
                 result.Add(targetGrid);
@@ -665,8 +772,8 @@ namespace NYH.BattleCardSystem
             foreach (Vector2Int cell in impactCells)
             {
                 BattleUnit unit = boardSystem.GetUnitAt(cell);
-                BattleUnitTargetFilter targetFilter = ResolvePreviewTargetFilter(battleCard);
-                bool isAttackPreview = BattleEffectResolver.GetAttackEffect(battleCard) != null;
+                BattleUnitTargetFilter targetFilter = ResolvePreviewTargetFilter(battleCard, userUnit);
+                bool isAttackPreview = BattleEffectResolver.GetAttackEffect(battleCard, userUnit) != null;
                 if (unit == null
                     || (isAttackPreview && unit == userUnit)
                     || !unit.IsAlive
@@ -696,7 +803,7 @@ namespace NYH.BattleCardSystem
                 return result;
             }
 
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, attacker);
             if (attackEffect == null)
             {
                 return result;
@@ -726,15 +833,15 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
-        private static BattleUnitTargetFilter ResolvePreviewTargetFilter(BattleCard battleCard)
+        private static BattleUnitTargetFilter ResolvePreviewTargetFilter(BattleCard battleCard, BattleUnit userUnit)
         {
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, userUnit);
             if (attackEffect != null)
             {
                 return attackEffect.ImpactTargetFilter;
             }
 
-            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard);
+            BattleHealEffect healEffect = BattleEffectResolver.GetHealEffect(battleCard, userUnit);
             return healEffect != null ? healEffect.HealTargetFilter : BattleUnitTargetFilter.EnemiesOnly;
         }
 

@@ -119,6 +119,19 @@
                 return card.TargetingMode;
             }
 
+            BattlePotionEffect potionEffect = BattleEffectResolver.GetPotionEffect(card);
+            if (potionEffect != null)
+            {
+                return potionEffect.TargetingType == BattlePotionTargetingType.All
+                    ? BattleCardTargetingMode.UtilityInstant
+                    : BattleCardTargetingMode.UtilityGrid;
+            }
+
+            if (BattleEffectResolver.GetTrapEffect(card) != null)
+            {
+                return BattleCardTargetingMode.UtilityGrid;
+            }
+
             // 기존 카드 자산을 전부 손대지 않아도 되도록
             // 이동/공격 관련 이펙트를 보고 하이브리드 모드를 자동 추론합니다.
             // 순서가 중요한 카드(예: 공격 후 이동)는 자산에서 수동 지정이 필요합니다.

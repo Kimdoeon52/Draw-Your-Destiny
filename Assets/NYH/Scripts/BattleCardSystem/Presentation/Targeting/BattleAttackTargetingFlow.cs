@@ -54,7 +54,7 @@ namespace NYH.BattleCardSystem
                 return BattleAttackTargetSelection.Invalid;
             }
 
-            bool isGroundTargetAttack = BattleTargetingQueryService.IsGroundTargetAttack(battleCard);
+            bool isGroundTargetAttack = BattleTargetingQueryService.IsGroundTargetAttack(battleCard, userUnit);
             Vector2Int attackOrigin = confirmedMovePath != null && confirmedMovePath.Count > 0
                 ? confirmedMovePath[confirmedMovePath.Count - 1]
                 : userUnit.GridPosition;
@@ -69,7 +69,7 @@ namespace NYH.BattleCardSystem
             BattleUnit resolvedTarget = ResolvePrimaryTarget(isGroundTargetAttack, clickedUnit, previewTargets);
 
             selectedAttackTargetPositions.Add(clickedGrid);
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(battleCard, userUnit);
             int requiredSelectionCount = attackEffect != null ? attackEffect.SelectionCount : 1;
             bool isComplete = selectedAttackTargetPositions.Count >= requiredSelectionCount;
 

@@ -125,6 +125,35 @@ namespace NYH.BattleCardSystem
             return result;
         }
 
+        public List<BattleUnit> GetUnitsInCells(
+            BattleTeam sourceTeam,
+            IEnumerable<Vector2Int> cells,
+            BattleUnitTargetFilter targetFilter)
+        {
+            List<BattleUnit> result = new();
+            if (cells == null)
+            {
+                return result;
+            }
+
+            HashSet<Vector2Int> cellSet = cells as HashSet<Vector2Int> ?? new HashSet<Vector2Int>(cells);
+            foreach (var pair in unitMap)
+            {
+                BattleUnit unit = pair.Value;
+                if (unit == null
+                    || !unit.IsAlive
+                    || !cellSet.Contains(pair.Key)
+                    || !BattleUnitTargetFilterUtility.Matches(sourceTeam, unit, targetFilter))
+                {
+                    continue;
+                }
+
+                result.Add(unit);
+            }
+
+            return result;
+        }
+
         // 유닛을 targetPosition으로 이동시키고 보드 점유 맵과 Transform을 함께 갱신합니다.
         public bool TryMoveUnit(
             BattleUnit unit,
@@ -347,6 +376,16 @@ namespace NYH.BattleCardSystem
 
             BattleTileType tileType = GetTile(position);
             return tileType != BattleTileType.Forest && tileType != BattleTileType.Rock;
+        }
+
+        public bool CanEnterCell(Vector2Int position)
+        {
+            if (!EnsureCombatTilesLoaded())
+            {
+                return false;
+            }
+
+            return CanEnter(position);
         }
 
         private int CalculateMoveCost(Vector2Int start, Vector2Int target)

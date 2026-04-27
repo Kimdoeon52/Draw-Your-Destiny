@@ -1,4 +1,4 @@
-﻿namespace NYH.BattleCardSystem
+namespace NYH.BattleCardSystem
 {
     using SerializeReferenceEditor;
     using System.Collections.Generic;
@@ -19,18 +19,18 @@
     // 카드 설명 상단과 본문에서 색상 태그로 표시할 키워드입니다.
     public enum BattleCardKeyword
     {
-        None,  // 타입 없음
-        Ranged, //원거리
-        Melle, //근거리 
-        Stun,  //기절
-        Slow,  //둔화
-        Disarm, //무장해제(n 턴간 공격력 0으로)
-        Push,   //밀기
-        Pull,   //당기기
-        MoveSpeedUp, //이동속도 증가
-        AttackPowerUp, //공격력 증가
-        AreaAttack, //범위 공격
-        NonPiercing, //비관통
+        None,                //타입 없음
+        Ranged,              //원거리
+        Melle,               //근거리 
+        Stun,                //기절
+        Slow,                //둔화
+        Disarm,              //무장해제(n 턴간 공격력 0으로)
+        Push,                //밀기
+        Pull,                //당기기
+        MoveSpeedUp,         //이동속도 증가
+        AttackPowerUp,       //공격력 증가
+        AreaAttack,          //범위 공격
+        NonPiercing,         //비관통
     }
 
     // 기본 제공 공격/회복 범위 패턴입니다.
@@ -80,6 +80,12 @@
         [InspectorName("직접 효과")]
         DirectEffect,
 
+        [InspectorName("그리드 선택")]
+        UtilityGrid,
+
+        [InspectorName("즉시 사용")]
+        UtilityInstant,
+
         [InspectorName("이동 전용")]
         MoveOnly,
 
@@ -93,7 +99,7 @@
         AttackThenMove,
     }
 
-    [CreateAssetMenu(menuName = "Data/Battle Card")]
+    [CreateAssetMenu(menuName = "CardData/Battle Card")]
     public class BattleCardData : CardDataBase
     {
         [Header("기본 정보")]

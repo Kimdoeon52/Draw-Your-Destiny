@@ -47,6 +47,7 @@ namespace NYH.BattleCardSystem
                 HandleMoveTargetHover,
                 HandleMovePathDrag,
                 HandleAttackTargetHover,
+                HandleUtilityTargetHover,
                 HandleBoardTargetingClick,
                 ClearMoveDragState);
         }
@@ -62,12 +63,28 @@ namespace NYH.BattleCardSystem
             // 새 카드 선택 시 이전 카드가 중앙에 남아 입력이 망가지는 상황을 막습니다.
             Clear(returnCardToHand: true);
             state.Begin(battleCard, cardView);
+            CardViewHoverSystem.Instance?.Hide();
+            state.PendingCardView?.BeginExternalSelection();
+
+            if (state.PendingTargetingMode == BattleCardTargetingMode.UtilityInstant)
+            {
+                RequestPlay(Vector2Int.zero, null, null, null);
+                return;
+            }
+
+            if (state.PendingTargetingMode == BattleCardTargetingMode.UtilityGrid)
+            {
+                state.SelectableAttackCells = BattleTargetingQueryService.ResolveUtilitySelectionCells(
+                    BattleBoardSystem.Instance,
+                    battleCard);
+                inputRouter.Phase = BattleCardTargetingPhase.SelectUtilityGrid;
+                previewCoordinator.RefreshUtilityPreview(state, null);
+                return;
+            }
+
             state.SelectableUnits.AddRange(BattleTargetingQueryService.FindUsablePlayerUnits(battleCard));
             inputRouter.Phase = BattleCardTargetingPhase.SelectUnit;
             previewCoordinator.ShowSelectableUnits(state.SelectableUnits);
-
-            CardViewHoverSystem.Instance?.Hide();
-            state.PendingCardView?.BeginExternalSelection();
         }
 
         public void Cancel()
@@ -109,9 +126,16 @@ namespace NYH.BattleCardSystem
             state.ConfirmedAttackTargetUnit = state.HasConfirmedAttackTarget
                 ? BattleBoardSystem.Instance?.GetUnitAt(state.ConfirmedAttackTargetGrid)
                 : null;
-            previewCoordinator.RefreshAttackPreview(state, state.HasLastAttackHoverCell && state.WasLastAttackHoverValid
+            Vector2Int? previewGrid = state.HasLastAttackHoverCell && state.WasLastAttackHoverValid
                 ? state.LastHoveredAttackCell
-                : (Vector2Int?)null);
+                : (Vector2Int?)null;
+            if (inputRouter.Phase == BattleCardTargetingPhase.SelectUtilityGrid)
+            {
+                previewCoordinator.RefreshUtilityPreview(state, previewGrid);
+                return;
+            }
+
+            previewCoordinator.RefreshAttackPreview(state, previewGrid);
         }
 
         private void ClearMoveDragState()
@@ -147,6 +171,12 @@ namespace NYH.BattleCardSystem
             if (inputRouter.Phase == BattleCardTargetingPhase.SelectAttackTarget)
             {
                 TrySelectAttackTarget(clickedGrid, clickedUnit);
+                return;
+            }
+
+            if (inputRouter.Phase == BattleCardTargetingPhase.SelectUtilityGrid)
+            {
+                TrySelectUtilityTarget(clickedGrid);
             }
         }
 
@@ -244,6 +274,28 @@ namespace NYH.BattleCardSystem
             }
         }
 
+        private void HandleUtilityTargetHover(Vector2 screenPosition)
+        {
+            if (state.PendingBattleCard == null || BattleBoardSystem.Instance == null)
+            {
+                return;
+            }
+
+            Vector2Int hoveredGrid = BattleTargetingQueryService.ResolveTargetGridPosition(screenPosition);
+            bool isValidHover = state.SelectableAttackCells.Contains(hoveredGrid);
+            if (state.HasLastAttackHoverCell
+                && hoveredGrid == state.LastHoveredAttackCell
+                && state.WasLastAttackHoverValid == isValidHover)
+            {
+                return;
+            }
+
+            state.HasLastAttackHoverCell = true;
+            state.LastHoveredAttackCell = hoveredGrid;
+            state.WasLastAttackHoverValid = isValidHover;
+            previewCoordinator.RefreshUtilityPreview(state, isValidHover ? hoveredGrid : (Vector2Int?)null);
+        }
+
         private void TrySelectAttackTarget(Vector2Int clickedGrid, BattleUnit clickedUnit)
         {
             if (state.PendingBattleCard == null || state.PendingUserUnit == null)
@@ -293,6 +345,16 @@ namespace NYH.BattleCardSystem
                         followUp.SkipPostAttackMove);
                     break;
             }
+        }
+
+        private void TrySelectUtilityTarget(Vector2Int clickedGrid)
+        {
+            if (state.PendingBattleCard == null || !state.SelectableAttackCells.Contains(clickedGrid))
+            {
+                return;
+            }
+
+            RequestPlay(clickedGrid, null, null, null);
         }
 
         private void RequestPlay(

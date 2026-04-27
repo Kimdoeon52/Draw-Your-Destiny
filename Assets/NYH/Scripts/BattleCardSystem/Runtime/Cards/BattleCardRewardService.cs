@@ -23,5 +23,13 @@ namespace NYH.BattleCardSystem
         {
             BattleDeckCollection.GetOrCreate().AddPotionCard(potionData);
         }
+
+        /// <summary>
+        /// Permanently removes one saved copy of a consumable battle card after it is played.
+        /// </summary>
+        public bool ConsumePersistentBattleCard(BattleCard card)
+        {
+            return card?.Data != null && BattleDeckCollection.GetOrCreate().RemoveSinglePersistedCard(card.Data);
+        }
     }
 }

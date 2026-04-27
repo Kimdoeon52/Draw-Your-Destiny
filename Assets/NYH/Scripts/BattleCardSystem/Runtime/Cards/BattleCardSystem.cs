@@ -41,11 +41,11 @@ namespace NYH.BattleCardSystem
 
             pileState = new BattleCardPileState();
             costService = new BattleCardCostService(maxActionPoints);
-            playPerformer = new BattlePlayPerformer(pileState, CanAffordCardCost, ResolveCardCost);
+            rewardService = new BattleCardRewardService();
+            playPerformer = new BattlePlayPerformer(pileState, CanAffordCardCost, ResolveCardCost, rewardService);
             tacticalPerformer = new BattleTacticalPerformer();
 
             deckSetupService = new BattleDeckSetupService(pileState);
-            rewardService = new BattleCardRewardService();
             handDrawService = new BattleHandDrawService(pileState);
             pileViewService = new BattleCardPileViewService(pileState);
 

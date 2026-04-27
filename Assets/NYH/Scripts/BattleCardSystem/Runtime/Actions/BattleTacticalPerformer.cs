@@ -60,7 +60,10 @@
                 // 이동이 실패한 뒤 후속 공격이 이어지면 하이브리드 카드가 잘못된 위치 기준으로 실행됩니다.
                 moveGA.PerformReactions.Clear();
                 moveGA.PostReactions.Clear();
+                yield break;
             }
+
+            BattleTrapSystem.TryTriggerTrapsAt(moveGA.Unit);
         }
 
         private static IEnumerator AnimateMove(BattleMoveGA moveGA)
@@ -224,6 +227,11 @@
                 if (battleEffect is BattleMoveEffect or BattleAttackEffect)
                 {
                     // 이동/공격 자체는 GameAction 체인에서 이미 처리되므로 피해/상태 같은 부가 이펙트만 적용합니다.
+                    continue;
+                }
+
+                if (!battleEffect.CanApply(context))
+                {
                     continue;
                 }
 

@@ -8,20 +8,23 @@ namespace NYH.BattleCardSystem
     /// 전투 카드 사용 요청을 처리하는 얇은 실행 조정자입니다.
     /// 이 클래스는 비용/카드 더미 상태를 확정하고, 실제 이동/공격 액션 조립은 BattleCardActionFactory에 넘깁니다.
     /// </summary>
-    public class BattlePlayPerformer
+    internal class BattlePlayPerformer
     {
         private readonly BattleCardPileState pileState;
         private readonly System.Func<BattleCard, bool> canAffordCost;
         private readonly System.Func<BattleCard, int, (bool paidByActionPoints, int actionPointsSpent, int healthPenalty)> resolveCost;
+        private readonly BattleCardRewardService rewardService;
 
         public BattlePlayPerformer(
             BattleCardPileState pileState,
             System.Func<BattleCard, bool> canAffordCost,
-            System.Func<BattleCard, int, (bool paidByActionPoints, int actionPointsSpent, int healthPenalty)> resolveCost)
+            System.Func<BattleCard, int, (bool paidByActionPoints, int actionPointsSpent, int healthPenalty)> resolveCost,
+            BattleCardRewardService rewardService)
         {
             this.pileState = pileState;
             this.canAffordCost = canAffordCost;
             this.resolveCost = resolveCost;
+            this.rewardService = rewardService;
         }
 
         public bool CanHandle(GameAction action)
@@ -70,6 +73,7 @@ namespace NYH.BattleCardSystem
             if (playCardGA.Card.IsConsumable)
             {
                 pileState.Exhaust(playCardGA.Card);
+                rewardService?.ConsumePersistentBattleCard(playCardGA.Card);
             }
             else
             {

@@ -17,6 +17,11 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
+            if (TryQueueUtilityCard(playCardGA))
+            {
+                return;
+            }
+
             BattleCardTargetingMode targetingMode = BattleCardTargetingUtility.ResolveTargetingMode(playCardGA.Card);
             if (targetingMode == BattleCardTargetingMode.MoveThenAttack)
             {
@@ -38,7 +43,7 @@ namespace NYH.BattleCardSystem
 
             if (playCardGA.Card.CardType == BattleCardType.Attack)
             {
-                BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+                BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card, playCardGA.UserUnit);
                 if (attackEffect == null)
                 {
                     Debug.LogWarning($"[BattleCardSystem] 공격 카드에 BattleAttackEffect가 없습니다: {playCardGA.Card.Title}");
@@ -70,6 +75,52 @@ namespace NYH.BattleCardSystem
             ApplyDirectBattleEffects(playCardGA);
         }
 
+        internal static void ApplyResolvedBattleEffects(
+            BattleCard card,
+            BattleEffectContext context,
+            IReadOnlyList<BattleUnit> resolvedTargets,
+            params System.Type[] excludedEffectTypes)
+        {
+            if (card?.RuntimeEffects == null)
+            {
+                return;
+            }
+
+            foreach (var effect in card.RuntimeEffects)
+            {
+                if (effect is not BattleEffect battleEffect)
+                {
+                    continue;
+                }
+
+                if (excludedEffectTypes != null)
+                {
+                    bool shouldSkip = false;
+                    for (int i = 0; i < excludedEffectTypes.Length; i++)
+                    {
+                        System.Type excludedType = excludedEffectTypes[i];
+                        if (excludedType != null && excludedType.IsInstanceOfType(battleEffect))
+                        {
+                            shouldSkip = true;
+                            break;
+                        }
+                    }
+
+                    if (shouldSkip)
+                    {
+                        continue;
+                    }
+                }
+
+                if (!battleEffect.CanApply(context))
+                {
+                    continue;
+                }
+
+                battleEffect.Apply(context, resolvedTargets);
+            }
+        }
+
         private static void QueueMoveThenAttack(BattlePlayCardGA playCardGA)
         {
             if (playCardGA?.Card == null || playCardGA.UserUnit == null)
@@ -77,8 +128,8 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(playCardGA.Card);
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(playCardGA.Card, playCardGA.UserUnit);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card, playCardGA.UserUnit);
 
             if (moveEffect == null || attackEffect == null)
             {
@@ -120,8 +171,8 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(playCardGA.Card);
-            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card);
+            BattleMoveEffect moveEffect = BattleEffectResolver.GetMoveEffect(playCardGA.Card, playCardGA.UserUnit);
+            BattleAttackEffect attackEffect = BattleEffectResolver.GetAttackEffect(playCardGA.Card, playCardGA.UserUnit);
 
             if (moveEffect == null || attackEffect == null)
             {
@@ -173,15 +224,7 @@ namespace NYH.BattleCardSystem
                 BattleBoardSystem.Instance,
                 BattleCardSystem.Instance);
 
-            foreach (var effect in playCardGA.Card.RuntimeEffects)
-            {
-                if (effect is not BattleEffect battleEffect)
-                {
-                    continue;
-                }
-
-                battleEffect.Apply(context, resolvedTargets);
-            }
+            ApplyResolvedBattleEffects(playCardGA.Card, context, resolvedTargets);
         }
 
         private static bool HasBattleEffects(BattleCard card)
@@ -205,6 +248,49 @@ namespace NYH.BattleCardSystem
         private static int ResolveLegacyMoveAmount(BattleCard card)
         {
             return BattleEffectResolver.GetMoveEffect(card)?.Amount ?? 0;
+        }
+
+        private static bool TryQueueUtilityCard(BattlePlayCardGA playCardGA)
+        {
+            if (playCardGA?.Card == null)
+            {
+                return false;
+            }
+
+            BattlePotionEffect potionEffect = BattleEffectResolver.GetPotionEffect(playCardGA.Card);
+            if (potionEffect != null)
+            {
+                List<BattleUnit> resolvedTargets = BattleUtilityEffectResolver.ResolvePotionTargets(
+                    BattleBoardSystem.Instance,
+                    potionEffect,
+                    playCardGA.TargetPosition);
+                BattleEffectContext context = new(
+                    playCardGA.Card,
+                    null,
+                    playCardGA.TargetUnit,
+                    playCardGA.TargetPosition,
+                    null,
+                    BattleBoardSystem.Instance,
+                    BattleCardSystem.Instance);
+                ApplyResolvedBattleEffects(
+                    playCardGA.Card,
+                    context,
+                    resolvedTargets,
+                    typeof(BattlePotionEffect),
+                    typeof(BattleTrapEffect),
+                    typeof(BattleMoveEffect),
+                    typeof(BattleAttackEffect));
+                return true;
+            }
+
+            BattleTrapEffect trapEffect = BattleEffectResolver.GetTrapEffect(playCardGA.Card);
+            if (trapEffect != null)
+            {
+                BattleTrapSystem.TryInstallTrap(playCardGA.Card, trapEffect, playCardGA.TargetPosition);
+                return true;
+            }
+
+            return false;
         }
 
         internal static IEnumerable<Vector2Int> EnumerateAttackTargetPositions(BattlePlayCardGA playCardGA)

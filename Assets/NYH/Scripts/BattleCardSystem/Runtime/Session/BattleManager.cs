@@ -181,6 +181,7 @@ namespace NYH.BattleCardSystem
             IsMulliganPhase = false;
             hasOpeningHandPrepared = false;
             LastResult = null;
+            BattleTrapSystem.ClearInstalledTraps();
             SetPhase(BattlePhase.None);
         }
 
@@ -432,6 +433,7 @@ namespace NYH.BattleCardSystem
 
             IsBattleEnded = true;
             LastResult = result;
+            BattleTrapSystem.ClearInstalledTraps();
             SetPhase(BattlePhase.Finished);
             OnBattleFinished?.Invoke(result);
         }

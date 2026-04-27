@@ -98,6 +98,41 @@ namespace NYH.BattleCardSystem
                 impactTargets);
         }
 
+        public void RefreshUtilityPreview(BattleTargetingState state, Vector2Int? hoveredGrid)
+        {
+            if (state == null)
+            {
+                Clear();
+                return;
+            }
+
+            IEnumerable<Vector2Int> impactCells = null;
+            IEnumerable<BattleUnit> impactTargets = null;
+
+            if (hoveredGrid.HasValue
+                && state.SelectableAttackCells.Contains(hoveredGrid.Value)
+                && BattleBoardSystem.Instance != null
+                && state.PendingBattleCard != null)
+            {
+                impactCells = BattleTargetingQueryService.ResolveUtilityPreviewImpactCells(
+                    BattleBoardSystem.Instance,
+                    state.PendingBattleCard,
+                    hoveredGrid.Value);
+                impactTargets = BattleTargetingQueryService.ResolveUtilityPreviewImpactTargets(
+                    BattleBoardSystem.Instance,
+                    state.PendingBattleCard,
+                    hoveredGrid.Value);
+            }
+
+            previewPresenter?.ShowAttackSelection(
+                null,
+                state.SelectableAttackCells,
+                null,
+                state.SelectedAttackTargetPositions,
+                impactCells,
+                impactTargets);
+        }
+
         private static IEnumerable<Vector2Int> ResolveMovePreviewAttackCells(BattleTargetingState state)
         {
             if (state.PendingTargetingMode != BattleCardTargetingMode.MoveThenAttack
