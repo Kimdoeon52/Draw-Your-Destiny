@@ -1,7 +1,9 @@
 using NYH.BattleCardSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 // Temporary battle-mode helper for scene testing.
+// - F4: reset the persistent battle deck back to the configured base deck
 // - F7: enter battle using real node data
 // - F8: exit battle
 // - F9: if inspector spawn data exists, enter an empty battle and spawn those units
@@ -42,6 +44,7 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
 
     [Header("Keyboard Test")]
     [SerializeField] private bool enableKeyboardShortcut = true;
+    [SerializeField] private KeyCode resetBattleDeckKey = KeyCode.F4;
     [SerializeField] private KeyCode enterBattleKey = KeyCode.F7;
     [SerializeField] private KeyCode exitBattleKey = KeyCode.F8;
     [SerializeField] private KeyCode spawnConfiguredUnitsKey = KeyCode.F9;
@@ -65,6 +68,11 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
         if (Input.GetKeyDown(enterBattleKey))
         {
             EnterBattleMode();
+        }
+
+        if (Input.GetKeyDown(resetBattleDeckKey))
+        {
+            ResetBattleDeckToBase();
         }
 
         if (Input.GetKeyDown(exitBattleKey))
@@ -158,6 +166,29 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
         }
 
         Debug.Log($"[TemporaryBattleModeSwitcher] Utility test cards added: total={addedCount}");
+    }
+
+    public void ResetBattleDeckToBase()
+    {
+        BattleDeckCollection deckCollection = BattleDeckCollection.GetOrCreate();
+        if (deckCollection == null)
+        {
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleDeckCollection is missing.");
+            return;
+        }
+
+        List<BattleCardData> baseDeckSnapshot = new(deckCollection.BaseBattleDeck);
+        deckCollection.ResetRun();
+        deckCollection.ClearSavedCurrentDeck();
+        deckCollection.ConfigureBaseDeck(baseDeckSnapshot);
+
+        BattleCardSystem battleCardSystem = BattleCardSystem.Instance;
+        if (battleCardSystem?.PileState != null)
+        {
+            battleCardSystem.PileState.Setup(deckCollection.BuildBattleDeckSources());
+        }
+
+        Debug.Log($"[TemporaryBattleModeSwitcher] Battle deck reset to base deck. baseCount={baseDeckSnapshot.Count}");
     }
 
     public BattleUnit SpawnPlayerUnit(BattleUnit unitPrefab, Vector2Int gridPosition, int startHealth = 10)

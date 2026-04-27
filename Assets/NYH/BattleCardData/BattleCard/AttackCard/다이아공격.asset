@@ -23,8 +23,8 @@ MonoBehaviour:
   <DisplayMoveRange>k__BackingField: 5
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
-  <TargetingMode>k__BackingField: 4
-  allowedUserUnitTypes: 07000000
+  <TargetingMode>k__BackingField: 6
+  allowedUserUnitTypes: 
   <Keywords>k__BackingField: 010000000a000000
   <Effects>k__BackingField:
   - rid: 5001
@@ -39,12 +39,14 @@ MonoBehaviour:
       type: {class: BattleMoveEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 1
+        allowedSourceUnitTypes: 
         amount: 5
         includeSourceUnitSpeed: 1
     - rid: 3212137787988901985
       type: {class: BattleAttackEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 2
+        allowedSourceUnitTypes: 
         range: 0
         targetCount: 0
         selectionCount: 1
@@ -67,6 +69,7 @@ MonoBehaviour:
       type: {class: BattleDamageEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 2
+        allowedSourceUnitTypes: 
         scalingMode: 1
         valueSourceUnit: 0
         valueType: 0

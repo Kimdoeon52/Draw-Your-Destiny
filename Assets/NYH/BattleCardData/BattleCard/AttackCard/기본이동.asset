@@ -23,7 +23,8 @@ MonoBehaviour:
   <DisplayMoveRange>k__BackingField: 5
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
-  <TargetingMode>k__BackingField: 2
+  <TargetingMode>k__BackingField: 4
+  allowedUserUnitTypes: 
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 7216728476613083244
@@ -35,5 +36,6 @@ MonoBehaviour:
       type: {class: BattleMoveEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
         targetType: 1
+        allowedSourceUnitTypes: 
         amount: 5
         includeSourceUnitSpeed: 0

@@ -70,7 +70,7 @@ namespace NYH.BattleCardSystem
             }
 
             pileState.RemoveFromHand(playCardGA.Card);
-            if (playCardGA.Card.IsConsumable)
+            if (ShouldConsumeOnPlay(playCardGA.Card))
             {
                 pileState.Exhaust(playCardGA.Card);
                 rewardService?.ConsumePersistentBattleCard(playCardGA.Card);
@@ -88,6 +88,19 @@ namespace NYH.BattleCardSystem
 
             BattleCardActionFactory.Queue(playCardGA);
             yield return null;
+        }
+
+        private static bool ShouldConsumeOnPlay(BattleCard card)
+        {
+            if (card == null)
+            {
+                return false;
+            }
+
+            // 포션/덫은 데이터 체크박스와 무관하게 항상 소모형으로 동작해야 합니다.
+            return card.IsConsumable
+                || card.CardType == BattleCardType.Potion
+                || card.CardType == BattleCardType.Trap;
         }
     }
 }

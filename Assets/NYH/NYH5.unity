@@ -142147,6 +142147,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 10
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 102
     adjacentNodeIDs: 65000000670000007f000000
     ownerCivID: -1
@@ -142159,6 +142160,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 103
     adjacentNodeIDs: 66000000680000007c0000007f000000
     ownerCivID: -1
@@ -142171,6 +142173,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 104
     adjacentNodeIDs: 670000007c0000007700000069000000
     ownerCivID: -1
@@ -142183,6 +142186,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 105
     adjacentNodeIDs: 680000006a00000077000000
     ownerCivID: -1
@@ -142195,6 +142199,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 106
     adjacentNodeIDs: 690000006b0000007700000078000000
     ownerCivID: -1
@@ -142207,6 +142212,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 107
     adjacentNodeIDs: 6a0000006c000000750000007600000078000000
     ownerCivID: -1
@@ -142219,6 +142225,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 108
     adjacentNodeIDs: 6b0000006d00000075000000
     ownerCivID: -1
@@ -142231,6 +142238,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 109
     adjacentNodeIDs: 6f0000006e0000006c0000007000000072000000
     ownerCivID: -1
@@ -142243,6 +142251,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 110
     adjacentNodeIDs: 6f0000006d000000
     ownerCivID: 1
@@ -142255,6 +142264,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 10
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 111
     adjacentNodeIDs: 6e0000006d00000070000000
     ownerCivID: -1
@@ -142267,6 +142277,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 112
     adjacentNodeIDs: 6f0000006d0000007100000072000000
     ownerCivID: -1
@@ -142279,6 +142290,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 113
     adjacentNodeIDs: 7000000072000000
     ownerCivID: -1
@@ -142291,6 +142303,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 114
     adjacentNodeIDs: 71000000700000006d000000740000007500000073000000
     ownerCivID: -1
@@ -142303,6 +142316,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 115
     adjacentNodeIDs: 72000000
     ownerCivID: 2
@@ -142315,6 +142329,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 10
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 116
     adjacentNodeIDs: 7200000075000000
     ownerCivID: -1
@@ -142327,6 +142342,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 117
     adjacentNodeIDs: 7200000074000000760000006b0000006c0000006d000000
     ownerCivID: -1
@@ -142339,6 +142355,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 118
     adjacentNodeIDs: 7500000078000000790000006b000000
     ownerCivID: -1
@@ -142351,6 +142368,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 119
     adjacentNodeIDs: 6a00000069000000780000007c0000007b00000068000000
     ownerCivID: -1
@@ -142363,6 +142381,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 120
     adjacentNodeIDs: 6a0000006b000000760000007b0000007900000077000000
     ownerCivID: -1
@@ -142375,6 +142394,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 121
     adjacentNodeIDs: 780000007a000000760000007b000000
     ownerCivID: -1
@@ -142387,6 +142407,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 122
     adjacentNodeIDs: 780000007a000000760000007b000000
     ownerCivID: -1
@@ -142399,6 +142420,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 123
     adjacentNodeIDs: 780000007a000000770000007c0000007d00000079000000
     ownerCivID: -1
@@ -142411,6 +142433,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 124
     adjacentNodeIDs: 6700000068000000770000007b0000007d0000007f000000
     ownerCivID: -1
@@ -142423,6 +142446,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 125
     adjacentNodeIDs: 7b0000007c0000007e0000007f000000
     ownerCivID: -1
@@ -142435,6 +142459,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 126
     adjacentNodeIDs: 7d0000007f0000008000000081000000
     ownerCivID: -1
@@ -142447,6 +142472,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 127
     adjacentNodeIDs: 66000000670000007c0000007d0000007e0000008000000081000000
     ownerCivID: -1
@@ -142459,6 +142485,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 128
     adjacentNodeIDs: 7f0000007e0000008100000082000000
     ownerCivID: -1
@@ -142471,6 +142498,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 129
     adjacentNodeIDs: 7e0000007f000000800000008200000083000000
     ownerCivID: -1
@@ -142483,6 +142511,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 130
     adjacentNodeIDs: 80000000810000008300000084000000
     ownerCivID: -1
@@ -142495,6 +142524,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 131
     adjacentNodeIDs: 810000008200000084000000
     ownerCivID: -1
@@ -142507,6 +142537,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 0
     playerPopulationCapacity: 0
+    oldUnitCount: 0
   - nodeID: 132
     adjacentNodeIDs: 8200000083000000
     ownerCivID: 3
@@ -142519,6 +142550,7 @@ MonoBehaviour:
     farmCount: 0
     maxHuman: 10
     playerPopulationCapacity: 0
+    oldUnitCount: 0
 --- !u!4 &416770746
 Transform:
   m_ObjectHideFlags: 0
@@ -274440,36 +274472,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseBattleDeck:
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: bf6fead40111a0d4f86db03a80eaea64, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: fa5ae31300ae60a46aa43e6c46b2118e, type: 2}
+  - {fileID: 11400000, guid: 2f22587a905266c468faba119bd9332c, type: 2}
+  - {fileID: 11400000, guid: 66b006cb5600f204f8f9ff0b957739ec, type: 2}
   earnedBattleCards: []
   currentBattleDeck: []
 --- !u!4 &1008384001
@@ -302005,7 +302017,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bd2d938231ca2bd46a39604ecbfada47, type: 2}
   - {fileID: 11400000, guid: cdda3b466226ef0449219e9eb2894c7a, type: 2}
   - {fileID: 11400000, guid: ddea4d78090fab942ad40dc5607f42d9, type: 2}
-  - {fileID: 11400000, guid: 319df86743b13334b88ea8921f0ef907, type: 2}
 --- !u!4 &1089494668
 Transform:
   m_ObjectHideFlags: 0
@@ -344105,8 +344116,10 @@ MonoBehaviour:
     startHealth: 5
   potionCardsToAdd:
   - cardData: {fileID: 11400000, guid: 6772ec816f2b48043b9280d7bd049e67, type: 2}
-    addCount: 0
-  trapCardsToAdd: []
+    addCount: 1
+  trapCardsToAdd:
+  - cardData: {fileID: 11400000, guid: a1db85817cb10d746a49b3336b8e954d, type: 2}
+    addCount: 1
   enableKeyboardShortcut: 1
   enterBattleKey: 288
   exitBattleKey: 289
