@@ -131,6 +131,8 @@ public class EnemyBrainBase : MonoBehaviour
                 if (building.data.visualPrefab != null)
                 {
                     GameObject build = Instantiate(building.data.visualPrefab, Vector3.zero, Quaternion.identity);
+                    // HumanPool 계열 Start()가 다음 프레임에 유닛 GO를 생성하기 전에 미리 비활성화
+                    foreach (var hp in build.GetComponentsInChildren<PoolBase.HumanPool>(true)) hp.enabled = false;
                     // 화면에는 보이지 않게 처리 (유닛 생산 로직만 활성화)
                     foreach (var sr in build.GetComponentsInChildren<SpriteRenderer>(true)) sr.enabled = false;
                     foreach (var r in build.GetComponentsInChildren<Renderer>(true)) r.enabled = false;
@@ -511,7 +513,8 @@ public class EnemyBrainBase : MonoBehaviour
             return true;
         }
         GameObject build = Instantiate(buildingData.visualPrefab, Vector3.zero, Quaternion.identity);
-        // (위치는 pos를 월드 좌표로 변환해서 세팅해야 함)
+        // HumanPool 계열 Start()가 다음 프레임에 유닛 GO를 생성하기 전에 미리 비활성화
+        foreach (var hp in build.GetComponentsInChildren<PoolBase.HumanPool>(true)) hp.enabled = false;
         // 화면에만 안 보이게 렌더러만 비활성 (Init/OnTurnPassed 경로는 유지 → Count 증가)
         foreach (var sr in build.GetComponentsInChildren<SpriteRenderer>(true)) sr.enabled = false;
         foreach (var r in build.GetComponentsInChildren<Renderer>(true)) r.enabled = false;

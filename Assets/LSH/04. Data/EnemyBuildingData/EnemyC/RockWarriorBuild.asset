@@ -16,6 +16,7 @@ MonoBehaviour:
   buildingName: "\uADFC\uC811 \uC720\uB2DB \uBCD1\uC601(\uC11D\uAE30)"
   buildingType: 7
   sprite: {fileID: -1392832154238072635, guid: ab08666331cd0e14fb116a98e967f73c, type: 3}
+  ruinSprite: {fileID: 0}
   requiredEra: 0
   isAutoUpgrade: 0
   upgradesTo: {fileID: 0}
@@ -29,7 +30,8 @@ MonoBehaviour:
   researchPerTurn: 0
   foodPerTurn: 0
   populationCapBonus: 0
-  visualPrefab: {fileID: 375015307261114755, guid: 6587e723cf5c67341bf120cbd5d0985b,
+  visualPrefab: {fileID: 375015307261114755, guid: cecbf9c7101024145ad34c50dd3a6e7f,
     type: 3}
   productionInterval: 3
+  unitsPerCycle: 1
   unitCapacity: 5
