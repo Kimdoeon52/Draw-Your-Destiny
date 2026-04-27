@@ -1,4 +1,5 @@
 using EnemyAPool;
+using NYH.BattleCardSystem;
 using PoolBase;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -78,7 +79,7 @@ public class EnemyBrainBase : MonoBehaviour
         if (existing != null)
             existing.count++; //안에 유닛 타입맞는거 증가.
         else
-            node.units.Add(new NodeUnit { unitType = type, count = 1 }); 
+            node.units.Add(new NodeUnit { unitType = type, count = 1 });
     }
 
     public virtual void OnUnitReturned(UnitType type, int nodeID) //유닛 죽었을때
@@ -106,7 +107,7 @@ public class EnemyBrainBase : MonoBehaviour
     //=============================임시 턴 시작 함수==============================
     protected virtual void Update()
     {
-        if(Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             StartEnemyTurn();
         }
@@ -124,7 +125,7 @@ public class EnemyBrainBase : MonoBehaviour
         food = 0;
         DefineEnemyState();
         //적 행동 확률 초기화
-        switch(enemyState)
+        switch (enemyState)
         {
             case EnemyState.Money: //경제트리라면 행동을 이걸로. 짓는 건물이 다름.
                 AddMoneyAction();
@@ -228,20 +229,20 @@ public class EnemyBrainBase : MonoBehaviour
             }
             switch (action)
             {
-               case EnemyAction.Building: //건물 짓기
-                    Debug.Log($"<color=red>[행동 {i+1}] 노드 {nodeID} 건물 짓기 시도</color> ");
+                case EnemyAction.Building: //건물 짓기
+                    Debug.Log($"<color=red>[행동 {i + 1}] 노드 {nodeID} 건물 짓기 시도</color> ");
                     CheckWhichBuilding(nodeID); //어떤 건물을 지을껀지 판단
                     break;
-               case EnemyAction.GetGold: //금과 식량 얻기
-                    Debug.Log($"<color=red>[행동 {i+1}] 노드 {nodeID} 골드 얻기</color> ");
+                case EnemyAction.GetGold: //금과 식량 얻기
+                    Debug.Log($"<color=red>[행동 {i + 1}] 노드 {nodeID} 골드 얻기</color> ");
                     GetGold();
                     break;
                 case EnemyAction.TryOccupy: //영지 점령 시도
-                    Debug.Log($"<color=pink>[행동 {i+1}] 노드 {nodeID} 점령 시도</color> ");
+                    Debug.Log($"<color=pink>[행동 {i + 1}] 노드 {nodeID} 점령 시도</color> ");
                     TryToOccupyAdjacentNode(nodeID);
                     break;
                 case EnemyAction.Rest: //턴 스킵
-                    Debug.Log($"<color=blue>[행동 {i+1}] 노드 {nodeID} 턴 스킵</color> ");
+                    Debug.Log($"<color=blue>[행동 {i + 1}] 노드 {nodeID} 턴 스킵</color> ");
                     break;
             }
         }
@@ -276,7 +277,7 @@ public class EnemyBrainBase : MonoBehaviour
     //==============================건물 짓기====================================
     protected virtual void CheckWhichBuilding(int nodeID)
     {
-        switch(enemyLevel) //적의 시대에 따른 건물 짓기
+        switch (enemyLevel) //적의 시대에 따른 건물 짓기
         {
             case 1: //석기 시대
                 Debug.Log("<color=yellow>[건물 짓자.]</color> ");
@@ -295,7 +296,7 @@ public class EnemyBrainBase : MonoBehaviour
     protected virtual void BuildSpecialBuilding(int nodeID) //특수 건물 짓는 함수. 레벨 2,3에서 추가 행동으로 지을 수 있게 하기.
     {
         int specialChoice = Random.Range(0, specialBuildData.Count);
-        switch(enemyState)
+        switch (enemyState)
         {
             case EnemyState.Money:
                 SpawnBuilding(nodeID, specialBuildData[0]); //0번째에는 포션건물
@@ -310,7 +311,7 @@ public class EnemyBrainBase : MonoBehaviour
         NodeData node = WorldMapManager.Instance.GetNode(nodeID);
         //적의 석기 시대 건물 짓기 행동 구현
         int buildingChoice = Random.Range(0, 3); //농장, 상점, 병영 중 하나 선택
-        if(node.maxHuman <= 100)
+        if (node.maxHuman <= 100)
         {
             buildingChoice = Random.Range(0, 4); //농장, 상점, 병영, 민가 중 하나 선택
         }
@@ -318,7 +319,7 @@ public class EnemyBrainBase : MonoBehaviour
         {
             case 0: //농장 건물
                 Debug.Log("<color=yellow>[농장 건물 짓자.]</color> ");
-                if(node.farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
+                if (node.farmCount >= 3) //농장 3개 이상이면 농장 안짓게 하기
                 {
                     Debug.Log("<color=yellow>[농장 3개 이상이라 농장 안짓자.]</color> ");
                     CheckWhichBuilding(nodeID); //다시 건물 선택
@@ -437,7 +438,6 @@ public class EnemyBrainBase : MonoBehaviour
                 SpawnBuilding(nodeID, houseData);
                 node.maxHuman += 10;
                 break;
-                break;
         }
     }
 
@@ -503,7 +503,7 @@ public class EnemyBrainBase : MonoBehaviour
         // 적 자기 노드의 city 타일맵을 소스에서 가져옴
         if (data.buildingType == BuildingType.Farm)
         {
-            if(!NodeDataManager.Instance.TryGetFarmlandTilemap(nodeID, out cityTilemap))
+            if (!NodeDataManager.Instance.TryGetFarmlandTilemap(nodeID, out cityTilemap))
                 return Vector3Int.zero;
         }
         else
@@ -617,7 +617,16 @@ public class EnemyBrainBase : MonoBehaviour
             }
             else if (adjacentNode.ownerCivID == 0) //조건2: 인접한 노드가 플레이어의 영지인가
             {
-                //전투로 진입하는 행동 구현
+                NodeData srcNode = WorldMapManager.Instance.GetNode(nodeID);
+                if (srcNode.units == null || srcNode.units.Count == 0)
+                {
+                    return;
+                }
+                Debug.Log($"<color=red>[AI 공격!!]</color> 적 {enemyID}가 노드 {nodeID}에서 플레이어 노드 {adjacentNode.nodeID}를 공격합니다!");
+                if (BattleSessionController.Instance != null) // 배틀 컨트롤러가 존재한다면
+                {
+                    BattleSessionController.Instance.EnterBattle(adjacentNode, srcNode); // 전투 시작
+                }
                 return;
             }
             else if (adjacentNode.ownerCivID == enemyID) //조건3: 인접한 노드가 본인의 영지인가
