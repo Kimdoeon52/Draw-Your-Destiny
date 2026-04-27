@@ -21,18 +21,20 @@ public class Barracks_ArcheryRange_Medic_Behaviour : UnitProducerBehaviour
         healerPool = GetComponent<HealerPool>();
     }
 
-    protected override void SpawnUnit(int slotInCycle)
+    protected override UnitType SpawnUnit(int slotInCycle)
     {
         // slotInCycle: 0 = 궁수, 1 = 힐러 (unitsPerCycle=2 기준)
         if (slotInCycle == 0)
         {
             archerPool.GetHuman(0);
             Debug.Log($"[Barracks_ArcheryRange_Medic] 궁수 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+            return UnitType.Archer;
         }
         else
         {
             healerPool.GetHuman(0);
             Debug.Log($"[Barracks_ArcheryRange_Medic] 힐러 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+            return UnitType.Healer;
         }
     }
 }

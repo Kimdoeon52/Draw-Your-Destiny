@@ -12,10 +12,10 @@ public class BarracksBehaviour : UnitProducerBehaviour
         rockWarriorPool = GetComponent<RockWarriorPool>();
     }
 
-    protected override void SpawnUnit(int slotInCycle)
+    protected override UnitType SpawnUnit(int slotInCycle)
     {
-        // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Soldier, instance); 로 교체
         rockWarriorPool.GetHuman(0);
         Debug.Log($"[Barracks] 병사 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+        return UnitType.RockWarrior;
     }
 }

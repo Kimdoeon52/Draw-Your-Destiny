@@ -19,10 +19,11 @@ public class MarketBehaviour : UnitProducerBehaviour
         Debug.Log($"[Market] 금 생산 예정 — 활성 상인={activeCount}");
     }
 
-    protected override void SpawnUnit(int slotInCycle)
+    protected override UnitType SpawnUnit(int slotInCycle)
     {
         // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Merchant, instance); 로 교체
         shoperPool.GetHuman(0);
         Debug.Log($"[Market] 상인 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+        return UnitType.Shoper;
     }
 }

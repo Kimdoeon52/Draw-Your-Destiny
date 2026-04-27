@@ -297,7 +297,18 @@ public class TileMapManager : Singleton<TileMapManager>
         if (gameManager != null)
         {
             gameManager.SpendGold(building.goldCost);
-            gameManager.IncreasePopulationCap(building.populationCapBonus);
+
+            // 인구 한도 보너스 적용 (이중 적용 방지 플래그 사용)
+            if (building.populationCapBonus > 0 && !instance.populationCapApplied)
+            {
+                WorldMapManager wm = WorldMapManager.Instance;
+                NodeData currentNode = wm != null ? wm.GetNode(wm.CurrentNodeID) : null;
+                if (currentNode != null)
+                {
+                    gameManager.ApplyBuildingPopulationBonus(currentNode, building.populationCapBonus);
+                    instance.populationCapApplied = true;
+                }
+            }
         }
     }
     // 적 전용 건물 배치 — PlaceBuilding과 동일한 BuildingInstance 상태로 생성

@@ -225,11 +225,37 @@ public class GameManager : PersistentSingleton<GameManager>
     // 식량 획득 (CardSystem에서 호출)
     public void AddFood(int amount) => ResourceManager.Instance.AddFood(amount);
 
-    // 민가(House) 배치 시 TileMapManager에서 호출
+    // 카드 효과 등 노드와 무관한 글로벌 인구 한도 증가 (CardResourcePerformer에서 호출)
     public void IncreasePopulationCap(int amount)
     {
         ResourceManager.Instance.AddMaxPopulation(amount);
         Debug.LogError($"인구 한도 증가:{amount} / 현재 인구:{ResourceManager.Instance.Population}");
+    }
+
+    // 노드별 인구 한도 한계
+    public const int NodeGlobalCapLimit = 20;       // 한 노드가 전역 한도에 기여 가능한 최대치
+    public const int NodeLocalCapacityLimit = 50;   // 한 노드의 인구 수용 최대치
+
+    // 건물의 populationCapBonus를 특정 노드와 전역에 함께 적용.
+    // 노드 capacity는 NodeLocalCapacityLimit(50)까지 누적, 전역 한도는 노드별 NodeGlobalCapLimit(20)까지만 기여.
+    // 즉 0~20 구간은 둘 다 증가, 그 이후는 노드 capacity만 증가.
+    public void ApplyBuildingPopulationBonus(NodeData node, int bonus)
+    {
+        if (node == null || bonus <= 0) return;
+
+        int oldCapacity = node.playerPopulationCapacity;
+        int newCapacity = Mathf.Min(NodeLocalCapacityLimit, oldCapacity + bonus);
+        node.playerPopulationCapacity = newCapacity;
+
+        int oldGlobalContrib = Mathf.Min(oldCapacity, NodeGlobalCapLimit);
+        int newGlobalContrib = Mathf.Min(newCapacity, NodeGlobalCapLimit);
+        int globalDelta = newGlobalContrib - oldGlobalContrib;
+
+        if (globalDelta > 0)
+            ResourceManager.Instance.AddMaxPopulation(globalDelta);
+
+        int capacityDelta = newCapacity - oldCapacity;
+        Debug.Log($"[GameManager] 노드 {node.nodeID} 인구 수용 +{capacityDelta} ({newCapacity}/{NodeLocalCapacityLimit}), 전역 한도 +{globalDelta}");
     }
 
     // 인간 생성 카드 효과 처리 후 CardSystem에서 호출

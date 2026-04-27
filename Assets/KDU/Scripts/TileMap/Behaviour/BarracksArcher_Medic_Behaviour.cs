@@ -14,11 +14,15 @@ public class ArcherBarracksBehaviour : UnitProducerBehaviour
         healerPool = GetComponent<HealerPool>();
     }
 
-    protected override void SpawnUnit(int slotInCycle)
+    protected override UnitType SpawnUnit(int slotInCycle)
     {
-        // TODO: 유닛 시스템 구현 후 UnitManager.Instance.Spawn(UnitType.Archer, instance); 로 교체
+        // 레거시: 한 번에 궁수+힐러 동시 스폰. 베이스는 1명만 추적하므로 healer는 별도 추가.
         archerPool.GetHuman(0);
         healerPool.GetHuman(0);
-        Debug.Log($"[ArcherBarracks] 궁수 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+        var wm = WorldMapManager.Instance;
+        if (wm != null)
+            WorldMapManager.AddUnitToNode(wm.GetNode(wm.CurrentNodeID), UnitType.Healer, 1);
+        Debug.Log($"[ArcherBarracks] 궁수+힐러 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+        return UnitType.Archer;
     }
 }

@@ -202,6 +202,7 @@ public class SaveManager : Singleton<SaveManager>
         save.research        = node.research;
         save.farmCount       = node.farmCount;
         save.maxHuman        = node.maxHuman;
+        save.playerPopulationCapacity = node.playerPopulationCapacity;
         save.units           = new List<NodeUnit>(node.units);
         save.buildings       = new List<SaveBuildingData>();
         foreach (BuildingInstance b in node.buildings)
@@ -220,6 +221,8 @@ public class SaveManager : Singleton<SaveManager>
         save.originZ        = b.origin.z;
         save.ownerCivID     = b.ownerCivID;
         save.isActive       = b.isActive;
+        save.isRuin         = b.isRuin;
+        save.populationCapApplied = b.populationCapApplied;
         save.savedState     = new BuildingRuntimeState();
         save.savedState.tick         = b.savedState.tick;
         save.savedState.activeCount  = b.savedState.activeCount;
@@ -266,6 +269,7 @@ public class SaveManager : Singleton<SaveManager>
         target.research       = save.research;
         target.farmCount      = save.farmCount;
         target.maxHuman       = save.maxHuman;
+        target.playerPopulationCapacity = save.playerPopulationCapacity;
         target.units          = new List<NodeUnit>(save.units);
         target.buildings      = new List<BuildingInstance>();
         foreach (SaveBuildingData sb in save.buildings)
@@ -288,6 +292,8 @@ public class SaveManager : Singleton<SaveManager>
         instance.footprint  = data != null ? RecalculateFootprint(origin, data) : new List<Vector3Int>();
         instance.ownerCivID = save.ownerCivID;
         instance.isActive   = save.isActive;
+        instance.isRuin     = save.isRuin;
+        instance.populationCapApplied = save.populationCapApplied;
         instance.visual     = null;    // 노드 진입 시 재생성
         instance.behaviour  = null;   // 노드 진입 시 재생성
         instance.savedState = new BuildingRuntimeState();

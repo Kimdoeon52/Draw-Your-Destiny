@@ -27,9 +27,10 @@ public class WizzardBarracksBehaviour : UnitProducerBehaviour
         base.OnTurnEnd();
     }
 
-    protected override void SpawnUnit(int slotInCycle)
+    protected override UnitType SpawnUnit(int slotInCycle)
     {
         wizardPool.GetHuman(0);
         Debug.Log($"[WizzardBarracks] 마법사 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+        return UnitType.Wizard;
     }
 }

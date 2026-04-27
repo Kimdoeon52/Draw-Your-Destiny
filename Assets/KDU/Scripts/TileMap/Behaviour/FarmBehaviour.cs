@@ -18,9 +18,10 @@ public class FarmBehaviour : UnitProducerBehaviour
         Debug.Log($"[Farm] 식량 생산 예정 — 활성 농부={activeCount}");
     }
 
-    protected override void SpawnUnit(int slotInCycle)
+    protected override UnitType SpawnUnit(int slotInCycle)
     {
         farmPool.GetHuman(0);
         Debug.Log($"[Farm] 농부 생산 — active={activeCount + 1}/{Capacity}, waiting={waiting}");
+        return UnitType.Farmer;
     }
 }

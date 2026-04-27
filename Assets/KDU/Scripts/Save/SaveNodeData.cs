@@ -31,4 +31,7 @@ public class SaveNodeData
     // AI 영지 수치
     public int farmCount;
     public int maxHuman;
+
+    // 플레이어 영지 인구 수용량 (0~50)
+    public int playerPopulationCapacity;
 }

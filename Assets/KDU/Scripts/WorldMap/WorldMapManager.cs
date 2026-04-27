@@ -274,30 +274,33 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
         int restored = 0;
 
-
         if (node.buildings != null)
         {
             foreach (BuildingInstance b in node.buildings)
             {
-                // 인구 한도 보너스 복구 (Mansion +10, House +5/7/10 등)
-                if (gameManager != null && b.data != null && b.data.populationCapBonus > 0)
+                if (b == null || !b.isRuin) continue;
+
+                b.isRuin = false;
+                b.isActive = true;
+
+                // 영지 뷰 안에서 호출됐다면 visual이 살아있으니 기본 스프라이트로 즉시 복구
+                if (b.visual != null && b.data != null && b.data.sprite != null)
                 {
-                    gameManager.IncreasePopulationCap(b.data.populationCapBonus);
-                    populationRestored += b.data.populationCapBonus;
+                    var sr = b.visual.GetComponent<SpriteRenderer>();
+                    if (sr != null) sr.sprite = b.data.sprite;
                 }
 
-                if (b != null && b.isRuin)
+                // 인구 한도 보너스 (Mansion / House 등) — 이중 적용 방지
+                if (gameManager != null && b.data != null
+                    && b.data.populationCapBonus > 0 && !b.populationCapApplied)
                 {
-                    b.isRuin = false;
-                    b.isActive = true;
-                    // 영지 뷰 안에서 호출됐다면 visual이 살아있으니 기본 스프라이트로 즉시 복구
-                    if (b.visual != null && b.data != null && b.data.sprite != null)
-                    {
-                        var sr = b.visual.GetComponent<SpriteRenderer>();
-                        if (sr != null) sr.sprite = b.data.sprite;
-                    }
-                    restored++;
+                    int beforeCap = node.playerPopulationCapacity;
+                    gameManager.ApplyBuildingPopulationBonus(node, b.data.populationCapBonus);
+                    populationRestored += node.playerPopulationCapacity - beforeCap;
+                    b.populationCapApplied = true;
                 }
+
+                restored++;
             }
         }
 
@@ -425,28 +428,97 @@ public class WorldMapManager : Singleton<WorldMapManager>
         foreach (NodeData node in allNodes)
         {
             if (node.nodeID == currentNodeID) continue; // 진입 중인 노드는 GameManager에서 이미 처리
+            if (node.ownerCivID != 0) continue;          // 플레이어 소유 노드만 (적 노드는 별도 시스템)
             foreach (BuildingInstance b in node.buildings)
-                TickOffscreen(b);
+                TickOffscreen(node, b);
         }
     }
 
-    private static void TickOffscreen(BuildingInstance b)
+    // 오프스크린 1턴 처리 — 온라인 UnitProducerBehaviour.OnTurnEnd → TrySpawnFromQueue 와 동일한 모델로 동작.
+    //   tick++ → interval 도달 시 waiting++ (1 사이클 = unitsPerCycle 명)
+    //   waiting > 0 && activeCount < capacity 이면 pendingSlot 순서로 1명씩 채움 + NodeData.units 누적
+    private static void TickOffscreen(NodeData node, BuildingInstance b)
     {
         if (b == null || b.data == null) return;
-        if (b.data.unitCapacity <= 0) return; // 생산 건물 아님
+        if (!b.isActive || b.isRuin) return;            // 비활성/잔해 건물은 생산 정지
+        int capacity = b.data.unitCapacity;
+        if (capacity <= 0) return;                       // 생산 건물 아님
 
         var state = b.savedState;
         state.tick++;
 
-        int interval = b.data.productionInterval;
-        if (interval <= 0) interval = 3;
-        if (state.tick < interval) return;
-
-        state.tick = 0;
-        if (state.activeCount < b.data.unitCapacity)
-            state.activeCount++;
-        else
+        int interval = b.data.productionInterval > 0 ? b.data.productionInterval : 3;
+        if (state.tick >= interval)
+        {
+            state.tick = 0;
             state.waiting++;
+        }
+
+        int per = Mathf.Max(1, b.data.unitsPerCycle);
+        while (state.waiting > 0 && state.activeCount < capacity)
+        {
+            UnitType produced = GetProducedUnitType(b.data.buildingType, state.pendingSlot);
+            AddUnitToNode(node, produced, 1);
+
+            state.activeCount++;
+            state.pendingSlot++;
+            if (state.pendingSlot >= per)
+            {
+                state.pendingSlot = 0;
+                state.waiting--;
+            }
+        }
+    }
+
+    // BuildingType + 사이클 슬롯 → 생산되는 UnitType. 오프스크린 tick 등 Behaviour 없이 결정해야 할 때 사용.
+    public static UnitType GetProducedUnitType(BuildingType buildingType, int slotInCycle)
+    {
+        switch (buildingType)
+        {
+            case BuildingType.Barracks_SoldierStone:
+            case BuildingType.Barracks_SoldierBronze:
+            case BuildingType.Barracks_SoldierIron:
+                return UnitType.RockWarrior;
+
+            case BuildingType.Barracks_ArcheryRange_Medic:
+            case BuildingType.Barracks_ArcheryRange_Medic_Elite:
+                return slotInCycle == 0 ? UnitType.Archer : UnitType.Healer;
+
+            case BuildingType.Barracks_Stable_Knight:
+                return slotInCycle == 0 ? UnitType.Knight : UnitType.HorseWarrior;
+
+            case BuildingType.Barracks_Wizard:
+                return UnitType.Wizard;
+
+            case BuildingType.Farm:
+                return UnitType.Farmer;
+
+            case BuildingType.Market:
+                return UnitType.Shoper;
+
+            default:
+                return UnitType.Farmer; // fallback (생산 건물이 아닌 경우 호출되면 안 됨)
+        }
+    }
+
+    // 유닛 사망 처리 — 플레이어가 노드에 들어와 있든 아니든 동작.
+    // 호출자: 노화 시스템 / 전투 패배 / 이벤트 등.
+    //   온라인(Behaviour 존재): NotifyUnitDied 위임 → 큐 즉시 보충
+    //   오프라인:                  savedState.activeCount 직접 감소 → 다음 tick에서 자동 보충
+    public static void OnUnitDied(NodeData node, BuildingInstance building, UnitType type)
+    {
+        if (node == null || building == null) return;
+
+        if (building.behaviour is UnitProducerBehaviour producer)
+        {
+            producer.NotifyUnitDied(type);   // node.units 차감 + 보충까지 처리됨
+            return;
+        }
+
+        // 오프라인 경로
+        RemoveUnitFromNode(node, type, 1);
+        var state = building.savedState;
+        if (state.activeCount > 0) state.activeCount--;
     }
 
     // ── 현재 진입 중인 노드 ───────────────────────────────────────
@@ -685,12 +757,26 @@ public class WorldMapManager : Singleton<WorldMapManager>
     {
         if (troops == null) return;
         foreach (var kv in troops)
-        {
-            if (kv.Value <= 0) continue;
-            NodeUnit u = node.units.Find(x => x.unitType == kv.Key);
-            if (u == null) node.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
-            else u.count += kv.Value;
-        }
+            AddUnitToNode(node, kv.Key, kv.Value);
+    }
+
+    // 건물 생산 시 호출. 노드의 NodeUnit 리스트에 해당 병종 카운트를 누적.
+    public static void AddUnitToNode(NodeData node, UnitType type, int count)
+    {
+        if (node == null || count <= 0) return;
+        NodeUnit u = node.units.Find(x => x.unitType == type);
+        if (u == null) node.units.Add(new NodeUnit { unitType = type, count = count });
+        else           u.count += count;
+    }
+
+    // 유닛 사망 / 파견 차감 시 호출. count <= 0 이 되면 엔트리 자체를 제거.
+    public static void RemoveUnitFromNode(NodeData node, UnitType type, int count)
+    {
+        if (node == null || count <= 0) return;
+        NodeUnit u = node.units.Find(x => x.unitType == type);
+        if (u == null) return;
+        u.count -= count;
+        if (u.count <= 0) node.units.Remove(u);
     }
 
     private static string TroopsToString(Dictionary<UnitType, int> troops)

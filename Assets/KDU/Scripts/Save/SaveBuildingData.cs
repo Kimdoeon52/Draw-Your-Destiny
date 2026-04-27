@@ -25,6 +25,12 @@ public class SaveBuildingData
     // isUniqueGlobal 건물의 활성화 여부
     public bool isActive;
 
+    // 잔해 상태 (전투 승리 후 점거된 건물)
+    public bool isRuin;
+
+    // populationCapBonus가 GameManager에 적용됐는지 여부 (이중 적용 방지)
+    public bool populationCapApplied;
+
     // 건물 런타임 상태 (tick, activeCount, waiting 등)
     public BuildingRuntimeState savedState = new BuildingRuntimeState();
 }

@@ -40,21 +40,27 @@ public abstract class UnitProducerBehaviour : BuildingBehaviour
         if (tick < interval) return;
         tick = 0;
 
-        // 사이클 1개 발동 → 큐에 쌓고 가능한 만큼 즉시 채움
+        // 사이클 1개 발동 -> 큐에 쌓고 가능한 만큼 즉시 채움
         waiting++;
         TrySpawnFromQueue();
     }
 
-    // 자리가 날 때마다 pendingSlot 순서대로 1명씩 스폰
+    // 자리가 날 때마다 pendingSlot 순서대로 1명씩 스폰.
+    // 자식 클래스의 SpawnUnit이 반환한 UnitType을 현재 노드의 NodeUnit 리스트에 누적.
     private void TrySpawnFromQueue()
     {
         int per = Mathf.Max(1, instance.data.unitsPerCycle);
 
         while (waiting > 0 && activeCount < Capacity)
         {
-            SpawnUnit(pendingSlot);
+            UnitType produced = SpawnUnit(pendingSlot);
             activeCount++;
             pendingSlot++;
+
+            // 노드 데이터에 1명 추가
+            WorldMapManager wm = WorldMapManager.Instance;
+            if (wm != null)
+                WorldMapManager.AddUnitToNode(wm.GetNode(wm.CurrentNodeID), produced, 1);
 
             if (pendingSlot >= per)
             {
@@ -65,16 +71,22 @@ public abstract class UnitProducerBehaviour : BuildingBehaviour
     }
 
     // 해당 건물 소속 유닛이 죽었을 때 외부에서 호출.
-    public void NotifyUnitDied()
+    // 사망 병종을 알아야 NodeData.units에서도 차감 가능 — 호출자가 UnitType을 넘겨줌.
+    public void NotifyUnitDied(UnitType type)
     {
         if (activeCount > 0) activeCount--;
+
+        WorldMapManager wm = WorldMapManager.Instance;
+        if (wm != null)
+            WorldMapManager.RemoveUnitFromNode(wm.GetNode(wm.CurrentNodeID), type, 1);
+
         TrySpawnFromQueue();
     }
 
-    // 자식 클래스가 실제 유닛 인스턴스를 생성/등록.
+    // 자식 클래스가 실제 유닛 인스턴스를 생성/등록 후 어떤 UnitType을 생산했는지 반환.
     // slotInCycle: 사이클 내 인덱스. 단일 유닛 건물이면 항상 0.
     //              쌍 건물이면 0=앞유닛(예: 궁수/기사), 1=뒷유닛(예: 힐러/기마병).
-    protected abstract void SpawnUnit(int slotInCycle);
+    protected abstract UnitType SpawnUnit(int slotInCycle);
 
     public override BuildingRuntimeState SaveState()
     {
