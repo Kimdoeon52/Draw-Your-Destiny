@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D.IK;
 using System;
+using Base;
 using Unity.VisualScripting;
 
 // ============================================================
@@ -235,6 +236,48 @@ public class GameManager : PersistentSingleton<GameManager>
     // 노드별 인구 한도 한계
     public const int NodeGlobalCapLimit = 20;       // 한 노드가 전역 한도에 기여 가능한 최대치
     public const int NodeLocalCapacityLimit = 50;   // 한 노드의 인구 수용 최대치
+
+    // ── 노화 유닛 추적 ───────────────────────────────────────────
+    // HumanBase.OnEnable에서 Register, OnDisable에서 Unregister.
+    // OnBecomeOld → 해당 유닛 homeNodeID 노드의 oldUnitCount++
+    // OnBecomeRemoved → 노화 상태로 풀 반환 시 oldUnitCount--
+    private readonly Dictionary<HumanBase, (Action onOld, Action onRemoved)> agingHandlers
+        = new Dictionary<HumanBase, (Action, Action)>();
+
+    public void RegisterAgingUnit(HumanBase unit)
+    {
+        if (unit == null || agingHandlers.ContainsKey(unit)) return;
+        Action onOld     = () => HandleUnitBecameOld(unit);
+        Action onRemoved = () => HandleUnitRemoved(unit);
+        unit.OnBecomeOld     += onOld;
+        unit.OnBecomeRemoved += onRemoved;
+        agingHandlers[unit] = (onOld, onRemoved);
+    }
+
+    public void UnregisterAgingUnit(HumanBase unit)
+    {
+        if (unit == null) return;
+        if (!agingHandlers.TryGetValue(unit, out var pair)) return;
+        unit.OnBecomeOld     -= pair.onOld;
+        unit.OnBecomeRemoved -= pair.onRemoved;
+        agingHandlers.Remove(unit);
+    }
+
+    private void HandleUnitBecameOld(HumanBase unit)
+    {
+        NodeData node = WorldMapManager.Instance?.GetNode(unit.homeNodeID);
+        if (node == null) return;
+        node.oldUnitCount++;
+        Debug.Log($"[GameManager] 노드 {unit.homeNodeID} 노화 +1 (총 {node.oldUnitCount})");
+    }
+
+    private void HandleUnitRemoved(HumanBase unit)
+    {
+        NodeData node = WorldMapManager.Instance?.GetNode(unit.homeNodeID);
+        if (node == null) return;
+        if (node.oldUnitCount > 0) node.oldUnitCount--;
+        Debug.Log($"[GameManager] 노드 {unit.homeNodeID} 노화 유닛 제거 (남은 {node.oldUnitCount})");
+    }
 
     // 건물의 populationCapBonus를 특정 노드와 전역에 함께 적용.
     // 노드 capacity는 NodeLocalCapacityLimit(50)까지 누적, 전역 한도는 노드별 NodeGlobalCapLimit(20)까지만 기여.

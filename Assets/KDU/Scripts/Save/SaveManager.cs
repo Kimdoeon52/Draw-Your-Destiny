@@ -203,6 +203,7 @@ public class SaveManager : Singleton<SaveManager>
         save.farmCount       = node.farmCount;
         save.maxHuman        = node.maxHuman;
         save.playerPopulationCapacity = node.playerPopulationCapacity;
+        save.oldUnitCount             = node.oldUnitCount;
         save.units           = new List<NodeUnit>(node.units);
         save.buildings       = new List<SaveBuildingData>();
         foreach (BuildingInstance b in node.buildings)
@@ -270,6 +271,7 @@ public class SaveManager : Singleton<SaveManager>
         target.farmCount      = save.farmCount;
         target.maxHuman       = save.maxHuman;
         target.playerPopulationCapacity = save.playerPopulationCapacity;
+        target.oldUnitCount             = save.oldUnitCount;
         target.units          = new List<NodeUnit>(save.units);
         target.buildings      = new List<BuildingInstance>();
         foreach (SaveBuildingData sb in save.buildings)
