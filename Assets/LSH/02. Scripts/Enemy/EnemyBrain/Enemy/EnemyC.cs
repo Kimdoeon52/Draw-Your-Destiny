@@ -1,7 +1,7 @@
 using UnityEngine;
 
-public class EnemyC : EnemyBrainBase //1. ¹«³­ 
-{//ÀüÅõÆ®¸®Enemy
+public class EnemyC : EnemyBrainBase //1. ë¬´ë‚œ 
+{//ì „íˆ¬íŠ¸ë¦¬Enemy
     protected override void Awake()
     {
         enemyID = 3;
@@ -13,7 +13,7 @@ public class EnemyC : EnemyBrainBase //1. ¹«³­
     {
         base.OnEnable();
     }
-    protected override void GetGold() //°ñµå¿Í ½Ã´ëÁ¡¼ö¸¦ ¾ò´Â Çàµ¿ ±¸Çö
+    protected override void GetGold() //ê³¨ë“œì™€ ì‹œëŒ€ì ìˆ˜ë¥¼ ì–»ëŠ” í–‰ë™ êµ¬í˜„
     {
         switch (enemyLevel)
         {
@@ -34,50 +34,50 @@ public class EnemyC : EnemyBrainBase //1. ¹«³­
                 break;
         }
     }
-    //===================================Enemyº° Çàµ¿ È®·ü Á¶Á¤==========================================
-    protected override void AddFightAction() //ÃÊ±â Çàµ¿ È®·ü Á¶Á¤
+    //===================================Enemyë³„ í–‰ë™ í™•ë¥  ì¡°ì •==========================================
+    protected override void AddFightAction() //ì´ˆê¸° í–‰ë™ í™•ë¥  ì¡°ì •
     {
-        AddActionCase(EnemyAction.Building, 40); //°Ç¹°40ÇÁ·Î
-        AddActionCase(EnemyAction.GetGold, 30); //°ñµå 40ÇÁ·Î
-        AddActionCase(EnemyAction.TryOccupy, 10); //¿µÁö 10ÇÁ·Î
-        AddActionCase(EnemyAction.Rest, 20); //ÈŞ½Ä 10ÇÁ·Î
+        AddActionCase(EnemyAction.Building, 40); //ê±´ë¬¼40í”„ë¡œ
+        AddActionCase(EnemyAction.GetGold, 30); //ê³¨ë“œ 30í”„ë¡œ
+        AddActionCase(EnemyAction.TryOccupy, 10); //ì˜ì§€ 10í”„ë¡œ
+        AddActionCase(EnemyAction.Rest, 20); //íœ´ì‹ 20í”„ë¡œ
     }
-    protected override void UpdateActionCases() //Àû Çàµ¿ È®·ü ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼öÀÓ. ¿¹¸¦ µé¾î ·¹º§¾÷ÇÏ¸é °Ç¹° Áş´Â Çàµ¿ È®·üÀÌ ¿Ã¶ó°¡´Â ½ÄÀ¸·Î.
+    protected override void UpdateActionCases() //ì  í–‰ë™ í™•ë¥  ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜ì„. ì˜ˆë¥¼ ë“¤ì–´ ë ˆë²¨ì—…í•˜ë©´ ê±´ë¬¼ ì§“ëŠ” í–‰ë™ í™•ë¥ ì´ ì˜¬ë¼ê°€ëŠ” ì‹ìœ¼ë¡œ.
     {
-        //Àû Çàµ¿ È®·ü ¾÷µ¥ÀÌÆ® ±¸Çö
+        //ì  í–‰ë™ í™•ë¥  ì—…ë°ì´íŠ¸ êµ¬í˜„
         if (enemyLevel == 2)
         {
-            actionCases[0].weight = 50; //°Ç¹° Áş±â È®·ü 40%
-            actionCases[1].weight = 20; //°ñµå ¾ò±â È®·ü 40%
-            actionCases[2].weight = 20; //¿µÁö Á¡·É ½Ãµµ È®·ü 20%
+            actionCases[0].weight = 40; //ê±´ë¬¼ ì§“ê¸° í™•ë¥  40%
+            actionCases[1].weight = 20; //ê³¨ë“œ ì–»ê¸° í™•ë¥  20%
+            actionCases[2].weight = 30; //ì˜ì§€ ì ë ¹ ì‹œë„ í™•ë¥  30%
             actionCases[3].weight = 10;
         }
         else if (enemyLevel == 3) 
         {
-            actionCases[0].weight = 60; //°Ç¹° Áş±â È®·ü 60%
-            actionCases[1].weight = 10; //°Ç¹° À§ÁÖ·Î ÇÏ±â À§ÇØ °ñµå ¾ò±â x
-            actionCases[2].weight = 20; //¿µÁö Á¡·É ½Ãµµ È®·ü 40%
+            actionCases[0].weight = 50; //ê±´ë¬¼ ì§“ê¸° í™•ë¥  50%
+            actionCases[1].weight = 10; //ê±´ë¬¼ ìœ„ì£¼ë¡œ í•˜ê¸° ìœ„í•´ ê³¨ë“œ ì–»ê¸° x
+            actionCases[2].weight = 30; //ì˜ì§€ ì ë ¹ ì‹œë„ í™•ë¥  30%
             actionCases[3].weight = 10;
         }
     }
-    //==============================================·¹º§¾÷ Á¶°Ç==========================================
-    protected override void CheckLevelUp() //Àû ·¹º§¾÷ Á¶°Ç ±¸Çö
+    //==============================================ë ˆë²¨ì—… ì¡°ê±´==========================================
+    protected override void CheckLevelUp() //ì  ë ˆë²¨ì—… ì¡°ê±´ êµ¬í˜„
     {
-        //ÀûÀÇ ·¹º§¾÷ Á¶°Ç ±¸Çö
+        //ì ì˜ ë ˆë²¨ì—… ì¡°ê±´ êµ¬í˜„
         switch (enemyLevel)
         {
             case 1:
-                if (countEnemyTurn >= 20) //10ÅÏ¸¶´Ù ·¹º§¾÷
+                if (countEnemyTurn >= 20) //10í„´ë§ˆë‹¤ ë ˆë²¨ì—…
                 {
                     enemyLevel = 2;
-                    Debug.Log($"<color=green>[·¹º§¾÷!!] Àû ·¹º§ÀÌ {enemyLevel}·Î »ó½ÂÇß½À´Ï´Ù.</color>");
+                    Debug.Log($"<color=green>[ë ˆë²¨ì—…!!] ì  ë ˆë²¨ì´ {enemyLevel}ë¡œ ìƒìŠ¹í–ˆìŠµë‹ˆë‹¤.</color>");
                 }
                 break;
             case 2:
-                if (countEnemyTurn >= 35) //20ÅÏ¸¶´Ù ·¹º§¾÷
+                if (countEnemyTurn >= 35) //20í„´ë§ˆë‹¤ ë ˆë²¨ì—…
                 {
                     enemyLevel = 3;
-                    Debug.Log($"<color=green>[·¹º§¾÷!!] Àû ·¹º§ÀÌ {enemyLevel}·Î »ó½ÂÇß½À´Ï´Ù.</color>");
+                    Debug.Log($"<color=green>[ë ˆë²¨ì—…!!] ì  ë ˆë²¨ì´ {enemyLevel}ë¡œ ìƒìŠ¹í–ˆìŠµë‹ˆë‹¤.</color>");
                 }
                 break;
         }

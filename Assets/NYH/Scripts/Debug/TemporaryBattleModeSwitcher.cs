@@ -16,6 +16,13 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
         public int startHealth = 10;
     }
 
+    [System.Serializable]
+    private class UtilityCardTestSlot
+    {
+        public BattleCardData cardData;
+        public int addCount = 1;
+    }
+
     [Header("Real Connection Test")]
     [SerializeField] private int testPlayerNodeID = 0;
     [SerializeField] private int testEnemyNodeID = 1;
@@ -27,11 +34,18 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
     [SerializeField] private BattleBoardSystem battleBoardSystem;
     [SerializeField] private UnitSpawnRequest[] unitsToSpawn;
 
+    [Header("Optional Utility Card Test")]
+    [Tooltip("F10을 눌렀을 때 배틀 덱에 추가할 테스트용 포션 카드 목록입니다.")]
+    [SerializeField] private UtilityCardTestSlot[] potionCardsToAdd;
+    [Tooltip("F10을 눌렀을 때 배틀 덱에 추가할 테스트용 덫 카드 목록입니다.")]
+    [SerializeField] private UtilityCardTestSlot[] trapCardsToAdd;
+
     [Header("Keyboard Test")]
     [SerializeField] private bool enableKeyboardShortcut = true;
     [SerializeField] private KeyCode enterBattleKey = KeyCode.F7;
     [SerializeField] private KeyCode exitBattleKey = KeyCode.F8;
     [SerializeField] private KeyCode spawnConfiguredUnitsKey = KeyCode.F9;
+    [SerializeField] private KeyCode addUtilityCardsKey = KeyCode.F10;
 
     private void Awake()
     {
@@ -61,6 +75,11 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
         if (Input.GetKeyDown(spawnConfiguredUnitsKey))
         {
             SpawnConfiguredUnits();
+        }
+
+        if (Input.GetKeyDown(addUtilityCardsKey))
+        {
+            AddConfiguredUtilityCards();
         }
     }
 
@@ -116,6 +135,29 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
         }
 
         SpawnCurrentTerritoryUnits();
+    }
+
+    public void AddConfiguredUtilityCards()
+    {
+        BattleCardSystem battleCardSystem = BattleCardSystem.Instance;
+        BattleDeckCollection deckCollection = BattleDeckCollection.GetOrCreate();
+        if (deckCollection == null)
+        {
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] BattleDeckCollection is missing.");
+            return;
+        }
+
+        int addedCount = 0;
+        addedCount += AddConfiguredUtilityCardsFromSlots(potionCardsToAdd, BattleCardType.Potion, deckCollection, battleCardSystem);
+        addedCount += AddConfiguredUtilityCardsFromSlots(trapCardsToAdd, BattleCardType.Trap, deckCollection, battleCardSystem);
+
+        if (addedCount <= 0)
+        {
+            Debug.LogWarning("[TemporaryBattleModeSwitcher] No utility cards were added. Check the configured potion/trap slots.");
+            return;
+        }
+
+        Debug.Log($"[TemporaryBattleModeSwitcher] Utility test cards added: total={addedCount}");
     }
 
     public BattleUnit SpawnPlayerUnit(BattleUnit unitPrefab, Vector2Int gridPosition, int startHealth = 10)
@@ -264,5 +306,46 @@ public class TemporaryBattleModeSwitcher : MonoBehaviour
 
         Debug.Log($"[TemporaryBattleModeSwitcher] Entering battle with current territory node data: node={currentNodeID}");
         battleSessionController.EnterBattle(currentNodeData, currentNodeData);
+    }
+
+    private static int AddConfiguredUtilityCardsFromSlots(
+        UtilityCardTestSlot[] slots,
+        BattleCardType expectedType,
+        BattleDeckCollection deckCollection,
+        BattleCardSystem battleCardSystem)
+    {
+        if (slots == null || slots.Length == 0)
+        {
+            return 0;
+        }
+
+        int addedCount = 0;
+        for (int i = 0; i < slots.Length; i++)
+        {
+            UtilityCardTestSlot slot = slots[i];
+            if (slot == null || slot.cardData == null)
+            {
+                continue;
+            }
+
+            if (slot.cardData.CardType != expectedType)
+            {
+                Debug.LogWarning(
+                    $"[TemporaryBattleModeSwitcher] Skipping utility card with mismatched type: card={slot.cardData.CardName}, expected={expectedType}, actual={slot.cardData.CardType}");
+                continue;
+            }
+
+            int repeatCount = Mathf.Max(0, slot.addCount);
+            for (int countIndex = 0; countIndex < repeatCount; countIndex++)
+            {
+                // BattleDeckCollection.AddPotionCard already supports deck-limit-ignoring utility cards
+                // such as potions and traps, so we reuse the same path for both card types here.
+                deckCollection.AddPotionCard(slot.cardData);
+                battleCardSystem?.PileState?.AddPotionCard(slot.cardData);
+                addedCount++;
+            }
+        }
+
+        return addedCount;
     }
 }

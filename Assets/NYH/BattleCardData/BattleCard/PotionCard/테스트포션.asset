@@ -10,32 +10,41 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e65b348dc63c8834cb1116ccfffa0291, type: 3}
-  m_Name: New Battle Card Data
+  m_Name: "\uD14C\uC2A4\uD2B8\uD3EC\uC158"
   m_EditorClassIdentifier: 
-  <CardID>k__BackingField: 0
-  <CardName>k__BackingField: 
+  <CardID>k__BackingField: 20000
+  <CardName>k__BackingField: "\uAC1C\uCA4C\uB294\uD3EC\uC158"
   <CardType>k__BackingField: 3
-  <Image>k__BackingField: {fileID: -7623661144529183703, guid: be785b53e8101134cb49e391918a7a82,
+  <Image>k__BackingField: {fileID: -3577410830333116246, guid: 013e245f0ec99e1449514b8f318938cd,
     type: 3}
   <GridImage>k__BackingField: {fileID: -6783172969570757394, guid: f454459c9f7eb9c41b2873053fc090eb,
     type: 3}
-  <ActionPointCost>k__BackingField: 0
+  <ActionPointCost>k__BackingField: 1
   <DisplayMoveRange>k__BackingField: 0
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
   <TargetingMode>k__BackingField: 0
   allowedUserUnitTypes: 
-  <Keywords>k__BackingField: 03000000
+  <Keywords>k__BackingField: 
   <Effects>k__BackingField:
-  - rid: 7216728748206325819
+  - rid: 7216728748206326014
+  - rid: -2
   description: 
   references:
     version: 2
     RefIds:
-    - rid: 7216728748206325819
-      type: {class: BattleStatModifierEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 7216728748206326014
+      type: {class: BattlePotionEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
-        targetType: 0
+        targetType: 2
         allowedSourceUnitTypes: 
-        statType: 0
-        amount: 1
+        targetingType: 0
+        ownerTeam: 0
+        range: 1
+        impactPattern: 3
+        customImpactPattern: {fileID: 11400000, guid: 2e95437cfb4213543833675e77f717f1,
+          type: 2}
+        impactTargetFilter: 2
+        globalTargetFilter: 1
