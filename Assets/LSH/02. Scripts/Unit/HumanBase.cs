@@ -85,7 +85,7 @@ namespace Base
 
         protected virtual void OnEnable()//초기화
         {
-            UnitAppear();
+            //UnitAppear();
             GameManager.Instance.OnTurnFin += UnitNextTurn; //턴이 끝날 때마다 UnitNextTurn 실행하도록 이벤트 등록
             GameManager.Instance.RegisterAgingUnit(this);   // OnBecomeOld/OnBecomeRemoved 구독해 노드별 노화 유닛 카운트 갱신
         }
@@ -95,7 +95,7 @@ namespace Base
             GameManager.Instance.OnTurnFin -= UnitNextTurn;
             GameManager.Instance.UnregisterAgingUnit(this);
         }
-        void UnitAppear() //유닛이 소환되면 초기화 시킴.
+        public void UnitAppear() //유닛이 소환되면 초기화 시킴.
         {
             age = 0; //나이는 무조건 0으로 시작
             ageGroup = AgeGroupBase.Baby; //나이 그룹도 아기부터 시작
@@ -177,6 +177,10 @@ namespace Base
         protected virtual void Dead() //사망 처리
         {
             StopMoveLoop();
+            if(ageGroup == AgeGroupBase.Old && OnBecomeRemoved != null)
+            {
+                OnBecomeRemoved.Invoke();
+            }
             UnitRegistry.Instance?.Unregister(this);
             if(ownerPool == null)
             {

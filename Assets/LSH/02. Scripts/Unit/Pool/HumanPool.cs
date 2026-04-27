@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Base;
@@ -25,14 +25,6 @@ namespace PoolBase
                 GameObject human = Instantiate(humanPrefab, poolParent);
                 human.SetActive(false);
                 pool.Enqueue(human);
-            }
-        }
-        //===========================임시 코드================================
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                GetHuman(0);
             }
         }
         //====================================================================
@@ -63,9 +55,9 @@ namespace PoolBase
                 human.transform.SetParent(registry.UnitsRoot, true);
 
             human.SetActive(true);
-
             HumanBase humanUnit = human.GetComponent<HumanBase>();
             humanUnit.ownerCivID = ownerCivID;
+            humanUnit.UnitAppear();
             humanUnit.SetOwnerPool(this);
 
             int nodeID = WorldMapManager.Instance != null ? WorldMapManager.Instance.CurrentNodeID : -1;
