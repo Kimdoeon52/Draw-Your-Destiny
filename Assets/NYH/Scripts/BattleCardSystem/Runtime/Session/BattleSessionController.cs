@@ -1,4 +1,4 @@
- namespace NYH.BattleCardSystem
+namespace NYH.BattleCardSystem
 {
     using NYH.CoreCardSystem;
     using TMPro;

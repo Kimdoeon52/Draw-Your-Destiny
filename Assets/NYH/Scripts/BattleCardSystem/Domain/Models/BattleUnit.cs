@@ -51,11 +51,13 @@ namespace NYH.BattleCardSystem
         public int CurrentSpeed => Mathf.Max(0, speed + speedModifier);
         public Vector2Int GridPosition => gridPosition;
         public bool IsAlive => CurrentHealth > 0;
+        public int BaseHealthPerUnit => baseHealthPerUnit;
         public bool IsStunned => isStunned;
         public bool IsDisarmed => isDisarmed;
 
         private int attackPowerModifier;
         private int speedModifier;
+        private int baseHealthPerUnit = 1;  // 역산용: 1유닛당 기본 HP
         private bool isStunned;
         private bool isDisarmed;
         private bool isDying;
@@ -105,6 +107,7 @@ namespace NYH.BattleCardSystem
         public void InitializeWithCount(Vector2Int startPosition, int baseHealth, int baseAttack, int unitCount)
         {
             int count = Mathf.Max(1, unitCount);
+            baseHealthPerUnit = baseHealth;
             maxHealth = baseHealth * count;
             attackPower = baseAttack * count;
             gridPosition = startPosition;

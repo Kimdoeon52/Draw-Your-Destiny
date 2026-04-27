@@ -37,6 +37,7 @@ namespace NYH.BattleCardSystem
         public int TurnCount;
         public int SurvivingPlayerUnits;
         public int SurvivingEnemyUnits;
+        public Dictionary<UnitType, int> SurvivingPlayerTroops;
     }
 
     /*
@@ -57,6 +58,7 @@ namespace NYH.BattleCardSystem
         [SerializeField] private BattleCardSystem battleCardSystem;
         [SerializeField] private BattleEnemyAIController enemyAIController;
         [SerializeField] private BattleStartSpawner battleStartSpawner;
+
 
         [Header("Battle Setup")]
         [SerializeField] private BattleStartContext defaultStartContext = new();
@@ -437,13 +439,30 @@ namespace NYH.BattleCardSystem
         private BattleResult BuildResult(bool isVictory)
         {
             RebuildUnitLists();
-            return new BattleResult
+            //return new BattleResult
+            var result = new BattleResult
             {
                 IsVictory = isVictory,
                 TurnCount = BattleTurn,
                 SurvivingPlayerUnits = CountAliveUnits(playerUnits),
                 SurvivingEnemyUnits = CountAliveUnits(enemyUnits),
             };
+            result.SurvivingPlayerTroops = new Dictionary<UnitType, int>();
+            foreach (BattleUnit unit in playerUnits)
+            {
+                if (unit == null || !unit.IsAlive)
+                {
+                    continue;
+                }
+
+                if (!result.SurvivingPlayerTroops.ContainsKey(unit.UnitType))
+                {
+                    result.SurvivingPlayerTroops[unit.UnitType] = 0;
+                }
+                int survivingCount = Mathf.CeilToInt((float)unit.CurrentHealth / unit.BaseHealthPerUnit);
+                result.SurvivingPlayerTroops[unit.UnitType] += survivingCount;
+            }
+            return result;
         }
 
         private void RebuildUnitLists()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using NYH.BattleCardSystem;
 
 // ============================================================
 // WorldMapManager — 월드맵 전체 관리 싱글톤
@@ -35,7 +36,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
     [Header("노드 시각 색상")]
     [Range(0f, 1f)] public float civTintAlpha = 0.75f;                   // 진영 색 투명도 (통합 배경 비치도록)
     public Color highlightColor = new Color(1f, 0.95f, 0.3f, 0.4f);     // 선택 모드 후보 노드
-    public Color dimColor       = new Color(0f, 0f, 0f, 0.45f);         // 선택 모드 비후보 노드
+    public Color dimColor = new Color(0f, 0f, 0f, 0.45f);         // 선택 모드 비후보 노드
+    [Header("전투 연동")]
+    [SerializeField] private NYH.BattleCardSystem.BattleSessionController battleSessionController;
 
     [Header("디버그")]
     public bool debugFreeEntry = false; // true면 적/빈 노드도 영지 진입 허용
@@ -72,9 +75,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
     {
         base.Awake();
         // 기본 상태: 월드맵 뷰 활성, 영지 뷰 비활성
-        if (worldMapView  != null) worldMapView.SetActive(true);
+        if (worldMapView != null) worldMapView.SetActive(true);
         if (territoryView != null) territoryView.SetActive(false);
-        if (fadePanel     != null)
+        if (fadePanel != null)
         {
             fadePanel.alpha = 0f;
             fadePanel.blocksRaycasts = false; // 투명할 때 클릭 차단 방지
@@ -161,7 +164,7 @@ public class WorldMapManager : Singleton<WorldMapManager>
         yield return FadeTo(1f);
 
         // 월드맵 뷰 비활성 → 영지 뷰 활성
-        if (worldMapView  != null) worldMapView.SetActive(false);
+        if (worldMapView != null) worldMapView.SetActive(false);
         if (territoryView != null) territoryView.SetActive(true);
 
         // 타일맵 복원
@@ -201,7 +204,7 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
         // 영지 뷰 비활성 → 월드맵 뷰 활성
         if (territoryView != null) territoryView.SetActive(false);
-        if (worldMapView  != null) worldMapView.SetActive(true);
+        if (worldMapView != null) worldMapView.SetActive(true);
 
         currentNodeID = -1;
 
@@ -519,9 +522,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
         troopDispatchModal.Open(src.units, troops =>
         {
-            if (mode == SelectionMode.Attack) 
+            if (mode == SelectionMode.Attack)
                 DeclareAttack(from, to, troops);
-            else                              
+            else
                 DeclareMove(from, to, troops);
 
             CancelSelection();
@@ -530,7 +533,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
     // ── 공격/이동 선언 ──────────────────────────────────────────
     // 모달 확정 시 호출됨. 출발 노드에서 병력 차감 후 후속 처리.
-
+    private int pendingAttackFromNodeID = -1;
+    private int pendingAttackTargetNodeID = -1;
+    private Dictionary<UnitType, int> pendingAttackTroops;
     private void DeclareAttack(int fromNodeID, int targetNodeID, Dictionary<UnitType, int> troops)
     {
         NodeData src = GetNode(fromNodeID);
@@ -541,22 +546,44 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
         Debug.Log($"[WorldMapManager] 공격 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}");
         RefreshAllNodeButtons();
-
-        // 전투 결과 1회성 구독 — 결과 데이터(생존자/턴 수 등)는 추후 활용. 지금은 승/패 분기만.
-        var battleManager = FindFirstObjectByType<NYH.BattleCardSystem.BattleManager>(FindObjectsInactive.Include);
-        if (battleManager == null)
+        NodeData attackerNode = new NodeData();
+        attackerNode.nodeID = -999;//임시
+        attackerNode.ownerCivID = 0;
+        foreach (var kv in troops)
         {
-            Debug.LogError("[WorldMapManager] BattleManager 미발견 — 결과 처리 불가");
-            return;
+            if (kv.Value > 0)
+            {
+                attackerNode.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
+            }
         }
+        pendingAttackFromNodeID = fromNodeID;
+        pendingAttackTargetNodeID = targetNodeID;
+        pendingAttackTroops = troops;
 
-        System.Action<NYH.BattleCardSystem.BattleResult> handler = null;
-        handler = result =>
+        if (battleSessionController != null)
         {
-            battleManager.OnBattleFinished -= handler;
-            ResolveAttackResult(targetNodeID, result);
-        };
-        battleManager.OnBattleFinished += handler;
+            battleSessionController.EnterBattle(attackerNode, target);
+        }
+        else
+        {
+            Debug.Log("[WorldMapManager] battleSessionController 미연결");
+        }
+        RefreshAllNodeButtons();
+        // // 전투 결과 1회성 구독 — 결과 데이터(생존자/턴 수 등)는 추후 활용. 지금은 승/패 분기만.
+        // var battleManager = FindFirstObjectByType<NYH.BattleCardSystem.BattleManager>(FindObjectsInactive.Include);
+        // if (battleManager == null)
+        // {
+        //     Debug.LogError("[WorldMapManager] BattleManager 미발견 — 결과 처리 불가");
+        //     return;
+        // }
+
+        // System.Action<NYH.BattleCardSystem.BattleResult> handler = null;
+        // handler = result =>
+        // {
+        //     battleManager.OnBattleFinished -= handler;
+        //     ResolveAttackResult(targetNodeID, result);
+        // };
+        // battleManager.OnBattleFinished += handler;
     }
 
     // 전투 종료 후 결과 처리.
@@ -650,7 +677,7 @@ public class WorldMapManager : Singleton<WorldMapManager>
             if (kv.Value <= 0) continue;
             NodeUnit u = node.units.Find(x => x.unitType == kv.Key);
             if (u == null) node.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
-            else           u.count += kv.Value;
+            else u.count += kv.Value;
         }
     }
 
@@ -661,6 +688,75 @@ public class WorldMapManager : Singleton<WorldMapManager>
         foreach (var kv in troops) if (kv.Value > 0) parts.Add($"{kv.Key}:{kv.Value}");
         return parts.Count == 0 ? "(none)" : string.Join(", ", parts);
     }
+
+    private void OnEnable()
+    {
+        // BattleManager의 OnBattleFinished 이벤트 구독
+        if (battleSessionController != null)
+        {
+            var bm = battleSessionController.GetComponentInChildren<BattleManager>(true);
+            if (bm != null)
+                bm.OnBattleFinished += OnBattleFinished;
+        }
+    }
+    private void OnDisable()
+    {
+        if (battleSessionController != null)
+        {
+            var bm = battleSessionController.GetComponentInChildren<BattleManager>(true);
+            if (bm != null)
+                bm.OnBattleFinished -= OnBattleFinished;
+        }
+    }
+    private void OnBattleFinished(BattleResult result)
+    {
+        if (pendingAttackTargetNodeID < 0) return; // 전투 컨텍스트 없음
+
+        int fromID = pendingAttackFromNodeID;
+        int targetID = pendingAttackTargetNodeID;
+        NodeData src = GetNode(fromID);
+        NodeData target = GetNode(targetID);
+
+        if (result.IsVictory)
+        {
+            // ── 승리 ──
+            // 1. 적 노드 소유권을 플레이어로 변경
+            SetNodeOwner(targetID, 0);
+
+            // 2. 생존 유닛을 대상 노드에 추가
+            if (result.SurvivingPlayerTroops != null)
+            {
+                foreach (var kv in result.SurvivingPlayerTroops)
+                {
+                    if (kv.Value <= 0) continue;
+                    NodeUnit u = target.units.Find(x => x.unitType == kv.Key);
+                    if (u == null)
+                        target.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
+                    else
+                        u.count += kv.Value;
+                }
+            }
+
+            // 3. 플레이어 유닛 주둔 표시
+            SetPlayerUnitsPresent(targetID, true);
+            Debug.Log($"[WorldMapManager] 전투 승리: 노드 {targetID} 점령");
+        }
+        else
+        {
+            // ── 패배 ──
+            // 파견 병력은 이미 차감됨(DeductTroops). 추가 처리 없음.
+            Debug.Log($"[WorldMapManager] 전투 패배: 파견 병력 소멸");
+        }
+
+        // 컨텍스트 클리어
+        pendingAttackFromNodeID = -1;
+        pendingAttackTargetNodeID = -1;
+        pendingAttackTroops = null;
+
+        RefreshAllNodeButtons();
+    }
+
+
 
     //============================Ai전용 탐색 함수 건들지마셈^^=====================================
     public List<NodeData> GetAdjacentNodes(int nodeID)
