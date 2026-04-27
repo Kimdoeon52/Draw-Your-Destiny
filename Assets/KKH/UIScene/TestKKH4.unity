@@ -142094,478 +142094,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!1 &416770744
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 416770746}
-  - component: {fileID: 416770745}
-  m_Layer: 0
-  m_Name: WorldMapManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &416770745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 416770744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d9e6006e65dba349b2a79e7b0051b72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  worldMapView: {fileID: 901606284}
-  territoryView: {fileID: 1719515412}
-  fadePanel: {fileID: 333971494}
-  fadeDuration: 0.4
-  cancelSelectionButton: {fileID: 2127507341}
-  troopDispatchModal: {fileID: 2131995756}
-  civTintAlpha: 0.75
-  highlightColor: {r: 1, g: 0.95, b: 0.3, a: 0.4}
-  dimColor: {r: 0, g: 0, b: 0, a: 0.45}
-  battleSessionController: {fileID: 1535182451}
-  debugFreeEntry: 0
-  allNodes:
-  - nodeID: 101
-    adjacentNodeIDs: 66000000
-    ownerCivID: 0
-    isMansionBuilt: 1
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 10
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 102
-    adjacentNodeIDs: 65000000670000007f000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 103
-    adjacentNodeIDs: 66000000680000007c0000007f000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 104
-    adjacentNodeIDs: 670000007c0000007700000069000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 105
-    adjacentNodeIDs: 680000006a00000077000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 106
-    adjacentNodeIDs: 690000006b0000007700000078000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 107
-    adjacentNodeIDs: 6a0000006c000000750000007600000078000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 108
-    adjacentNodeIDs: 6b0000006d00000075000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 109
-    adjacentNodeIDs: 6f0000006e0000006c0000007000000072000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 110
-    adjacentNodeIDs: 6f0000006d000000
-    ownerCivID: 1
-    isMansionBuilt: 1
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 10
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 111
-    adjacentNodeIDs: 6e0000006d00000070000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 112
-    adjacentNodeIDs: 6f0000006d0000007100000072000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 113
-    adjacentNodeIDs: 7000000072000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 114
-    adjacentNodeIDs: 71000000700000006d000000740000007500000073000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 115
-    adjacentNodeIDs: 72000000
-    ownerCivID: 2
-    isMansionBuilt: 1
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 10
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 116
-    adjacentNodeIDs: 7200000075000000
-    ownerCivID: -1
-    isMansionBuilt: 1
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 117
-    adjacentNodeIDs: 7200000074000000760000006b0000006c0000006d000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 118
-    adjacentNodeIDs: 7500000078000000790000006b000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 119
-    adjacentNodeIDs: 6a00000069000000780000007c0000007b00000068000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 120
-    adjacentNodeIDs: 6a0000006b000000760000007b0000007900000077000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 121
-    adjacentNodeIDs: 780000007a000000760000007b000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 122
-    adjacentNodeIDs: 780000007a000000760000007b000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 123
-    adjacentNodeIDs: 780000007a000000770000007c0000007d00000079000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 124
-    adjacentNodeIDs: 6700000068000000770000007b0000007d0000007f000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 125
-    adjacentNodeIDs: 7b0000007c0000007e0000007f000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 126
-    adjacentNodeIDs: 7d0000007f0000008000000081000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 127
-    adjacentNodeIDs: 66000000670000007c0000007d0000007e0000008000000081000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 128
-    adjacentNodeIDs: 7f0000007e0000008100000082000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 129
-    adjacentNodeIDs: 7e0000007f000000800000008200000083000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 130
-    adjacentNodeIDs: 80000000810000008300000084000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 131
-    adjacentNodeIDs: 810000008200000084000000
-    ownerCivID: -1
-    isMansionBuilt: 0
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 0
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
-  - nodeID: 132
-    adjacentNodeIDs: 8200000083000000
-    ownerCivID: 3
-    isMansionBuilt: 1
-    hasPlayerUnits: 0
-    gold: 0
-    food: 0
-    research: 0
-    units: []
-    farmCount: 0
-    maxHuman: 10
-    playerPopulationCapacity: 0
-    oldUnitCount: 0
---- !u!4 &416770746
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 416770744}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.8750916, y: -4.187364, z: -0.07518664}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &422643522
 GameObject:
   m_ObjectHideFlags: 0
@@ -204234,7 +203762,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 416770745}
+      - m_Target: {fileID: 1884524326}
         m_TargetAssemblyTypeName: WorldMapManager, Assembly-CSharp
         m_MethodName: BeginAttackSelection
         m_Mode: 1
@@ -255871,6 +255399,70 @@ BoxCollider2D:
   m_AutoTiling: 1
   m_Size: {x: 19.912155, y: 13.677029}
   m_EdgeRadius: 0
+--- !u!1 &938640871
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 938640873}
+  - component: {fileID: 938640872}
+  m_Layer: 0
+  m_Name: EnemyA
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &938640872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938640871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6045b0c12c08af54685c3bac677f8a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionCases: []
+  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
+  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
+  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
+  barracksData:
+  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
+  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
+  - {fileID: 11400000, guid: 1682bb96636c2ff4c94285dde1b56447, type: 2}
+  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
+  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
+  - {fileID: 11400000, guid: 0c7c8e0fe9a6ca94ca97b3a3a24cc9a7, type: 2}
+  specialBuildData: []
+  gold: 0
+  science: 0
+  food: 0
+  enemyLevel: 0
+  enemyID: 0
+  countEnemyTurn: 0
+  cardCount: 0
+  enemyState: 0
+--- !u!4 &938640873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938640871}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &948311748
 GameObject:
   m_ObjectHideFlags: 0
@@ -307794,9 +307386,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 863d6c6c8112b0a499dfd84f4169f45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyA: {fileID: 1212933959}
-  enemyB: {fileID: 1366505622}
-  enemyC: {fileID: 1606899275}
+  enemyA: {fileID: 938640872}
+  enemyB: {fileID: 0}
+  enemyC: {fileID: 0}
   currentTurn: 0
   endTurn: 0
   startTurn: 0
@@ -322947,70 +322539,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1 &1212933958
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1212933960}
-  - component: {fileID: 1212933959}
-  m_Layer: 0
-  m_Name: EnemyA
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1212933959
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212933958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6045b0c12c08af54685c3bac677f8a3b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionCases: []
-  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
-  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
-  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
-  barracksData:
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
-  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
-  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
-  specialBuildData:
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  gold: 0
-  science: 0
-  food: 0
-  enemyLevel: 0
-  enemyID: 0
-  countEnemyTurn: 0
-  cardCount: 0
-  enemyState: 1
---- !u!4 &1212933960
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212933958}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1219173281
 GameObject:
   m_ObjectHideFlags: 0
@@ -344135,9 +343663,7 @@ MonoBehaviour:
       type: 3}
     gridPosition: {x: -9, y: -4}
     startHealth: 5
-  potionCardsToAdd:
-  - cardData: {fileID: 11400000, guid: 6772ec816f2b48043b9280d7bd049e67, type: 2}
-    addCount: 0
+  potionCardsToAdd: []
   trapCardsToAdd: []
   enableKeyboardShortcut: 1
   enterBattleKey: 288
@@ -366517,70 +366043,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1368983844}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1366505621
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1366505623}
-  - component: {fileID: 1366505622}
-  m_Layer: 0
-  m_Name: EnemyB
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1366505622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1366505621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0da2e3af4fbc04449d00b4adf0b1828, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionCases: []
-  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
-  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
-  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
-  barracksData:
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
-  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
-  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
-  specialBuildData:
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  gold: 0
-  science: 0
-  food: 0
-  enemyLevel: 0
-  enemyID: 0
-  countEnemyTurn: 0
-  cardCount: 0
-  enemyState: 0
---- !u!4 &1366505623
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1366505621}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1367359649
@@ -412449,7 +411911,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 416770745}
+      - m_Target: {fileID: 1884524326}
         m_TargetAssemblyTypeName: WorldMapManager, Assembly-CSharp
         m_MethodName: BeginMoveSelection
         m_Mode: 1
@@ -412772,70 +412234,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!1 &1606899274
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1606899276}
-  - component: {fileID: 1606899275}
-  m_Layer: 0
-  m_Name: EnemyC
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1606899275
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606899274}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba0b2edc9d373b741837aaf8a6e6e6e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  actionCases: []
-  farmData: {fileID: 11400000, guid: ddef5334d21beed44a54e08b5999450f, type: 2}
-  marketData: {fileID: 11400000, guid: a1f24190578b2634dacd05c6e0510536, type: 2}
-  houseData: {fileID: 11400000, guid: 360c8ac1e03456244939623010b4a316, type: 2}
-  barracksData:
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: bd71447df002fbf47a0903b9f337f855, type: 2}
-  - {fileID: 11400000, guid: f9b9dc3a7d8c6f442a80f09af2cd8443, type: 2}
-  - {fileID: 11400000, guid: 1f9fdd9e1c474b446ad0c501bca975c1, type: 2}
-  specialBuildData:
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  - {fileID: 11400000, guid: e61a69ced6f7acd4ba6eb3a50074ede9, type: 2}
-  gold: 0
-  science: 0
-  food: 0
-  enemyLevel: 0
-  enemyID: 0
-  countEnemyTurn: 0
-  cardCount: 0
-  enemyState: 1
---- !u!4 &1606899276
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1606899274}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1614508818
 GameObject:
   m_ObjectHideFlags: 0
@@ -440334,7 +439732,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1758259932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477530,6 +476928,192 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1877262343}
   m_CullTransparentMesh: 1
+--- !u!1 &1884524325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1884524327}
+  - component: {fileID: 1884524326}
+  m_Layer: 0
+  m_Name: WorldMapManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1884524326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884524325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9e6006e65dba349b2a79e7b0051b72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldMapView: {fileID: 901606284}
+  territoryView: {fileID: 1719515412}
+  fadePanel: {fileID: 333971494}
+  fadeDuration: 0.4
+  cancelSelectionButton: {fileID: 2127507341}
+  troopDispatchModal: {fileID: 2131995756}
+  civTintAlpha: 0.3
+  highlightColor: {r: 1, g: 0.95, b: 0.3, a: 0.4}
+  dimColor: {r: 0, g: 0, b: 0, a: 0.45}
+  battleSessionController: {fileID: 1535182451}
+  debugFreeEntry: 1
+  allNodes:
+  - nodeID: 101
+    adjacentNodeIDs: 6600000067000000
+    ownerCivID: 0
+    isMansionBuilt: 1
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 102
+    adjacentNodeIDs: 6500000068000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 103
+    adjacentNodeIDs: 6500000069000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 104
+    adjacentNodeIDs: 660000006a000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 105
+    adjacentNodeIDs: 670000006b000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 106
+    adjacentNodeIDs: 680000006c000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 107
+    adjacentNodeIDs: 690000006d000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 108
+    adjacentNodeIDs: 6a0000006e000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 109
+    adjacentNodeIDs: 6b0000006e000000
+    ownerCivID: -1
+    isMansionBuilt: 0
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+  - nodeID: 110
+    adjacentNodeIDs: 6c0000006d000000
+    ownerCivID: 1
+    isMansionBuilt: 1
+    hasPlayerUnits: 0
+    gold: 0
+    food: 0
+    research: 0
+    units: []
+    farmCount: 0
+    maxHuman: 10
+    playerPopulationCapacity: 0
+    oldUnitCount: 0
+--- !u!4 &1884524327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884524325}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.8750916, y: -4.1873636, z: -0.07518664}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1898639102
 GameObject:
   m_ObjectHideFlags: 0
@@ -503525,7 +503109,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 416770745}
+      - m_Target: {fileID: 1884524326}
         m_TargetAssemblyTypeName: WorldMapManager, Assembly-CSharp
         m_MethodName: ExitTerritoryView
         m_Mode: 1
@@ -504541,51 +504125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f9f9d40a6927274f9c1470f78216f53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2115642025
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2115642027}
-  - component: {fileID: 2115642026}
-  m_Layer: 0
-  m_Name: UnitDatabase
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2115642026
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2115642025}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db7f297a8d397394f87a4f1b8ed1b4ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unitStats: []
---- !u!4 &2115642027
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2115642025}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2118977380
 GameObject:
   m_ObjectHideFlags: 0
@@ -504924,9 +504463,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 416770745}
+      - m_Target: {fileID: 1884524326}
         m_TargetAssemblyTypeName: WorldMapManager, Assembly-CSharp
-        m_MethodName: CancelSelection
+        m_MethodName: ExitTerritoryView
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -505457,7 +504996,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
-  - {fileID: 416770746}
   - {fileID: 619394802}
   - {fileID: 1812015203}
   - {fileID: 1898639103}
@@ -505466,12 +505004,14 @@ SceneRoots:
   - {fileID: 1169971045}
   - {fileID: 719729717}
   - {fileID: 1719515416}
+  - {fileID: 938640873}
   - {fileID: 1395773283}
   - {fileID: 522887710}
   - {fileID: 1098538681}
   - {fileID: 373539071}
   - {fileID: 1596670697}
   - {fileID: 297718893}
+  - {fileID: 1884524327}
   - {fileID: 752894701}
   - {fileID: 968860956}
   - {fileID: 91458505}
@@ -505497,11 +505037,7 @@ SceneRoots:
   - {fileID: 928906027}
   - {fileID: 603273959}
   - {fileID: 1122682164}
-  - {fileID: 1212933960}
-  - {fileID: 1366505623}
-  - {fileID: 1606899276}
   - {fileID: 1532801342}
   - {fileID: 1294300764}
-  - {fileID: 2115642027}
   - {fileID: 1758259933}
   - {fileID: 1650876024}

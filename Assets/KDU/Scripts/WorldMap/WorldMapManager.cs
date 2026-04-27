@@ -85,10 +85,25 @@ public class WorldMapManager : Singleton<WorldMapManager>
         if (cancelSelectionButton != null) cancelSelectionButton.SetActive(false);
     }
 
+    // battleSessionController 자동 해석: 인스펙터 연결이 없으면 싱글톤으로 폴백
+    private BattleSessionController ResolvedBattleSession
+        => battleSessionController != null ? battleSessionController : BattleSessionController.Instance;
+
     private void Start()
     {
         nodeDataManager = NodeDataManager.Instance;
         nodeButtons = FindObjectsByType<NodeButton>(FindObjectsSortMode.None);
+
+        // 인스펙터에 battleSessionController가 비어있으면 씬에서 자동 탐색
+        if (battleSessionController == null)
+        {
+            battleSessionController = FindFirstObjectByType<BattleSessionController>(FindObjectsInactive.Include);
+            if (battleSessionController != null)
+                Debug.Log("[WorldMapManager] battleSessionController 자동 탐색 성공");
+            else
+                Debug.LogWarning("[WorldMapManager] battleSessionController를 찾을 수 없습니다. 인스펙터를 확인하세요.");
+        }
+
         RefreshAllNodeButtons();
     }
 
@@ -623,9 +638,17 @@ public class WorldMapManager : Singleton<WorldMapManager>
         NodeData target = GetNode(targetNodeID);
         if (src == null || target == null) return;
 
+        // 전투 컨트롤러가 없으면 병력을 깎지 않고 리턴 (유저 손실 방지)
+        var bsc = ResolvedBattleSession;
+        if (bsc == null)
+        {
+            Debug.LogError("[WorldMapManager] BattleSessionController를 찾을 수 없습니다! 전투가 취소됩니다.");
+            return;
+        }
+
         DeductTroops(src, troops);
 
-        Debug.Log($"[WorldMapManager] 공격 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}");
+        Debug.Log($"<color=yellow>[WorldMapManager] 공격 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}</color>");
         RefreshAllNodeButtons();
 
         // ── 공격 상황 정보(Context) 저장 ──
@@ -642,10 +665,8 @@ public class WorldMapManager : Singleton<WorldMapManager>
         foreach (var kv in troops)
             attackerNode.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
 
-        if (battleSessionController != null)
-            battleSessionController.EnterBattle(attackerNode, target);
-        else
-            Debug.Log("[WorldMapManager] battleSessionController 미연결");
+        Debug.Log($"<color=yellow>[WorldMapManager] EnterBattle 호출 시작 (playerUnits={attackerNode.units.Count}종, targetOwner={target.ownerCivID})</color>");
+        bsc.EnterBattle(attackerNode, target);
 
         RefreshAllNodeButtons();
     }
@@ -760,18 +781,20 @@ public class WorldMapManager : Singleton<WorldMapManager>
     private void OnEnable()
     {
         // BattleManager의 OnBattleFinished 이벤트 구독
-        if (battleSessionController != null)
+        var bsc = ResolvedBattleSession;
+        if (bsc != null)
         {
-            var bm = battleSessionController.GetComponentInChildren<BattleManager>(true);
+            var bm = bsc.GetComponentInChildren<BattleManager>(true);
             if (bm != null)
                 bm.OnBattleFinished += OnBattleFinished;
         }
     }
     private void OnDisable()
     {
-        if (battleSessionController != null)
+        var bsc = ResolvedBattleSession;
+        if (bsc != null)
         {
-            var bm = battleSessionController.GetComponentInChildren<BattleManager>(true);
+            var bm = bsc.GetComponentInChildren<BattleManager>(true);
             if (bm != null)
                 bm.OnBattleFinished -= OnBattleFinished;
         }
