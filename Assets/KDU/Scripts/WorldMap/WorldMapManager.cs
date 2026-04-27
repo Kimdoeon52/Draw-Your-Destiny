@@ -617,9 +617,6 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
     // ── 공격/이동 선언 ──────────────────────────────────────────
     // 모달 확정 시 호출됨. 출발 노드에서 병력 차감 후 후속 처리.
-    private int pendingAttackFromNodeID = -1;
-    private int pendingAttackTargetNodeID = -1;
-    private Dictionary<UnitType, int> pendingAttackTroops;
     private void DeclareAttack(int fromNodeID, int targetNodeID, Dictionary<UnitType, int> troops)
     {
         NodeData src = GetNode(fromNodeID);
@@ -630,74 +627,46 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
         Debug.Log($"[WorldMapManager] 공격 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}");
         RefreshAllNodeButtons();
-        NodeData attackerNode = new NodeData();
-        attackerNode.nodeID = -999;//임시
-        attackerNode.ownerCivID = 0;
-        foreach (var kv in troops)
+
+        // ── 공격 상황 정보(Context) 저장 ──
+        lastAttackContext = new BattleAttackContext
         {
-            if (kv.Value > 0)
-            {
-                attackerNode.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
-            }
-        }
-        pendingAttackFromNodeID = fromNodeID;
-        pendingAttackTargetNodeID = targetNodeID;
-        pendingAttackTroops = troops;
+            AttackerCivID = 0, // 플레이어 공격
+            SourceNodeID = fromNodeID,
+            TargetNodeID = targetNodeID,
+            DispatchedTroops = troops
+        };
+
+        // 가상 노드 생성 및 전투 진입
+        NodeData attackerNode = new NodeData { nodeID = -999, ownerCivID = 0 };
+        foreach (var kv in troops)
+            attackerNode.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
 
         if (battleSessionController != null)
-        {
             battleSessionController.EnterBattle(attackerNode, target);
-        }
         else
-        {
             Debug.Log("[WorldMapManager] battleSessionController 미연결");
-        }
-        RefreshAllNodeButtons();
-        // // 전투 결과 1회성 구독 — 결과 데이터(생존자/턴 수 등)는 추후 활용. 지금은 승/패 분기만.
-        // var battleManager = FindFirstObjectByType<NYH.BattleCardSystem.BattleManager>(FindObjectsInactive.Include);
-        // if (battleManager == null)
-        // {
-        //     Debug.LogError("[WorldMapManager] BattleManager 미발견 — 결과 처리 불가");
-        //     return;
-        // }
 
-        // System.Action<NYH.BattleCardSystem.BattleResult> handler = null;
-        // handler = result =>
-        // {
-        //     battleManager.OnBattleFinished -= handler;
-        //     ResolveAttackResult(targetNodeID, result);
-        // };
-        // battleManager.OnBattleFinished += handler;
+        RefreshAllNodeButtons();
     }
 
-    // 전투 종료 후 결과 처리.
-    // 승리: 적 노드 건물 정리(파괴/잔해), hasPlayerUnits=true, isMansionBuilt=false.
-    //       ownerCivID는 "전체 재건 카드" → RestoreCapturedNode() 호출 시 0으로 전환.
-    // 패배: 추가 처리 없음 (파견 병력은 이미 차감됨).
-    private void ResolveAttackResult(int targetNodeID, NYH.BattleCardSystem.BattleResult result)
+    // 기존의 pending... 필드들을 하나로 통합
+    private BattleAttackContext lastAttackContext;
+    // AI가 정보를 기록할 수 있게 열어주는 함수
+    public void SetLastAttackContext(BattleAttackContext context)
     {
-        if (result == null) return;
-        NodeData target = GetNode(targetNodeID);
-        if (target == null) return;
-
-        if (result.IsVictory)
-        {
-            DemolishCapturedNodeBuildings(target);
-            target.hasPlayerUnits = true;
-            target.isMansionBuilt = false;
-            RebalanceUniqueGlobalBuildings();
-            Debug.Log($"[WorldMapManager] 전투 승리 — 노드 {targetNodeID} 점거 (영주성 재건 대기). 잔여 건물 {target.buildings.Count}");
-
-            // 전투 결과 처리 해야됨 (유닛 남은거)
-            // 전체 재건 카드 자동으로 플레이어 핸드에 추가 (카드 시스템 연동 필요)
-        }
-        else
-        {
-            Debug.Log($"[WorldMapManager] 전투 패배 — 노드 {targetNodeID}, 파견 병력 전부 소멸");
-        }
-
-        RefreshAllNodeButtons();
+        this.lastAttackContext = context;
     }
+    // 위에서 만든 유틸리티 (EnemyBrainBase에서 호출하기 편하게)
+    public static Dictionary<UnitType, int> ConvertNodeUnitsToDict(List<NodeUnit> units)
+    {
+        var dict = new Dictionary<UnitType, int>();
+        if (units == null) return dict;
+        foreach (var u in units) dict[u.unitType] = u.count;
+        return dict;
+    }
+
+
 
     // 전투 승리 후 적 노드 건물 정리.
     //   완전 파괴: 군사 건물 / Lab / PotionBuilding / TrapWorkshop 그 외 비-잔해 타입 → 리스트에서 제거
@@ -732,11 +701,12 @@ public class WorldMapManager : Singleton<WorldMapManager>
         NodeData target = GetNode(targetNodeID);
         if (src == null || target == null) return;
 
-        DeductTroops(src, troops);
-        AddTroops(target, troops);
-        target.hasPlayerUnits = true;
+        DeductTroops(src, troops); // 출발지 차감
+        AddTroops(target, troops); // 목적지 추가
 
-        Debug.Log($"[WorldMapManager] 이동 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}");
+        target.hasPlayerUnits = true; // 유닛 주둔 표시
+
+        Debug.Log($"[WorldMapManager] 이동 완료: {fromNodeID} -> {targetNodeID}");
         RefreshAllNodeButtons();
     }
 
@@ -766,7 +736,7 @@ public class WorldMapManager : Singleton<WorldMapManager>
         if (node == null || count <= 0) return;
         NodeUnit u = node.units.Find(x => x.unitType == type);
         if (u == null) node.units.Add(new NodeUnit { unitType = type, count = count });
-        else           u.count += count;
+        else u.count += count;
     }
 
     // 유닛 사망 / 파견 차감 시 호출. count <= 0 이 되면 엔트리 자체를 제거.
@@ -808,49 +778,38 @@ public class WorldMapManager : Singleton<WorldMapManager>
     }
     private void OnBattleFinished(BattleResult result)
     {
-        if (pendingAttackTargetNodeID < 0) return; // 전투 컨텍스트 없음
+        if (lastAttackContext == null) return;
 
-        int fromID = pendingAttackFromNodeID;
-        int targetID = pendingAttackTargetNodeID;
-        NodeData src = GetNode(fromID);
+        int attackerID = lastAttackContext.AttackerCivID;
+        int targetID = lastAttackContext.TargetNodeID;
         NodeData target = GetNode(targetID);
 
-        if (result.IsVictory)
+        // 승리 팀이 공격자 팀과 일치하는지 확인 (AttackerCivID가 0이면 Player팀, 아니면 Enemy팀)
+        BattleTeam attackerTeam = (attackerID == 0) ? BattleTeam.Player : BattleTeam.Enemy;
+
+        if (result.Winner == attackerTeam)
         {
-            // ── 승리 ──
-            // 1. 적 노드 소유권을 플레이어로 변경
-            SetNodeOwner(targetID, 0);
+            // [승리 시] 땅 주인 변경
+            SetNodeOwner(targetID, attackerID);
 
-            // 2. 생존 유닛을 대상 노드에 추가
-            if (result.SurvivingPlayerTroops != null)
+            // 생존 병력 투입 (공격자가 플레이어면 PlayerTroops, 아니면 EnemyTroops)
+            var survivors = (attackerID == 0) ? result.SurvivingPlayerTroops : result.SurvivingEnemyTroops;
+            AddTroops(target, survivors);
+
+            if (attackerID == 0)
             {
-                foreach (var kv in result.SurvivingPlayerTroops)
-                {
-                    if (kv.Value <= 0) continue;
-                    NodeUnit u = target.units.Find(x => x.unitType == kv.Key);
-                    if (u == null)
-                        target.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
-                    else
-                        u.count += kv.Value;
-                }
+                DemolishCapturedNodeBuildings(target); // 플레이어 점령 시에만 건물 잔해 처리
+                target.hasPlayerUnits = true;
             }
-
-            // 3. 플레이어 유닛 주둔 표시
-            SetPlayerUnitsPresent(targetID, true);
-            Debug.Log($"[WorldMapManager] 전투 승리: 노드 {targetID} 점령");
+            Debug.Log($"<color=cyan>[전투 결과]</color> 진영 {attackerID}가 노드 {targetID} 점령 완료!");
         }
         else
         {
-            // ── 패배 ──
-            // 파견 병력은 이미 차감됨(DeductTroops). 추가 처리 없음.
-            Debug.Log($"[WorldMapManager] 전투 패배: 파견 병력 소멸");
+            // [패배 시] 공격 측 병력 소모 (플레이어는 이미 Declare 시점에 차감됨)
+            Debug.Log($"<color=orange>[전투 결과]</color> 노드 {targetID} 방어 성공 (공격자 {attackerID} 패배)");
         }
 
-        // 컨텍스트 클리어
-        pendingAttackFromNodeID = -1;
-        pendingAttackTargetNodeID = -1;
-        pendingAttackTroops = null;
-
+        lastAttackContext = null;
         RefreshAllNodeButtons();
     }
 
@@ -878,4 +837,11 @@ public class WorldMapManager : Singleton<WorldMapManager>
             if (node.ownerCivID == civID) result.Add(node);
         return result;
     }
+}
+public class BattleAttackContext
+{
+    public int AttackerCivID;               // 공격자 진영 ID (0=플레이어)
+    public int SourceNodeID;                // 공격이 출발한 노드 ID
+    public int TargetNodeID;                // 공격 대상 노드 ID
+    public Dictionary<UnitType, int> DispatchedTroops; // 이번 공격에 투입된 병력
 }

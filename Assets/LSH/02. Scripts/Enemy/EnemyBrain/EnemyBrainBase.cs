@@ -622,7 +622,14 @@ public class EnemyBrainBase : MonoBehaviour
                 {
                     return;
                 }
-                Debug.Log($"<color=red>[AI 공격!!]</color> 적 {enemyID}가 노드 {nodeID}에서 플레이어 노드 {adjacentNode.nodeID}를 공격합니다!");
+                var context = new BattleAttackContext
+                {
+                    AttackerCivID = enemyID,
+                    SourceNodeID = nodeID,
+                    TargetNodeID = adjacentNode.nodeID,
+                    DispatchedTroops = WorldMapManager.ConvertNodeUnitsToDict(srcNode.units)
+                };
+                WorldMapManager.Instance.SetLastAttackContext(context);
                 if (BattleSessionController.Instance != null) // 배틀 컨트롤러가 존재한다면
                 {
                     BattleSessionController.Instance.EnterBattle(adjacentNode, srcNode); // 전투 시작
