@@ -54,15 +54,27 @@ public class NodeButton : MonoBehaviour
 
         var mgr = WorldMapManager.Instance;
 
-        // 진영 색 — 알파 낮춰서 통합 배경이 비치도록
-        if (backgroundImage != null)
+        if (data.ownerCivID == -1)
         {
-            Color c = data.ownerCivID == -1
-                ? WorldMapManager.NeutralColor
-                : WorldMapManager.CivColors[data.ownerCivID];
-            c.a = mgr != null ? mgr.civTintAlpha : 0.3f;
+            backgroundImage.color = new Color(1, 1, 1, 0);
+        }
+        else
+        {
+            Color c = WorldMapManager.CivColors[data.ownerCivID];
+            c.a = mgr != null ? mgr.civTintAlpha : 0.75f;
             backgroundImage.color = c;
         }
+
+
+        //// 진영 색 — 알파 낮춰서 통합 배경이 비치도록
+        //if (backgroundImage != null)
+        //{
+        //    Color c = data.ownerCivID == -1
+        //        ? WorldMapManager.NeutralColor
+        //        : WorldMapManager.CivColors[data.ownerCivID];
+        //    c.a = mgr != null ? mgr.civTintAlpha : 0.75f;
+        //    backgroundImage.color = c;
+        //}
 
         // 영주성 아이콘
         if (mansionIcon != null)

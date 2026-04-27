@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,12 +33,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
     public TroopDispatchModal troopDispatchModal;   // 병력 수 선택 모달
 
     [Header("노드 시각 색상")]
-    [Range(0f, 1f)] public float civTintAlpha = 0.3f;                   // 진영 색 투명도 (통합 배경 비치도록)
+    [Range(0f, 1f)] public float civTintAlpha = 0.75f;                   // 진영 색 투명도 (통합 배경 비치도록)
     public Color highlightColor = new Color(1f, 0.95f, 0.3f, 0.4f);     // 선택 모드 후보 노드
     public Color dimColor       = new Color(0f, 0f, 0f, 0.45f);         // 선택 모드 비후보 노드
-
-    [Header("빈 노드 점령 비용")]
-    public int claimCost = 30;          // 빈 노드 즉시 점령에 필요한 금
 
     [Header("디버그")]
     public bool debugFreeEntry = false; // true면 적/빈 노드도 영지 진입 허용
@@ -57,7 +54,7 @@ public class WorldMapManager : Singleton<WorldMapManager>
         new Color(0.3f, 0.85f,0.3f, 1f),  // 2 AI2
         new Color(1f,   0.8f, 0.1f, 1f),  // 3 AI3
     };
-    public static readonly Color NeutralColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+    public static readonly Color NeutralColor = new Color(1f, 1f, 1f, 0f);
 
     // ── 런타임 상태 ──────────────────────────────────────────────
     [SerializeField]
@@ -141,11 +138,8 @@ public class WorldMapManager : Singleton<WorldMapManager>
         }
         else if (node.ownerCivID == -1)
         {
-            // 빈 노드 → 인접 아군 노드가 있을 때만 점령 가능
-            if (IsAdjacentToPlayer(nodeID))
-                TryClaimNode(node);
-            else
-                Debug.Log("[WorldMapManager] 인접한 아군 노드가 없어 점령할 수 없습니다.");
+            // 빈 노드 → 영지 뷰의 [이동] 버튼으로만 진입 가능 (직접 클릭은 안내만)
+            Debug.Log("[WorldMapManager] 빈 노드는 인접 아군 노드의 [이동] 버튼으로 유닛을 파견해 점령하세요.");
         }
         else
         {
@@ -155,24 +149,6 @@ public class WorldMapManager : Singleton<WorldMapManager>
             else
                 Debug.Log("[WorldMapManager] 인접한 아군 노드가 없어 공격할 수 없습니다.");
         }
-    }
-
-    // ── 빈 노드 점령 ─────────────────────────────────────────────
-    private void TryClaimNode(NodeData node)
-    {
-        if (ResourceManager.Instance == null) return;
-        if (ResourceManager.Instance.Gold < claimCost)
-        {
-            Debug.Log($"[WorldMapManager] 골드 부족. 점령 비용: {claimCost}");
-            return;
-        }
-
-        ResourceManager.Instance.AddGold(-claimCost);
-        node.ownerCivID = 0;
-        node.isMansionBuilt = false;
-
-        Debug.Log($"[WorldMapManager] 노드 {node.nodeID} 점령 완료 (비용 {claimCost}G)");
-        RefreshAllNodeButtons();
     }
 
     // ── 영지 뷰 진입 ─────────────────────────────────────────────
@@ -277,9 +253,54 @@ public class WorldMapManager : Singleton<WorldMapManager>
         return false;
     }
 
+    // ── 전체 재건 카드 효과 ────────────────────────────────────────
+    // 전투 승리로 점거한 노드에서 카드 시스템이 호출.
+    // 잔해(isRuin=true) 건물을 모두 복구하고 영주성 재건 효과(점령 확정)까지 적용.
+    // 영주성 재건 카드(OnMansionRebuilt)와의 차이: 잔해 건물 복구가 추가됨.
+    public void RestoreCapturedNode()
+    {
+        NodeData node = GetNode(currentNodeID);
+        if (node == null)
+        {
+            Debug.LogWarning("[WorldMapManager] 현재 진입한 노드가 없습니다.");
+            return;
+        }
+
+        int restored = 0;
+        if (node.buildings != null)
+        {
+            foreach (BuildingInstance b in node.buildings)
+            {
+                if (b != null && b.isRuin)
+                {
+                    b.isRuin = false;
+                    b.isActive = true;
+                    // 영지 뷰 안에서 호출됐다면 visual이 살아있으니 기본 스프라이트로 즉시 복구
+                    if (b.visual != null && b.data != null && b.data.sprite != null)
+                    {
+                        var sr = b.visual.GetComponent<SpriteRenderer>();
+                        if (sr != null) sr.sprite = b.data.sprite;
+                    }
+                    restored++;
+                }
+            }
+        }
+
+        node.isMansionBuilt = true;
+        node.ownerCivID = 0;
+        BuildingPlacementController.UnlockPlacement();
+        RebalanceUniqueGlobalBuildings();
+        RefreshAllNodeButtons();
+
+        var actionPanel = FindFirstObjectByType<TerritoryActionPanel>();
+        if (actionPanel != null) actionPanel.Refresh();
+
+        Debug.Log($"[WorldMapManager] 노드 {currentNodeID} 전체 재건 완료 — 잔해 {restored}개 복구 + 점령 확정");
+    }
+
     // ── 영주성 재건 카드 효과 ─────────────────────────────────────
-    // 카드 시스템에서 영주성 재건 카드 사용 시 호출.
-    // isMansionBuilt = true로 설정하고 배치 UI 잠금 해제.
+    // MansionBehaviour.OnPlaced() 또는 카드 시스템에서 영주성 재건 시 호출.
+    // 빈 노드(또는 유닛만 주둔한 노드)에 영주성을 짓는 순간 점령 완료 처리.
     public void OnMansionRebuilt()
     {
         NodeData node = GetNode(currentNodeID);
@@ -289,8 +310,11 @@ public class WorldMapManager : Singleton<WorldMapManager>
             return;
         }
         node.isMansionBuilt = true;
+        node.ownerCivID = 0;                  // 점령 완료
         BuildingPlacementController.UnlockPlacement();
-        Debug.Log($"[WorldMapManager] 노드 {currentNodeID} 영주성 재건 완료 — 배치 잠금 해제.");
+        RebalanceUniqueGlobalBuildings();     // isUniqueGlobal 건물 active 상태 재조정
+        RefreshAllNodeButtons();
+        Debug.Log($"[WorldMapManager] 노드 {currentNodeID} 영주성 재건 완료 — 점령 + 배치 잠금 해제.");
 
         // 공격/이동 버튼 활성 조건이 바뀌었으므로 패널 갱신
         var actionPanel = FindFirstObjectByType<TerritoryActionPanel>();
@@ -495,8 +519,11 @@ public class WorldMapManager : Singleton<WorldMapManager>
 
         troopDispatchModal.Open(src.units, troops =>
         {
-            if (mode == SelectionMode.Attack) DeclareAttack(from, to, troops);
-            else                              DeclareMove(from, to, troops);
+            if (mode == SelectionMode.Attack) 
+                DeclareAttack(from, to, troops);
+            else                              
+                DeclareMove(from, to, troops);
+
             CancelSelection();
         });
     }
@@ -513,12 +540,79 @@ public class WorldMapManager : Singleton<WorldMapManager>
         DeductTroops(src, troops);
 
         Debug.Log($"[WorldMapManager] 공격 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}");
-        // TODO: 전투 시스템 연동
-        //   - target 노드의 CombatArea로 진입 (NodeDataManager 확장 필요)
-        //   - 전투 결과 처리:
-        //       승리: SetNodeOwner(targetNodeID, 0) + SetPlayerUnitsPresent(targetNodeID, true) + 생존 유닛 target.units에 추가
-        //       패배: 파견 유닛 전부 소멸 (이미 차감됨)
         RefreshAllNodeButtons();
+
+        // 전투 결과 1회성 구독 — 결과 데이터(생존자/턴 수 등)는 추후 활용. 지금은 승/패 분기만.
+        var battleManager = FindFirstObjectByType<NYH.BattleCardSystem.BattleManager>(FindObjectsInactive.Include);
+        if (battleManager == null)
+        {
+            Debug.LogError("[WorldMapManager] BattleManager 미발견 — 결과 처리 불가");
+            return;
+        }
+
+        System.Action<NYH.BattleCardSystem.BattleResult> handler = null;
+        handler = result =>
+        {
+            battleManager.OnBattleFinished -= handler;
+            ResolveAttackResult(targetNodeID, result);
+        };
+        battleManager.OnBattleFinished += handler;
+    }
+
+    // 전투 종료 후 결과 처리.
+    // 승리: 적 노드 건물 정리(파괴/잔해), hasPlayerUnits=true, isMansionBuilt=false.
+    //       ownerCivID는 "전체 재건 카드" → RestoreCapturedNode() 호출 시 0으로 전환.
+    // 패배: 추가 처리 없음 (파견 병력은 이미 차감됨).
+    private void ResolveAttackResult(int targetNodeID, NYH.BattleCardSystem.BattleResult result)
+    {
+        if (result == null) return;
+        NodeData target = GetNode(targetNodeID);
+        if (target == null) return;
+
+        if (result.IsVictory)
+        {
+            DemolishCapturedNodeBuildings(target);
+            target.hasPlayerUnits = true;
+            target.isMansionBuilt = false;
+            RebalanceUniqueGlobalBuildings();
+            Debug.Log($"[WorldMapManager] 전투 승리 — 노드 {targetNodeID} 점거 (영주성 재건 대기). 잔여 건물 {target.buildings.Count}");
+
+            // 전투 결과 처리 해야됨 (유닛 남은거)
+            // 전체 재건 카드 자동으로 플레이어 핸드에 추가 (카드 시스템 연동 필요)
+        }
+        else
+        {
+            Debug.Log($"[WorldMapManager] 전투 패배 — 노드 {targetNodeID}, 파견 병력 전부 소멸");
+        }
+
+        RefreshAllNodeButtons();
+    }
+
+    // 전투 승리 후 적 노드 건물 정리.
+    //   완전 파괴: 군사 건물 / Lab / PotionBuilding / TrapWorkshop 그 외 비-잔해 타입 → 리스트에서 제거
+    //   잔해 유지: Mansion / House / Market / Farm → isRuin=true, isActive=false (재건 카드로 복구)
+    private static void DemolishCapturedNodeBuildings(NodeData target)
+    {
+        if (target == null || target.buildings == null) return;
+        target.buildings.RemoveAll(b =>
+        {
+            if (b == null || b.data == null) return true;
+            if (IsRuinableType(b.data.buildingType))
+            {
+                b.isRuin = true;
+                b.isActive = false;
+                return false;
+            }
+            return true;
+        });
+    }
+
+    private static bool IsRuinableType(BuildingType t)
+    {
+        return t == BuildingType.Mansion
+            || t == BuildingType.House
+            || t == BuildingType.Market
+            || t == BuildingType.Farm;
     }
 
     private void DeclareMove(int fromNodeID, int targetNodeID, Dictionary<UnitType, int> troops)

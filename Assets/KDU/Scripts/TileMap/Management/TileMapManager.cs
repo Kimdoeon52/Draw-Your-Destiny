@@ -750,6 +750,13 @@ public class TileMapManager : Singleton<TileMapManager>
         // 시각화 재생성
         instance.visual = CreateBuildingVisual(instance.origin, instance.data);
 
+        // 잔해 상태면 ruinSprite로 교체 (있는 경우)
+        if (instance.isRuin && instance.data.ruinSprite != null && instance.visual != null)
+        {
+            SpriteRenderer sr = instance.visual.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.sprite = instance.data.ruinSprite;
+        }
+
         // Behaviour 캐싱 & 저장된 상태 복원
         instance.behaviour = instance.visual != null ? instance.visual.GetComponent<BuildingBehaviour>() : null;
         if (instance.behaviour != null)

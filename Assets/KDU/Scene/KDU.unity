@@ -388139,10 +388139,9 @@ MonoBehaviour:
   fadeDuration: 0.4
   cancelSelectionButton: {fileID: 1972537601}
   troopDispatchModal: {fileID: 984307056}
-  civTintAlpha: 0.5
+  civTintAlpha: 0.75
   highlightColor: {r: 1, g: 0.95, b: 0.3, a: 0.4}
   dimColor: {r: 0, g: 0, b: 0, a: 0.45}
-  claimCost: 30
   debugFreeEntry: 0
   allNodes:
   - nodeID: 101

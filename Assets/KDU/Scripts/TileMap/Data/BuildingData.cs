@@ -19,6 +19,7 @@ public class BuildingData : ScriptableObject
     public string buildingName;
     public BuildingType buildingType;    // 코드에서 타입 분기 시 사용
     public Sprite sprite;               // 배치 시 표시될 스프라이트
+    public Sprite ruinSprite;           // 잔해 상태(BuildingInstance.isRuin=true)에서 표시될 스프라이트 (null이면 기본 sprite 사용)
 
     [Header("시대 조건")]
     public Era requiredEra;             // 이 시대 이상이어야 배치/해금 가능

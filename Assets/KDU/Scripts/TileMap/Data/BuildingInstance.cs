@@ -43,6 +43,10 @@ public class BuildingInstance
     // false = 건물은 존재하지만 효과를 내지 않음 (플레이어가 같은 타입 건물을 이미 다른 노드에 보유 중)
     public bool isActive = true;
 
+    // 잔해 상태 — 전투 승리로 노드 점거 후 일부 건물(Mansion/House/Market/Farm)이 남는 상태.
+    // 잔해는 효과/생산 정지(isActive=false)로 처리, 전체 재건 카드 호출 시 false로 복구.
+    public bool isRuin = false;
+
     // 현재 건물 타입 — data가 null이면 None 반환
     public BuildingType type => data != null ? data.buildingType : BuildingType.None;
 }
