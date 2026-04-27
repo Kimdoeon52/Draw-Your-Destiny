@@ -113,6 +113,41 @@ public class EnemyBrainBase : MonoBehaviour
         }
     }
     //=============================초기화 함수====================================
+    protected virtual void Start()
+    {
+        InitializeExistingBuildings();
+    }
+
+    protected void InitializeExistingBuildings()
+    {
+        List<NodeData> owned = WorldMapManager.Instance.GetNodesByCivID(enemyID);
+        foreach (var node in owned)
+        {
+            foreach (var building in node.buildings)
+            {
+                // 이미 시각적 오브젝트가 있거나(구독 중), 데이터가 없으면 스킵
+                if (building == null || building.data == null || building.visual != null) continue;
+
+                if (building.data.visualPrefab != null)
+                {
+                    GameObject build = Instantiate(building.data.visualPrefab, Vector3.zero, Quaternion.identity);
+                    // 화면에는 보이지 않게 처리 (유닛 생산 로직만 활성화)
+                    foreach (var sr in build.GetComponentsInChildren<SpriteRenderer>(true)) sr.enabled = false;
+                    foreach (var r in build.GetComponentsInChildren<Renderer>(true)) r.enabled = false;
+                    building.visual = build;
+
+                    var poolBases = build.GetComponents<EnemyAPool.EnemyAPoolBase>();
+                    foreach (var poolBase in poolBases)
+                    {
+                        if (poolBase == null) continue;
+                        poolBase.Init(this, node.nodeID);
+                        Debug.Log($"<color=cyan>[기존 병영 풀 복구] 노드 {node.nodeID} / {building.data.buildingName} 구독 완료</color>");
+                    }
+                }
+            }
+        }
+    }
+
     protected virtual void Setting()
     {
     }
@@ -613,6 +648,7 @@ public class EnemyBrainBase : MonoBehaviour
             if (adjacentNode.ownerCivID == -1) //조건1: 인접한 노드가 누구의 것도 아니라면
             {
                 adjacentNode.ownerCivID = enemyID; //해당 노드를 본인의 영지로 설정
+                InitializeExistingBuildings(); // 점령한 노드의 건물들 초기화
                 return;
             }
             else if (adjacentNode.ownerCivID == 0) //조건2: 인접한 노드가 플레이어의 영지인가
@@ -650,6 +686,7 @@ public class EnemyBrainBase : MonoBehaviour
                     if (myGold > otherGold)
                     {
                         adjacentNode.ownerCivID = enemyID; // 골드가 더 많으면 영지 점령
+                        InitializeExistingBuildings(); // 뺏은 노드의 건물들 초기화
                         Debug.Log($"<color=orange>[영지 쟁탈 승리] 노드 {adjacentNode.nodeID}를 적군 {otherEnemy.enemyID}에게서 약탈!</color>");
                     }
                     else

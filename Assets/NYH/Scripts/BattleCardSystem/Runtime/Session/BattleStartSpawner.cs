@@ -66,14 +66,23 @@ namespace NYH.BattleCardSystem
         public List<BattleUnit> SpawnFromRoster(BattleUnitRoster roster)
         {
             List<BattleUnit> spawned = new();
-            if (roster == null || roster.Entries.Count == 0)
+            if (roster == null)
             {
+                Debug.LogWarning("[BattleStartSpawner] Roster가 null입니다.");
+                return spawned;
+            }
+
+            Debug.Log($"[BattleStartSpawner] SpawnFromRoster 시작: Team={roster.Team}, Entries={roster.Entries.Count}");
+
+            if (roster.Entries.Count == 0)
+            {
+                Debug.LogWarning($"[BattleStartSpawner] {roster.Team} 로스터가 비어 있어 스폰을 건너뜁니다.");
                 return spawned;
             }
 
             if (spawnService == null)
             {
-                Debug.LogWarning("[BattleStartSpawner] BattleUnitSpawnService가 없어 스폰할 수 없습니다.");
+                Debug.LogError("[BattleStartSpawner] BattleUnitSpawnService가 없어 스폰할 수 없습니다.");
                 return spawned;
             }
 
@@ -84,33 +93,39 @@ namespace NYH.BattleCardSystem
                 ? playerRowDirection
                 : enemyRowDirection;
 
+            Debug.Log($"[BattleStartSpawner] 스폰 설정: Origin={origin}, Direction={rowDirection}, MaxColumns={maxColumns}");
+
             // 종류별 1기만 스폰 (count는 스탯에 반영)
             for (int entryIndex = 0; entryIndex < roster.Entries.Count; entryIndex++)
             {
                 BattleUnitRosterEntry entry = roster.Entries[entryIndex];
                 if (entry == null || entry.Prefab == null || entry.Count <= 0)
                 {
+                    Debug.LogWarning($"[BattleStartSpawner] 유효하지 않은 엔트리 스킵: index={entryIndex}, prefab={entry?.Prefab != null}, count={entry?.Count}");
                     continue;
                 }
 
                 Vector2Int cell = CalculateSpawnCell(origin, entryIndex, rowDirection);
-                cell = FindEmptyCell(cell, origin, rowDirection);
+                Vector2Int emptyCell = FindEmptyCell(cell, origin, rowDirection);
+
+                Debug.Log($"[BattleStartSpawner] 스폰 시도: {entry.UnitType} x{entry.Count} at {emptyCell} (original={cell})");
 
                 // count를 스탯 배율로 적용하여 1기만 스폰
                 BattleUnit unit = spawnService.SpawnUnitWithCount(
-                    entry.Prefab, cell, entry.Health, entry.AttackPower, entry.Count);
+                    entry.Prefab, emptyCell, entry.Health, entry.AttackPower, entry.Count);
+
                 if (unit != null)
                 {
                     spawned.Add(unit);
-                    Debug.Log($"[BattleStartSpawner] 스폰: {entry.UnitType} x{entry.Count} → HP={unit.MaxHealth}, ATK={unit.CurrentAttackPower}");
+                    Debug.Log($"<color=green>[BattleStartSpawner] 스폰 성공: {entry.UnitType} at {emptyCell}</color>");
                 }
                 else
                 {
-                    Debug.LogWarning($"[BattleStartSpawner] 스폰 실패: type={entry.UnitType}, cell={cell}");
+                    Debug.LogError($"<color=red>[BattleStartSpawner] 스폰 실패 (SpawnService 리턴 null): {entry.UnitType} at {emptyCell}. 좌표 서비스 로그를 확인하세요.</color>");
                 }
             }
 
-            Debug.Log($"[BattleStartSpawner] Roster 스폰 완료: team={roster.Team}, 종류={roster.Entries.Count}, 스폰={spawned.Count}");
+            Debug.Log($"[BattleStartSpawner] Roster 스폰 완료: team={roster.Team}, 시도={roster.Entries.Count}, 성공={spawned.Count}");
             return spawned;
         }
 
