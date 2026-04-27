@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: "\uAC1C\uCA4C\uB294\uD2B8\uB7A9"
   m_EditorClassIdentifier: 
   <CardID>k__BackingField: 0
-  <CardName>k__BackingField: 
+  <CardName>k__BackingField: "\uAC1C\uCA4C\uB294\uD2B8\uB7A9"
   <CardType>k__BackingField: 4
   <Image>k__BackingField: {fileID: -6578267993364069794, guid: 1c9bc0d104c01934da10d4333b9dc48b,
     type: 3}
   <GridImage>k__BackingField: {fileID: -3093487034711078432, guid: 1617c78f84e0d1f43bf87a344a362f4a,
     type: 3}
-  <ActionPointCost>k__BackingField: 0
+  <ActionPointCost>k__BackingField: 1
   <DisplayMoveRange>k__BackingField: 0
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
@@ -28,6 +28,7 @@ MonoBehaviour:
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 7216728750708752804
+  - rid: 7216728750853456509
   description: 
   references:
     version: 2
@@ -45,5 +46,10 @@ MonoBehaviour:
           type: 3}
         impactRange: 0
         impactPattern: 0
-        customImpactPattern: {fileID: 0}
+        customImpactPattern: {fileID: 11400000, guid: a9965da87551b6640aca5549f465cc56,
+          type: 2}
         impactTargetFilter: 0
+    - rid: 7216728750853456509
+      type: {class: ExtinctionCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        ExtinctionCard: 1

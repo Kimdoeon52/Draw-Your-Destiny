@@ -28,13 +28,11 @@ MonoBehaviour:
   <Keywords>k__BackingField: 
   <Effects>k__BackingField:
   - rid: 7216728748206326014
-  - rid: -2
+  - rid: 7216728750853456510
   description: 
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 7216728748206326014
       type: {class: BattlePotionEffect, ns: NYH.BattleCardSystem, asm: Assembly-CSharp}
       data:
@@ -48,3 +46,7 @@ MonoBehaviour:
           type: 2}
         impactTargetFilter: 2
         globalTargetFilter: 1
+    - rid: 7216728750853456510
+      type: {class: ExtinctionCardEffect, ns: , asm: Assembly-CSharp}
+      data:
+        ExtinctionCard: 1

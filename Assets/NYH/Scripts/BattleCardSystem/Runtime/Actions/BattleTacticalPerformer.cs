@@ -45,6 +45,7 @@
                 yield break;
             }
 
+            bool checkedTrapDuringPath = HasPlannedPath(moveGA);
             yield return AnimateMove(moveGA);
 
             bool moved = BattleBoardSystem.Instance.TryMoveUnit(
@@ -63,7 +64,10 @@
                 yield break;
             }
 
-            BattleTrapSystem.TryTriggerTrapsAt(moveGA.Unit);
+            if (!checkedTrapDuringPath)
+            {
+                BattleTrapSystem.TryTriggerTrapsAt(moveGA.Unit);
+            }
         }
 
         private static IEnumerator AnimateMove(BattleMoveGA moveGA)
@@ -97,11 +101,22 @@
                 currentPosition = targetWorld;
                 unitTransform.position = currentPosition;
                 unit.SetGridPosition(pathCell);
+                BattleTrapSystem.TryTriggerTrapsAt(unit);
+                if (!unit.IsAlive)
+                {
+                    yield break;
+                }
+
                 yield return null;
             }
 
             unit.SetGridPosition(moveGA.TargetPosition);
             unit.SnapToGridCenter();
+        }
+
+        private static bool HasPlannedPath(BattleMoveGA moveGA)
+        {
+            return moveGA?.PlannedPath != null && moveGA.PlannedPath.Count > 0;
         }
 
         private void ResolveAttack(BattleAttackGA attackGA)

@@ -23,7 +23,7 @@ MonoBehaviour:
   <DisplayMoveRange>k__BackingField: 4
   <IgnoresDeckLimit>k__BackingField: 0
   <IsConsumable>k__BackingField: 0
-  <TargetingMode>k__BackingField: 4
+  <TargetingMode>k__BackingField: 5
   allowedUserUnitTypes: 
   <Keywords>k__BackingField: 020000000b000000
   <Effects>k__BackingField:
