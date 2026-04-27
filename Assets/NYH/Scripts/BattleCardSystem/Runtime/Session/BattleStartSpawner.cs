@@ -97,6 +97,11 @@ namespace NYH.BattleCardSystem
                 if (designatedTiles != null && entryIndex < designatedTiles.Count)
                 {
                     cell = designatedTiles[entryIndex];
+                    if (BattleBoardSystem.Instance != null && !BattleGridCoordinateService.Instance.IsCombatCell(cell))
+                    {
+                        Debug.LogWarning($"[BattleStartSpawner] 지정된 스폰 타일 {cell} 이 유효한 전투 셀이 아닙니다. 기본 위치로 대체합니다.");
+                        cell = CalculateSpawnCell(origin, entryIndex, rowDirection);
+                    }
                 }
                 else
                 {
@@ -165,9 +170,11 @@ namespace NYH.BattleCardSystem
         }
 
         // Roster 또는 fallback 중 적절한 쪽으로 스폰합니다.
-        public List<BattleUnit> SpawnAll(BattleUnitRoster playerRoster, BattleUnitRoster enemyRoster)
+        public List<BattleUnit> SpawnAll(BattleStartContext context)
         {
             List<BattleUnit> spawned = new();
+            BattleUnitRoster playerRoster = context.PlayerRoster;
+            BattleUnitRoster enemyRoster = context.EnemyRoster;
 
             bool hasRoster = (playerRoster != null && playerRoster.Entries.Count > 0)
                 || (enemyRoster != null && enemyRoster.Entries.Count > 0);
@@ -178,20 +185,8 @@ namespace NYH.BattleCardSystem
                 List<Vector2Int> attackTiles = GetSpawnTilesFromTilemap("Tilemap_AttackSpawn");
                 List<Vector2Int> defenceTiles = GetSpawnTilesFromTilemap("Tilemap_DefenceSpawn");
 
-                // 공격자와 수비자 식별
-                bool playerIsAttacker = true; // 기본값
-                var kduManager = FindFirstObjectByType<WorldMapManager>();
-                if (kduManager != null)
-                {
-                    // lastAttackContext의 AttackerCivID가 0이면 플레이어가 공격자
-                    // private 필드이므로 현재 코드 구조상 reflection 또는 문맥으로 파악 가능하지만, 
-                    // 지금은 Player가 Attack 모달을 띄웠는지, 아니면 AI 턴인지에 따라 결정됨.
-                    // WorldMapManager에 직접 접근하기 까다로우므로 BattleTeam을 확인.
-                }
-
-                // BattleSessionController를 우회하지 않고, WorldMap 공격 파견은 항상 플레이어가 선공임
-                // AI 침투 방어가 구현되면 해당 스크립트에서 플래그를 넘겨주는 것이 더 깔끔함.
-                // 임시: 플레이어가 공격자라고 간주. 나중에 AI 전투가 엮이면 수정 필요.
+                // 공격자와 수비자 식별 (context 기준)
+                bool playerIsAttacker = context.IsPlayerAttacker;
                 List<Vector2Int> playerTiles = playerIsAttacker ? attackTiles : defenceTiles;
                 List<Vector2Int> enemyTiles = playerIsAttacker ? defenceTiles : attackTiles;
 

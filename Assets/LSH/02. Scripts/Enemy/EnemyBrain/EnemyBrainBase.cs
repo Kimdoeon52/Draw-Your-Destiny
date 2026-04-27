@@ -671,7 +671,8 @@ public class EnemyBrainBase : MonoBehaviour
                 WorldMapManager.Instance.SetLastAttackContext(context);
                 if (BattleSessionController.Instance != null) // 배틀 컨트롤러가 존재한다면
                 {
-                    BattleSessionController.Instance.EnterBattle(adjacentNode, srcNode); // 전투 시작
+                    // AI(적)가 플레이어의 영지를 침략하는 상황이므로 플레이어는 방어자(false)가 됩니다.
+                    BattleSessionController.Instance.EnterBattle(adjacentNode, srcNode, false); // 전투 시작
                 }
                 return;
             }

@@ -23,6 +23,7 @@ namespace NYH.BattleCardSystem
     public class BattleStartContext
     {
         public bool StartWithMulligan = true;
+        public bool IsPlayerAttacker = true;
 
         // 전투에 투입할 유닛 로스터 (null이면 씬에 미리 배치된 유닛 또는 fallback 사용)
         public BattleUnitRoster PlayerRoster;
@@ -155,7 +156,7 @@ namespace NYH.BattleCardSystem
             // 유닛 스폰: Roster가 있으면 Roster 기반, 없으면 fallback/씬 배치 유닛 사용
             if (battleStartSpawner != null)
             {
-                battleStartSpawner.SpawnAll(resolvedContext.PlayerRoster, resolvedContext.EnemyRoster);
+                battleStartSpawner.SpawnAll(resolvedContext);
             }
 
             RebuildUnitLists();

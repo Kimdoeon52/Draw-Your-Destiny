@@ -50,6 +50,14 @@ namespace NYH.BattleCardSystem
 
             Vector3 spawnPosition = BattleUnit.GetWorldPositionForGrid(gridPosition, unitPrefab.transform.position.z);
             BattleUnit spawnedUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
+            
+            // [수정] 문명 모드 이동 스크립트 비활성화 (전투 중 맘대로 돌아다니는 현상 방지)
+            MonoBehaviour worldScript = spawnedUnit.GetComponent("EnemyUnitBase") as MonoBehaviour;
+            if (worldScript != null) worldScript.enabled = false;
+            // [수정] 프리팹의 렌더러가 꺼져있을 수 있으므로 강제로 켭니다 (유령 유닛 방지)
+            foreach (var sr in spawnedUnit.GetComponentsInChildren<SpriteRenderer>(true)) sr.enabled = true;
+            foreach (var r in spawnedUnit.GetComponentsInChildren<Renderer>(true)) r.enabled = true;
+
             int resolvedHealth = startHealth >= 0 ? Mathf.Clamp(startHealth, 0, spawnedUnit.MaxHealth) : spawnedUnit.MaxHealth;
             spawnedUnit.Initialize(gridPosition, resolvedHealth);
             spawnedUnit.SnapToGridCenter();
@@ -94,6 +102,14 @@ namespace NYH.BattleCardSystem
 
             Vector3 spawnPosition = BattleUnit.GetWorldPositionForGrid(gridPosition, unitPrefab.transform.position.z);
             BattleUnit spawnedUnit = Instantiate(unitPrefab, spawnPosition, Quaternion.identity);
+
+            // [수정] 문명 모드 이동 스크립트 비활성화 (전투 중 맘대로 돌아다니는 현상 방지)
+            MonoBehaviour worldScript = spawnedUnit.GetComponent("EnemyUnitBase") as MonoBehaviour;
+            if (worldScript != null) worldScript.enabled = false;
+            // [수정] 프리팹의 렌더러가 꺼져있을 수 있으므로 강제로 켭니다 (유령 유닛 방지)
+            foreach (var sr in spawnedUnit.GetComponentsInChildren<SpriteRenderer>(true)) sr.enabled = true;
+            foreach (var r in spawnedUnit.GetComponentsInChildren<Renderer>(true)) r.enabled = true;
+
             spawnedUnit.InitializeWithCount(gridPosition, baseHealth, baseAttack, unitCount);
             spawnedUnit.SnapToGridCenter();
 

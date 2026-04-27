@@ -47,6 +47,9 @@ namespace NYH.BattleCardSystem
         private TMP_Text deckButtonTmpText;
         private TMP_Text discardButtonTmpText;
 
+        private NodeData currentPlayerNode;
+        private NodeData currentEnemyNode;
+
         private void Awake()
         {
             Instance = this;
@@ -95,13 +98,16 @@ namespace NYH.BattleCardSystem
         // NodeData를 지정해 전투 진입 — 월드맵에서 공격 시 호출
         // playerNode: 플레이어 유닛이 있는 노드
         // enemyNode: 공격 대상(적) 노드
-        public void EnterBattle(NodeData playerNode, NodeData enemyNode)
+        public void EnterBattle(NodeData playerNode, NodeData enemyNode, bool isPlayerAttacker = true)
         {
             if (IsBattleActive)
             {
                 Debug.LogWarning("[BattleSession] 이미 전투 모드입니다.");
                 return;
             }
+
+            currentPlayerNode = playerNode;
+            currentEnemyNode = enemyNode;
 
             if (CardSystem.Instance == null)
             {
@@ -137,7 +143,8 @@ namespace NYH.BattleCardSystem
             // 유닛 로스터 구성
             BattleStartContext context = new BattleStartContext
             {
-                StartWithMulligan = true
+                StartWithMulligan = true,
+                IsPlayerAttacker = isPlayerAttacker
             };
 
             if (prefabRegistry != null)
@@ -180,6 +187,16 @@ namespace NYH.BattleCardSystem
                 sharedHandView.ClearAllCardsImmediate();
             }
 
+            // [추가] 전투에 사용된 모든 BattleUnit 오브젝트 파괴
+            BattleUnit[] allUnits = FindObjectsByType<BattleUnit>(FindObjectsSortMode.None);
+            foreach (BattleUnit unit in allUnits)
+            {
+                if (unit != null)
+                {
+                    Destroy(unit.gameObject);
+                }
+            }
+
             SetObjectsActive(battleModeObjects, false);
             SetObjectsActive(civilizationModeObjects, true);
 
@@ -195,12 +212,45 @@ namespace NYH.BattleCardSystem
             }
 
             savedCivilizationState = null;
+            currentPlayerNode = null;
+            currentEnemyNode = null;
             IsBattleActive = false;
             RefreshDeckViewButtonLabels();
         }
 
-        private void HandleBattleFinished(BattleResult _)
+        private void HandleBattleFinished(BattleResult result)
         {
+            // 전투 결과를 월드맵 노드에 반영 (생존 유닛 반환)
+            if (currentPlayerNode != null && result.SurvivingPlayerTroops != null)
+            {
+                currentPlayerNode.units.Clear();
+                foreach (var kvp in result.SurvivingPlayerTroops)
+                {
+                    if (kvp.Value > 0)
+                    {
+                        currentPlayerNode.units.Add(new NodeUnit { unitType = kvp.Key, count = kvp.Value });
+                    }
+                }
+            }
+
+            if (currentEnemyNode != null && result.SurvivingEnemyTroops != null)
+            {
+                currentEnemyNode.units.Clear();
+                foreach (var kvp in result.SurvivingEnemyTroops)
+                {
+                    if (kvp.Value > 0)
+                    {
+                        currentEnemyNode.units.Add(new NodeUnit { unitType = kvp.Key, count = kvp.Value });
+                    }
+                }
+
+                // 플레이어 승리 시 노드 소유권 빼앗기 (임시 처리, 문명 매니저 연결에 따라 다름)
+                if (result.IsVictory)
+                {
+                    currentEnemyNode.ownerCivID = 0; // 플레이어 소유
+                }
+            }
+
             ExitBattle();
         }
 
