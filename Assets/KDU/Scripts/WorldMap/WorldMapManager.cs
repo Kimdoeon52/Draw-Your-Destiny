@@ -262,6 +262,9 @@ public class WorldMapManager : Singleton<WorldMapManager>
     // 영주성 재건 카드(OnMansionRebuilt)와의 차이: 잔해 건물 복구가 추가됨.
     public void RestoreCapturedNode()
     {
+        int populationRestored = 0;
+        var gameManager = GameManager.Instance;
+
         NodeData node = GetNode(currentNodeID);
         if (node == null)
         {
@@ -270,10 +273,19 @@ public class WorldMapManager : Singleton<WorldMapManager>
         }
 
         int restored = 0;
+
+
         if (node.buildings != null)
         {
             foreach (BuildingInstance b in node.buildings)
             {
+                // 인구 한도 보너스 복구 (Mansion +10, House +5/7/10 등)
+                if (gameManager != null && b.data != null && b.data.populationCapBonus > 0)
+                {
+                    gameManager.IncreasePopulationCap(b.data.populationCapBonus);
+                    populationRestored += b.data.populationCapBonus;
+                }
+
                 if (b != null && b.isRuin)
                 {
                     b.isRuin = false;

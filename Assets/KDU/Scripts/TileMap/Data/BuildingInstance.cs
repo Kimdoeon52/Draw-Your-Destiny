@@ -47,6 +47,11 @@ public class BuildingInstance
     // 잔해는 효과/생산 정지(isActive=false)로 처리, 전체 재건 카드 호출 시 false로 복구.
     public bool isRuin = false;
 
+    // populationCapBonus가 한 번이라도 GameManager에 적용됐는지 추적.
+    // PlaceBuilding 또는 RestoreCapturedNode에서 적용 후 true로 설정.
+    // 잔해 -> 재건 시 이미 true면 재적용하지 않음 (이중 적용 방지).
+    public bool populationCapApplied = false;
+
     // 현재 건물 타입 — data가 null이면 None 반환
     public BuildingType type => data != null ? data.buildingType : BuildingType.None;
 }

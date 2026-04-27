@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4366970227175011903}
   - component: {fileID: 3381336256497483676}
   m_Layer: 0
-  m_Name: Bank_Bronze_Prefab
+  m_Name: Bank_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -12,8 +12,8 @@ public class FarmBehaviour : UnitProducerBehaviour
 
     public override void OnTurnEnd()
     {
-        base.OnTurnEnd(); // 농부 생산 처리
         if (!instance.isActive) return;
+        base.OnTurnEnd(); // 농부 생산 처리
         ResourceManager.Instance.AddFood(activeCount * instance.data.foodPerTurn);
         Debug.Log($"[Farm] 식량 생산 예정 — 활성 농부={activeCount}");
     }

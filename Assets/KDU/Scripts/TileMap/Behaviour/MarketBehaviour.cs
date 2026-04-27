@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 // 상점 — 상인 유닛 생산. 매 턴 활성 상인 수 × n 만큼 금도 생산.
 public class MarketBehaviour : UnitProducerBehaviour
@@ -12,10 +12,9 @@ public class MarketBehaviour : UnitProducerBehaviour
 
     public override void OnTurnEnd()
     {
+        if (!instance.isActive) return;
         base.OnTurnEnd(); // 상인 생산 처리
 
-        // TODO: goldPerTurn 확정 후 수치 채움
-        // ResourceManager.Instance.AddGold(activeCount * goldPerMerchant);
         GameManager.Instance.AddGold(activeCount * instance.data.goldPerTurn);
         Debug.Log($"[Market] 금 생산 예정 — 활성 상인={activeCount}");
     }

@@ -43,4 +43,9 @@ public class NodeData
     // AI 영지 상태 (영지 단위로 누적되는 수치)
     public int farmCount = 0;
     public int maxHuman = 10;
+
+    // 플레이어 영지 인구 수용량 (0~50). House/Mansion 등이 누적시킴.
+    // 전역 인구 한도(ResourceManager.maxPopulation) 기여도는 min(capacity, 20).
+    // 즉 0~20 구간은 전역 한도와 노드 수용량 둘 다 늘어나고, 20 초과분은 노드 수용량만 늘어남.
+    public int playerPopulationCapacity = 0;
 }
