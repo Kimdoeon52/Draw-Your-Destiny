@@ -68,7 +68,8 @@ namespace Base
         protected int pathIndex = 0;
         protected bool isMoving = false;
 
-        public event System.Action OnOldCount;
+        public event System.Action OnBecomeOld;//늙었을때
+        public event System.Action OnBecomeRemoved;//새로 태어났을 떄
         //================================업데이트================================================
 
         protected virtual void Update()
@@ -139,10 +140,10 @@ namespace Base
                 case < 15:
                     ageGroup = AgeGroupBase.Adult;
                     break;
-                case >= 15:
-                    if (OnOldCount != null)
+                case 15: //되는 순간.
+                    if (OnBecomeOld != null)
                     {
-                        OnOldCount.Invoke();
+                        OnBecomeOld.Invoke();
                     }
                     ageGroup = AgeGroupBase.Old;
                     break;
@@ -300,12 +301,10 @@ namespace Base
         {
             if (!TileMapManager.Instance.IsValidPosition(cell)) //유효한 위치인지 검사
             {
-                Debug.Log("못움직임임");
                 return false;
             }
 
             TileType tileType = TileMapManager.Instance.GetTileType(cell); //타일 타입 받아와서
-            Debug.Log("움직이이이이임");
             return tileType == TileType.Plain //평지, 도시, 농지 허용
                 || tileType == TileType.City
                 || tileType == TileType.Farmland;
