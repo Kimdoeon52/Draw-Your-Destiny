@@ -634,22 +634,39 @@ public class WorldMapManager : Singleton<WorldMapManager>
     // 모달 확정 시 호출됨. 출발 노드에서 병력 차감 후 후속 처리.
     private void DeclareAttack(int fromNodeID, int targetNodeID, Dictionary<UnitType, int> troops)
     {
+        StartCoroutine(DeclareAttackCoroutine(fromNodeID, targetNodeID, troops));
+    }
+
+    private IEnumerator DeclareAttackCoroutine(int fromNodeID, int targetNodeID, Dictionary<UnitType, int> troops)
+    {
         NodeData src = GetNode(fromNodeID);
         NodeData target = GetNode(targetNodeID);
-        if (src == null || target == null) return;
+        if (src == null || target == null) yield break;
 
-        // 전투 컨트롤러가 없으면 병력을 깎지 않고 리턴 (유저 손실 방지)
         var bsc = ResolvedBattleSession;
         if (bsc == null)
         {
             Debug.LogError("[WorldMapManager] BattleSessionController를 찾을 수 없습니다! 전투가 취소됩니다.");
-            return;
+            yield break;
         }
 
         DeductTroops(src, troops);
 
-        Debug.Log($"<color=yellow>[WorldMapManager] 공격 선언: 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}</color>");
+        Debug.Log($"<color=yellow>[WorldMapManager] 공격 선언 (코루틴): 노드 {fromNodeID} → {targetNodeID}, 파견 {TroopsToString(troops)}</color>");
         RefreshAllNodeButtons();
+
+        isTransitioning = true;
+        yield return FadeTo(1f); // 페이드 아웃
+
+        // ── 타겟 영지 맵 강제 로드 ──
+        currentNodeID = targetNodeID; // 타겟 노드로 현재 뷰 변경
+        if (worldMapView != null) worldMapView.SetActive(false);
+        if (territoryView != null) territoryView.SetActive(true);
+        if (nodeDataManager != null)
+            nodeDataManager.EnterNode(target);
+
+        // 배치 UI 잠금 (전투 중에는 기본적으로 잠김)
+        BuildingPlacementController.LockPlacement();
 
         // ── 공격 상황 정보(Context) 저장 ──
         lastAttackContext = new BattleAttackContext
@@ -666,8 +683,13 @@ public class WorldMapManager : Singleton<WorldMapManager>
             attackerNode.units.Add(new NodeUnit { unitType = kv.Key, count = kv.Value });
 
         Debug.Log($"<color=yellow>[WorldMapManager] EnterBattle 호출 시작 (playerUnits={attackerNode.units.Count}종, targetOwner={target.ownerCivID})</color>");
-        bsc.EnterBattle(attackerNode, target);
 
+        // 페이드 인 효과 후 전투를 넘기거나 넘기고 나서 페이드 인. 
+        // BattleSessionController도 자기만의 모달 전환 제어를 할 수 있으므로 우선 페이드 인
+        yield return FadeTo(0f);
+        isTransitioning = false;
+
+        bsc.EnterBattle(attackerNode, target);
         RefreshAllNodeButtons();
     }
 

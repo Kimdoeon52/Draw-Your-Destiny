@@ -38,8 +38,8 @@ namespace NYH.BattleCardSystem
 
             if (!coordinateService.IsCombatCell(gridPosition))
             {
-                Debug.LogWarning($"[BattleUnitSpawnService] 전투 셀이 아닌 위치에는 소환할 수 없습니다. pos={gridPosition}");
-                return null;
+                Debug.LogWarning($"[BattleUnitSpawnService] 전투 셀이 아닌 위치에 소환 시도 중입니다. (임시 허용 강제 스폰) pos={gridPosition}");
+                // return null;
             }
 
             if (battleBoardSystem.GetUnitAt(gridPosition) != null)
@@ -82,8 +82,8 @@ namespace NYH.BattleCardSystem
 
             if (!coordinateService.IsCombatCell(gridPosition))
             {
-                Debug.LogWarning($"[BattleUnitSpawnService] 전투 셀이 아닌 위치에는 소환할 수 없습니다. pos={gridPosition}");
-                return null;
+                Debug.LogWarning($"[BattleUnitSpawnService] 전투 셀이 아닌 위치에 소환 시도 중입니다. (임시 허용 강제 스폰) pos={gridPosition}");
+                // return null;
             }
 
             if (battleBoardSystem.GetUnitAt(gridPosition) != null)

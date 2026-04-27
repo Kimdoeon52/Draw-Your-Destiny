@@ -103,23 +103,20 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
-            if (battleManager == null)
+            if (CardSystem.Instance == null)
             {
-                Debug.LogError("[BattleSession] BattleManager가 없어 전투를 시작할 수 없습니다.");
+                Debug.LogWarning("[BattleSession] CardSystem이 없어 문명 카드 상태를 백업할 수 없습니다.");
                 return;
             }
 
-            // 문명 카드 상태 백업 (CardSystem이 없으면 건너뜀 — 전투 자체는 진행)
-            if (CardSystem.Instance != null)
+            if (battleManager == null)
             {
-                savedCivilizationState = CardSystem.Instance.CaptureRuntimeState();
-                Debug.Log($"[BattleSession] 문명 상태 백업 완료: {FormatState(savedCivilizationState)}");
+                Debug.LogWarning("[BattleSession] BattleManager가 없어 전투를 시작할 수 없습니다.");
+                return;
             }
-            else
-            {
-                Debug.LogWarning("[BattleSession] CardSystem이 없어 카드 백업을 건너뜁니다. 전투는 계속 진행됩니다.");
-                savedCivilizationState = null;
-            }
+
+            savedCivilizationState = CardSystem.Instance.CaptureRuntimeState();
+            Debug.Log($"[BattleSession] 문명 상태 백업 완료: {FormatState(savedCivilizationState)}");
 
             if (sharedHandView != null)
             {
@@ -137,8 +134,6 @@ namespace NYH.BattleCardSystem
             IsBattleActive = true;
             RefreshDeckViewButtonLabels();
 
-            Debug.Log($"[BattleSession] 전투 모드 전환 완료. playerNode={playerNode?.nodeID}, enemyNode={enemyNode?.nodeID}");
-
             // 유닛 로스터 구성
             BattleStartContext context = new BattleStartContext
             {
@@ -151,7 +146,6 @@ namespace NYH.BattleCardSystem
                 {
                     context.PlayerRoster = BattleUnitRosterBuilder.Build(
                         playerNode, BattleTeam.Player, 0, prefabRegistry);
-                    Debug.Log($"[BattleSession] 플레이어 로스터 빌드 완료: {context.PlayerRoster?.Entries?.Count ?? 0}개 항목");
                 }
 
                 if (enemyNode != null)
@@ -159,12 +153,7 @@ namespace NYH.BattleCardSystem
                     context.EnemyRoster = BattleUnitRosterBuilder.Build(
                         enemyNode, BattleTeam.Enemy,
                         enemyNode.ownerCivID, prefabRegistry);
-                    Debug.Log($"[BattleSession] 적 로스터 빌드 완료: {context.EnemyRoster?.Entries?.Count ?? 0}개 항목");
                 }
-            }
-            else
-            {
-                Debug.LogWarning("[BattleSession] prefabRegistry가 없어 로스터 빌드를 건너뜁니다. Fallback 유닛이 사용됩니다.");
             }
 
             battleManager.SetupBattle(context);

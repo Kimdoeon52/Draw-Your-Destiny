@@ -56,8 +56,8 @@ namespace NYH.BattleCardSystem
 
             if (!BattleGridCoordinateService.Instance.IsCombatCell(position))
             {
-                Debug.LogWarning($"[BattleBoardSystem] 전투 셀이 아닌 위치에는 유닛을 등록할 수 없습니다. unit={unit.name}, pos={position}");
-                return false;
+                Debug.LogWarning($"[BattleBoardSystem] 전투 셀이 아닌 위치에 유닛 강제 등록 (임시): unit={unit.name}, pos={position}");
+                // return false;
             }
 
             if (unitMap.TryGetValue(position, out BattleUnit occupant) && occupant != unit)
