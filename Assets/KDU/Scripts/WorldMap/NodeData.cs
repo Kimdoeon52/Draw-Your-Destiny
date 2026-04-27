@@ -48,4 +48,8 @@ public class NodeData
     // 전역 인구 한도(ResourceManager.maxPopulation) 기여도는 min(capacity, 20).
     // 즉 0~20 구간은 전역 한도와 노드 수용량 둘 다 늘어나고, 20 초과분은 노드 수용량만 늘어남.
     public int playerPopulationCapacity = 0;
+
+    // 이 노드의 노화(Old) 상태 유닛 수.
+    // HumanBase.OnBecomeOld 발생 시 GameManager가 +1, OnBecomeRemoved(노화 유닛 풀 반환) 시 -1.
+    public int oldUnitCount = 0;
 }

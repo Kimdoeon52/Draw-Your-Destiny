@@ -34,4 +34,7 @@ public class SaveNodeData
 
     // 플레이어 영지 인구 수용량 (0~50)
     public int playerPopulationCapacity;
+
+    // 노화(Old) 상태 유닛 수
+    public int oldUnitCount;
 }

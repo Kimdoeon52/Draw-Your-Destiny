@@ -642,7 +642,21 @@ public class EnemyBrainBase : MonoBehaviour
             }
             else //조건4: 인접한 노드가 다른적의 영지인가
             {
-                //다른 적과 골드와 식량의 총량을 비교후 승리 판단여부 행동 구현
+                EnemyBrainBase otherEnemy = EnemyBrainManager.Instance.GetBrain(adjacentNode.ownerCivID);
+                int otherGold = otherEnemy.gold + otherEnemy.food;
+                int myGold = gold + food;
+                if (otherEnemy != null)
+                {
+                    if (myGold > otherGold)
+                    {
+                        adjacentNode.ownerCivID = enemyID; // 골드가 더 많으면 영지 점령
+                        Debug.Log($"<color=orange>[영지 쟁탈 승리] 노드 {adjacentNode.nodeID}를 적군 {otherEnemy.enemyID}에게서 약탈!</color>");
+                    }
+                    else
+                    {
+                        Debug.Log($"<color=orange>[영지 쟁탈 패배] 노드 {adjacentNode.nodeID}를 못뺏었어요ㅋ.</color>");
+                    }
+                }
                 return;
             }
         }
