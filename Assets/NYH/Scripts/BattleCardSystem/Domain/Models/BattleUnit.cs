@@ -73,6 +73,12 @@ namespace NYH.BattleCardSystem
 
         private void OnEnable()
         {
+            // 문명 모드 시 영지 스폰 유닛이 전투 보드로 텔레포트하는 것을 방지
+            if (BattleSessionController.Instance != null && !BattleSessionController.Instance.IsBattleActive)
+            {
+                return;
+            }
+
             ApplyGridWorldPosition();
             if (BattleBoardSystem.Instance != null)
             {

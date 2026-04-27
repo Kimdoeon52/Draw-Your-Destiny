@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8407133263628665639}
   - component: {fileID: -8925902554403630171}
   - component: {fileID: -3434270290906817416}
+  - component: {fileID: -1103223928826931149}
   m_Layer: 0
   m_Name: EnemyAHealer
   m_TagString: Untagged
@@ -136,3 +137,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-1103223928826931149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3901228212941006485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cca038f7de0c7542955f233e782ae15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitId: 2003
+  unitType: 2
+  team: 0
+  maxHealth: 10
+  attackPower: 1
+  speed: 1
+  gridPosition: {x: -9, y: 1}
+  visualRoot: {fileID: 0}
+  enableGridAlignmentDebug: 0

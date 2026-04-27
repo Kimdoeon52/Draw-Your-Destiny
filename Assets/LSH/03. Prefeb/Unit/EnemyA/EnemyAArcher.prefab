@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7035232704444567421}
   - component: {fileID: 3023531532152739078}
   - component: {fileID: 3900448302754999126}
+  - component: {fileID: 6933770321739471758}
   m_Layer: 0
   m_Name: EnemyAArcher
   m_TagString: Untagged
@@ -136,3 +137,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6933770321739471758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4601516375054929816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cca038f7de0c7542955f233e782ae15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitId: 2002
+  unitType: 2
+  team: 0
+  maxHealth: 10
+  attackPower: 1
+  speed: 1
+  gridPosition: {x: -9, y: 2}
+  visualRoot: {fileID: 0}
+  enableGridAlignmentDebug: 0

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6015838828499253870}
   - component: {fileID: 1835611549950650937}
   - component: {fileID: -2253802102621230800}
+  - component: {fileID: -6005608083804525166}
   m_Layer: 0
   m_Name: EnemyASuperUnit
   m_TagString: Untagged
@@ -136,3 +137,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-6005608083804525166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9036962498194939828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cca038f7de0c7542955f233e782ae15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitId: 2005
+  unitType: 2
+  team: 0
+  maxHealth: 10
+  attackPower: 1
+  speed: 1
+  gridPosition: {x: -9, y: -1}
+  visualRoot: {fileID: 0}
+  enableGridAlignmentDebug: 0

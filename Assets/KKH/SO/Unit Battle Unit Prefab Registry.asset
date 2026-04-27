@@ -18,3 +18,28 @@ MonoBehaviour:
       type: 3}
     EnemyPrefab: {fileID: 3996323684320540842, guid: 4f9f86478dd89c34ca2b1e8458381959,
       type: 3}
+  - UnitType: 4
+    PlayerPrefab: {fileID: 2610344812791259742, guid: f5286bca1552de64d93e1949ca6013d2,
+      type: 3}
+    EnemyPrefab: {fileID: 6933770321739471758, guid: df5a862aa55a7d34d98ff972f6d7af8f,
+      type: 3}
+  - UnitType: 3
+    PlayerPrefab: {fileID: 7473726725014081838, guid: 5ecefad98da83f8459a9064336923400,
+      type: 3}
+    EnemyPrefab: {fileID: -1103223928826931149, guid: 1a116afc1586b3a40ac838e1a761667a,
+      type: 3}
+  - UnitType: 5
+    PlayerPrefab: {fileID: 6200842116865210580, guid: c1f4a682d592ec649a8221c9c4d70a86,
+      type: 3}
+    EnemyPrefab: {fileID: -2348039324001635826, guid: a6269e4616ffcd548acffe40ab09308b,
+      type: 3}
+  - UnitType: 6
+    PlayerPrefab: {fileID: -8270931049459144512, guid: f0494652108c6964599af2d7cfd66365,
+      type: 3}
+    EnemyPrefab: {fileID: -6005608083804525166, guid: e865585d206cd164788bd0e523543c60,
+      type: 3}
+  - UnitType: 7
+    PlayerPrefab: {fileID: 953155438611232620, guid: 42e888ae2dd50be41ae2020313c46794,
+      type: 3}
+    EnemyPrefab: {fileID: 8243179000501126247, guid: b0276b816c0886b459597c1b907705b7,
+      type: 3}

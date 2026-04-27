@@ -14,6 +14,8 @@ namespace NYH.BattleCardSystem
      */
     public class BattleSessionController : MonoBehaviour
     {
+        public static BattleSessionController Instance { get; private set; }
+
         [Header("References")]
         [SerializeField] private BattleManager battleManager;
         [SerializeField] private BattleUIController battleUIController;
@@ -47,6 +49,8 @@ namespace NYH.BattleCardSystem
 
         private void Awake()
         {
+            Instance = this;
+
             if (battleManager == null)
             {
                 battleManager = FindFirstObjectByType<BattleManager>(FindObjectsInactive.Include);
