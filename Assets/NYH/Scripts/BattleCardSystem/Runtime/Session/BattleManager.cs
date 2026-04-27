@@ -38,6 +38,8 @@ namespace NYH.BattleCardSystem
         public int SurvivingPlayerUnits;
         public int SurvivingEnemyUnits;
         public Dictionary<UnitType, int> SurvivingPlayerTroops;
+        public Dictionary<UnitType, int> SurvivingEnemyTroops;
+        public BattleTeam Winner;
     }
 
     /*
@@ -431,6 +433,10 @@ namespace NYH.BattleCardSystem
                 return;
             }
 
+            bool hasPlayerUnits = HasAliveUnits(playerUnits);
+            result.Winner = hasPlayerUnits ? BattleTeam.Player : BattleTeam.Enemy;
+            result.IsVictory = (result.Winner == BattleTeam.Player);
+
             IsBattleEnded = true;
             LastResult = result;
             BattleTrapSystem.ClearInstalledTraps();
@@ -441,7 +447,6 @@ namespace NYH.BattleCardSystem
         private BattleResult BuildResult(bool isVictory)
         {
             RebuildUnitLists();
-            //return new BattleResult
             var result = new BattleResult
             {
                 IsVictory = isVictory,
@@ -452,18 +457,25 @@ namespace NYH.BattleCardSystem
             result.SurvivingPlayerTroops = new Dictionary<UnitType, int>();
             foreach (BattleUnit unit in playerUnits)
             {
-                if (unit == null || !unit.IsAlive)
-                {
-                    continue;
-                }
-
+                if (unit == null || !unit.IsAlive) continue;
                 if (!result.SurvivingPlayerTroops.ContainsKey(unit.UnitType))
-                {
                     result.SurvivingPlayerTroops[unit.UnitType] = 0;
-                }
+
                 int survivingCount = Mathf.CeilToInt((float)unit.CurrentHealth / unit.BaseHealthPerUnit);
                 result.SurvivingPlayerTroops[unit.UnitType] += survivingCount;
             }
+
+            result.SurvivingEnemyTroops = new Dictionary<UnitType, int>();
+            foreach (BattleUnit unit in enemyUnits)
+            {
+                if (unit == null || !unit.IsAlive) continue;
+                if (!result.SurvivingEnemyTroops.ContainsKey(unit.UnitType))
+                    result.SurvivingEnemyTroops[unit.UnitType] = 0;
+
+                int survivingCount = Mathf.CeilToInt((float)unit.CurrentHealth / unit.BaseHealthPerUnit);
+                result.SurvivingEnemyTroops[unit.UnitType] += survivingCount;
+            }
+
             return result;
         }
 
