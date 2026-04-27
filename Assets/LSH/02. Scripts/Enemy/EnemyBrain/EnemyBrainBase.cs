@@ -1,4 +1,4 @@
-﻿using EnemyAPool;
+using EnemyAPool;
 using PoolBase;
 using System.Collections.Generic;
 using Unity.VisualScripting;

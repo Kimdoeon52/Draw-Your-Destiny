@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using PoolBase;
 using System.Collections.Generic;
 using System.Threading;
@@ -68,6 +68,7 @@ namespace Base
         protected int pathIndex = 0;
         protected bool isMoving = false;
 
+        public event System.Action OnOldCount;
         //================================업데이트================================================
 
         protected virtual void Update()
@@ -139,6 +140,10 @@ namespace Base
                     ageGroup = AgeGroupBase.Adult;
                     break;
                 case >= 15:
+                    if (OnOldCount != null)
+                    {
+                        OnOldCount.Invoke();
+                    }
                     ageGroup = AgeGroupBase.Old;
                     break;
             }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D.IK;
 using System;
+using Unity.VisualScripting;
 
 // ============================================================
 // GameManager — 게임 전체 상태 관리 (PersistentSingleton)
@@ -47,6 +48,9 @@ public class GameManager : PersistentSingleton<GameManager>
 
     private CitySpawnManager citySpawnManager;
     public event System.Action OnTurnFin;//턴 끝났다는 걸 알리는 이벤트임.
+
+    [Header("노인수")]
+    [SerializeField] int oldManCount = 0;
 
     protected override void Awake()
     {
