@@ -1,7 +1,7 @@
 using UnityEngine;
 
-public class EnemyB : EnemyBrainBase //1. °ñµå°¡ ¸¹À½ 2. ½Ã´ë¹ßÀü ºü¸§ 3. ¹æ¾îÀ§ÁÖ Á¡·É ½Ãµµ Àß¾ÈÇÔ 4. °Ç¹° ¸¹ÀÌ Áö¾î¼­ À¯´Ö °¹¼ö°¡ ¸¹¾ÆÁü //5. ÃÊ¹İ ·¯³Ê.
-{//°æÁ¦Æ®¸® Enemy
+public class EnemyB : EnemyBrainBase //1. ê³¨ë“œê°€ ë§ìŒ 2. ì‹œëŒ€ë°œì „ ë¹ ë¦„ 3. ë°©ì–´ìœ„ì£¼ ì ë ¹ ì‹œë„ ì˜ì•ˆí•¨ 4. ê±´ë¬¼ ë§ì´ ì§€ì–´ì„œ ìœ ë‹› ê°¯ìˆ˜ê°€ ë§ì•„ì§ //5. ì´ˆë°˜ ëŸ¬ë„ˆ.
+{//ê²½ì œíŠ¸ë¦¬ Enemy
     protected override void Awake()
     {
         enemyID = 2;
@@ -13,71 +13,74 @@ public class EnemyB : EnemyBrainBase //1. °ñµå°¡ ¸¹À½ 2. ½Ã´ë¹ßÀü ºü¸§ 3. ¹æ¾îÀ§
     {
         base.OnEnable();
     }
-    //===================================Enemyº° Çàµ¿ È®·ü Á¶Á¤==========================================
-    protected override void AddMoneyAction() //ÃÊ±â Çàµ¿ È®·ü Á¶Á¤
+    //===================================Enemyë³„ í–‰ë™ í™•ë¥  ì¡°ì •==========================================
+    protected override void AddMoneyAction() //ì´ˆê¸° í–‰ë™ í™•ë¥  ì¡°ì •
     {
-        AddActionCase(EnemyAction.Building, 35); //°Ç¹°35ÇÁ·Î
-        AddActionCase(EnemyAction.GetGold, 40); //°ñµå 40ÇÁ·Î
-        AddActionCase(EnemyAction.TryOccupy, 5); //¿µÁö 5ÇÁ·Î
-        AddActionCase(EnemyAction.Rest, 20); //ÈŞ½Ä 20ÇÁ·Î
+        AddActionCase(EnemyAction.Building, 30); //ê±´ë¬¼35í”„ë¡œ
+        AddActionCase(EnemyAction.GetGold, 40); //ê³¨ë“œ 40í”„ë¡œ
+        AddActionCase(EnemyAction.TryOccupy, 10); //ì˜ì§€ 5í”„ë¡œ
+        AddActionCase(EnemyAction.Rest, 20); //íœ´ì‹ 20í”„ë¡œ
     }
-    protected override void UpdateActionCases() //Àû Çàµ¿ È®·ü ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼öÀÓ. ¿¹¸¦ µé¾î ·¹º§¾÷ÇÏ¸é °Ç¹° Áş´Â Çàµ¿ È®·üÀÌ ¿Ã¶ó°¡´Â ½ÄÀ¸·Î.
+    protected override void UpdateActionCases() //ì  í–‰ë™ í™•ë¥  ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜ì„. ì˜ˆë¥¼ ë“¤ì–´ ë ˆë²¨ì—…í•˜ë©´ ê±´ë¬¼ ì§“ëŠ” í–‰ë™ í™•ë¥ ì´ ì˜¬ë¼ê°€ëŠ” ì‹ìœ¼ë¡œ.
     {
-        //Àû Çàµ¿ È®·ü ¾÷µ¥ÀÌÆ® ±¸Çö
+        //ì  í–‰ë™ í™•ë¥  ì—…ë°ì´íŠ¸ êµ¬í˜„
         if (enemyLevel == 2)
         {
-            actionCases[0].weight = 60; //°Ç¹° Áş±â È®·ü 40%
-            actionCases[1].weight = 30; //°ñµå ¾ò±â È®·ü 40%
-            actionCases[2].weight = 10; //¿µÁö Á¡·É ½Ãµµ È®·ü 10%
+            actionCases[0].weight = 50; //ê±´ë¬¼ ì§“ê¸° í™•ë¥  40%
+            actionCases[1].weight = 30; //ê³¨ë“œ ì–»ê¸° í™•ë¥  40%
+            actionCases[2].weight = 20; //ì˜ì§€ ì ë ¹ ì‹œë„ í™•ë¥  10%
+            actionCases[3].weight = 0;
         }
-        else if (enemyLevel == 3) //°ø°İÀûÀ¸·Î º¯ÇÔ
+        else if (enemyLevel == 3) //ê³µê²©ì ìœ¼ë¡œ ë³€í•¨
         {
-            actionCases[0].weight = 80; //°Ç¹° Áş±â È®·ü 60%
-            actionCases[1].weight = 10; //°Ç¹° À§ÁÖ·Î ÇÏ±â À§ÇØ °ñµå ¾ò±â x
-            actionCases[2].weight = 10; //¿µÁö Á¡·É ½Ãµµ È®·ü 10%
+            actionCases[0].weight = 70; //ê±´ë¬¼ ì§“ê¸° í™•ë¥  60%
+            actionCases[1].weight = 10; //ê±´ë¬¼ ìœ„ì£¼ë¡œ í•˜ê¸° ìœ„í•´ ê³¨ë“œ ì–»ê¸° x
+            actionCases[2].weight = 20; //ì˜ì§€ ì ë ¹ ì‹œë„ í™•ë¥  10%
+            actionCases[3].weight = 0;
+            cardCount = 5;
         }
     }
     //=================================================================================================
-    protected override void GetGold() //°ñµå¿Í ½Ã´ëÁ¡¼ö¸¦ ¾ò´Â Çàµ¿ ±¸Çö
+    protected override void GetGold() //ê³¨ë“œì™€ ì‹œëŒ€ì ìˆ˜ë¥¼ ì–»ëŠ” í–‰ë™ êµ¬í˜„
     {
-        switch (enemyLevel) //½Ã´ë ¹ßÀüÀº ºü¸£°Ô °ñµåµµ ¸¹ÀÌ
+        switch (enemyLevel) //ì‹œëŒ€ ë°œì „ì€ ë¹ ë¥´ê²Œ ê³¨ë“œë„ ë§ì´
         {
             case 1:
-                gold += 50;
+                gold += 500;
                 science += 100;
                 break;
             case 2:
-                gold += 75;
+                gold += 750;
                 science += 300;
                 break;
             case 3:
-                gold += 100;
+                gold += 1000;
                 break;
             default:
-                gold += 100;
+                gold += 1000;
                 science += 50;
                 break;
         }
     }
-    //=============================================·¹º§¾÷ Á¶°Ç========================================== 
+    //=============================================ë ˆë²¨ì—… ì¡°ê±´========================================== 
 
-    protected override void CheckLevelUp() //Àû ·¹º§¾÷ Á¶°Ç ±¸Çö
+    protected override void CheckLevelUp() //ì  ë ˆë²¨ì—… ì¡°ê±´ êµ¬í˜„
     {
-        //ÀûÀÇ ·¹º§¾÷ Á¶°Ç ±¸Çö
+        //ì ì˜ ë ˆë²¨ì—… ì¡°ê±´ êµ¬í˜„
         switch (enemyLevel)
         {
             case 1:
-                if (countEnemyTurn >= 15) //10ÅÏ¸¶´Ù ·¹º§¾÷
+                if (countEnemyTurn >= 15) //10í„´ë§ˆë‹¤ ë ˆë²¨ì—…
                 {
                     enemyLevel = 2;
-                    Debug.Log($"<color=green>[·¹º§¾÷!!] Àû ·¹º§ÀÌ {enemyLevel}·Î »ó½ÂÇß½À´Ï´Ù.</color>");
+                    Debug.Log($"<color=green>[ë ˆë²¨ì—…!!] ì  ë ˆë²¨ì´ {enemyLevel}ë¡œ ìƒìŠ¹í–ˆìŠµë‹ˆë‹¤.</color>");
                 }
                 break;
             case 2:
-                if (countEnemyTurn >= 30) //20ÅÏ¸¶´Ù ·¹º§¾÷
+                if (countEnemyTurn >= 30) //20í„´ë§ˆë‹¤ ë ˆë²¨ì—…
                 {
                     enemyLevel = 3;
-                    Debug.Log($"<color=green>[·¹º§¾÷!!] Àû ·¹º§ÀÌ {enemyLevel}·Î »ó½ÂÇß½À´Ï´Ù.</color>");
+                    Debug.Log($"<color=green>[ë ˆë²¨ì—…!!] ì  ë ˆë²¨ì´ {enemyLevel}ë¡œ ìƒìŠ¹í–ˆìŠµë‹ˆë‹¤.</color>");
                 }
                 break;
         }
@@ -86,7 +89,7 @@ public class EnemyB : EnemyBrainBase //1. °ñµå°¡ ¸¹À½ 2. ½Ã´ë¹ßÀü ºü¸§ 3. ¹æ¾îÀ§
     //=================================================================================================
     protected override void DefineEnemyState()
     {
-        enemyState = EnemyState.Money; //°æÁ¦ Æ®¸®·Î ¼³Á¤
+        enemyState = EnemyState.Money; //ê²½ì œ íŠ¸ë¦¬ë¡œ ì„¤ì •
     }
     public override void StartEnemyTurn()
     {

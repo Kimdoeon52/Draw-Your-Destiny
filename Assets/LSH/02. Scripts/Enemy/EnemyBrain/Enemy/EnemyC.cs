@@ -18,18 +18,18 @@ public class EnemyC : EnemyBrainBase //1. 무난
         switch (enemyLevel)
         {
             case 1:
-                gold += 50;
+                gold += 500;
                 science += 100;
                 break;
             case 2:
-                gold += 75;
+                gold += 750;
                 science += 300;
                 break;
             case 3:
-                gold += 100;
+                gold += 1000;
                 break;
             default:
-                gold += 100;
+                gold += 1000;
                 science += 50;
                 break;
         }
@@ -58,6 +58,7 @@ public class EnemyC : EnemyBrainBase //1. 무난
             actionCases[1].weight = 10; //건물 위주로 하기 위해 골드 얻기 x
             actionCases[2].weight = 30; //영지 점령 시도 확률 30%
             actionCases[3].weight = 10;
+            cardCount = 5;
         }
     }
     //==============================================레벨업 조건==========================================

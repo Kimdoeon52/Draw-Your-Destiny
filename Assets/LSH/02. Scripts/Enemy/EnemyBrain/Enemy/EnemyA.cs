@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using EnemyAPool;
 using Unity.VisualScripting;
 
@@ -37,9 +37,9 @@ public class EnemyA : EnemyBrainBase //1. 골드가 많음 2. 카드 갯수 많�
         }
         else if (enemyLevel == 3) //공격적으로 변함.
         {
-            actionCases[0].weight = 60; //건물 짓기 확률 60%
+            actionCases[0].weight = 30; //건물 짓기 확률 60%
             actionCases[1].weight = 0; //건물 위주로 하기 위해 골드 얻기 x
-            actionCases[2].weight = 30; //영지 점령 시도 확률 40%
+            actionCases[2].weight = 60; //영지 점령 시도 확률 40%
             actionCases[3].weight = 10; 
             cardCount = 5;
         }
@@ -73,21 +73,21 @@ public class EnemyA : EnemyBrainBase //1. 골드가 많음 2. 카드 갯수 많�
         switch (enemyLevel) //시대발전은 느리게 후반 골드는 많이
         {
             case 1:
-                gold += 30;
+                gold += 1000;
                 science += 50;
                 food += 10;
                 break;
             case 2:
-                gold += 50;
+                gold += 5000;
                 science += 100;
                 food += 15;
                 break;
             case 3:
-                gold += 100;
+                gold += 1000;
                 food += 20;
                 break;
             default:
-                gold += 100;
+                gold += 1000;
                 science += 50;
                 break;
         }
